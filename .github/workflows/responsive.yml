@@ -1,0 +1,29 @@
+name: responsive
+# 운영 사이트 반응형 점검 — 크롬 · 파이어폭스 · 사파리 엔진 × 320 · 375 · 768 · 1280 (작업 0110)
+#   main 에 머지되면 Pages 배포를 기다렸다가 · 매일 한 번 · 손으로도
+#   운영 페이지를 열기만 함 (빌드 안 함 → D1 읽기 없음)
+on:
+  push:
+    branches: [main]
+    paths: ["apps/web/**", "packages/ui/**", "packages/shared/**"]
+  schedule:
+    - cron: "40 3 * * *" # 한국 12:40 (점심 수집 뒤)
+  workflow_dispatch:
+concurrency:
+  group: responsive
+  cancel-in-progress: true
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx -w @hav/web playwright install --with-deps firefox webkit
+      - name: Pages 배포 기다림 (머지 때만)
+        if: github.event_name == 'push'
+        run: sleep 300
+      - run: npm -w @hav/web run test:responsive
