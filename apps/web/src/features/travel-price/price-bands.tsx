@@ -25,7 +25,7 @@ export function PriceBands({ bands, signalOf, latestYear }: Props) {
 
   return (
     <div>
-      <div className="flex gap-1.5 overflow-x-auto pb-1 text-xs" role="group" aria-label="지역">
+      <div className="flex flex-wrap gap-1.5 text-xs" role="group" aria-label="지역">
         {[{ id: "all" as const, label: "전체" }, ...regions].map((r) => (
           <button
             key={r.id}

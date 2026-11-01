@@ -44,11 +44,11 @@ export function CalcForm({ rates }: { rates: FxRate[] }) {
             <span className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-sm text-fg-2">{input.currency}</span>
           </div>
         </Field>
-        <Field label="보내는 곳" hint="건강기능식품 · 의약품 등은 일반통관이라 150달러" htmlFor="route">
+        <Field label="보내는 곳" hint="미국에서 오는 목록통관 물품만 200달러 · 건강기능식품 · 의약품 등은 일반통관이라 150달러" htmlFor="route">
           <Select id="route" value={input.route} onChange={set("route")}>
             {(Object.keys(ROUTE_LABEL) as Route[]).map((k) => (
               <option key={k} value={k}>
-                {ROUTE_LABEL[k]} — 한도 {k === "us-list" ? 200 : 150}달러
+                {ROUTE_LABEL[k]} · {k === "us-list" ? 200 : 150}달러
               </option>
             ))}
           </Select>

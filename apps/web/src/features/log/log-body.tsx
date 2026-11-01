@@ -105,8 +105,9 @@ function PinnedScenes({ activity, names, blocked, mood }: Props) {
   const [scene, setScene] = useState(0);
   useMotionValueEvent(scrollYProgress, "change", (v) => setScene(v < 0.33 ? 0 : v < 0.66 ? 1 : 2));
 
+  // 장면 셋을 넘기는 스크롤 길이 — 휴대폰은 짧게 (330vh 면 같은 패널을 두 화면 넘게 밀어야 했음 · 작업 0111)
   return (
-    <div ref={ref} data-surface="dark" className="relative h-[330vh] bg-surface text-fg">
+    <div ref={ref} data-surface="dark" className="relative h-[230vh] bg-surface text-fg sm:h-[330vh]">
       <div className="sticky top-20 flex h-[calc(100svh-5rem)] sm:top-13 sm:h-[calc(100svh-3.25rem)] flex-col justify-center gap-8 px-4 sm:px-8">
         <div className="relative mx-auto h-36 w-full max-w-3xl sm:h-32">
           {/* initial={false}: 첫 장면은 숨겼다 보여 주지 않음 (JS 전에도 보임 · LCP) */}
