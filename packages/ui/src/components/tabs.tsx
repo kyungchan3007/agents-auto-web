@@ -9,7 +9,8 @@ export type TabItem = { value: string; label: string; content: ReactNode };
 export function Tabs({ items, defaultValue }: { items: TabItem[]; defaultValue?: string }) {
   return (
     <BaseTabs.Root defaultValue={defaultValue ?? items[0]?.value}>
-      <BaseTabs.List className="relative flex gap-6 overflow-x-auto border-b border-line">
+      {/* 좁은 화면은 간격을 줄이고 · 360px 아래는 끝을 흐려 옆으로 넘길 수 있다고 알림 (작업 0111) */}
+      <BaseTabs.List className="relative flex gap-4 overflow-x-auto border-b border-line [scrollbar-width:none] max-[359px]:[mask-image:linear-gradient(to_right,black_85%,transparent)] sm:gap-6">
         {items.map((t) => (
           <BaseTabs.Tab
             key={t.value}

@@ -38,7 +38,8 @@ export function CurrencyList({ items }: { items: ListItem[] }) {
   return (
     <nav aria-label="통화 목록" className="min-w-0">
       <Input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="통화 · 나라 찾기" aria-label="통화 찾기" className="h-11 text-sm" />
-      <div className="mt-3 flex gap-1.5 overflow-x-auto pb-1 text-xs lg:flex-wrap lg:overflow-visible" role="group" aria-label="지역">
+      {/* 지역 · 정렬 단추는 줄을 넘겨 다 보이게 — 옆으로 넘기게 두니 320px 에서 "오세아니아" 가 잘렸음 (작업 0111) */}
+      <div className="mt-3 flex flex-wrap gap-1.5 text-xs" role="group" aria-label="지역">
         {chips.map((r) => (
           <button
             key={r.id}
@@ -52,7 +53,7 @@ export function CurrencyList({ items }: { items: ListItem[] }) {
         ))}
       </div>
       {hasChange && (
-        <div className="mt-2 flex gap-1.5 overflow-x-auto pb-1 text-xs lg:flex-wrap" role="group" aria-label="정렬">
+        <div className="mt-2 flex flex-wrap gap-1.5 text-xs" role="group" aria-label="정렬">
           {SORTS.map((s) => (
             <button
               key={s.id}
@@ -66,8 +67,8 @@ export function CurrencyList({ items }: { items: ListItem[] }) {
           ))}
         </div>
       )}
-      {/* 스크롤 영역 안쪽 여백 — 칸 테두리가 영역 끝에 붙어 잘려 보였음 (작업 0067) */}
-      <ul className="mt-3 flex gap-2 overflow-x-auto p-0.5 pb-2 lg:max-h-[calc(100svh-14rem)] lg:flex-col lg:overflow-x-visible lg:overflow-y-auto">
+      {/* 스크롤 영역 안쪽 여백 — 칸 테두리가 영역 끝에 붙어 잘려 보였음 (작업 0067) · 휴대폰은 오른쪽 끝을 흐리게 = 옆으로 넘길 수 있음 (작업 0111) */}
+      <ul className="mt-3 flex gap-2 overflow-x-auto p-0.5 pb-2 [mask-image:linear-gradient(to_right,black_85%,transparent)] lg:[mask-image:none] lg:max-h-[calc(100svh-14rem)] lg:flex-col lg:overflow-x-visible lg:overflow-y-auto">
         {shown.map((i) => {
           const on = i.currency === current;
           const fav = favs.includes(i.currency);

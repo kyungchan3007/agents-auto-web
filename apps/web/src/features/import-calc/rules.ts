@@ -19,8 +19,9 @@ export type Route = "us-list" | "other";
 export const DUTY_FREE_USD: Record<Route, number> = { "us-list": 200, other: 150 };
 
 export const ROUTE_LABEL: Record<Route, string> = {
-  "us-list": "미국에서 · 목록통관 물품",
-  other: "그 밖 나라 · 또는 일반통관 물품",
+  // 짧게 — 320px 선택 칸에서 "…한도 20" 처럼 잘렸음 · 자세한 뜻은 칸 아래 안내 글 (작업 0111)
+  "us-list": "미국 · 목록통관",
+  other: "그 밖 나라 · 일반통관",
 };
 
 export const VAT_RATE = 0.1;
