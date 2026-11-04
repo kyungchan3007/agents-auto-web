@@ -13,8 +13,8 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image" },
   // 홈 화면에 추가했을 때 iOS 위 막대 · 이름 (작업 0091 · 아이콘은 app/apple-icon.png)
   appleWebApp: { capable: true, title: SITE_NAME, statusBarStyle: "black-translucent" },
-  // Google Search Console 소유권 확인 — 공개 값 · 지우면 확인이 풀림 (작업 0116)
-  verification: { google: "R0iWKilXNc-qRD85sm-ZvPjOdQOBP_GYUn-0hBPZAsY" },
+  // Google Search Console · Bing Webmaster Tools 소유권 확인 — 공개 값 · 지우면 확인이 풀림 (작업 0116 · 0117)
+  verification: { google: "R0iWKilXNc-qRD85sm-ZvPjOdQOBP_GYUn-0hBPZAsY", other: { "msvalidate.01": "80D88D51D528F03400697BF62BD604BF" } },
 };
 
 // 휴대폰 주소창 색 — 사이트 바탕(검정)과 같게
