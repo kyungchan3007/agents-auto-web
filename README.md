@@ -32,6 +32,7 @@
 | 🚦 싸다 · 비싸다 신호 | 최근 90일 안에서 오늘 값의 위치 (**예측 · 투자 조언 아님**) | [SIG](docs/domain/signal.md) |
 | ✈️ [여행 물가](https://tripfx.pages.dev/prices) | 한국 대비 나라별 물가 수준 · 여행 예산 어림 | [TRV](docs/domain/travel-price.md) |
 | 🛒 [직구 계산](https://tripfx.pages.dev/calc) | 외화 → 원화 · 면세 한도 · 예상 관부가세 (입력값은 어디에도 보내지 않음) | [IMP](docs/domain/import-calc.md) |
+| ℹ️ [소개](https://tripfx.pages.dev/about) | 자료 출처 · 신호 · 물가 · 직구 세금 판단 기준 | |
 | 🛠️ [작업실](https://tripfx.pages.dev/log) | 사이트 상태 점검판 · 에이전트 실시간 활동 · 머지된 작업 기록 | [LOG](docs/domain/build-log.md) |
 
 - 즐겨찾기는 이 브라우저에만 저장합니다 — 계정 · 서버 저장 없음

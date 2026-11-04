@@ -44,7 +44,7 @@ export function headlineOf(s: SiteStatus): Headline {
 /** "12:00 · 수출입은행 · 22개 통화" · 실패면 이유 */
 export function runText(r: StatusRun | null): string {
   if (!r) return "기록 없음";
-  const src = r.source === "koreaexim" ? "수출입은행" : r.source.includes("frankfurter") ? "예비 출처" : r.source;
+  const src = r.source === "koreaexim" ? "한국수출입은행" : r.source.includes("frankfurter") ? "예비 출처" : r.source;
   const when = hm(r.at);
   if (r.status === "error") return `${when} · 실패${reasonText(r.reason) ? ` (${reasonText(r.reason)})` : ""}`;
   if (r.status === "empty") return `${when} · 고시 없음`;

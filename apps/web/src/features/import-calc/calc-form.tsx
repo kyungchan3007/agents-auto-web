@@ -7,6 +7,7 @@ import { Input, Select } from "@hav/ui/field";
 import { useState, useSyncExternalStore } from "react";
 import { MoneyCatLazy } from "../../shared/three-lazy";
 import { type CalcInput, calc, catMood } from "./calc";
+import { DateText } from "@/shared/date-text";
 import { ROUTE_LABEL, RULES_SOURCE, type Route } from "./rules";
 
 const MOOD_TEXT = { happy: "면세 한도 안이라 금화를 안고 웃는 고양이", worried: "한도에 가까워 금화를 꽉 쥐고 걱정하는 고양이", sad: "한도를 넘어 세금 동전이 날아가 시무룩한 고양이", neutral: "금화를 들고 기다리는 고양이" } as const;
@@ -107,7 +108,20 @@ export function CalcForm({ rates }: { rates: FxRate[] }) {
           <li>
             예상 금액입니다. 실제 세액은 관세청 과세환율 · 품목 분류로 정해집니다 · 개별소비세 등 다른 세금 · 같은 날 여러 건 합산은 빼고 계산
           </li>
-          <li>{rate ? `환율 ${rate.date} 기준 · ${SOURCE_NAME[rate.source]}` : "환율을 받지 못했습니다"} · 면세 한도: {RULES_SOURCE.name} ({RULES_SOURCE.checked} 확인)</li>
+          <li>
+            {rate ? (
+              <>
+                환율 <DateText date={rate.date} /> 기준 · {SOURCE_NAME[rate.source]}
+              </>
+            ) : (
+              "환율을 받지 못했습니다"
+            )}{" "}
+            · 면세 한도:{" "}
+            <a href={RULES_SOURCE.url} className="underline underline-offset-2 hover:decoration-2">
+              {RULES_SOURCE.name}
+            </a>{" "}
+            (<DateText date={RULES_SOURCE.checked} /> 확인)
+          </li>
           <li>입력한 값은 이 화면 안에서만 계산하고 어디에도 보내지 않습니다</li>
         </ul>
       </div>

@@ -3,7 +3,7 @@
 import { NavBar } from "@hav/ui/nav-bar";
 import Link from "next/link";
 
-export type Page = "home" | "currencies" | "prices" | "calc" | "log";
+export type Page = "home" | "currencies" | "prices" | "calc" | "log" | "about";
 
 export function SiteNav({ page }: { page: Page }) {
   return (
