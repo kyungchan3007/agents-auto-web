@@ -4,6 +4,7 @@ import { api } from "@/shared/api";
 
 export const metadata: Metadata = {
   title: "직구 계산기 · Tripfx",
+  alternates: { canonical: "/calc" },
   description: "해외 직구 물건 값을 원화로 · 면세 한도 안인지 · 넘으면 관세 · 부가세 예상",
 };
 

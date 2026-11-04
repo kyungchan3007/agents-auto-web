@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { Home } from "@/features/home/home";
 import { api, mustHave } from "@/shared/api";
+
+export const metadata: Metadata = {
+  title: "Tripfx — 오늘 환율 · 여행 물가 · 직구 세금 계산",
+  alternates: { canonical: "/" },
+};
 
 // 홈 — 빌드할 때 API 에서 받아 정적 페이지로 (실패해도 빌드는 성공 · 화면은 "자료 없음")
 export default async function Page() {
