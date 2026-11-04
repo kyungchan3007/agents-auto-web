@@ -29,7 +29,8 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
               <div className="flex justify-center md:block">
                 <CoinSlot signals={tones} />
               </div>
-              {children}
+              {/* 본문 표시 — 코드 순서는 목록 먼저 그대로 (바꾸면 키보드 이동 순서가 화면과 어긋남 · 작업 0114) */}
+              <main className="min-w-0">{children}</main>
             </div>
           </div>
         </div>

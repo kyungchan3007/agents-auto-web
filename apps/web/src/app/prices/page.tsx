@@ -4,6 +4,7 @@ import { api } from "@/shared/api";
 
 export const metadata: Metadata = {
   title: "여행 물가 · Tripfx",
+  alternates: { canonical: "/prices" },
   description: "한국보다 물가가 싼 여행지 · 비싼 여행지 — 세계은행 물가 자료 · 오늘 그 나라 통화 신호",
 };
 
