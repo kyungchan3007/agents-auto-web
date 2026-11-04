@@ -19,8 +19,8 @@ describe("점검판 글 (작업 0105)", () => {
     expect(reasonText(null)).toBeNull();
   });
   it("수집 한 줄 (한국 시각)", () => {
-    expect(runText({ at: "2026-10-29T03:00:30Z", source: "koreaexim", status: "ok", rows: 22, reason: null })).toBe("12:00 · 수출입은행 · 22개 통화");
+    expect(runText({ at: "2026-10-29T03:00:30Z", source: "koreaexim", status: "ok", rows: 22, reason: null })).toBe("12:00 · 한국수출입은행 · 22개 통화");
     expect(runText({ at: "2026-10-30T06:00:10Z", source: "koreaexim", status: "error", rows: 0, reason: "http-500" })).toBe("15:00 · 실패 (서버 응답 500)");
-    expect(lastRunText({ ...base, lastRun: { at: "2026-10-29T03:00:30Z", source: "koreaexim", status: "ok", rows: 22, reason: null } })).toBe("10월 29일 12:00 · 수출입은행 · 22개 통화");
+    expect(lastRunText({ ...base, lastRun: { at: "2026-10-29T03:00:30Z", source: "koreaexim", status: "ok", rows: 22, reason: null } })).toBe("10월 29일 12:00 · 한국수출입은행 · 22개 통화");
   });
 });

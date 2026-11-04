@@ -10,7 +10,7 @@ import { Card } from "@hav/ui/card";
 import { Section } from "@hav/ui/section";
 import { SignalBadge } from "@hav/ui/signal-badge";
 import { Tabs } from "@hav/ui/tabs";
-import { SOURCE_NAME, currencyName, groupByRegion, headline, percentileText, rangeOf, rateText, toUnit } from "@hav/shared/currency";
+import { SOURCE_NAME, SOURCE_NOTE, currencyName, groupByRegion, headline, percentileText, rangeOf, rateText, toUnit } from "@hav/shared/currency";
 import { CurrencyFlag as Flag } from "@/shared/currency-flag";
 import { GlobeLazy, MoneyCatLazy } from "@/shared/three-lazy";
 import { YearChart } from "@/shared/year-chart";
@@ -19,6 +19,7 @@ import { TripScenes } from "./trip-scenes";
 import { monthChangeText } from "./change";
 import { DESTINATIONS, EARTH_TEXTURE, SEOUL } from "./places";
 import { FreshnessNote } from "@/shared/freshness-note";
+import { DateText } from "@/shared/date-text";
 import { CountUp } from "@hav/ui/count-up";
 import { Reveal } from "@hav/ui/reveal";
 
@@ -67,7 +68,7 @@ export function Home({ latest, signals, levels, heroHistory, changes }: HomeData
             {/* 작은 제목은 큰 제목 바로 위에 붙임 — 섹션 위에 두면 지구본 높이만큼 떨어져 보였음 */}
             <p className="flex items-center gap-2 text-eyebrow font-semibold text-fg-2">
               <Flag currency={HERO} />
-              오늘의 환율 · {hero.date} 기준 · {SOURCE_NAME[hero.source]}
+              오늘의 환율 · <DateText date={hero.date} /> 기준 · {SOURCE_NAME[hero.source]}
             </p>
             <FreshnessNote date={hero.date} className="mt-2" />
             <h1 className="mt-4 text-title font-semibold tracking-tight text-fg">{headline(HERO, heroSignal?.signal ?? null)}</h1>
@@ -210,7 +211,11 @@ export function Home({ latest, signals, levels, heroHistory, changes }: HomeData
         <div className="mx-auto max-w-5xl space-y-2">
           <p>신호는 최근 {windowDays}일 중 오늘 값의 위치입니다. 앞으로를 예측하지 않으며, 투자 · 금융 조언이 아닙니다.</p>
           <p>
-            환율: 한국수출입은행 (예비: Frankfurter) · 화면에 보이는 값은 사이트를 만든 시점의 자료입니다 ·{" "}
+            {SOURCE_NOTE} · 화면에 보이는 값은 사이트를 만든 시점의 자료입니다 ·{" "}
+            <a href="/about" className="text-accent underline underline-offset-2 hover:decoration-2">
+              소개 · 판단 기준
+            </a>{" "}
+            ·{" "}
             <a href="/log" className="text-accent underline underline-offset-2 hover:decoration-2">
               🚧 이 사이트는 AI 코딩 에이전트가 만들고 있습니다
             </a>

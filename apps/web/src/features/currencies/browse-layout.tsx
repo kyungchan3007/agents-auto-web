@@ -2,6 +2,7 @@
 // 목록 · 동전은 레이아웃이라 통화를 바꿔도 남고, 상세(children)만 바뀜
 import type { Fetched } from "@/shared/api";
 import { SiteNav } from "@/shared/site-nav";
+import { SOURCE_NOTE } from "@hav/shared/currency";
 import type { FxChanges, FxLatest } from "@hav/shared/fx";
 import type { SignalList } from "@hav/shared/signal";
 import type { ReactNode } from "react";
@@ -36,7 +37,11 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
         </div>
       </section>
       <footer data-surface="dark" className="border-t border-line bg-surface px-4 py-10 text-xs text-fg-2 sm:px-8">
-        <div className="mx-auto max-w-6xl">신호는 최근 {windowDays}일 중 오늘 값의 위치입니다. 앞으로를 예측하지 않으며, 투자 · 금융 조언이 아닙니다 · 환율: 한국수출입은행 (예비: Frankfurter)</div>
+        <div className="mx-auto max-w-6xl">신호는 최근 {windowDays}일 중 오늘 값의 위치입니다. 앞으로를 예측하지 않으며, 투자 · 금융 조언이 아닙니다 · {SOURCE_NOTE} ·{" "}
+          <a href="/about" className="text-accent underline underline-offset-2 hover:decoration-2">
+            소개 · 판단 기준
+          </a>
+        </div>
       </footer>
     </>
   );

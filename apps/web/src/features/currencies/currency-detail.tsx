@@ -6,11 +6,14 @@ import type { CurrencySignal } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES, countriesOf } from "@hav/shared/travel";
 import { SignalBadge } from "@hav/ui/signal-badge";
 import { CurrencyFlag } from "@/shared/currency-flag";
+import { DateText } from "@/shared/date-text";
 import { FreshnessNote } from "@/shared/freshness-note";
 import { Converter } from "./converter";
 import { describeCurrency } from "./describe";
 import { PeriodChart } from "./period-chart";
+import { changeText } from "./periods";
 import { ShareButton } from "./share-button";
+import { periodRows, showsSummary, summaryOf } from "./summary";
 
 export type DetailData = { code: string; rate: FxRate | null; signal: Fetched<CurrencySignal>; history: Fetched<FxHistory>; problem: string | null };
 
@@ -28,12 +31,15 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
   const s = signal.ok ? signal.data : null;
   const days = history.ok ? toUnit(history.data.rates, rate.unit) : [];
   const range = rangeOf(days);
+  // 요약 · 기간별 표는 비교군 통화에만 먼저 (docs/geo-measurement.md)
+  const first = showsSummary(code);
+  const rows = first ? periodRows(days) : [];
 
   return (
     <div className="min-w-0">
       <p className="flex flex-wrap items-center gap-2 text-sm text-fg-2">
         <CurrencyFlag currency={code} />
-        <span className="font-semibold text-fg">{name}</span> {code} · {rate.date} 기준 · {SOURCE_NAME[rate.source]}
+        <span className="font-semibold text-fg">{name}</span> {code} · <DateText date={rate.date} /> 기준 · {SOURCE_NAME[rate.source]}
         <span className="ml-auto">
           <ShareButton title={`${name} ${code} 환율 · Tripfx`} text={describeCurrency(code, rate, s?.signal ?? null)} />
         </span>
@@ -52,6 +58,8 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
         </span>
       </div>
 
+      {first && <p className="mt-5 text-sm leading-relaxed text-fg-2">{summaryOf(name, code, rate, days, s ? { signal: s.signal, percentile: s.percentile, windowDays: s.rule.windowDays } : null)}</p>}
+
       <div className="mt-8">
         <Converter code={code} rate={rate} />
       </div>
@@ -59,6 +67,32 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
       <div className="mt-10">
         {history.ok ? <PeriodChart rates={days} unitText={t.unit} /> : <p className="rounded-card border border-line p-6 text-sm text-fg-2">1년 기록을 받지 못했습니다 ({history.reason})</p>}
       </div>
+
+      {rows.length > 0 && (
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <caption className="pb-2 text-left text-xs text-fg-2">기간별 변화 · {rows[0].to.date} 기준</caption>
+            <thead className="text-xs text-fg-2">
+              <tr>
+                <th scope="col" className="py-1.5 pr-3 font-normal">기간</th>
+                <th scope="col" className="py-1.5 pr-3 font-normal">시작일</th>
+                <th scope="col" className="py-1.5 pr-3 font-normal">시작 값</th>
+                <th scope="col" className="py-1.5 font-normal">변화</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line border-t border-line text-fg">
+              {rows.map((r) => (
+                <tr key={r.id}>
+                  <th scope="row" className="py-2 pr-3 font-medium">{r.label}</th>
+                  <td className="py-2 pr-3 whitespace-nowrap"><DateText date={r.from.date} /></td>
+                  <td className="py-2 pr-3 whitespace-nowrap">{rateText({ baseRate: r.from.baseRate, unit: rate.unit }).value}</td>
+                  <td className="py-2 whitespace-nowrap">{changeText(r.pct).value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <dl className="mt-8 grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
         <Stat label="1년 최저" value={range ? rateText({ baseRate: range.min.baseRate, unit: rate.unit }).value : "—"} sub={range && `${t.unit} · ${range.min.date}`} />

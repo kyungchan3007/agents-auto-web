@@ -25,6 +25,10 @@ export function LogPage({ tasks, status, builtAt }: { tasks: Fetched<TasksSummar
           기록은 에이전트의 도구 사용 훅이 보냅니다 · 공개 일지의 원본은{" "}
           <a href={REPO_URL} className="text-accent underline underline-offset-2 hover:decoration-2">
             GitHub 커밋 · PR
+          </a>{" "}
+          ·{" "}
+          <a href="/about" className="text-accent underline underline-offset-2 hover:decoration-2">
+            소개 · 판단 기준
           </a>
         </div>
       </footer>
