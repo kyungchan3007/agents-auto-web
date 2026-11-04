@@ -7,6 +7,7 @@ import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScro
 import { type TasksSummary, blockMarks, snagText } from "@hav/shared/tasks";
 import { useRef, useState } from "react";
 import type { Fetched } from "../../shared/api";
+import { PatchLog } from "./patch-log";
 import { TaskDesks } from "./task-desks";
 import { LivePanel, type Mode } from "./live-panel";
 import { MOOD_TEXT, moodOf } from "./mood";
@@ -35,6 +36,7 @@ export function LogBody({ buildTasks }: { buildTasks: Fetched<TasksSummary> }) {
 
   return (
     <>
+      <PatchLog tasks={tasks} />
       {reduce ? <StackedScenes {...props} /> : <PinnedScenes {...props} />}
       <TaskDesks activity={activity} tasks={tasks} />
       <section data-surface="elevated" className="bg-surface px-4 py-24 text-fg sm:px-8 sm:py-32">

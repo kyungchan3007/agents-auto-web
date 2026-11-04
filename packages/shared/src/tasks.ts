@@ -39,3 +39,16 @@ export function snagText(marks: boolean[], since: string | null): string {
   const from = since ? `${new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", timeZone: "Asia/Seoul" }).format(new Date(since))} 기록부터 셈` : "아직 센 기록 없음";
   return red > 0 ? `빨간 블록 ${red}개 = 하네스가 막았거나 게이트가 실패했던 작업 · ${from}` : `빨간 블록 없음 — 하네스가 막거나 게이트가 실패한 작업이 없음 · ${from}`;
 }
+
+export type PatchKind = "security" | "bug";
+export type Patch = Pick<DoneTask, "number" | "url" | "mergedAt"> & { kind: PatchKind; summary: string };
+
+const PATCH_KIND: Record<string, PatchKind> = { 보안: "security", 버그: "bug" };
+
+/** 머지된 작업 중 패치만 — PR 제목 "패치(보안) — 요약" · "패치(버그) — 요약" 으로 구분 · 최근부터 (작업 0113) */
+export function patchesOf(done: DoneTask[]): Patch[] {
+  return done.flatMap((d) => {
+    const m = /^패치\((보안|버그)\)\s*[—:·-]\s*(.+)$/.exec(d.name);
+    return m ? [{ number: d.number, url: d.url, mergedAt: d.mergedAt, kind: PATCH_KIND[m[1]], summary: m[2] }] : [];
+  });
+}
