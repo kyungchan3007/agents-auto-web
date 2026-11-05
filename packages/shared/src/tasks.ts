@@ -52,3 +52,13 @@ export function patchesOf(done: DoneTask[]): Patch[] {
     return m ? [{ number: d.number, url: d.url, mergedAt: d.mergedAt, kind: PATCH_KIND[m[1]], summary: m[2] }] : [];
   });
 }
+
+const kstDay = (ms: number) => new Date(ms + 9 * 3600_000).toISOString().slice(0, 10);
+
+/** 오늘(한국 날짜) 머지된 패치 수 — 찾아서 고친 것만 셈 (작업 0122) */
+export function todayPatchCounts(done: DoneTask[], nowMs: number): Record<PatchKind, number> {
+  const today = kstDay(nowMs);
+  const counts: Record<PatchKind, number> = { bug: 0, security: 0 };
+  for (const p of patchesOf(done)) if (kstDay(Date.parse(p.mergedAt)) === today) counts[p.kind] += 1;
+  return counts;
+}
