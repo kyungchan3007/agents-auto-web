@@ -1,9 +1,9 @@
 // Hono 앱 + 예약 실행을 한 Worker 에 (docs/architecture.md Hono 규칙)
+import { kstDate } from "@hav/shared/date";
 import { Hono } from "hono";
 import type { Env } from "./env";
 import { activityRoutes } from "./features/activity/routes";
 import { dailyFx } from "./features/fx/daily";
-import { kstDate } from "./features/fx/rate";
 import { fxRoutes } from "./features/fx/routes";
 import { d1RateStore, hasOfficialRates, hasRates } from "./features/fx/store";
 import { collectPriceLevels } from "./features/prices/collect";

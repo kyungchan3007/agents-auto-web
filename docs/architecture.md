@@ -1,7 +1,7 @@
 # 구조 · 경계
 
 > 사람과 에이전트가 같이 읽는 구조 설명. **코드로 확인할 수 있는 경계는 린트로 옮기고 여기엔 이유만 남긴다.**
-> 2026-10-28 합의 (작업 0012 · 이슈 #12). 지금 코드는 아직 단일 Next.js 앱 — 모노레포 전환은 별도 이슈
+> 2026-10-28 합의 (작업 0012 · 이슈 #12).
 
 ## 결정 요약
 | 항목 | 결정 | 상태 |
@@ -100,6 +100,7 @@ turbo.json                       작업 그래프 (build · lint · typecheck ·
 | 규칙 | 강제 | 위치 |
 | --- | --- | --- |
 | 슬라이스끼리 import 금지 | 테스트 | `apps/web/src/shared/role-boundary.test.ts` |
+| 앱 공용 폴더는 사이트 고유 파일만 — 2개 이상이 쓰는 공통은 `@hav/shared`(로직) · `@hav/ui`(화면 · 훅) · 의존 방향 shared ← ui ← apps | 허용 목록 테스트 (작업 0126) | `apps/web/src/shared/role-boundary.test.ts` |
 | 화면(`.tsx`)은 그리기만 · 상태 · 효과는 `use-*.ts` · 계산은 순수 `*.ts` | 테스트 (작업 0125) | `apps/web/src/shared/role-boundary.test.ts` |
 | 패키지끼리 `../` import 금지 | (예정) eslint `no-restricted-imports` | `@hav/config` eslint |
 | `apps/web` 은 외부 환율 API를 직접 부르지 않음 | (예정) eslint · 테스트 | `@hav/config` eslint |

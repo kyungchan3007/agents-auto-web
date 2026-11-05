@@ -1,6 +1,6 @@
 // 작업 목록 API 계약 — GitHub Actions 가 D1 에 저장한 이슈 · 머지된 PR 을 만드는 중 페이지가 읽음
 import { z } from "zod";
-import { IsoDateTime } from "./date";
+import { IsoDateTime, kstDate } from "./date";
 
 export const DoneTask = z.object({
   number: z.number().int().positive(),
@@ -53,12 +53,10 @@ export function patchesOf(done: DoneTask[]): Patch[] {
   });
 }
 
-const kstDay = (ms: number) => new Date(ms + 9 * 3600_000).toISOString().slice(0, 10);
-
 /** 오늘(한국 날짜) 머지된 패치 수 — 찾아서 고친 것만 셈 (작업 0122) */
 export function todayPatchCounts(done: DoneTask[], nowMs: number): Record<PatchKind, number> {
-  const today = kstDay(nowMs);
+  const today = kstDate(new Date(nowMs));
   const counts: Record<PatchKind, number> = { bug: 0, security: 0 };
-  for (const p of patchesOf(done)) if (kstDay(Date.parse(p.mergedAt)) === today) counts[p.kind] += 1;
+  for (const p of patchesOf(done)) if (kstDate(new Date(p.mergedAt)) === today) counts[p.kind] += 1;
   return counts;
 }

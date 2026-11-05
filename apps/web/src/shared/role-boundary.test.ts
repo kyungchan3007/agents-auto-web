@@ -72,4 +72,22 @@ describe("코드 역할 분담 (작업 0125)", () => {
     const bad = logic.filter((f) => /from\s*"(react|motion\/react)"/.test(readFileSync(f, "utf8").replace(/import type[^\n]*\n/g, ""))).map((f) => relative(SRC, f));
     expect(bad).toEqual([]);
   });
+
+  it("앱 공용 폴더에는 이 사이트 고유 파일만 — 2개 이상 기능이 쓰는 공통 모듈 · 디자인은 @hav/ui · @hav/shared 로 승격 (작업 0126)", () => {
+    const allowed = ["api.ts", "outage-notice.tsx", "outage.ts", "site-nav.tsx", "site.ts", "sitemap-entries.ts", "use-outage-visible.ts"];
+    const here = files(join(SRC, "shared")).map((f) => relative(join(SRC, "shared"), f)).sort();
+    expect(here).toEqual([...allowed].sort());
+  });
+
+  it("API 기능 폴더끼리 직접 가져오지 않음 (작업 0126)", () => {
+    const API = resolve(SRC, "../../api/src/features");
+    const bad = files(API).flatMap((f) => {
+      const slice = relative(API, f).split("/")[0];
+      return [...readFileSync(f, "utf8").matchAll(/from\s*"(\.[^"]+)"/g)]
+        .map((m) => relative(API, resolve(f, "..", m[1])))
+        .filter((rel) => !rel.startsWith("..") && rel.split("/")[0] !== slice)
+        .map((rel) => `${relative(API, f)} → ${rel}`);
+    });
+    expect(bad).toEqual([]);
+  });
 });

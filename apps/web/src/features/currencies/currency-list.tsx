@@ -3,14 +3,14 @@
 // 왼쪽 목록 — 찾기 · 지역 · `+ 통화` (누르면 그 통화 주소로 · 목록과 찾은 글자는 페이지를 옮겨도 그대로: 레이아웃에 있음)
 // 휴대폰은 위에 가로로 넘기는 줄 · ☆ 를 누르면 즐겨찾기 — 맨 위로 · "즐겨찾기" 묶음 (이 브라우저에만 저장 · 작업 0089)
 import { currencyName } from "@hav/shared/currency";
-import { signalLabel } from "@hav/ui/signal-badge";
+import { SIGNAL_TEXT, signalLabel } from "@hav/ui/signal-badge";
 import { Input } from "@hav/ui/field";
 import Link from "next/link";
-import { CurrencyFlag } from "../../shared/currency-flag";
-import { SIGNAL_TONE } from "../../shared/signal-tone";
+import { CurrencyFlag } from "@hav/ui/currency-flag";
 import type { ListItem } from "./list";
 import { SORTS, pctText } from "./sort";
 import { useCurrencyList } from "./use-currency-list";
+import { FilterChip } from "@hav/ui/filter-chip";
 
 export type { ListItem };
 
@@ -23,29 +23,17 @@ export function CurrencyList({ items }: { items: ListItem[] }) {
       {/* 지역 · 정렬 단추는 줄을 넘겨 다 보이게 — 옆으로 넘기게 두니 320px 에서 "오세아니아" 가 잘렸음 (작업 0111) */}
       <div className="mt-3 flex flex-wrap gap-1.5 text-xs" role="group" aria-label="지역">
         {chips.map((r) => (
-          <button
-            key={r.id}
-            type="button"
-            onClick={() => setRegion(r.id)}
-            aria-pressed={picked === r.id}
-            className={`shrink-0 rounded-pill px-3 py-1 font-semibold transition-colors ${picked === r.id ? "bg-accent text-on-accent" : "text-fg-2 hover:text-fg"}`}
-          >
+          <FilterChip key={r.id} active={picked === r.id} onClick={() => setRegion(r.id)}>
             {r.label}
-          </button>
+          </FilterChip>
         ))}
       </div>
       {hasChange && (
         <div className="mt-2 flex flex-wrap gap-1.5 text-xs" role="group" aria-label="정렬">
           {SORTS.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => setSort(s.id)}
-              aria-pressed={sort === s.id}
-              className={`shrink-0 rounded-pill border px-3 py-1 transition-colors ${sort === s.id ? "border-fg text-fg" : "border-line text-fg-2 hover:text-fg"}`}
-            >
+            <FilterChip key={s.id} variant="outline" active={sort === s.id} onClick={() => setSort(s.id)}>
               {s.label}
-            </button>
+            </FilterChip>
           ))}
         </div>
       )}
@@ -74,7 +62,7 @@ export function CurrencyList({ items }: { items: ListItem[] }) {
                       {pctText(i.change)}
                     </span>
                   )}
-                  {i.signal && <span className={`font-semibold ${SIGNAL_TONE[i.signal]}`}>{signalLabel(i.signal)}</span>}
+                  {i.signal && <span className={`font-semibold ${SIGNAL_TEXT[i.signal]}`}>{signalLabel(i.signal)}</span>}
                 </span>
               </Link>
               <button

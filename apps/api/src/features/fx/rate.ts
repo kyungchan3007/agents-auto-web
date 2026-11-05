@@ -24,11 +24,6 @@ export class SourceError extends Error {
 /** 날짜 검사의 원본은 @hav/shared/date */
 export { isIsoDate } from "@hav/shared/date";
 
-/** 한국 날짜 (KST = UTC+9) */
-export function kstDate(now: Date = new Date()): string {
-  return new Date(now.getTime() + 9 * 3600_000).toISOString().slice(0, 10);
-}
-
 /** 토 · 일 (날짜만 보고 판단 — 시간대 영향 없음) */
 export function isWeekend(date: string): boolean {
   const day = new Date(`${date}T00:00:00Z`).getUTCDay();

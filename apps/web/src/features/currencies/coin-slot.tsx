@@ -4,7 +4,7 @@
 import { currencyName, currencySymbol } from "@hav/shared/currency";
 import type { Signal } from "@hav/shared/signal";
 import { signalLabel } from "@hav/ui/signal-badge";
-import { CoinLazy } from "../../shared/three-lazy";
+import { CoinLazy } from "@hav/ui/three/lazy";
 import { useCurrentCode } from "./use-currency-list";
 
 export function CoinSlot({ signals }: { signals: Record<string, Signal | null> }) {

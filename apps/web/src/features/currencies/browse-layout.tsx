@@ -8,6 +8,9 @@ import type { SignalList } from "@hav/shared/signal";
 import type { ReactNode } from "react";
 import { CoinSlot } from "./coin-slot";
 import { CurrencyList } from "./currency-list";
+import { Eyebrow } from "@hav/ui/heading";
+import { TextLink } from "@hav/ui/text-link";
+import { PageFooter } from "@hav/ui/page-footer";
 
 export function BrowseLayout({ latest, signals, changes, children }: { latest: Fetched<FxLatest>; signals: Fetched<SignalList>; changes: Fetched<FxChanges>; children: ReactNode }) {
   const tones = Object.fromEntries((signals.ok ? signals.data.signals : []).map((s) => [s.currency, s.signal]));
@@ -21,7 +24,7 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
       <SiteNav page="currencies" />
       <section data-surface="dark" className="bg-surface px-4 pt-10 pb-24 text-fg sm:px-8 sm:pt-16">
         <div className="mx-auto max-w-6xl">
-          <p className="text-eyebrow font-semibold text-fg-2">통화 둘러보기 · {items.length}개</p>
+          <Eyebrow>통화 둘러보기 · {items.length}개</Eyebrow>
           <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-12">
             <div className="min-w-0 lg:sticky lg:top-20 lg:self-start">
               <CurrencyList items={items} />
@@ -36,13 +39,11 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
           </div>
         </div>
       </section>
-      <footer data-surface="dark" className="border-t border-line bg-surface px-4 py-10 text-xs text-fg-2 sm:px-8">
-        <div className="mx-auto max-w-6xl">신호는 최근 {windowDays}일 중 오늘 값의 위치입니다. 앞으로를 예측하지 않으며, 투자 · 금융 조언이 아닙니다 · {SOURCE_NOTE} ·{" "}
-          <a href="/about" className="text-accent underline underline-offset-2 hover:decoration-2">
+      <PageFooter width="max-w-6xl">신호는 최근 {windowDays}일 중 오늘 값의 위치입니다. 앞으로를 예측하지 않으며, 투자 · 금융 조언이 아닙니다 · {SOURCE_NOTE} ·{" "}
+          <TextLink href="/about">
             소개 · 판단 기준
-          </a>
-        </div>
-      </footer>
+          </TextLink>
+      </PageFooter>
     </>
   );
 }

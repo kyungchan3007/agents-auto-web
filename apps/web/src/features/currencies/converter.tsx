@@ -4,7 +4,7 @@
 //   입력은 이 화면 상태에만 (보내지 않음 · 저장하지 않음) · 기준일 · 출처를 같이 (FX-01) · 송금 환율이 있으면 "실제로 바꿀 때" 값도
 import { SOURCE_NAME, currencyName } from "@hav/shared/currency";
 import type { FxRate } from "@hav/shared/fx";
-import { Input } from "@hav/ui/field";
+import { UnitInput } from "@hav/ui/field";
 import { type Side, amountText, presets } from "./convert";
 import { useConverter } from "./use-converter";
 
@@ -21,10 +21,7 @@ export function Converter({ code, rate }: { code: string; rate: FxRate }) {
         {(["foreign", "won"] as const).map((s) => (
           <label key={s} className="grid gap-1.5">
             <span className="text-xs text-fg-2">{s === "won" ? "원화" : `${currencyName(code)} ${code}`}</span>
-            <div className="relative">
-              <Input inputMode="decimal" autoComplete="off" value={value(s)} onChange={edit(s)} onFocus={(e) => e.target.select()} className="pr-14 text-lg font-semibold" aria-describedby="converter-note" />
-              <span className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-sm text-fg-2">{label(s)}</span>
-            </div>
+            <UnitInput unit={label(s)} inputMode="decimal" autoComplete="off" value={value(s)} onChange={edit(s)} onFocus={(e) => e.target.select()} className="text-lg font-semibold" aria-describedby="converter-note" />
           </label>
         ))}
       </div>

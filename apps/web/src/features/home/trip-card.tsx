@@ -3,11 +3,12 @@ import { currencyName, rateText } from "@hav/shared/currency";
 import type { FxRate } from "@hav/shared/fx";
 import type { Signal } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES, relativeText } from "@hav/shared/travel";
-import { signalLabel } from "@hav/ui/signal-badge";
+import { SIGNAL_TEXT, signalLabel } from "@hav/ui/signal-badge";
 import type { Place } from "@hav/ui/three/geo";
 import Link from "next/link";
-import { CurrencyFlag } from "@/shared/currency-flag";
-import { SIGNAL_TONE } from "@/shared/signal-tone";
+import { CurrencyFlag } from "@hav/ui/currency-flag";
+import { Title } from "@hav/ui/heading";
+import { StatTile } from "@hav/ui/stat-tile";
 
 export type TripStop = {
   place: Place & { country: string };
@@ -28,20 +29,13 @@ export function TripCard({ stop: s, active }: { stop: TripStop; active: boolean 
         <CurrencyFlag currency={code} />
         {s.place.name} · {country?.name ?? s.place.country}
       </p>
-      <h3 className="mt-3 text-title font-semibold tracking-tight text-fg">
+      <Title as="h3" className="mt-3 text-fg">
         {currencyName(code)},{" "}
-        {s.signal ? <span className={SIGNAL_TONE[s.signal]}>오늘은 {signalLabel(s.signal)}.</span> : <span className="text-fg-2">판단할 자료가 모자랍니다.</span>}
-      </h3>
+        {s.signal ? <span className={SIGNAL_TEXT[s.signal]}>오늘은 {signalLabel(s.signal)}.</span> : <span className="text-fg-2">판단할 자료가 모자랍니다.</span>}
+      </Title>
       <dl className="mt-6 grid grid-cols-2 gap-3 text-sm">
-        <div className="rounded-card bg-surface-2 p-4">
-          <dt className="text-xs text-fg-2">오늘 환율</dt>
-          <dd className="mt-1 text-base font-semibold whitespace-nowrap text-fg sm:text-lg">{t ? `${t.value}${t.unit}` : "자료 없음"}</dd>
-        </div>
-        <div className="rounded-card bg-surface-2 p-4">
-          <dt className="text-xs text-fg-2">물가 · 한국 대비</dt>
-          <dd className="mt-1 text-base font-semibold text-fg sm:text-lg">{s.price ? relativeText(s.price.relative) : "자료 없음"}</dd>
-          {s.price && <dd className="mt-0.5 text-xs text-fg-2">{s.price.year}년 · 세계은행</dd>}
-        </div>
+        <StatTile label="오늘 환율" value={t ? `${t.value}${t.unit}` : "자료 없음"} className="bg-surface-2 p-4" valueClassName="text-base whitespace-nowrap sm:text-lg" />
+        <StatTile label="물가 · 한국 대비" value={s.price ? relativeText(s.price.relative) : "자료 없음"} sub={s.price && <>{s.price.year}년 · 세계은행</>} className="bg-surface-2 p-4" valueClassName="text-base sm:text-lg" />
       </dl>
       <p className="mt-5 flex flex-wrap gap-x-5 gap-y-1 text-sm font-semibold text-accent">
         <Link href={`/currencies/${code}`} className="hover:underline">

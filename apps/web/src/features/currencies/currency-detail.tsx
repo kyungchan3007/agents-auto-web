@@ -5,15 +5,17 @@ import type { FxHistory, FxRate } from "@hav/shared/fx";
 import type { CurrencySignal } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES, countriesOf } from "@hav/shared/travel";
 import { SignalBadge } from "@hav/ui/signal-badge";
-import { CurrencyFlag } from "@/shared/currency-flag";
-import { DateText } from "@/shared/date-text";
-import { FreshnessNote } from "@/shared/freshness-note";
+import { CurrencyFlag } from "@hav/ui/currency-flag";
+import { DateText } from "@hav/ui/date-text";
+import { FreshnessNote } from "@hav/ui/freshness-note";
 import { Converter } from "./converter";
 import { describeCurrency } from "./describe";
 import { PeriodChart } from "./period-chart";
 import { PeriodTable } from "./period-table";
 import { ShareButton } from "./share-button";
 import { periodRows, showsSummary, summaryOf } from "./summary";
+import { EmptyState } from "@hav/ui/empty-state";
+import { StatTile } from "@hav/ui/stat-tile";
 
 export type DetailData = { code: string; rate: FxRate | null; signal: Fetched<CurrencySignal>; history: Fetched<FxHistory>; problem: string | null };
 
@@ -21,10 +23,7 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
   const name = currencyName(code);
   if (!rate) {
     return (
-      <div className="rounded-card border border-line p-8">
-        <p className="text-lg font-semibold text-fg">자료 없음</p>
-        <p className="mt-2 text-sm text-fg-2">{problem ?? `${name}(${code}) 환율이 아직 수집되지 않았습니다`}</p>
-      </div>
+      <EmptyState>{problem ?? `${name}(${code}) 환율이 아직 수집되지 않았습니다`}</EmptyState>
     );
   }
   const t = rateText(rate);
@@ -71,9 +70,9 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
       {rows.length > 0 && <PeriodTable rows={rows} unit={rate.unit} />}
 
       <dl className="mt-8 grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
-        <Stat label="1년 최저" value={range ? rateText({ baseRate: range.min.baseRate, unit: rate.unit }).value : "—"} sub={range && `${t.unit} · ${range.min.date}`} />
-        <Stat label="1년 최고" value={range ? rateText({ baseRate: range.max.baseRate, unit: rate.unit }).value : "—"} sub={range && `${t.unit} · ${range.max.date}`} />
-        <Stat label="환산 예시" value={sampleText(code, rate).split(" → ")[1]} sub={sampleText(code, rate).split(" → ")[0]} />
+        <StatTile label="1년 최저" value={range ? rateText({ baseRate: range.min.baseRate, unit: rate.unit }).value : "—"} sub={range && `${t.unit} · ${range.min.date}`} />
+        <StatTile label="1년 최고" value={range ? rateText({ baseRate: range.max.baseRate, unit: rate.unit }).value : "—"} sub={range && `${t.unit} · ${range.max.date}`} />
+        <StatTile label="환산 예시" value={sampleText(code, rate).split(" → ")[1]} sub={sampleText(code, rate).split(" → ")[0]} />
       </dl>
       <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-accent">
         <a href={`/calc?currency=${code}`} className="hover:underline">
@@ -90,16 +89,6 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
           </a>
         )}
       </div>
-    </div>
-  );
-}
-
-function Stat({ label, value, sub }: { label: string; value: string; sub?: string | null }) {
-  return (
-    <div className="rounded-card bg-surface-2 p-5">
-      <dt className="text-xs text-fg-2">{label}</dt>
-      <dd className="mt-1 text-lg font-semibold text-fg">{value}</dd>
-      {sub && <dd className="mt-0.5 text-xs text-fg-2">{sub}</dd>}
     </div>
   );
 }

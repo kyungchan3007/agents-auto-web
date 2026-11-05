@@ -1,6 +1,6 @@
 // 기간별 변화 표 — 차트와 같은 숫자를 글자로 (작업 0115)
 import { rateText } from "@hav/shared/currency";
-import { DateText } from "@/shared/date-text";
+import { DateText } from "@hav/ui/date-text";
 import { changeText } from "./periods";
 import type { periodRows } from "./summary";
 

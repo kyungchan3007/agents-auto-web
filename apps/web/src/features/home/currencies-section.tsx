@@ -5,10 +5,10 @@ import { Section } from "@hav/ui/section";
 import { SignalBadge } from "@hav/ui/signal-badge";
 import { Tabs } from "@hav/ui/tabs";
 import Link from "next/link";
-import { CurrencyFlag as Flag } from "@/shared/currency-flag";
+import { CurrencyFlag as Flag } from "@hav/ui/currency-flag";
 import { monthChangeText } from "./change";
 import type { HomeView } from "./home-data";
-import { NoData } from "./no-data";
+import { EmptyState } from "@hav/ui/empty-state";
 
 const CHANGE_TONE = { up: "text-expensive", down: "text-cheap", flat: "text-fg" } as const;
 
@@ -63,7 +63,7 @@ export function CurrenciesSection({ view }: { view: HomeView }) {
           }))}
         />
       ) : (
-        <NoData reason={problem ?? "표시할 통화가 없습니다"} />
+        <EmptyState>{problem ?? "표시할 통화가 없습니다"}</EmptyState>
       )}
     </Section>
   );

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Eyebrow, Title } from "./heading";
 
 export type Surface = "dark" | "elevated" | "light";
 
@@ -19,8 +20,8 @@ export function Section({
   return (
     <section id={id} data-surface={surface} className="bg-surface px-4 py-24 text-fg sm:px-8 sm:py-32">
       <div className="mx-auto max-w-5xl">
-        {eyebrow && <p className="text-eyebrow font-semibold text-fg-2">{eyebrow}</p>}
-        {title && <h2 className="mt-3 text-title font-semibold tracking-tight">{title}</h2>}
+        {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+        {title && <Title className="mt-3">{title}</Title>}
         {children && <div className="mt-10 text-lead text-fg-2">{children}</div>}
       </div>
     </section>

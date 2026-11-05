@@ -1,14 +1,13 @@
 // 사이트 상태 — 수집 기록 · 최신 환율 날짜 · 오늘 예약 회차가 돌았는지 (작업 0105)
 //   2026-10-30 12:00 · 13:30 예약이 아예 돌지 않았는데 화면에서는 알 수 없었음
+import { kstDate, kstNow } from "@hav/shared/date";
 import type { SiteStatus, SlotState, StatusRun, StatusSlot } from "@hav/shared/status";
 
 export type RunRow = { startedAt: string; source: string; status: "running" | "ok" | "empty" | "error"; rows: number; message: string | null };
 export type Slot = { cron: string; kind: "collect" | "retry" };
 
-const KST = 9 * 3600_000;
 export const SLOT_WINDOW_MS = 5 * 60_000;
-const kst = (d: Date) => new Date(d.getTime() + KST);
-const kstDay = (iso: string) => kst(new Date(iso)).toISOString().slice(0, 10);
+const kstDay = (iso: string) => kstDate(new Date(iso));
 
 /** 수집 코드의 메시지 "koreaexim no-key: 키 없음" → "no-key" (원본 글은 내보내지 않음) */
 export function reasonOf(message: string | null): string | null {
@@ -32,7 +31,7 @@ function slotTime(cron: string): string {
  * - 그 밖에 시각이 5분 넘게 지났으면 missed · 아니면 upcoming
  */
 export function scheduleOf(slots: Slot[], runs: RunRow[], now: Date, firstRateAt: string | null): StatusSlot[] {
-  const k = kst(now);
+  const k = kstNow(now);
   const day = k.getUTCDay();
   if (day === 0 || day === 6) return [];
   const today = k.toISOString().slice(0, 10);
@@ -53,7 +52,7 @@ export function scheduleOf(slots: Slot[], runs: RunRow[], now: Date, firstRateAt
 }
 
 export function siteStatus(input: { now: Date; latestDate: string | null; runs: RunRow[]; slots: Slot[]; firstRateAt: string | null }): SiteStatus {
-  const today = kst(input.now).toISOString().slice(0, 10);
+  const today = kstDate(input.now);
   const fx = input.runs.filter((r) => r.source.startsWith("koreaexim"));
   return {
     today,

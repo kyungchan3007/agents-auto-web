@@ -3,9 +3,9 @@ import { currencyName, rateText } from "@hav/shared/currency";
 import { Reveal } from "@hav/ui/reveal";
 import { Section } from "@hav/ui/section";
 import Link from "next/link";
-import { YearChart } from "@/shared/year-chart";
+import { YearChart } from "@hav/ui/year-chart";
 import { HERO, type HomeView } from "./home-data";
-import { NoData } from "./no-data";
+import { EmptyState } from "@hav/ui/empty-state";
 
 export function YearSection({ view }: { view: HomeView }) {
   const { hero, year, yearRange, heroHistoryProblem } = view;
@@ -34,7 +34,7 @@ export function YearSection({ view }: { view: HomeView }) {
           </Link>
         </Reveal>
       ) : (
-        <NoData reason={heroHistoryProblem} />
+        <EmptyState>{heroHistoryProblem}</EmptyState>
       )}
     </Section>
   );

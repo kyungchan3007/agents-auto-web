@@ -1,14 +1,15 @@
 // 오늘 발견된 버그 · 보안 — 찾아서 고쳐 머지한 것만 셈 (작업 0122)
 import { CountUp } from "@hav/ui/count-up";
 import type { todayPatchCounts } from "@hav/shared/tasks";
+import { Title } from "@hav/ui/heading";
 
 export function TodayPatches({ counts }: { counts: ReturnType<typeof todayPatchCounts> }) {
   return (
     <section data-surface="elevated" aria-labelledby="today-patch-title" className="bg-surface px-4 py-24 text-fg sm:px-8 sm:py-32">
       <div className="mx-auto max-w-5xl">
-        <h2 id="today-patch-title" className="text-title font-semibold tracking-tight">
+        <Title id="today-patch-title">
           오늘 발견된 버그와 보안.
-        </h2>
+        </Title>
         <div className="mt-10 grid gap-10 sm:grid-cols-2">
           <Stat value={counts.bug} label="오늘 발견된 버그" />
           <Stat value={counts.security} label="오늘 발견된 보안 문제" />

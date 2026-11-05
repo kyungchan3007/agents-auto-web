@@ -3,11 +3,12 @@
 // 가운데 패널 장면 ①~③ — 고정 패널(스크롤로 장면 바뀜) · 움직임 줄이기면 차례로 쌓음
 import { AnimatePresence, motion } from "motion/react";
 import type { Mood } from "@hav/ui/three/worker-cat";
-import { WorkerCatLazy } from "../../shared/three-lazy";
+import { WorkerCatLazy } from "@hav/ui/three/lazy";
 import { LivePanel, type Mode } from "./live-panel";
 import { MOOD_TEXT } from "./mood";
 import type { Activity } from "./use-activity";
 import { usePinnedScene } from "./use-pinned-scene";
+import { Title } from "@hav/ui/heading";
 
 const SCENES: { mode: Mode; title: string; body: (blocked: number) => string }[] = [
   { mode: "status", title: "에이전트의 현재 작업.", body: () => "에이전트가 도구를 쓸 때마다 이 패널이 바뀝니다. 10분 넘게 기록이 없으면 대기 중으로 표시합니다." },
@@ -18,7 +19,7 @@ const SCENES: { mode: Mode; title: string; body: (blocked: number) => string }[]
 function Caption({ i, blocked }: { i: number; blocked: number }) {
   return (
     <div className="text-center">
-      <p className="text-title font-semibold tracking-tight">{SCENES[i].title}</p>
+      <Title as="p">{SCENES[i].title}</Title>
       <p className="mx-auto mt-3 max-w-xl text-base text-fg-2 sm:text-lead">{SCENES[i].body(blocked)}</p>
     </div>
   );

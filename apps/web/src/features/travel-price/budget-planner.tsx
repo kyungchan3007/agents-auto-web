@@ -7,6 +7,7 @@ import { type TravelRow, relativeText } from "@hav/shared/travel";
 import { Input, Select } from "@hav/ui/field";
 import { localText, wonText } from "./budget";
 import { type Latest, useBudgetPlanner } from "./use-budget-planner";
+import { StatTile } from "@hav/ui/stat-tile";
 
 export function BudgetPlanner({ rows, latestOf }: { rows: TravelRow[]; latestOf: Record<string, Latest> }) {
   const { sorted, country, setCountry, daily, setDaily, days, setDays, row, d, n, latest, budget: b } = useBudgetPlanner(rows, latestOf);
@@ -50,16 +51,8 @@ export function BudgetPlanner({ rows, latestOf }: { rows: TravelRow[]; latestOf:
                 {row.name} 물가는 한국보다 <span className="font-semibold text-fg">{relativeText(row.relative)}</span> ({row.year}년)
               </p>
               <dl className="mt-3 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-card bg-surface p-5">
-                  <dt className="text-xs text-fg-2">하루</dt>
-                  <dd className="mt-1 text-2xl font-semibold tracking-tight">약 {wonText(b.dailyWon)}</dd>
-                  {b.dailyLocal != null && row.currency && <dd className="mt-0.5 text-sm text-fg-2">≈ {localText(b.dailyLocal, row.currency)}</dd>}
-                </div>
-                <div className="rounded-card bg-surface p-5">
-                  <dt className="text-xs text-fg-2">{n}일 전체</dt>
-                  <dd className="mt-1 text-2xl font-semibold tracking-tight">약 {wonText(b.totalWon)}</dd>
-                  {b.totalLocal != null && row.currency && <dd className="mt-0.5 text-sm text-fg-2">≈ {localText(b.totalLocal, row.currency)}</dd>}
-                </div>
+                <StatTile label="하루" value={<>약 {wonText(b.dailyWon)}</>} sub={b.dailyLocal != null && row.currency && <span className="text-sm">≈ {localText(b.dailyLocal, row.currency)}</span>} className="bg-surface p-5" valueClassName="text-2xl tracking-tight" />
+                <StatTile label={<>{n}일 전체</>} value={<>약 {wonText(b.totalWon)}</>} sub={b.totalLocal != null && row.currency && <span className="text-sm">≈ {localText(b.totalLocal, row.currency)}</span>} className="bg-surface p-5" valueClassName="text-2xl tracking-tight" />
               </dl>
               <p className="mt-3 text-xs leading-relaxed text-fg-2">
                 {row.currency && latest

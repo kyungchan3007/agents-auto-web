@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { kstDate } from "@hav/shared/date";
 import { fetchFrankfurter, parseFrankfurter } from "./frankfurter";
 import { fetchKoreaexim, parseKoreaexim, parseNumber, parseUnit } from "./koreaexim";
-import { SourceError, isIsoDate, isWeekend, kstDate } from "./rate";
+import { SourceError, isIsoDate, isWeekend } from "./rate";
 
 const AT = "2026-10-28T03:00:00.000Z";
 
