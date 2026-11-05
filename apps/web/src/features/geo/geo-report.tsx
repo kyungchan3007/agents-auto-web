@@ -15,9 +15,35 @@ export function GeoReport({ build }: { build: Fetched<Report> }) {
   if (!report.ok) return <EmptyState>측정 자료를 받지 못했습니다 ({report.reason})</EmptyState>;
   const r = report.data;
   const { ai, engines, aiHits, engineHits, referralHits } = geoView(r);
+  const search = r.search;
   return (
     <>
-      <dl className="grid gap-3 sm:grid-cols-3">
+      <section>
+        <h2 className="text-lg font-semibold tracking-tight">구글 검색</h2>
+        {!search ? (
+          <p className="mt-3 text-sm text-fg-2">아직 가져온 자료가 없습니다.</p>
+        ) : (
+          <>
+            <dl className="mt-3 grid gap-3 sm:grid-cols-3">
+              <StatTile label="검색 노출" value={`${search.impressions.toLocaleString("ko-KR")}회`} valueClassName="text-2xl tracking-tight" />
+              <StatTile label="클릭" value={`${search.clicks.toLocaleString("ko-KR")}회`} valueClassName="text-2xl tracking-tight" />
+              <StatTile label="평균 순위" value={search.position == null ? "자료 없음" : `${search.position}위`} valueClassName="text-2xl tracking-tight" />
+            </dl>
+            <p className="mt-3 text-xs text-fg-2">
+              {search.firstDay && search.lastDay ? `${search.firstDay} ~ ${search.lastDay} · ` : "기록 없음 · "}Google Search Console 기준 · 구글 검색 전체 수치이며 AI 답변만 구분한 값이 아닙니다 · 며칠 늦게 반영됩니다
+            </p>
+            <Block title="상위 검색어" empty={search.queries.length === 0}>
+              <HitTable head={["검색어", "노출", "클릭", "순위"]} rows={search.queries.map((q) => [q.key, q.impressions, q.clicks, q.position])} />
+            </Block>
+            <Block title="검색에 나온 페이지" empty={search.pages.length === 0}>
+              <HitTable head={["페이지", "노출", "클릭", "순위"]} rows={search.pages.map((q) => [q.key, q.impressions, q.clicks, q.position])} />
+            </Block>
+          </>
+        )}
+      </section>
+
+      <h2 className="mt-12 text-lg font-semibold tracking-tight">AI 봇 · AI 서비스</h2>
+      <dl className="mt-3 grid gap-3 sm:grid-cols-3">
         <StatTile label="AI 봇 방문" value={`${aiHits.toLocaleString("ko-KR")}회`} sub="학습 · 검색 색인 · 사용자 요청" valueClassName="text-2xl tracking-tight" />
         <StatTile label="일반 검색 엔진 방문" value={`${engineHits.toLocaleString("ko-KR")}회`} sub="Googlebot · bingbot" valueClassName="text-2xl tracking-tight" />
         <StatTile label="AI 서비스에서 유입" value={`${referralHits.toLocaleString("ko-KR")}회`} sub="ChatGPT · Claude 등에서 넘어온 방문" valueClassName="text-2xl tracking-tight" />

@@ -35,7 +35,7 @@
 | ✈️ [여행 물가](https://tripfx.pages.dev/prices) | 한국 대비 나라별 물가 수준 · 여행 예산 계산 |
 | 🛒 [직구 계산](https://tripfx.pages.dev/calc) | 외화 → 원화 · 면세 한도 · 예상 관부가세 |
 | 🛠️ [작업실](https://tripfx.pages.dev/log) | 사이트 상태 · 패치 내역 · 에이전트 실시간 활동 · 머지된 작업 |
-| 📡 [GEO 측정](https://tripfx.pages.dev/geo) | AI 봇 방문 · AI 서비스 유입 · AI 검색 인용 측정 기록 |
+| 📡 [GEO 측정](https://tripfx.pages.dev/geo) | 구글 검색 노출 · AI 봇 방문 · AI 서비스 유입 · AI 검색 인용 측정 기록 |
 | ℹ️ [소개](https://tripfx.pages.dev/about) | 자료 출처와 판단 기준 |
 
 <table>
@@ -137,6 +137,7 @@ flowchart LR
 | 사이트 배포 | main 머지마다 · PR마다 미리보기 | Cloudflare Pages |
 | API 배포 | API 코드가 바뀐 머지 | [`deploy-api.yml`](.github/workflows/deploy-api.yml) |
 | 보안 점검 | 매일 한국 05:30 | [`security-audit.yml`](.github/workflows/security-audit.yml) |
+| 검색 자료 수집 | 매일 한국 04:20 | [`gsc-sync.yml`](.github/workflows/gsc-sync.yml) — Search Console → D1 |
 | 반응형 점검 | 머지 뒤 · 매일 한국 12:40 | [`responsive.yml`](.github/workflows/responsive.yml) |
 
 - 환율 · 물가 값은 빌드 때 받아 정적 페이지에 넣습니다

@@ -93,3 +93,30 @@ export const geoHits = sqliteTable(
   },
   (t) => [primaryKey({ columns: [t.day, t.kind, t.name, t.path] })],
 );
+
+/** Search Console 날짜별 — GitHub Actions(gsc-sync.yml)가 통째로 바꿔 넣음 · 작업 0130 */
+export const gscDaily = sqliteTable("gsc_daily", {
+  day: text("day").primaryKey(),
+  clicks: integer("clicks").notNull(),
+  impressions: integer("impressions").notNull(),
+  position: real("position").notNull(),
+});
+
+/** Search Console 상위 검색어 · 페이지 — 검색어는 노출 2회 이상만 */
+export const gscTop = sqliteTable(
+  "gsc_top",
+  {
+    kind: text("kind", { enum: ["query", "page"] }).notNull(),
+    key: text("key").notNull(),
+    clicks: integer("clicks").notNull(),
+    impressions: integer("impressions").notNull(),
+    position: real("position").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.kind, t.key] })],
+);
+
+/** Search Console 마지막으로 가져온 때 */
+export const gscSync = sqliteTable("gsc_sync", {
+  id: integer("id").primaryKey(),
+  syncedAt: text("synced_at").notNull(),
+});
