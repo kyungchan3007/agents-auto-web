@@ -54,10 +54,14 @@ export function computeSignal(points: Point[], rule: SignalRule = SIGNAL_RULE): 
 /** 1 외화당 원 — 엔처럼 100 단위 고시도, 출처마다 단위가 달라도 같은 기준으로 (FX-04) */
 export const perUnit = (r: { baseRate: number; unit: number }) => r.baseRate / r.unit;
 
-/** 저장된 환율(통화 · 날짜순) → 통화별 신호 */
-export function signalsByCurrency(rows: { currency: string; date: string; baseRate: number; unit: number }[]) {
+/**
+ * 저장된 환율(통화 · 날짜순) → 통화별 신호
+ * 공식 값이 있는 통화만 — 2026-09-15 예비 출처에서 들어온 통화 147개가 "자료 부족" 으로 남아 있었음 (FX-03 · 작업 0098)
+ */
+export function signalsByCurrency(rows: { currency: string; date: string; baseRate: number; unit: number; source: string }[]) {
+  const official = new Set(rows.filter((r) => r.source === "koreaexim").map((r) => r.currency));
   const byCurrency = new Map<string, Point[]>();
-  for (const r of rows) byCurrency.set(r.currency, [...(byCurrency.get(r.currency) ?? []), { date: r.date, value: perUnit(r) }]);
+  for (const r of rows) if (official.has(r.currency)) byCurrency.set(r.currency, [...(byCurrency.get(r.currency) ?? []), { date: r.date, value: perUnit(r) }]);
   return [...byCurrency].map(([currency, points]) => {
     const { signal, reason, percentile, latest } = computeSignal(points);
     return { currency, signal, reason, percentile, latest };

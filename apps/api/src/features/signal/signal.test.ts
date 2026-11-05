@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type Point, computeSignal, weekdaysBetween } from "./signal";
+import { type Point, computeSignal, weekdaysBetween, signalsByCurrency } from "./signal";
 
 /** 끝날짜에서 거꾸로 평일마다 값을 붙인다 (values[마지막] = 끝날짜 값) */
 function weekdaySeries(end: string, values: number[]): Point[] {
@@ -68,5 +68,14 @@ describe("computeSignal", () => {
     const r = computeSignal([]);
     expect(r).toMatchObject({ signal: null, reason: "no-data" });
     expect(r.method).toMatch(/예측 아님/);
+  });
+});
+
+describe("신호 목록은 공식 값이 있는 통화만 (작업 0128)", () => {
+  it("예비 출처에만 있는 통화는 뺌 · 공식 통화의 예비 값은 계산에 씀", () => {
+    const row = (currency: string, date: string, source: string) => ({ currency, date, baseRate: 1000, unit: 1, source });
+    const r = signalsByCurrency([row("AFN", "2026-09-15", "frankfurter"), row("USD", "2026-11-03", "frankfurter"), row("USD", "2026-11-04", "koreaexim")]);
+    expect(r.map((s) => s.currency)).toEqual(["USD"]);
+    expect(r[0].latest?.date).toBe("2026-11-04");
   });
 });
