@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pctText, sortByChange } from "./sort";
+import { sortByChange } from "./sort";
 
 const items = [
   { currency: "JPY", change: -1.9 },
@@ -17,9 +17,5 @@ describe("통화 목록 정렬 (작업 0099)", () => {
   });
   it("많이 비싸진 순 · 변화율 없는 통화는 뒤로", () => {
     expect(sortByChange(items, "pricier").map((i) => i.currency)).toEqual(["EUR", "USD", "JPY", "AED"]);
-  });
-  it("글자", () => {
-    expect(pctText(-1.94)).toBe("-1.9%");
-    expect(pctText(0.8)).toBe("+0.8%");
   });
 });

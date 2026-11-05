@@ -1,6 +1,6 @@
 // 환율 API — 읽기는 누구나 · 수집은 관리 토큰이 있을 때만 · 요청 · 응답 모양은 @hav/shared/fx
 import { type CollectResult, CollectQuery, CurrencyParam, type FxChanges, FxChangesQuery, type FxHistory, FxHistoryQuery, type FxLatest } from "@hav/shared/fx";
-import { kstDate } from "@hav/shared/date";
+import { isoDaysBefore, kstDate } from "@hav/shared/date";
 import { Hono } from "hono";
 import { adminGuard } from "../../admin";
 import { cached } from "../../db/cache";
@@ -19,14 +19,14 @@ export const fxRoutes = new Hono<{ Bindings: Env }>()
   // 통화마다 기간 변화율 — 홈 통화 칸 (작업 0096)
   .get("/changes", validate("query", FxChangesQuery), cached(), async (c) => {
     const { days } = c.req.valid("query");
-    const since = new Date(Date.now() - days * 86400_000).toISOString().slice(0, 10);
+    const since = isoDaysBefore(days);
     const body: FxChanges = { days, since, changes: changesOf(await ratesSince(c.env.DB, since)) };
     return c.json(body);
   })
   .get("/:currency/history", validate("param", CurrencyParam), validate("query", FxHistoryQuery), cached(), async (c) => {
     const { currency } = c.req.valid("param");
     const { days } = c.req.valid("query");
-    const since = new Date(Date.now() - days * 86400_000).toISOString().slice(0, 10);
+    const since = isoDaysBefore(days);
     const body: FxHistory = { currency, since, rates: await rateHistory(c.env.DB, currency, since) };
     return c.json(body);
   })

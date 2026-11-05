@@ -1,6 +1,7 @@
 // 환율 계산기 계산 — 원 ↔ 외화 (작업 0086) · 화면 상태에만 · 보내지 않음
 //   매매기준율(base) 로 바꾸고, 수출입은행 송금 환율(tts · ttb)이 있으면 "실제로 바꿀 때" 가까운 값을 같이
 //   tts = 은행이 외화를 팔 때(내가 외화를 살 때) · ttb = 은행이 외화를 살 때(내가 외화를 팔 때)
+import { numberText, stripNumberText } from "@hav/shared/format";
 import type { FxRate } from "@hav/shared/fx";
 
 export type Side = "won" | "foreign";
@@ -32,12 +33,12 @@ export const presets = (side: Side, r: Pick<FxRate, "unit">) => (side === "won" 
 /** 원은 정수 · 100 단위 통화(엔 · 루피아)는 정수 · 나머지 외화는 소수 둘째 자리 */
 export function amountText(v: number, side: Side, r: Pick<FxRate, "unit">): string {
   const digits = side === "won" || r.unit !== 1 ? 0 : 2;
-  return v.toLocaleString("ko-KR", { maximumFractionDigits: digits, minimumFractionDigits: 0 });
+  return numberText(v, { maximumFractionDigits: digits, minimumFractionDigits: 0 });
 }
 
 /** "12,345.6" · " 20 " → 숫자 · 빈 칸 · 숫자 아님 · 음수는 null */
 export function parseInput(s: string): number | null {
-  const t = s.replace(/[,\s]/g, "");
+  const t = stripNumberText(s);
   if (!/^\d*\.?\d+$|^\d+\.$/.test(t)) return null;
   return Number(t);
 }

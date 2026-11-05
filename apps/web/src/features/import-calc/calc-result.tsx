@@ -1,5 +1,6 @@
 // 직구 계산 결과 칸 — 그리기만 · 결과 옆에 환율 기준일 · 출처 (IMP-02) · "예상" 안내 (IMP-04)
 import { SOURCE_NAME } from "@hav/shared/currency";
+import { numberText } from "@hav/shared/format";
 import type { FxRate } from "@hav/shared/fx";
 import { MoneyCatLazy } from "@hav/ui/three/lazy";
 import { DateText } from "@hav/ui/date-text";
@@ -7,7 +8,7 @@ import type { CalcResult as Result, catMood } from "./calc";
 import { RULES_SOURCE } from "./rules";
 
 const MOOD_TEXT = { happy: "면세 한도 안이라 만족한 표정의 고양이", worried: "면세 한도에 가까워 걱정하는 고양이", sad: "면세 한도를 넘어 실망한 표정의 고양이", neutral: "금화를 들고 대기하는 고양이" } as const;
-const usd = (n: number) => n.toLocaleString("ko-KR", { maximumFractionDigits: 2 });
+const usd = (n: number) => numberText(n, { maximumFractionDigits: 2 });
 
 export function CalcResult({ result: r, mood, rate, dutyRate }: { result: Result | null; mood: ReturnType<typeof catMood>; rate: FxRate | undefined; dutyRate: string }) {
   return (
@@ -16,7 +17,7 @@ export function CalcResult({ result: r, mood, rate, dutyRate }: { result: Result
         <div className="min-w-0">
           <p className="text-sm text-fg-2">원화로</p>
           <p className="mt-1 text-[clamp(2rem,6vw,3.25rem)] leading-tight font-bold tracking-tighter">
-            {r?.ok ? <span className="text-aurora">{r.priceKrw.toLocaleString("ko-KR")}</span> : <span className="text-fg-2">—</span>}
+            {r?.ok ? <span className="text-aurora">{numberText(r.priceKrw)}</span> : <span className="text-fg-2">—</span>}
             <span className="ml-1.5 text-title font-semibold">원</span>
           </p>
         </div>
@@ -78,7 +79,7 @@ function Row({ k, v, strong = false }: { k: string; v: number | null; strong?: b
   return (
     <div className={`flex items-baseline justify-between gap-4 ${strong ? "pt-2 text-base font-semibold text-fg" : "text-fg-2"}`}>
       <dt>{k}</dt>
-      <dd className="shrink-0 font-semibold text-fg">{v == null ? "—" : `${v.toLocaleString("ko-KR")}원`}</dd>
+      <dd className="shrink-0 font-semibold text-fg">{v == null ? "—" : `${numberText(v)}원`}</dd>
     </div>
   );
 }

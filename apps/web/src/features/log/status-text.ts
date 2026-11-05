@@ -1,4 +1,6 @@
 // 사이트 상태 점검판 글 — 순수 함수 (작업 0105) · 값은 API 가 준 것만 · 이유는 분류 코드를 한국어로
+import { kstDate } from "@hav/shared/date";
+import { monthDayText as md } from "@hav/shared/format";
 import type { SiteStatus, SlotState, StatusRun } from "@hav/shared/status";
 
 export const SLOT_TEXT: Record<SlotState, string> = {
@@ -30,10 +32,6 @@ export function timeText(iso: string): string {
 }
 
 const hm = (iso: string) => new Intl.DateTimeFormat("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Seoul" }).format(new Date(iso));
-const md = (date: string) => {
-  const [, m, d] = date.split("-").map(Number);
-  return `${m}월 ${d}일`;
-};
 
 export type Headline = { tone: "ok" | "warn" | "bad" | "rest"; text: string };
 
@@ -61,6 +59,6 @@ export function runText(r: StatusRun | null): string {
 export function lastRunText(s: SiteStatus): string {
   const r = s.lastRun;
   if (!r) return "기록 없음";
-  const day = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date(r.at));
+  const day = kstDate(new Date(r.at));
   return day === s.today ? runText(r) : `${md(day)} ${runText(r)}`;
 }

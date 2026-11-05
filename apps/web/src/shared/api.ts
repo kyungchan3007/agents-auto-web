@@ -1,4 +1,5 @@
 // API 받기 — 빌드 때 부르고 @hav/shared 스키마로 검사 · 실패해도 던지지 않고 이유를 돌려준다 (빌드가 깨지지 않게)
+import { type Fetched, type FetchOptions, fetchJson } from "@hav/shared/fetched";
 import { FxChanges, FxHistory, FxLatest } from "@hav/shared/fx";
 import { PriceLevels } from "@hav/shared/prices";
 import { CurrencySignal, SignalList } from "@hav/shared/signal";
@@ -9,42 +10,17 @@ import type { z } from "zod";
 
 export const DEFAULT_API = "https://tripfx-api.developfff.workers.dev";
 
-export type Fetched<T> = { ok: true; data: T } | { ok: false; reason: string };
+export type { Fetched };
 
-export type ApiOptions = { base?: string; fetcher?: typeof fetch; timeoutMs?: number; headers?: Record<string, string>; retries?: number; retryDelayMs?: number };
+export type ApiOptions = FetchOptions & { base?: string };
 
 const apiBase = (base?: string) => (base ?? process.env.TRIPFX_API_URL ?? DEFAULT_API).replace(/\/$/, "");
 
-/** 다시 받아 볼 만한 실패 — 연결 끊김 · 시간 초과 · 서버 오류 · 너무 많은 요청 (모양 다름 · 4xx 는 다시 해도 같아서 바로 실패) */
-const retryable = (reason: string) => reason === "연결 실패" || reason === "시간 초과" || /^HTTP (5\d\d|429)$/.test(reason);
+/** 한 경로를 받아 스키마로 검사 — 받는 규칙은 @hav/shared/fetched · 주소만 이 사이트 설정 */
+export const getJson = <T extends z.ZodType>(path: string, schema: T, opts: ApiOptions = {}) => fetchJson(`${apiBase(opts.base)}${path}`, schema, opts);
 
-/**
- * 한 경로를 받아 스키마로 검사 — 연결 실패 · 시간 초과 · HTTP 오류 · 모양 다름은 모두 { ok: false }
- * 빌드 때 운영 API 연결이 가끔 끊겨(ECONNRESET) 통화 페이지가 달러 하나만 만들어진 적이 있어 짧게 두 번 더 받아 봄 (작업 0076)
- */
-export async function getJson<T extends z.ZodType>(path: string, schema: T, opts: ApiOptions = {}): Promise<Fetched<z.infer<T>>> {
-  const { retries = 2, retryDelayMs = 500 } = opts;
-  let last = await getOnce(path, schema, opts);
-  for (let i = 0; i < retries && !last.ok && retryable(last.reason); i++) {
-    await new Promise((r) => setTimeout(r, retryDelayMs * (i + 1)));
-    last = await getOnce(path, schema, opts);
-  }
-  return last;
-}
-
-async function getOnce<T extends z.ZodType>(path: string, schema: T, opts: ApiOptions): Promise<Fetched<z.infer<T>>> {
-  const url = `${apiBase(opts.base)}${path}`;
-  try {
-    const res = await (opts.fetcher ?? fetch)(url, { headers: opts.headers, signal: AbortSignal.timeout(opts.timeoutMs ?? 10_000) });
-    if (!res.ok) return { ok: false, reason: `HTTP ${res.status}` };
-    const parsed = schema.safeParse(await res.json());
-    if (!parsed.success) return { ok: false, reason: `응답 모양이 다름: ${parsed.error.issues[0]?.path.join(".")} ${parsed.error.issues[0]?.message}` };
-    return { ok: true, data: parsed.data };
-  } catch (e) {
-    const name = e instanceof Error ? e.name : "";
-    return { ok: false, reason: name === "TimeoutError" ? "시간 초과" : "연결 실패" };
-  }
-}
+/** 브라우저에서 같은 주소의 BFF 로 받을 때 */
+export const LIVE: ApiOptions = { base: "/bff", timeoutMs: 8_000 };
 
 /**
  * 운영 배포 빌드(Cloudflare Pages · main)에서 꼭 필요한 자료를 못 받으면 빌드를 멈춤 — 실패한 빌드는 배포되지 않아 예전 사이트가 그대로 남음

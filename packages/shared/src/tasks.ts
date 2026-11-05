@@ -1,6 +1,6 @@
 // 작업 목록 API 계약 — GitHub Actions 가 D1 에 저장한 이슈 · 머지된 PR 을 만드는 중 페이지가 읽음
 import { z } from "zod";
-import { IsoDateTime, kstDate } from "./date";
+import { IsoDateTime, kstDate, kstMonthDay } from "./date";
 
 export const DoneTask = z.object({
   number: z.number().int().positive(),
@@ -36,7 +36,7 @@ export function blockMarks(done: Pick<DoneTask, "task" | "mergedAt">[], snags: T
 /** 블록 탑 밑 설명 — 색만으로 전하지 않게 빨간 블록 수 · 언제부터 센 것인지 (그 전 기록은 지워져 모름) */
 export function snagText(marks: boolean[], since: string | null): string {
   const red = marks.filter(Boolean).length;
-  const from = since ? `${new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", timeZone: "Asia/Seoul" }).format(new Date(since))} 기록부터 셈` : "아직 센 기록 없음";
+  const from = since ? `${kstMonthDay(since)} 기록부터 셈` : "아직 센 기록 없음";
   return red > 0 ? `빨간 블록 ${red}개 = 하네스가 막았거나 게이트가 실패했던 작업 · ${from}` : `빨간 블록 없음 — 하네스가 막거나 게이트가 실패한 작업이 없음 · ${from}`;
 }
 

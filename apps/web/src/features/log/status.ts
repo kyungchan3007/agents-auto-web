@@ -1,4 +1,5 @@
 // 실시간 기록 → 화면에 보일 상태 — 순수 함수 (테스트 있음) · 기록에 없는 건 지어내지 않음
+import { kstDate } from "@hav/shared/date";
 import type { ActivityEvent, ActivityKind } from "@hav/shared/activity";
 
 /** 마지막 기록이 이 안이면 "작업 중" */
@@ -42,8 +43,6 @@ export function agoText(ms: number): string {
 /** 한국 시각 HH:MM:SS (터미널 느낌 — "23시 18분" 이 아니라 23:18:44) */
 export const clockText = (iso: string) => new Date(Date.parse(iso) + 9 * 3_600_000).toISOString().slice(11, 19);
 
-const kstDay = (t: number) => new Date(t + 9 * 3_600_000).toISOString().slice(0, 10);
-
 export type LiveStatus =
   | { state: "none" }
   | {
@@ -72,7 +71,7 @@ export function liveStatus(events: ActivityEvent[], now: number): LiveStatus {
 
 /** 오늘(한국 날짜) 숫자 — 받은 줄 안에서만 셈 */
 export function todayStats(events: ActivityEvent[], now: number) {
-  const today = events.filter((e) => kstDay(Date.parse(e.at)) === kstDay(now));
+  const today = events.filter((e) => kstDate(new Date(e.at)) === kstDate(new Date(now)));
   return {
     lines: today.length,
     blocked: today.filter((e) => e.kind === "blocked").length,

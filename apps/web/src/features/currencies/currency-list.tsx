@@ -8,7 +8,8 @@ import { Input } from "@hav/ui/field";
 import Link from "next/link";
 import { CurrencyFlag } from "@hav/ui/currency-flag";
 import type { ListItem } from "./list";
-import { SORTS, pctText } from "./sort";
+import { SORTS } from "./sort";
+import { signedPct } from "@hav/shared/format";
 import { useCurrencyList } from "./use-currency-list";
 import { FilterChip } from "@hav/ui/filter-chip";
 
@@ -59,7 +60,7 @@ export function CurrencyList({ items }: { items: ListItem[] }) {
                 <span className="ml-auto flex shrink-0 items-baseline gap-2 pl-3 text-xs whitespace-nowrap">
                   {sort !== "region" && i.change != null && (
                     <span className={`font-semibold ${Math.abs(i.change) < 0.05 ? "text-fg" : i.change < 0 ? "text-cheap" : "text-expensive"}`} title="지난 1개월 변화 (원화 기준)">
-                      {pctText(i.change)}
+                      {signedPct(i.change)}
                     </span>
                   )}
                   {i.signal && <span className={`font-semibold ${SIGNAL_TEXT[i.signal]}`}>{signalLabel(i.signal)}</span>}

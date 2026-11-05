@@ -10,3 +10,8 @@ export function kstNow(now: Date = new Date()): Date {
 export function kstDate(now: Date = new Date()): string {
   return kstNow(now).toISOString().slice(0, 10);
 }
+
+/** "10월 30일" — 시각(ISO)을 한국 날짜로 */
+export function kstMonthDay(iso: string): string {
+  return new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", timeZone: "Asia/Seoul" }).format(new Date(iso));
+}

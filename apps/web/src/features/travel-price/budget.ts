@@ -2,6 +2,8 @@
 //   물가 수준(한국 = 1) 을 곱하기만 함 · 현지 통화는 오늘 매매기준율(1 외화당 원)로 나눔 — 둘 중 없는 값은 지어내지 않고 null (TRV-02)
 //   나라 전체 가계 소비 평균이라 숙소 · 도시에 따라 다름 — 화면에 같이 적음
 
+import { numberText, stripNumberText } from "@hav/shared/format";
+
 export type Budget = { dailyWon: number; totalWon: number; dailyLocal: number | null; totalLocal: number | null };
 
 /**
@@ -17,13 +19,13 @@ export function budgetOf(dailyWon: number, days: number, relative: number, wonPe
 }
 
 /** 원은 천 원 단위로 반올림 (어림값이라 끝자리가 의미 없음) · 현지 통화는 정수 (1 미만 통화는 소수 둘째 자리) */
-export const wonText = (v: number) => `${(Math.round(v / 1000) * 1000).toLocaleString("ko-KR")}원`;
+export const wonText = (v: number) => `${numberText(Math.round(v / 1000) * 1000)}원`;
 export const localText = (v: number, code: string) =>
-  `${v.toLocaleString("ko-KR", { maximumFractionDigits: v < 100 ? 2 : 0 })} ${code}`;
+  `${numberText(v, { maximumFractionDigits: v < 100 ? 2 : 0 })} ${code}`;
 
 /** 하루 예산 · 일수 입력 — 쉼표 허용 · 0 이하 · 숫자 아님은 null · 일수는 1 ~ 90 정수 */
 export function parseDaily(s: string): number | null {
-  const t = s.replace(/[,\s]/g, "");
+  const t = stripNumberText(s);
   if (!/^\d+$/.test(t)) return null;
   const n = Number(t);
   return n > 0 ? n : null;
