@@ -14,6 +14,7 @@ describe("GEO 화면 자료 (작업 0129)", () => {
       referrals: [{ name: "ChatGPT", hits: 4, lastDay: "2026-11-05" }],
       pages: [],
       verifiedDay: null,
+      search: null,
     });
     expect([v.aiHits, v.engineHits, v.referralHits]).toEqual([5, 9, 4]);
     expect(v.ai.map((b) => b.name)).toEqual(["GPTBot", "ChatGPT-User"]);

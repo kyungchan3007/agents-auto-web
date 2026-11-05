@@ -30,6 +30,6 @@ describe("GEO 응답 (작업 0129)", () => {
     expect(r.verifiedDay).toBe("2026-11-07");
   });
   it("기록이 없으면 빈 값", () => {
-    expect(geoReport([], "2026-10-08")).toEqual({ since: "2026-10-08", firstDay: null, bots: [], referrals: [], pages: [], verifiedDay: null });
+    expect(geoReport([], "2026-10-08")).toEqual({ since: "2026-10-08", firstDay: null, bots: [], referrals: [], pages: [], verifiedDay: null, search: null });
   });
 });

@@ -19,6 +19,10 @@
 - Cloudflare Web Analytics 도 켬 (사람 방문 · 유입)
 - AI Crawl Control: 계정 메뉴에 없음 · 도메인(zone) 기능으로 보이며 tripfx.pages.dev 는 zone 이 아님
 
+## 구글 검색 자료
+- `gsc-sync.yml` 이 매일 Search Console 노출 · 클릭 · 순위 · 상위 검색어 · 페이지를 가져옴 (작업 0130) · 서비스 계정 `tripfx-gsc` (제한적 권한) · 키는 GitHub 비밀값 `GSC_SERVICE_ACCOUNT_JSON`
+- AI 답변만 구분한 값이 아님 · 검색어는 노출 2회 이상만 공개
+
 ## 새로 측정하면
 - 이 문서 "기록" 과 `apps/web/src/features/geo/geo-view.ts` 의 `MEASUREMENTS` 에 같이 더함
 

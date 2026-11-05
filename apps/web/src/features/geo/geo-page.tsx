@@ -57,7 +57,7 @@ export function GeoPage({ build }: { build: Fetched<Report> }) {
 
           <section className="mt-10">
             <h2 className="text-lg font-semibold tracking-tight">아직 연결하지 않은 자료</h2>
-            <p className="mt-2 text-sm text-fg-2">Google Search Console과 Bing Webmaster Tools에 등록했습니다 (2026-11-05). 검색 노출 · 클릭 수는 아직 이 페이지에 연결하지 않았습니다.</p>
+            <p className="mt-2 text-sm text-fg-2">Bing Webmaster Tools에 등록했습니다 (2026-11-05). Bing 검색 · Copilot 인용 수치와 구글 AI 답변 전용 수치는 아직 이 페이지에 연결하지 않았습니다.</p>
           </section>
 
           <section className="mt-10 border-t border-line pt-6 text-xs leading-relaxed text-fg-2">
@@ -67,6 +67,7 @@ export function GeoPage({ build }: { build: Fetched<Report> }) {
               <li>유입은 브라우저가 유입 주소를 보낸 방문만 잡힙니다. 앱에서 넘어온 방문은 빠질 수 있습니다.</li>
               <li>방문은 하루 · 봇 이름 · 페이지별 횟수로만 저장합니다. IP 주소 · 전체 User-Agent · 쿼리는 저장하지 않으며, 일반 방문은 이 집계에 넣지 않습니다.</li>
               <li>봇이 읽었다는 것이 AI 답변에 인용되었다는 뜻은 아닙니다.</li>
+              <li>검색어는 노출 2회 이상인 것만 표시합니다.</li>
             </ul>
           </section>
         </div>
