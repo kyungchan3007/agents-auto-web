@@ -72,7 +72,7 @@ export function Home({ latest, signals, levels, heroHistory, changes }: HomeData
             </p>
             <FreshnessNote date={hero.date} className="mt-2" />
             <h1 className="mt-4 text-title font-semibold tracking-tight text-fg">{headline(HERO, heroSignal?.signal ?? null)}</h1>
-            <p className="mt-6 text-hero font-bold tracking-tighter">
+            <p className="mt-6 text-hero font-bold tracking-tighter whitespace-nowrap">
               <CountUp text={rateText(hero).value} className="text-aurora" />
               <span className="ml-3 text-title font-semibold text-fg">{rateText(hero).unit}</span>
             </p>

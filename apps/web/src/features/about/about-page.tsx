@@ -63,7 +63,7 @@ export function AboutPage({ signals }: { signals: Fetched<SignalList> }) {
 
           <Part title="누가 만드나요">
             <p>
-              AI 코딩 에이전트가 코드를 작성하고, 그 과정을{" "}
+              개발자는 기획 · 설계 · 정책을 간단히 정하고, 코드의 역할 분담까지만 확인합니다. 코드 작성부터 테스트 · 머지까지는 AI 코딩 에이전트가 맡습니다. 에이전트의 개발 생산성과 효과, GEO(AI 검색 노출)를 확인하기 위한 프로젝트이며, 과정은{" "}
               <a href="/log" className={LINK}>
                 작업실
               </a>
