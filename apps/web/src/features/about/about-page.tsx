@@ -57,6 +57,10 @@ export function AboutPage({ signals }: { signals: Fetched<SignalList> }) {
             <p>결과는 예상 금액입니다. 실제 세액은 관세청 과세환율과 품목 분류로 정해집니다. 입력한 값은 브라우저 안에서만 계산하고 어디에도 보내지 않습니다.</p>
           </Part>
 
+          <Part title="방문 통계">
+            <p>어느 페이지를 얼마나 보는지와 어디서 넘어왔는지를 Cloudflare Web Analytics로 집계합니다. 로그인이 없고, 직구 계산기 · 여행 예산에 넣은 값은 보내지 않습니다.</p>
+          </Part>
+
           <Part title="누가 만드나요">
             <p>
               AI 코딩 에이전트가 코드를 작성하고, 그 과정을{" "}
