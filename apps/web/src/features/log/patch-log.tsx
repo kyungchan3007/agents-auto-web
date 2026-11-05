@@ -1,4 +1,4 @@
-// 패치 내역 — 매일 오전 7시 보안 · 버그 점검에서 고쳐 머지한 것 (작업 0113) · 원본은 머지된 PR 제목
+// 패치 내역 — 매일 보안 점검(security-audit.yml)에서 나와 고쳐 머지한 것 (작업 0113) · 원본은 머지된 PR 제목
 import { type PatchKind, type TasksSummary, patchesOf } from "@hav/shared/tasks";
 import type { Fetched } from "../../shared/api";
 
@@ -17,7 +17,7 @@ export function PatchLog({ tasks }: { tasks: Fetched<TasksSummary> }) {
         <p id="patch-title" className="text-xs font-semibold text-fg-2">
           패치 내역
         </p>
-        <p className="mt-2 text-sm text-fg-2">매일 오전 7시에 보안 · 버그를 점검합니다. 고칠 것이 없는 날은 기록이 남지 않습니다.</p>
+        <p className="mt-2 text-sm text-fg-2">매일 보안 취약점을 점검합니다. 고칠 것이 없는 날은 기록이 남지 않습니다.</p>
         {!tasks.ok ? (
           <p className="mt-4 text-sm text-fg-2">내역을 받지 못했습니다 ({tasks.reason})</p>
         ) : patches.length === 0 ? (
