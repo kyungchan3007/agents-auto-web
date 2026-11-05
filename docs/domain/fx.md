@@ -16,7 +16,7 @@
 | FX-02 | 받지 못한 날(주말 · 공휴일 · 오류)의 값은 만들지 않는다 — 비워 두고 "자료 없음"으로 표시 | `apps/api/src/features/fx/collect.test.ts` "데이터 없는 날" · "주말을 채우지 않음" · "다른 날짜" |
 | FX-03 | 통화 목록은 API 응답에 있는 것 전부 — 코드에 고정하지 않는다 (원화 자신 · 송금 환율이 0 인 옛 통화는 뺌) | `sources.test.ts` "원화 자신 · 거래 안 하는 옛 통화는 빼고 나머지 전부" |
 | FX-04 | 100 단위로 고시되는 통화(예: 엔)는 단위를 화면에 표시한다 | `sources.test.ts` "100 단위 통화" (저장) · `currency.test.ts` "단위 맞춤" (예비 출처는 엔도 1 단위로 옴 → 화면 단위로 맞춰 그림 · 작업 0058) · `sources.test.ts` "엔 · 루피아는 수출입은행처럼 100 단위로 저장" (작업 0072부터 예비 출처도 같은 단위로 저장 · 예전 줄은 마이그레이션 `0003_fx_unit_backfill` 로 고침 · 작업 0074 · 화면 맞춤은 다른 출처 대비로 남김) |
-| FX-05 | 공식 원화 환율(수출입은행)이 예비(Frankfurter)보다 우선 — 예비는 이미 있는 값을 덮지 않는다 | `store.ts` saveRates (onConflictDoNothing) |
+| FX-05 | 공식 원화 환율(수출입은행)이 예비(Frankfurter)보다 우선 — 예비는 이미 있는 값을 덮지 않는다 | `store.ts` saveRates (onConflictDoNothing) · 예비 값만 있는 날은 공식 값을 다시 시도해 덮음 (`daily.test.ts` · 작업 0121) |
 | FX-06 | 환율 계산기(원 ↔ 외화)는 브라우저 안에서만 계산 · 매매기준율과 기준일 · 출처를 같이 · 송금 환율(tts · ttb)이 없으면 그 값은 보여 주지 않음 (지어내지 않음) | `apps/web/src/features/currencies/convert.test.ts` (작업 0086) |
 | FX-07 | 평일 12:00 KST 수집을 놓쳐도 13:30 · 15:00 KST 에 "오늘 값이 없으면" 다시 수집 · 새 값을 저장하면 사이트를 바로 다시 빌드 | `apps/api/src/features/fx/daily.test.ts` (작업 0094) |
 | FX-08 | 화면의 기준일이 오늘(한국 날짜)이 아니면 왜인지 한 줄 — 고시 전 · 늦음 · 주말 (값은 바꾸지 않음) | `apps/web/src/shared/freshness.test.ts` (작업 0095) |
