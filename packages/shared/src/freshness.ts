@@ -2,21 +2,17 @@
 //   브라우저에서 지금 한국 시각과 비교해 왜 그 날짜인지 알려 줌 · 값을 바꾸지는 않음 (FX-02 지어내지 않음)
 //   2026-10-30: 12:00 예약 수집이 돌지 않았는데 사이트는 아무 말 없이 10-29 값을 보여 줌
 
-import { kstNow } from "./date";
+import { kstDate, kstNow } from "./date";
+import { monthDayText as md } from "./format";
 
 /** 수출입은행 고시(11시 전후) + 수집(12:00) + 다시 빌드 몇 분 → 13:00 KST 부터 "늦음" */
 const READY_HOUR = 13;
 
 export type Freshness = { kind: "today" } | { kind: "before-release" | "late" | "no-release"; text: string };
 
-const md = (iso: string) => {
-  const [, m, d] = iso.split("-").map(Number);
-  return `${m}월 ${d}일`;
-};
-
 export function freshness(date: string, now: Date = new Date()): Freshness {
   const k = kstNow(now);
-  const today = k.toISOString().slice(0, 10);
+  const today = kstDate(now);
   if (date >= today) return { kind: "today" };
   const day = k.getUTCDay();
   if (day === 0 || day === 6) return { kind: "no-release", text: `주말에는 고시가 없어 ${md(date)} 값입니다` };

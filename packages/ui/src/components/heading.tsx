@@ -10,3 +10,8 @@ type TitleProps = HTMLAttributes<HTMLHeadingElement> & { as?: "h1" | "h2" | "h3"
 export function Title({ as: Tag = "h2", className = "", ...rest }: TitleProps) {
   return <Tag className={`text-title font-semibold tracking-tight ${className}`} {...rest} />;
 }
+
+/** 페이지 안 작은 구역 제목 */
+export function SubTitle({ className = "", ...rest }: HTMLAttributes<HTMLHeadingElement>) {
+  return <h2 className={`text-lg font-semibold tracking-tight ${className}`} {...rest} />;
+}

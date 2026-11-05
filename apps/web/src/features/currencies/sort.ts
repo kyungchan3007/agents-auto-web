@@ -16,6 +16,3 @@ export function sortByChange<T extends { currency: string; change: number | null
     return (a.change - b.change) * dir;
   });
 }
-
-/** 목록 옆 작은 글자 "-1.9%" */
-export const pctText = (pct: number) => `${pct > 0 ? "+" : ""}${pct.toFixed(1)}%`;

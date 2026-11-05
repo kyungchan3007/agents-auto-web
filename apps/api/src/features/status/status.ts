@@ -34,7 +34,7 @@ export function scheduleOf(slots: Slot[], runs: RunRow[], now: Date, firstRateAt
   const k = kstNow(now);
   const day = k.getUTCDay();
   if (day === 0 || day === 6) return [];
-  const today = k.toISOString().slice(0, 10);
+  const today = kstDate(now);
   return slots.map((s) => {
     const time = slotTime(s.cron);
     const at = Date.parse(`${today}T${time}:00+09:00`);

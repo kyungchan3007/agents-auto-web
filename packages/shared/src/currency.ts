@@ -1,5 +1,6 @@
 // 통화 → 한국어 이름 · 국기 나라 · 지역 · 화면 문장 — 홈 · 통화 둘러보기 · 직구 계산기가 같이 씀 (순수 함수 · 테스트 있음)
 // 예측 문구를 쓰지 않는다 (SIG-01) · API 는 코드만 준다
+import { numberText } from "./format";
 import type { FxRate } from "./fx";
 import type { Signal } from "./signal";
 
@@ -88,7 +89,7 @@ export function percentileText(signal: Signal | null, percentile: number | null,
 /** 표시용 환율 — 엔 · 루피아는 100 단위 그대로 보여 주고 단위를 붙인다 (FX-04) */
 export function rateText(rate: Pick<FxRate, "baseRate" | "unit">): { value: string; unit: string } {
   return {
-    value: rate.baseRate.toLocaleString("ko-KR", { minimumFractionDigits: rate.baseRate >= 100 ? 1 : 2, maximumFractionDigits: 2 }),
+    value: numberText(rate.baseRate, { minimumFractionDigits: rate.baseRate >= 100 ? 1 : 2, maximumFractionDigits: 2 }),
     unit: rate.unit === 1 ? "원" : `원 / ${rate.unit}`,
   };
 }
@@ -118,7 +119,7 @@ export function rangeOf(rates: Day[]): { min: Day; max: Day; first: Day; last: D
 export function sampleText(code: string, rate: Pick<FxRate, "baseRate" | "unit">): string {
   const amount = rate.unit === 1 ? 100 : 1000;
   const won = Math.round((amount / rate.unit) * rate.baseRate);
-  return `${amount.toLocaleString("ko-KR")} ${code} → ${won.toLocaleString("ko-KR")}원`;
+  return `${numberText(amount)} ${code} → ${numberText(won)}원`;
 }
 
 /** 목록 찾기 — 이름 · 코드 (대소문자 · 띄어쓰기 무시) */

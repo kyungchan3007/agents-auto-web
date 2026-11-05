@@ -6,7 +6,7 @@ import { SOURCE_NOTE } from "@hav/shared/currency";
 import type { SignalList } from "@hav/shared/signal";
 import { BAND_EDGE } from "@hav/shared/travel";
 import type { ReactNode } from "react";
-import { Eyebrow, Title } from "@hav/ui/heading";
+import { PageSection } from "@hav/ui/page-section";
 import { TextLink } from "@hav/ui/text-link";
 
 const pct = (n: number) => `${Math.round(n * 100)}%`;
@@ -19,10 +19,7 @@ export function AboutPage({ signals, duty }: { signals: Fetched<SignalList>; dut
   return (
     <>
       <SiteNav page="about" />
-      <main data-surface="dark" className="bg-surface px-4 pt-14 pb-24 text-fg sm:px-8 sm:pt-20">
-        <div className="mx-auto max-w-3xl">
-          <Eyebrow>소개</Eyebrow>
-          <Title as="h1" className="mt-3">Tripfx는 어떤 자료를, 어떤 기준으로 보여 주나요.</Title>
+      <PageSection as="main" width="max-w-3xl" eyebrow="소개" title="Tripfx는 어떤 자료를, 어떤 기준으로 보여 주나요.">
           <p className="mt-6 text-lead text-fg-2">Tripfx는 여행과 해외 직구를 앞둔 사람이 환율 · 여행지 물가 · 직구 세금을 한곳에서 확인하는 사이트입니다. 로그인 없이 쓸 수 있습니다.</p>
 
           <Part title="환율">
@@ -84,8 +81,7 @@ export function AboutPage({ signals, duty }: { signals: Fetched<SignalList>; dut
               로 알려 주세요.
             </p>
           </Part>
-        </div>
-      </main>
+      </PageSection>
     </>
   );
 }

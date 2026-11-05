@@ -103,6 +103,7 @@ turbo.json                       작업 그래프 (build · lint · typecheck ·
 | 슬라이스끼리 import 금지 | 테스트 | `apps/web/src/shared/role-boundary.test.ts` |
 | 앱 공용 폴더는 사이트 고유 파일만 — 2개 이상이 쓰는 공통은 `@hav/shared`(로직) · `@hav/ui`(화면 · 훅) · 의존 방향 shared ← ui ← apps | 허용 목록 테스트 (작업 0126) | `apps/web/src/shared/role-boundary.test.ts` |
 | 화면(`.tsx`)은 그리기만 · 상태 · 효과는 `use-*.ts` · 계산은 순수 `*.ts` | 테스트 (작업 0125) | `apps/web/src/shared/role-boundary.test.ts` |
+| 숫자 · 변화율 · 날짜 표기는 `@hav/shared/format` · `date` · JSON 받기는 `@hav/shared/fetched` · 빌드 값 뒤 새로 받기는 `@hav/ui/hooks/use-live` | 작업 0136 | 해당 패키지 |
 | 패키지끼리 `../` import 금지 | (예정) eslint `no-restricted-imports` | `@hav/config` eslint |
 | `apps/web` 은 외부 환율 API를 직접 부르지 않음 | (예정) eslint · 테스트 | `@hav/config` eslint |
 | API 입력은 zod 검증을 거침 | 슬라이스 테스트 | `apps/api` 테스트 |

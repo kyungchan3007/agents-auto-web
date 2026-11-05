@@ -5,6 +5,8 @@
   "type": "module",
   "exports": {
     "./date": "./src/date.ts",
+    "./fetched": "./src/fetched.ts",
+    "./format": "./src/format.ts",
     "./fx": "./src/fx.ts",
     "./signal": "./src/signal.ts",
     "./prices": "./src/prices.ts",

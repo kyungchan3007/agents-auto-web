@@ -32,3 +32,13 @@ export function Select({ className = "", children, ...rest }: SelectHTMLAttribut
     </div>
   );
 }
+
+/** 칸 위 작은 이름표 — 입력 칸을 감쌈 */
+export function FieldLabel({ label, children }: { label: ReactNode; children: ReactNode }) {
+  return (
+    <label className="grid gap-1.5">
+      <span className="text-xs text-fg-2">{label}</span>
+      {children}
+    </label>
+  );
+}

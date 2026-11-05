@@ -4,7 +4,8 @@
 //   입력은 이 화면 상태에만 (보내지 않음) · 물가 기준 연도 · 환율 기준일을 같이 (TRV-01 · TRV-03)
 import { currencyName } from "@hav/shared/currency";
 import { type TravelRow, relativeText } from "@hav/shared/travel";
-import { Input, Select } from "@hav/ui/field";
+import { FieldLabel, Input, Select } from "@hav/ui/field";
+import { SubTitle } from "@hav/ui/heading";
 import { localText, wonText } from "./budget";
 import { type Latest, useBudgetPlanner } from "./use-budget-planner";
 import { StatTile } from "@hav/ui/stat-tile";
@@ -14,13 +15,10 @@ export function BudgetPlanner({ rows, latestOf }: { rows: TravelRow[]; latestOf:
 
   return (
     <section id="budget" aria-labelledby="budget-title" className="scroll-mt-20 rounded-card bg-surface-2 p-5 sm:p-8">
-      <h2 id="budget-title" className="text-lg font-semibold tracking-tight">
-        여행 예산 계산
-      </h2>
+      <SubTitle id="budget-title">여행 예산 계산</SubTitle>
       <p className="mt-1 text-sm text-fg-2">한국에서의 하루 지출을 기준으로 그 나라의 예상 비용을 계산합니다.</p>
       <form className="mt-5 grid gap-3 sm:grid-cols-[1.2fr_1fr_0.6fr]" onSubmit={(e) => e.preventDefault()}>
-        <label className="grid gap-1.5">
-          <span className="text-xs text-fg-2">나라</span>
+        <FieldLabel label="나라">
           <Select value={country} onChange={(e) => setCountry(e.target.value)}>
             {sorted.map((r) => (
               <option key={r.country} value={r.country}>
@@ -28,15 +26,13 @@ export function BudgetPlanner({ rows, latestOf }: { rows: TravelRow[]; latestOf:
               </option>
             ))}
           </Select>
-        </label>
-        <label className="grid gap-1.5">
-          <span className="text-xs text-fg-2">한국에서 하루 (원)</span>
+        </FieldLabel>
+        <FieldLabel label="한국에서 하루 (원)">
           <Input inputMode="numeric" autoComplete="off" value={daily} onChange={(e) => setDaily(e.target.value)} aria-invalid={d == null} />
-        </label>
-        <label className="grid gap-1.5">
-          <span className="text-xs text-fg-2">일수</span>
+        </FieldLabel>
+        <FieldLabel label="일수">
           <Input inputMode="numeric" autoComplete="off" value={days} onChange={(e) => setDays(e.target.value)} aria-invalid={n == null} />
-        </label>
+        </FieldLabel>
       </form>
 
       <div className="mt-6" aria-live="polite">

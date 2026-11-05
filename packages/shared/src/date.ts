@@ -11,4 +11,9 @@ export function isIsoDate(s: string): boolean {
 export const IsoDate = z.string().refine(isIsoDate, "YYYY-MM-DD 날짜가 아님");
 export const IsoDateTime = z.iso.datetime();
 
-export { kstDate, kstNow } from "./kst";
+/** from 에서 days 일 전 날짜 (YYYY-MM-DD · UTC) */
+export function isoDaysBefore(days: number, from: Date = new Date()): string {
+  return new Date(from.getTime() - days * 86400_000).toISOString().slice(0, 10);
+}
+
+export { kstDate, kstMonthDay, kstNow } from "./kst";

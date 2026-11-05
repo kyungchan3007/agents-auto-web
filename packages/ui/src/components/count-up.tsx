@@ -1,5 +1,6 @@
 "use client";
 
+import { numberText } from "@hav/shared/format";
 import { animate, useInView, useReducedMotion } from "motion/react";
 import { useEffect, useRef } from "react";
 
@@ -17,7 +18,7 @@ export function CountUp({ text, className = "" }: { text: string; className?: st
     const target = Number(text.replace(/,/g, ""));
     if (!el || !inView || reduce || !Number.isFinite(target)) return;
     const decimals = text.split(".")[1]?.length ?? 0;
-    const fmt = (v: number) => v.toLocaleString("ko-KR", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    const fmt = (v: number) => numberText(v, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
     const controls = animate(0, target, {
       duration: 1.4,
       ease: [0.22, 1, 0.36, 1],

@@ -2,6 +2,7 @@
 
 // 사이트 상태 점검판 — 작업실 맨 위 (작업 0105) · 오늘 환율 · 마지막 수집 · 사이트 빌드 · 오늘 예약 회차
 import type { SiteStatus } from "@hav/shared/status";
+import { Panel } from "@hav/ui/panel";
 import type { Fetched } from "../../shared/api";
 import { SLOT_TEXT, headlineOf, lastRunText, timeText } from "./status-text";
 import { useStatus } from "./use-status";
@@ -13,16 +14,13 @@ export function StatusBoard({ build, builtAt }: { build: Fetched<SiteStatus>; bu
   const f = useStatus(build);
   return (
     <section data-surface="dark" aria-labelledby="status-title" className="bg-surface px-4 pt-10 text-fg sm:px-8 sm:pt-14">
-      <div className="mx-auto max-w-3xl rounded-card bg-surface-2 p-5 ring-1 ring-line sm:p-6">
-        <p id="status-title" className="text-xs font-semibold text-fg-2">
-          사이트 상태
-        </p>
+      <Panel id="status-title" label="사이트 상태">
         {!f.ok ? (
           <p className="mt-2 text-sm text-fg-2">상태를 받지 못했습니다 ({f.reason})</p>
         ) : (
           <Body s={f.data} builtAt={builtAt} />
         )}
-      </div>
+      </Panel>
     </section>
   );
 }

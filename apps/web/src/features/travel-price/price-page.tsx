@@ -6,7 +6,7 @@ import type { SignalList } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES, travelBands } from "@hav/shared/travel";
 import { BudgetPlanner } from "./budget-planner";
 import { PriceBands } from "./price-bands";
-import { Eyebrow, Title } from "@hav/ui/heading";
+import { PageSection } from "@hav/ui/page-section";
 import { EmptyState } from "@hav/ui/empty-state";
 
 export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; signals: Fetched<SignalList> }) {
@@ -18,14 +18,18 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
   return (
     <>
       <SiteNav page="prices" />
-      <section data-surface="light" className="bg-surface px-4 pt-14 pb-24 text-fg sm:px-8 sm:pt-20">
-        <div className="mx-auto max-w-6xl">
-          <Eyebrow>여행 물가</Eyebrow>
-          <Title as="h1" className="mt-3">
+      <PageSection
+        surface="light"
+        width="max-w-6xl"
+        eyebrow="여행 물가"
+        title={
+          <>
             같은 금액으로,
             <br />
             어느 나라가 저렴한지 확인합니다.
-          </Title>
+          </>
+        }
+      >
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-fg-2">
             한국 물가를 기준으로 나라별 물가가 얼마나 싼지 · 비싼지 묶었습니다. 막대 가운데 선이 한국입니다. 오늘 그 나라 통화가 싼 편인지도 옆에 같이 적었습니다 — 두 값은
             따로 봅니다.
@@ -56,8 +60,7 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
               {!signals.ok && <p>오늘 환율 신호를 받지 못해 비워 두었습니다 ({signals.reason})</p>}
             </div>
           )}
-        </div>
-      </section>
+      </PageSection>
     </>
   );
 }

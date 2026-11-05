@@ -1,6 +1,6 @@
 import type { ActivityEvent } from "@hav/shared/activity";
 import { describe, expect, it } from "vitest";
-import { pickTasks } from "./use-tasks";
+import { pickLive } from "@hav/shared/fetched";
 import { MOOD_TEXT, moodOf } from "./mood";
 import { STAGES, deskLabel, deskProgress, deskState } from "./stage";
 import { MOODS } from "@hav/ui/three/worker-cat";
@@ -58,13 +58,13 @@ describe("지난 작업 고르기", () => {
 
   it("브라우저에서 새로 받은 게 있으면 그것 · 실패면 빌드 때 것", () => {
     const build = { ok: true as const, data: sum(1, "2026-10-28T10:00:00.000Z") };
-    expect(pickTasks(build, { ok: true, data: sum(3, "2026-10-28T11:00:00.000Z") })).toMatchObject({ ok: true, data: { done: { length: 3 } } });
-    expect(pickTasks(build, { ok: false, reason: "연결 실패" })).toBe(build);
-    expect(pickTasks(build, null)).toBe(build);
+    expect(pickLive(build, { ok: true, data: sum(3, "2026-10-28T11:00:00.000Z") })).toMatchObject({ ok: true, data: { done: { length: 3 } } });
+    expect(pickLive(build, { ok: false, reason: "연결 실패" })).toBe(build);
+    expect(pickLive(build, null)).toBe(build);
   });
 
   it("둘 다 실패면 빌드 때 이유", () => {
-    expect(pickTasks({ ok: false, reason: "HTTP 503" }, { ok: false, reason: "연결 실패" })).toEqual({ ok: false, reason: "HTTP 503" });
+    expect(pickLive({ ok: false, reason: "HTTP 503" }, { ok: false, reason: "연결 실패" })).toEqual({ ok: false, reason: "HTTP 503" });
   });
 });
 
