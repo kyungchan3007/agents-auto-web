@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BrowseLayout } from "@/features/currencies/browse-layout";
+import { BrowseLayout } from "@/features/currencies/components/browse-layout";
 import { api } from "@/shared/api";
 
 export const metadata: Metadata = {

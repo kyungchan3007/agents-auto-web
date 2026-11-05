@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { GeoPage } from "@/features/geo/geo-page";
+import { GeoPage } from "@/features/geo/components/geo-page";
 import { api } from "@/shared/api";
 
 export const metadata: Metadata = {

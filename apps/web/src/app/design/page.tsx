@@ -1,11 +1,11 @@
-import { BigNumber } from "@hav/ui/big-number";
-import { Button } from "@hav/ui/button";
-import { Card } from "@hav/ui/card";
-import { NavBar } from "@hav/ui/nav-bar";
-import { Section } from "@hav/ui/section";
-import { SignalBadge } from "@hav/ui/signal-badge";
-import { Tabs } from "@hav/ui/tabs";
-import { Tooltip } from "@hav/ui/tooltip";
+import { BigNumber } from "@hav/ui/text/big-number";
+import { Button } from "@hav/ui/form/button";
+import { Card } from "@hav/ui/layout/card";
+import { NavBar } from "@hav/ui/layout/nav-bar";
+import { Section } from "@hav/ui/layout/section";
+import { SignalBadge } from "@hav/ui/data/signal-badge";
+import { Tabs } from "@hav/ui/form/tabs";
+import { Tooltip } from "@hav/ui/feedback/tooltip";
 import type { Metadata } from "next";
 import { Characters } from "./characters";
 

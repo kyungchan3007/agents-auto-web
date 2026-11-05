@@ -4,8 +4,8 @@ import { drizzle } from "drizzle-orm/d1";
 import { clearApiCache } from "../../db/cache";
 import { runLog } from "../../db/runs";
 import { fxRates } from "../../db/schema";
-import type { RateStore } from "./collect";
-import type { RateRow } from "./rate";
+import type { RateStore } from "./collect/collect";
+import type { RateRow } from "./sources/rate";
 
 // D1 은 쿼리 하나에 바인딩 값 100개까지 → 8칸 × 12줄 = 96
 const CHUNK = 12;

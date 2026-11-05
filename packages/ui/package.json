@@ -5,10 +5,10 @@
   "type": "module",
   "exports": {
     "./tokens.css": "./src/tokens.css",
-    "./contrast": "./src/contrast.ts",
-    "./chart": "./src/chart.ts",
+    "./contrast": "./src/lib/contrast.ts",
+    "./chart": "./src/lib/chart.ts",
     "./hooks/*": "./src/hooks/*.ts",
-    "./three/geo": "./src/three/geo.ts",
+    "./three/lib/*": "./src/three/lib/*.ts",
     "./three/*": "./src/three/*.tsx",
     "./*": "./src/components/*.tsx"
   },

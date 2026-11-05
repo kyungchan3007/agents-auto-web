@@ -79,6 +79,19 @@ describe("코드 역할 분담 (작업 0125)", () => {
     expect(here).toEqual([...allowed].sort());
   });
 
+  it("기능 폴더 안은 성격별로 — 화면은 components · 훅은 hooks · 계산은 lib (작업 0137)", () => {
+    const bad = files(FEATURES)
+      .map((f) => relative(FEATURES, f).split("/").slice(1).join("/"))
+      .filter((f) => !/^(components\/[^/]+\.tsx|hooks\/use-[^/]+\.ts|lib\/[^/]+\.ts)$/.test(f));
+    expect(bad).toEqual([]);
+  });
+
+  it("패키지 파일은 묶음 폴더 안에 — 바로 아래에 두지 않음 (작업 0137)", () => {
+    const PKG = resolve(SRC, "../../../packages");
+    const loose = (dir: string) => readdirSync(dir, { withFileTypes: true }).filter((d) => d.isFile() && /\.tsx?$/.test(d.name)).map((d) => join(relative(PKG, dir), d.name));
+    expect([loose(join(PKG, "ui/src")), loose(join(PKG, "ui/src/components")), loose(join(PKG, "ui/src/three")), loose(join(PKG, "shared/src"))].flat()).toEqual([]);
+  });
+
   it("API 기능 폴더끼리 직접 가져오지 않음 (작업 0126)", () => {
     const API = resolve(SRC, "../../api/src/features");
     const bad = files(API).flatMap((f) => {

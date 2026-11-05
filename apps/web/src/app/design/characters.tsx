@@ -1,10 +1,10 @@
 "use client";
 
 // 디자인 시스템 확인용 — 🐱 작업 고양이 · 💰 돈 든 고양이 표정을 버튼으로 바꿔 봄 (캔버스 두 개만)
-import { MONEY_MOODS, type MoneyMood } from "@hav/ui/three/money-cat";
-import { MOODS, type Mood } from "@hav/ui/three/worker-cat";
+import { MONEY_MOODS, type MoneyMood } from "@hav/ui/three/characters/money-cat";
+import { MOODS, type Mood } from "@hav/ui/three/characters/worker-cat";
 import { useState } from "react";
-import { MoneyCatLazy, WorkerCatLazy } from "@hav/ui/three/lazy";
+import { MoneyCatLazy, WorkerCatLazy } from "@hav/ui/three/scene/lazy";
 
 export function Characters() {
   const [work, setWork] = useState<Mood>("typing");
