@@ -1,28 +1,10 @@
 "use client";
 
 // 공유 — 휴대폰은 공유 창(Web Share) · 안 되면 주소 복사 (작업 0093) · 아무것도 보내지 않음 (브라우저 기능만)
-import { useState } from "react";
+import { useShare } from "./use-share";
 
 export function ShareButton({ title, text }: { title: string; text: string }) {
-  const [done, setDone] = useState<"copied" | "failed" | null>(null);
-  const share = async () => {
-    const url = window.location.href;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title, text, url });
-        return;
-      } catch (e) {
-        if (e instanceof DOMException && e.name === "AbortError") return; // 사용자가 닫음
-      }
-    }
-    try {
-      await navigator.clipboard.writeText(url);
-      setDone("copied");
-    } catch {
-      setDone("failed");
-    }
-    setTimeout(() => setDone(null), 2500);
-  };
+  const { share, done } = useShare({ title, text });
   return (
     <button type="button" onClick={share} className="inline-flex items-center gap-1.5 rounded-pill border border-line px-3 py-1 text-xs font-semibold text-fg-2 transition-colors hover:text-fg">
       <svg aria-hidden viewBox="0 0 16 16" className="size-3.5">

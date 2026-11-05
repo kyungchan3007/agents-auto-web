@@ -59,9 +59,9 @@ test("통화 목록 정렬 — 싸진 순이면 변화율이 보임 (작업 0099
   await expect(page.getByRole("navigation", { name: "통화 목록" }).locator("li").first()).toContainText(/[+-]\d+\.\d%/);
 });
 
-test("작업실 — 사이트 상태 점검판이 맨 위 · 탭 제목은 사이트 이름만 (작업 0105)", async ({ page }) => {
+test("작업실 — 사이트 상태 점검판이 맨 위 · 탭 제목은 페이지 이름 (작업 0105 · 0114)", async ({ page }) => {
   await page.goto("/log");
-  await expect(page).toHaveTitle("Tripfx");
+  await expect(page).toHaveTitle("작업실 · Tripfx");
   const board = page.locator('section[aria-labelledby="status-title"]');
   await expect(board).toContainText("사이트 상태");
   await expect(board).toContainText(/최근 환율|상태를 받지 못했습니다/);

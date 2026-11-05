@@ -8,7 +8,7 @@ import type { Fetched } from "../../shared/api";
 import { REPO_URL } from "../../shared/site";
 import { StationsLazy } from "../../shared/three-lazy";
 import { MOOD_TEXT, moodOf } from "./mood";
-import { STAGES, deskState } from "./stage";
+import { STAGES, deskLabel, deskProgress, deskState } from "./stage";
 import { liveStatus } from "./status";
 import type { Activity } from "./use-activity";
 
@@ -20,9 +20,7 @@ export function TaskDesks({ activity, tasks }: { activity: Activity; tasks: Fetc
   const desk = deskState(activity.events, done);
   const status = liveStatus(activity.events, activity.now);
   const mood = moodOf(status);
-  // 끝난 작업은 선반으로 → 캐릭터는 1번 책상에서 다음 작업을 기다림
-  const active = desk.finished ? 0 : desk.stage;
-  const doneCount = desk.finished ? 0 : desk.stage;
+  const { active, doneCount } = deskProgress(desk);
   const name = desk.task ? (names[desk.task]?.split(" — ")[0] ?? null) : null;
 
   return (
@@ -46,7 +44,7 @@ export function TaskDesks({ activity, tasks }: { activity: Activity; tasks: Fetc
 
       <ol className="grid grid-cols-4 gap-2 text-center sm:gap-4">
         {STAGES.map((s, i) => {
-          const state = i < doneCount ? "끝" : i === active && desk.task && !desk.finished ? "지금" : "대기";
+          const state = deskLabel(i, desk);
           return (
             <li key={s.id} className={`rounded-card p-3 sm:p-4 ${state === "지금" ? "bg-surface-2 ring-1 ring-accent" : "bg-surface-2/60"}`}>
               <p className="text-xl sm:text-2xl" aria-hidden>

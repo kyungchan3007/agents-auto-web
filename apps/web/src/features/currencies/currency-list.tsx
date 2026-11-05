@@ -2,38 +2,20 @@
 
 // 왼쪽 목록 — 찾기 · 지역 · `+ 통화` (누르면 그 통화 주소로 · 목록과 찾은 글자는 페이지를 옮겨도 그대로: 레이아웃에 있음)
 // 휴대폰은 위에 가로로 넘기는 줄 · ☆ 를 누르면 즐겨찾기 — 맨 위로 · "즐겨찾기" 묶음 (이 브라우저에만 저장 · 작업 0089)
-import { REGIONS, type Region, currencyName, currencyRegion, groupByRegion, matchCurrency } from "@hav/shared/currency";
-import type { Signal } from "@hav/shared/signal";
+import { currencyName } from "@hav/shared/currency";
 import { signalLabel } from "@hav/ui/signal-badge";
 import { Input } from "@hav/ui/field";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
 import { CurrencyFlag } from "../../shared/currency-flag";
-import { favoritesFirst, useFavorites } from "./favorites";
-import { codeFromPath } from "./route";
-import { SORTS, type SortId, pctText, sortByChange } from "./sort";
+import { SIGNAL_TONE } from "../../shared/signal-tone";
+import type { ListItem } from "./list";
+import { SORTS, pctText } from "./sort";
+import { useCurrencyList } from "./use-currency-list";
 
-export type ListItem = { currency: string; signal: Signal | null; change: number | null };
-
-const TONE: Record<Signal, string> = { cheap: "text-cheap", normal: "text-normal", expensive: "text-expensive" };
+export type { ListItem };
 
 export function CurrencyList({ items }: { items: ListItem[] }) {
-  const current = codeFromPath(usePathname());
-  const [query, setQuery] = useState("");
-  const [region, setRegion] = useState<Region | "all" | "fav">("all");
-  const [favs, toggleFav] = useFavorites();
-  const [sort, setSort] = useState<SortId>("region");
-  const hasChange = items.some((i) => i.change != null);
-  const regions = REGIONS.filter((r) => items.some((i) => currencyRegion(i.currency) === r.id));
-  const chips = [{ id: "all" as const, label: "전체" }, ...(favs.length > 0 ? [{ id: "fav" as const, label: `★ 즐겨찾기 ${favs.length}` }] : []), ...regions];
-  // 즐겨찾기를 다 빼서 그 묶음이 사라지면 전체로
-  const picked = region === "fav" && favs.length === 0 ? "all" : region;
-  // 정렬을 고르면 그 순서 그대로 (즐겨찾기 맨 위는 기본 정렬일 때만)
-  const base = groupByRegion(items).flatMap((g) => g.items);
-  const shown = (sort === "region" ? favoritesFirst(base, favs) : sortByChange(base, sort)).filter(
-    (i) => (picked === "all" || (picked === "fav" ? favs.includes(i.currency) : currencyRegion(i.currency) === picked)) && matchCurrency(i.currency, query),
-  );
+  const { current, query, setQuery, picked, setRegion, favs, toggleFav, sort, setSort, hasChange, chips, shown } = useCurrencyList(items);
 
   return (
     <nav aria-label="통화 목록" className="min-w-0">
@@ -92,7 +74,7 @@ export function CurrencyList({ items }: { items: ListItem[] }) {
                       {pctText(i.change)}
                     </span>
                   )}
-                  {i.signal && <span className={`font-semibold ${TONE[i.signal]}`}>{signalLabel(i.signal)}</span>}
+                  {i.signal && <span className={`font-semibold ${SIGNAL_TONE[i.signal]}`}>{signalLabel(i.signal)}</span>}
                 </span>
               </Link>
               <button

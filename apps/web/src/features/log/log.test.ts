@@ -2,7 +2,7 @@ import type { ActivityEvent } from "@hav/shared/activity";
 import { describe, expect, it } from "vitest";
 import { pickTasks } from "./use-tasks";
 import { MOOD_TEXT, moodOf } from "./mood";
-import { STAGES, deskState } from "./stage";
+import { STAGES, deskLabel, deskProgress, deskState } from "./stage";
 import { MOODS } from "@hav/ui/three/worker-cat";
 import { KEEP_LINES, agoText, clockText, liveStatus, mergeEvents, todayStats } from "./status";
 
@@ -154,3 +154,17 @@ describe("작업 책상 — 머지 기록에 작업 번호가 빠져도 (작업 
   });
 });
 
+describe("작업 책상 표시 (작업 0125)", () => {
+  const desk = (stage: 0 | 1 | 2 | 3, finished = false, task: string | null = "0125") => ({ task, stage, finished });
+  it("진행 중: 앞 책상은 끝 · 지금 책상 · 뒤는 대기", () => {
+    expect([0, 1, 2, 3].map((i) => deskLabel(i, desk(2)))).toEqual(["끝", "끝", "지금", "대기"]);
+    expect(deskProgress(desk(2))).toEqual({ active: 2, doneCount: 2 });
+  });
+  it("끝난 작업은 1번 책상에서 대기", () => {
+    expect(deskProgress(desk(3, true))).toEqual({ active: 0, doneCount: 0 });
+    expect(deskLabel(0, desk(3, true))).toBe("대기");
+  });
+  it("기록이 없으면 지금 표시 없음", () => {
+    expect(deskLabel(0, desk(0, false, null))).toBe("대기");
+  });
+});

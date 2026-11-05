@@ -3,28 +3,13 @@
 // 여행 예산 계산 — 나라 · 한국에서 하루 쓰는 돈 · 일수 → 같은 생활이면 그 나라에서 하루 · 전체 (원 · 현지 통화) (작업 0088)
 //   입력은 이 화면 상태에만 (보내지 않음) · 물가 기준 연도 · 환율 기준일을 같이 (TRV-01 · TRV-03)
 import { currencyName } from "@hav/shared/currency";
-import type { SignalList } from "@hav/shared/signal";
 import { type TravelRow, relativeText } from "@hav/shared/travel";
 import { Input, Select } from "@hav/ui/field";
-import { useState, useSyncExternalStore } from "react";
-import { budgetOf, localText, parseDaily, parseDays, wonText } from "./budget";
-
-type Latest = SignalList["signals"][number]["latest"];
+import { localText, wonText } from "./budget";
+import { type Latest, useBudgetPlanner } from "./use-budget-planner";
 
 export function BudgetPlanner({ rows, latestOf }: { rows: TravelRow[]; latestOf: Record<string, Latest> }) {
-  const sorted = [...rows].sort((a, b) => a.name.localeCompare(b.name, "ko"));
-  // /prices?country=THA#budget (홈 여행지 · 통화 상세에서 옴) — 정적 페이지라 주소는 브라우저에서 읽음 (작업 0100)
-  const fromUrl = useSyncExternalStore(noop, () => new URLSearchParams(window.location.search).get("country")?.toUpperCase() ?? "", () => "");
-  const [picked, setCountry] = useState<string | null>(null);
-  const fallback = rows.some((r) => r.country === "JPN") ? "JPN" : (sorted[0]?.country ?? "");
-  const country = picked ?? (rows.some((r) => r.country === fromUrl) ? fromUrl : fallback);
-  const [daily, setDaily] = useState("100,000");
-  const [days, setDays] = useState("4");
-  const row = rows.find((r) => r.country === country);
-  const d = parseDaily(daily);
-  const n = parseDays(days);
-  const latest = row?.currency ? (latestOf[row.currency] ?? null) : null;
-  const b = row && d != null && n != null ? budgetOf(d, n, row.relative, latest?.value ?? null) : null;
+  const { sorted, country, setCountry, daily, setDaily, days, setDays, row, d, n, latest, budget: b } = useBudgetPlanner(rows, latestOf);
 
   return (
     <section id="budget" aria-labelledby="budget-title" className="scroll-mt-20 rounded-card bg-surface-2 p-5 sm:p-8">
@@ -91,5 +76,3 @@ export function BudgetPlanner({ rows, latestOf }: { rows: TravelRow[]; latestOf:
     </section>
   );
 }
-
-const noop = () => () => {};

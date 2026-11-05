@@ -5,22 +5,12 @@
 import { SOURCE_NAME, currencyName } from "@hav/shared/currency";
 import type { FxRate } from "@hav/shared/fx";
 import { Input } from "@hav/ui/field";
-import { useState } from "react";
-import { type Side, amountText, convert, convertRemit, parseInput, presets } from "./convert";
+import { type Side, amountText, presets } from "./convert";
+import { useConverter } from "./use-converter";
 
 export function Converter({ code, rate }: { code: string; rate: FxRate }) {
-  const [side, setSide] = useState<Side>("foreign");
-  const [text, setText] = useState(String(presets("foreign", rate)[2]));
-  const amount = parseInput(text);
-  const other: Side = side === "won" ? "foreign" : "won";
-  const result = amount == null ? null : convert(amount, side, rate);
-  const remit = amount == null ? null : convertRemit(amount, side, rate);
+  const { side, amount, other, result, remit, invalid, value, edit, pick } = useConverter(rate);
   const label = (s: Side) => (s === "won" ? "원" : code);
-  const value = (s: Side) => (s === side ? text : result == null ? "" : amountText(result, s, rate));
-  const edit = (s: Side) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSide(s);
-    setText(e.target.value);
-  };
 
   return (
     <section aria-labelledby="converter-title" className="rounded-card bg-surface-2 p-5 sm:p-6">
@@ -44,10 +34,7 @@ export function Converter({ code, rate }: { code: string; rate: FxRate }) {
             <button
               key={`${s}${p}`}
               type="button"
-              onClick={() => {
-                setSide(s);
-                setText(String(p));
-              }}
+              onClick={() => pick(s, p)}
               className={`rounded-full border px-3 py-1 text-xs transition-colors ${side === s && amount === p ? "border-accent text-accent" : "border-line text-fg-2 hover:text-fg"}`}
             >
               {amountText(p, s, rate)} {label(s)}
@@ -56,7 +43,7 @@ export function Converter({ code, rate }: { code: string; rate: FxRate }) {
         )}
       </div>
       <p id="converter-note" className="mt-4 text-xs leading-relaxed text-fg-2" aria-live="polite">
-        {text.trim() !== "" && amount == null ? (
+        {invalid ? (
           <span className="text-expensive">0 이상의 숫자만 넣어 주세요.</span>
         ) : (
           <>
