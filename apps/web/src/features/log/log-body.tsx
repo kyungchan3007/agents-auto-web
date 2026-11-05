@@ -1,10 +1,10 @@
 "use client";
 
-// 만드는 중 — 가운데 고정 패널 장면 ①~③ → ④ 작업 책상 · 다 한 일 선반 → 끝 숫자
+// 작업실 — 패치 내역 → 가운데 고정 패널 장면 ①~③ → ④ 작업 책상 · 다 한 일 선반 → 오늘 발견된 버그 · 보안
 // 패널은 화면에 고정하고 스크롤로 장면만 바뀜 (참고 페이지 방식) · 움직임 줄이기면 장면을 차례로 쌓음
 import { CountUp } from "@hav/ui/count-up";
 import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { type TasksSummary, blockMarks, snagText } from "@hav/shared/tasks";
+import { type TasksSummary, todayPatchCounts } from "@hav/shared/tasks";
 import { useRef, useState } from "react";
 import type { Fetched } from "../../shared/api";
 import { PatchLog } from "./patch-log";
@@ -12,7 +12,7 @@ import { TaskDesks } from "./task-desks";
 import { LivePanel, type Mode } from "./live-panel";
 import { MOOD_TEXT, moodOf } from "./mood";
 import { liveStatus, todayStats } from "./status";
-import { BlockTowerLazy, WorkerCatLazy } from "../../shared/three-lazy";
+import { WorkerCatLazy } from "../../shared/three-lazy";
 import type { Mood } from "@hav/ui/three/worker-cat";
 import { type Activity, useActivity } from "./use-activity";
 import { useTasks } from "./use-tasks";
@@ -27,8 +27,8 @@ export function LogBody({ buildTasks }: { buildTasks: Fetched<TasksSummary> }) {
   const activity = useActivity();
   const tasks = useTasks(buildTasks);
   const names = tasks.ok ? tasks.data.names : {};
-  const doneCount = tasks.ok ? tasks.data.done.length : 0;
-  const marks = tasks.ok ? blockMarks(tasks.data.done, tasks.data.snags) : [];
+  // activity.now 는 브라우저에서만 채워짐 — 그 전(빌드 그림)에는 0 이라 날짜가 달라 0 으로 보임
+  const patches = todayPatchCounts(tasks.ok ? tasks.data.done : [], activity.now);
   const stats = todayStats(activity.events, activity.now);
   const reduce = useReducedMotion();
   const mood = moodOf(liveStatus(activity.events, activity.now));
@@ -39,26 +39,17 @@ export function LogBody({ buildTasks }: { buildTasks: Fetched<TasksSummary> }) {
       <PatchLog tasks={tasks} />
       {reduce ? <StackedScenes {...props} /> : <PinnedScenes {...props} />}
       <TaskDesks activity={activity} tasks={tasks} />
-      <section data-surface="elevated" className="bg-surface px-4 py-24 text-fg sm:px-8 sm:py-32">
-        <div className="mx-auto grid max-w-5xl items-center gap-12 md:grid-cols-[1fr_1.1fr]">
-          {/* 🧱 머지된 작업 하나 = 블록 하나 · 맨 위가 최신 (막힌 작업 표시는 작업별 기록이 없어 뺌 · docs/design.md) */}
-          <div className="order-last md:order-first">
-            <BlockTowerLazy count={doneCount} marks={marks} label={`블록 탑 — 머지된 작업 ${doneCount}개 · ${snagText(marks, tasks.ok ? tasks.data.snagsSince : null)}`} className="h-[340px] w-full sm:h-[420px]" />
-            <p className="mt-2 flex items-start justify-center gap-2 text-center text-xs text-fg-2">
-              <span aria-hidden className="mt-1 inline-block size-2 shrink-0 rounded-sm bg-expensive" />
-              {snagText(marks, tasks.ok ? tasks.data.snagsSince : null)}
-            </p>
+      {/* 블록 탑 · 머지 수 칸은 뺌 (2026-11-05 사용자 · 작업 0122) — 오늘 찾아서 고친 것만 */}
+      <section data-surface="elevated" aria-labelledby="today-patch-title" className="bg-surface px-4 py-24 text-fg sm:px-8 sm:py-32">
+        <div className="mx-auto max-w-5xl">
+          <h2 id="today-patch-title" className="text-title font-semibold tracking-tight">
+            오늘 발견된 버그와 보안.
+          </h2>
+          <div className="mt-10 grid gap-10 sm:grid-cols-2">
+            <Stat value={patches.bug} label="오늘 발견된 버그" />
+            <Stat value={patches.security} label="오늘 발견된 보안 문제" />
           </div>
-          <div>
-            <p className="text-title font-semibold tracking-tight">
-              한 블록 = 머지된 작업 하나.
-            </p>
-            <div className="mt-10 grid gap-10 sm:grid-cols-3 md:grid-cols-1">
-              <Stat value={doneCount} label="머지된 작업" />
-              <Stat value={stats.lines} label="오늘 남긴 기록 (최근 50줄 중)" />
-              <Stat value={stats.blocked} label="오늘 하네스가 막은 것" />
-            </div>
-          </div>
+          <p className="mt-8 text-sm text-fg-2">찾아서 고쳐 머지한 것만 셉니다. 무엇을 고쳤는지는 위 패치 내역에 있습니다.</p>
         </div>
       </section>
     </>
