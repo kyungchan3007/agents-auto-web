@@ -5,7 +5,7 @@ import { dailyFx } from "./daily";
 const NOW = () => new Date("2026-10-30T04:30:00Z");
 const HOOK = "https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/test-hook";
 
-function deps(opts: { has?: boolean; exim?: "ok" | "empty"; hook?: string; hookStatus?: number } = {}) {
+function deps(opts: { has?: boolean; official?: boolean; exim?: "ok" | "empty" | 525; hook?: string; hookStatus?: number } = {}) {
   const calls: string[] = [];
   let collected = 0;
   const store: RateStore = {
@@ -20,10 +20,11 @@ function deps(opts: { has?: boolean; exim?: "ok" | "empty"; hook?: string; hookS
     const url = String(u);
     calls.push(`${init?.method ?? "GET"} ${url.includes("koreaexim") ? "koreaexim" : url === HOOK ? "hook" : "other"}`);
     if (url === HOOK) return new Response("", { status: opts.hookStatus ?? 200 });
+    if (url.includes("koreaexim") && opts.exim === 525) return new Response("", { status: 525 });
     if (url.includes("koreaexim")) return new Response(JSON.stringify(opts.exim === "empty" ? [] : [{ result: 1, cur_unit: "USD", ttb: "1,310", tts: "1,350", deal_bas_r: "1,330" }]));
     return new Response("[]");
   };
-  return { calls, collected: () => collected, d: { store, hasRates: async () => opts.has ?? false, koreaeximKey: "k", deployHook: opts.hook, fetcher, now: NOW } };
+  return { calls, collected: () => collected, d: { store, hasRates: async () => opts.has ?? false, hasOfficialRates: async () => opts.official ?? opts.has ?? false, koreaeximKey: "k", deployHook: opts.hook, fetcher, now: NOW } };
 }
 
 describe("평일 환율 예약 실행 (작업 0094)", () => {
@@ -51,5 +52,18 @@ describe("평일 환율 예약 실행 (작업 0094)", () => {
   it("배포 훅이 실패해도 수집 결과는 그대로", async () => {
     const t = deps({ hook: HOOK, hookStatus: 500 });
     expect(await dailyFx("2026-10-30", false, t.d)).toMatchObject({ status: "ok", rows: 1, rebuild: "failed" });
+  });
+
+  it("예비 값만 있으면 다시 시도 — 공식 값이 오면 덮고 다시 빌드 (작업 0121)", async () => {
+    const t = deps({ has: true, official: false, hook: HOOK });
+    expect(await dailyFx("2026-11-05", true, t.d)).toMatchObject({ skipped: false, status: "ok", source: "koreaexim", rebuild: "requested" });
+    expect(t.collected()).toBe(1);
+  });
+
+  it("예비 값이 있는 날 다시 시도가 또 실패하면 예비를 받지 않고 빌드도 안 함 (작업 0121)", async () => {
+    const t = deps({ has: true, official: false, exim: 525, hook: HOOK });
+    expect(await dailyFx("2026-11-05", true, t.d)).toMatchObject({ skipped: false, status: "error", rows: 0, rebuild: "not-needed" });
+    expect(t.calls).toEqual(["GET koreaexim"]);
+    expect(t.collected()).toBe(0);
   });
 });

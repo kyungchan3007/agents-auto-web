@@ -5,7 +5,7 @@ import { activityRoutes } from "./features/activity/routes";
 import { dailyFx } from "./features/fx/daily";
 import { kstDate } from "./features/fx/rate";
 import { fxRoutes } from "./features/fx/routes";
-import { d1RateStore, hasRates } from "./features/fx/store";
+import { d1RateStore, hasOfficialRates, hasRates } from "./features/fx/store";
 import { collectPriceLevels } from "./features/prices/collect";
 import { priceRoutes } from "./features/prices/routes";
 import { d1PriceStore } from "./features/prices/store";
@@ -54,6 +54,7 @@ export default {
       dailyFx(kstDate(), retry, {
         store: d1RateStore(env.DB),
         hasRates: (date) => hasRates(env.DB, date),
+        hasOfficialRates: (date) => hasOfficialRates(env.DB, date),
         koreaeximKey: env.KOREAEXIM_KEY,
         deployHook: env.PAGES_DEPLOY_HOOK,
       }).then(() => undefined),

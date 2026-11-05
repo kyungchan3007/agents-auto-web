@@ -9,7 +9,7 @@ import { changesOf } from "./changes";
 import { collectDay } from "./collect";
 import { ensureToday } from "./ensure";
 import { kstDate } from "./rate";
-import { d1RateStore, hasRates, lastFxRunAt, latestRates, rateHistory, ratesSince } from "./store";
+import { d1RateStore, fallbackDate, hasOfficialRates, hasRates, lastFxRunAt, latestRates, rateHistory, ratesSince } from "./store";
 
 export const fxRoutes = new Hono<{ Bindings: Env }>()
   .get("/latest", cached(), async (c) => {
@@ -36,6 +36,8 @@ export const fxRoutes = new Hono<{ Bindings: Env }>()
     const r = await ensureToday({
       store: d1RateStore(db),
       hasRates: (date) => hasRates(db, date),
+      hasOfficialRates: (date) => hasOfficialRates(db, date),
+      fallbackDate: (today) => fallbackDate(db, today),
       lastRunAt: () => lastFxRunAt(db),
       koreaeximKey: c.env.KOREAEXIM_KEY,
       deployHook: c.env.PAGES_DEPLOY_HOOK,

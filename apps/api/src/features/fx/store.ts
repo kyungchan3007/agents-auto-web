@@ -49,6 +49,18 @@ export async function hasRates(d1: D1Database, date: string): Promise<boolean> {
   return (await d1.prepare("select 1 as x from fx_rates where date = ? limit 1").bind(date).first()) !== null;
 }
 
+/** 그 날짜 공식 값이 있는지 (작업 0121) */
+export async function hasOfficialRates(d1: D1Database, date: string): Promise<boolean> {
+  return (await d1.prepare("select 1 as x from fx_rates where date = ? and source = 'koreaexim' limit 1").bind(date).first()) !== null;
+}
+
+/** 지난 14일 중 예비 값이 남은 가장 최근 날 · 없으면 null — 공휴일처럼 복구되지 않는 날이 더 앞날을 막지 않게 최근부터 (작업 0121) */
+export async function fallbackDate(d1: D1Database, today: string): Promise<string | null> {
+  const since = new Date(Date.parse(`${today}T00:00:00Z`) - 14 * 86400_000).toISOString().slice(0, 10);
+  const r = await d1.prepare("select max(date) as d from fx_rates where date >= ? and date < ? and source = 'frankfurter'").bind(since, today).first<{ d: string | null }>();
+  return r?.d ?? null;
+}
+
 /** 마지막 환율 수집 시작 시각 — 오늘 값 메우기가 20분에 한 번까지만 돌게 (작업 0106) */
 export async function lastFxRunAt(d1: D1Database): Promise<string | null> {
   const r = await d1.prepare("select started_at as at from fetch_runs where source like 'koreaexim%' order by id desc limit 1").first<{ at: string }>();

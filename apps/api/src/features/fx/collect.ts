@@ -18,7 +18,7 @@ export type CollectResult = { date: string; status: "ok" | "empty" | "error"; so
 export async function collectDay(
   store: RateStore,
   date: string,
-  opts: { koreaeximKey?: string; fetcher?: typeof fetch; now?: () => Date } = {},
+  opts: { koreaeximKey?: string; fetcher?: typeof fetch; now?: () => Date; fallback?: boolean } = {},
 ): Promise<CollectResult> {
   const now = opts.now ?? (() => new Date());
   const runId = await store.startRun("koreaexim", now().toISOString());
@@ -38,6 +38,8 @@ export async function collectDay(
       if (!(e instanceof SourceError)) throw e;
       // 수출입은행 실패 → 예비. 수출입은행처럼 영업일만: 주말은 채우지 않고, 요청한 날짜의 줄만 쓴다 (FX-02)
       message = `koreaexim ${e.code}: ${e.message}`;
+      // 이미 값이 있는 날을 공식 값으로 바꾸려는 시도 — 예비를 또 받지 않음 (저장 · 캐시 비우기만 늘어남 · 작업 0121)
+      if (opts.fallback === false) return finish("error", 0);
       source = "koreaexim→frankfurter";
       rows = isWeekend(date) ? [] : (await fetchFrankfurter(date, opts.fetcher, now)).filter((r) => r.date === date);
       // 예비는 통화가 160개 넘게 와서, 그날만 목록이 22개 → 160개로 늘어남 — 공식 출처가 주던 통화만 (FX-03 은 공식 출처 기준 · 작업 0098)

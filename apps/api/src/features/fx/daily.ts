@@ -8,6 +8,8 @@ export type DailyDeps = {
   store: RateStore;
   /** 그 날짜(한국 날짜) 환율이 이미 저장됐는지 */
   hasRates: (date: string) => Promise<boolean>;
+  /** 그 날짜 공식(수출입은행) 값이 있는지 — 예비 값만 있으면 다시 시도 (작업 0121) */
+  hasOfficialRates: (date: string) => Promise<boolean>;
   koreaeximKey?: string;
   /** Cloudflare Pages 배포 훅 주소 — 없으면 다시 빌드 안 함 */
   deployHook?: string;
@@ -17,10 +19,15 @@ export type DailyDeps = {
 
 export type DailyResult = { skipped: true } | (CollectResult & { skipped: false; rebuild: "requested" | "no-hook" | "failed" | "not-needed" });
 
-/** retry=true(다시 하는 예약)는 오늘 값이 이미 있으면 건너뜀 · 첫 예약은 항상 수집 (수출입은행 값이 예비 값을 덮게 FX-05) */
+/**
+ * retry=true(다시 하는 예약)는 오늘 공식 값이 있으면 건너뜀 · 첫 예약은 항상 수집 (수출입은행 값이 예비 값을 덮게 FX-05)
+ * 예비 값만 있어도 건너뛰던 것 고침 — 12:00 한 번 실패하면 그날은 예비로 끝났음 (2026-11-02 ~ 05 · 작업 0121)
+ */
 export async function dailyFx(date: string, retry: boolean, deps: DailyDeps): Promise<DailyResult> {
-  if (retry && (await deps.hasRates(date))) return { skipped: true };
-  const r = await collectDay(deps.store, date, { koreaeximKey: deps.koreaeximKey, fetcher: deps.fetcher, now: deps.now });
+  if (retry && (await deps.hasOfficialRates(date))) return { skipped: true };
+  // 이미 값이 있으면 다시 시도가 실패해도 예비를 또 받지 않음 · 그때는 값이 안 바뀌어 다시 빌드도 없음
+  const had = retry && (await deps.hasRates(date));
+  const r = await collectDay(deps.store, date, { koreaeximKey: deps.koreaeximKey, fetcher: deps.fetcher, now: deps.now, fallback: !had });
   if (r.status !== "ok" || r.rows === 0) return { ...r, skipped: false, rebuild: "not-needed" };
   if (!deps.deployHook) return { ...r, skipped: false, rebuild: "no-hook" };
   try {

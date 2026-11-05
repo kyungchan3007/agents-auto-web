@@ -2,11 +2,11 @@ import { describe, expect, it } from "vitest";
 import type { RateStore } from "./collect";
 import { ensureToday } from "./ensure";
 
-function deps(opts: { has?: boolean; lastRunAt?: string | null } = {}) {
+function deps(opts: { has?: boolean; lastRunAt?: string | null; past?: string } = {}) {
   let collected = 0;
   const store: RateStore = { startRun: async () => 1, finishRun: async () => undefined, saveRates: async (r) => ((collected += r.length), r.length) };
   const fetcher: typeof fetch = async (u) => new Response(String(u).includes("koreaexim") ? JSON.stringify([{ result: 1, cur_unit: "USD", ttb: "1", tts: "2", deal_bas_r: "1,330" }]) : "[]");
-  return { collected: () => collected, d: { store, hasRates: async () => opts.has ?? false, koreaeximKey: "k", fetcher, lastRunAt: async () => opts.lastRunAt ?? null } };
+  return { collected: () => collected, d: { store, hasRates: async () => opts.has ?? false, hasOfficialRates: async () => opts.has ?? false, fallbackDate: async () => opts.past ?? null, koreaeximKey: "k", fetcher, lastRunAt: async () => opts.lastRunAt ?? null } };
 }
 
 describe("오늘 환율이 없으면 수집 (작업 0106)", () => {
@@ -27,5 +27,10 @@ describe("오늘 환율이 없으면 수집 (작업 0106)", () => {
   it("주말 · 한국 11:30 전은 안 함", async () => {
     expect((await ensureToday(deps().d, new Date("2026-10-31T06:00:00Z"))).done).toBe(false);
     expect(await ensureToday(deps().d, new Date("2026-10-30T02:00:00Z"))).toEqual({ done: false, why: "too-early" });
+  });
+  it("오늘 공식 값이 있으면 지난 예비 날을 공식 값으로 덮음 · 다시 빌드 안 함 (작업 0121)", async () => {
+    const t = deps({ has: true, past: "2026-11-04" });
+    expect(await ensureToday(t.d, new Date("2026-11-05T06:10:00Z"))).toMatchObject({ done: true, skipped: false, status: "ok", date: "2026-11-04", rebuild: "not-needed" });
+    expect(t.collected()).toBe(1);
   });
 });
