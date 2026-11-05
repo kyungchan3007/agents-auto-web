@@ -2,10 +2,10 @@
 import type { SiteStatus, SlotState, StatusRun } from "@hav/shared/status";
 
 export const SLOT_TEXT: Record<SlotState, string> = {
-  done: "수집함",
+  done: "수집 완료",
   empty: "고시 없음",
   error: "실패",
-  missed: "안 돎",
+  missed: "실패",
   "not-needed": "필요 없음",
   upcoming: "예정",
 };

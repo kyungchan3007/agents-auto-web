@@ -99,15 +99,15 @@ export function Home({ latest, signals, levels, heroHistory, changes }: HomeData
         <div className="mx-auto max-w-5xl">
           <p className="text-eyebrow font-semibold text-fg-2">여행지 고르기</p>
           <h2 className="mt-3 text-title font-semibold tracking-tight">
-            어디로 갈까.
+            여행지 비교.
             <br />
-            환율과 물가를 같이.
+            환율과 물가를 함께 확인합니다.
           </h2>
           <TripScenes origin={SEOUL} stops={stops} />
         </div>
       </section>
 
-      <Section id="currencies" surface="elevated" eyebrow={`모든 통화 · ${rates.length}개`} title={<>여행 · 직구 전에,<br />한눈에.</>}>
+      <Section id="currencies" surface="elevated" eyebrow={`모든 통화 · ${rates.length}개`} title={<>여행 · 직구 전에,<br />한 번에 확인합니다.</>}>
         {groups.length > 0 ? (
           <Tabs
             items={groups.map((g) => ({
@@ -165,9 +165,9 @@ export function Home({ latest, signals, levels, heroHistory, changes }: HomeData
         eyebrow={`${currencyName(HERO)} · 최근 1년`}
         title={
           <>
-            1년 동안,
+            최근 1년의
             <br />
-            이만큼 움직였습니다.
+            환율 변동입니다.
           </>
         }
       >
@@ -194,9 +194,9 @@ export function Home({ latest, signals, levels, heroHistory, changes }: HomeData
           <Reveal>
             <p className="text-eyebrow font-semibold text-fg-2">직구 계산기</p>
             <h2 className="mt-3 text-title font-semibold tracking-tight">
-              사기 전에,
+              구매 전에,
               <br />
-              세금이 붙는지 먼저.
+              세금 부과 여부를 확인합니다.
             </h2>
             <p className="mt-6 text-lead text-fg-2">물건 값과 배송비를 넣으면 원화로 얼마인지, 면세 한도 안인지, 넘으면 관세 · 부가세가 얼마쯤인지 바로 보여 줍니다.</p>
             <Link href="/calc" className="mt-8 inline-flex rounded-pill bg-accent px-5 py-2.5 text-sm font-semibold text-on-accent">

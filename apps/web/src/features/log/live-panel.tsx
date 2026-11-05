@@ -28,7 +28,7 @@ export function LivePanel({ activity, names, mode }: { activity: Activity; names
         <span className="ml-2 truncate">tripfx — 작업실</span>
         <span className="ml-auto flex items-center gap-2" aria-live="polite">
           <span className={`size-2 rounded-full ${working ? "animate-pulse bg-accent" : "bg-fg-2"}`} />
-          {working ? "작업 중" : status.state === "idle" ? "쉬는 중" : "기다리는 중"}
+          {working ? "작업 중" : status.state === "idle" ? "대기 중" : "기록 대기 중"}
         </span>
       </div>
 
@@ -43,8 +43,8 @@ export function LivePanel({ activity, names, mode }: { activity: Activity; names
                 ? "아직 기록이 없습니다"
                 : "불러오는 중…"
               : working
-                ? <>지금, <span className="text-aurora">{shortName ?? (status.task ? `작업 ${status.task}` : "무언가")}</span> 작업 중</>
-                : <>쉬는 중 <span className="text-fg-2">· 마지막 작업 {status.ago}</span></>}
+                ? <>지금, <span className="text-aurora">{shortName ?? (status.task ? `작업 ${status.task}` : "다음 작업")}</span> 작업 중</>
+                : <>대기 중 <span className="text-fg-2">· 마지막 작업 {status.ago}</span></>}
         </p>
         {error && <p className="mt-2 text-xs text-fg-2">연결이 끊겼습니다 · 다시 시도하는 중 ({error})</p>}
 

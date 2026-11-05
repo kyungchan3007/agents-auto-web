@@ -18,9 +18,9 @@ import { type Activity, useActivity } from "./use-activity";
 import { useTasks } from "./use-tasks";
 
 const SCENES: { mode: Mode; title: string; body: (blocked: number) => string }[] = [
-  { mode: "status", title: "지금, 무엇을 하고 있을까.", body: () => "에이전트가 도구를 쓸 때마다 이 패널이 바뀝니다. 10분 넘게 조용하면 쉬는 중이에요." },
-  { mode: "log", title: "한 줄씩, 실시간으로.", body: () => "파일 이름과 하는 일만 보입니다. 명령 · 파일 내용 · 비밀값은 보내지 않아요." },
-  { mode: "blocked", title: "막힌 것도 숨기지 않습니다.", body: (n) => (n > 0 ? `오늘 하네스가 멈춰 세운 순간 — ${n}번.` : "오늘은 아직 하네스가 막은 일이 없습니다.") },
+  { mode: "status", title: "에이전트의 현재 작업.", body: () => "에이전트가 도구를 쓸 때마다 이 패널이 바뀝니다. 10분 넘게 기록이 없으면 대기 중으로 표시합니다." },
+  { mode: "log", title: "한 줄씩, 실시간으로.", body: () => "파일 이름과 하는 일만 보입니다. 명령 · 파일 내용 · 비밀값은 전송하지 않습니다." },
+  { mode: "blocked", title: "차단된 작업도 공개합니다.", body: (n) => (n > 0 ? `오늘 하네스가 차단한 횟수: ${n}회.` : "오늘 하네스가 차단한 작업은 없습니다.") },
 ];
 
 export function LogBody({ buildTasks }: { buildTasks: Fetched<TasksSummary> }) {

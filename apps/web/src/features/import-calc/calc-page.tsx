@@ -12,9 +12,9 @@ export function CalcPage({ latest }: { latest: Fetched<FxLatest> }) {
         <div className="mx-auto max-w-6xl">
           <p className="text-eyebrow font-semibold text-fg-2">직구 계산기</p>
           <h1 className="mt-3 text-title font-semibold tracking-tight">
-            사기 전에,
+            구매 전에,
             <br />
-            세금이 붙는지 먼저.
+            세금 부과 여부를 확인합니다.
           </h1>
           <div className="mt-10">
             {latest.ok && latest.data.rates.length > 0 ? (

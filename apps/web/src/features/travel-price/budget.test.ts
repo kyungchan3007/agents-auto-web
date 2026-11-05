@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { budgetOf, localText, parseDaily, parseDays, wonText } from "./budget";
 
-describe("여행 예산 어림 (작업 0088)", () => {
+describe("여행 예산 계산 (작업 0088)", () => {
   it("물가 수준을 곱하고 · 일수를 곱함", () => {
     const b = budgetOf(100_000, 4, 1.12, 8.4689);
     expect(b.dailyWon).toBeCloseTo(112_000);

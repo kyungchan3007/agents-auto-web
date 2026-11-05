@@ -10,7 +10,7 @@ import { type CalcInput, calc, catMood } from "./calc";
 import { DateText } from "@/shared/date-text";
 import { ROUTE_LABEL, RULES_SOURCE, type Route } from "./rules";
 
-const MOOD_TEXT = { happy: "면세 한도 안이라 금화를 안고 웃는 고양이", worried: "한도에 가까워 금화를 꽉 쥐고 걱정하는 고양이", sad: "한도를 넘어 세금 동전이 날아가 시무룩한 고양이", neutral: "금화를 들고 기다리는 고양이" } as const;
+const MOOD_TEXT = { happy: "면세 한도 안이라 만족한 표정의 고양이", worried: "면세 한도에 가까워 걱정하는 고양이", sad: "면세 한도를 넘어 실망한 표정의 고양이", neutral: "금화를 들고 대기하는 고양이" } as const;
 
 export function CalcForm({ rates }: { rates: FxRate[] }) {
   const table = Object.fromEntries(rates.map((r) => [r.currency, r]));
