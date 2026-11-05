@@ -1,43 +1,13 @@
 "use client";
 
 // 사이트 상태 점검판 — 작업실 맨 위 (작업 0105) · 오늘 환율 · 마지막 수집 · 사이트 빌드 · 오늘 예약 회차
-//   빌드 때 받은 값을 먼저 · 브라우저가 /bff/status 를 5분마다(탭이 보일 때만) — API 도 5분 구간 캐시라 D1 읽기는 사람 수와 상관없음
 import type { SiteStatus } from "@hav/shared/status";
-import { useEffect, useState } from "react";
-import { type Fetched, getJson } from "../../shared/api";
-import { SiteStatus as Schema } from "@hav/shared/status";
-import { SLOT_TEXT, headlineOf, lastRunText } from "./status-text";
+import type { Fetched } from "../../shared/api";
+import { SLOT_TEXT, headlineOf, lastRunText, timeText } from "./status-text";
+import { useStatus } from "./use-status";
 
-const POLL_MS = 5 * 60_000;
 const TONE = { ok: "text-cheap", warn: "text-normal", bad: "text-expensive", rest: "text-fg-2" } as const;
 const SLOT_TONE = { done: "text-cheap", "not-needed": "text-fg-2", upcoming: "text-fg-2", empty: "text-fg-2", error: "text-expensive", missed: "text-expensive" } as const;
-/** "10월 30일 14:39" (한국 시각) */
-const hm = (iso: string) => {
-  const p = Object.fromEntries(new Intl.DateTimeFormat("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Seoul" }).formatToParts(new Date(iso)).map((x) => [x.type, x.value]));
-  return `${p.month}월 ${p.day}일 ${p.hour}:${p.minute}`;
-};
-
-function useStatus(build: Fetched<SiteStatus>, base = "/bff"): Fetched<SiteStatus> {
-  const [live, setLive] = useState<Fetched<SiteStatus> | null>(null);
-  useEffect(() => {
-    let stopped = false;
-    const tick = async () => {
-      if (document.hidden) return;
-      const r = await getJson("/status", Schema, { base, timeoutMs: 8_000 });
-      if (!stopped && r.ok) setLive(r);
-    };
-    void tick();
-    const id = setInterval(tick, POLL_MS);
-    const onShow = () => !document.hidden && void tick();
-    document.addEventListener("visibilitychange", onShow);
-    return () => {
-      stopped = true;
-      clearInterval(id);
-      document.removeEventListener("visibilitychange", onShow);
-    };
-  }, [base]);
-  return live ?? build;
-}
 
 export function StatusBoard({ build, builtAt }: { build: Fetched<SiteStatus>; builtAt: string }) {
   const f = useStatus(build);
@@ -68,8 +38,8 @@ function Body({ s, builtAt }: { s: SiteStatus; builtAt: string }) {
       <dl className="mt-4 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
         <Row k="최근 환율" v={s.latestDate ?? "없음"} />
         <Row k="마지막 수집" v={lastRunText(s)} />
-        <Row k="사이트 빌드" v={hm(builtAt)} />
-        <Row k="확인한 때" v={hm(s.now)} />
+        <Row k="사이트 빌드" v={timeText(builtAt)} />
+        <Row k="확인한 때" v={timeText(s.now)} />
       </dl>
       {s.schedule.length > 0 && (
         <ol className="mt-4 grid grid-cols-3 gap-2 text-center text-xs" aria-label="오늘 수집 예약">

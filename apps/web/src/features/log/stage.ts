@@ -53,3 +53,14 @@ export function deskState(events: ActivityEvent[], done: DoneTask[]): DeskState 
   const stage = all.filter((e) => e.task === task).reduce<Stage>((m, e) => Math.max(m, stageOf(e)) as Stage, 0);
   return { task, stage, finished: false };
 }
+
+/** 끝난 작업은 선반으로 → 캐릭터는 1번 책상에서 다음 작업을 기다림 */
+export function deskProgress(desk: DeskState): { active: number; doneCount: number } {
+  return desk.finished ? { active: 0, doneCount: 0 } : { active: desk.stage, doneCount: desk.stage };
+}
+
+/** 책상 하나의 표시 상태 */
+export function deskLabel(i: number, desk: DeskState): "끝" | "지금" | "대기" {
+  const { active, doneCount } = deskProgress(desk);
+  return i < doneCount ? "끝" : i === active && desk.task && !desk.finished ? "지금" : "대기";
+}

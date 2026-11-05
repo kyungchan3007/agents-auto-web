@@ -1,148 +1,24 @@
 "use client";
 
-// 작업실 — 패치 내역 → 가운데 고정 패널 장면 ①~③ → ④ 작업 책상 · 다 한 일 선반 → 오늘 발견된 버그 · 보안
-// 패널은 화면에 고정하고 스크롤로 장면만 바뀜 (참고 페이지 방식) · 움직임 줄이기면 장면을 차례로 쌓음
-import { CountUp } from "@hav/ui/count-up";
-import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { type TasksSummary, todayPatchCounts } from "@hav/shared/tasks";
-import { useRef, useState } from "react";
+// 작업실 본문 — 패치 내역 → 가운데 패널 장면 ①~③ → ④ 작업 책상 · 다 한 일 선반 → 오늘 발견된 버그 · 보안
+import type { TasksSummary } from "@hav/shared/tasks";
 import type { Fetched } from "../../shared/api";
 import { PatchLog } from "./patch-log";
+import { PinnedScenes, StackedScenes } from "./scenes";
 import { TaskDesks } from "./task-desks";
-import { LivePanel, type Mode } from "./live-panel";
-import { MOOD_TEXT, moodOf } from "./mood";
-import { liveStatus, todayStats } from "./status";
-import { WorkerCatLazy } from "../../shared/three-lazy";
-import type { Mood } from "@hav/ui/three/worker-cat";
-import { type Activity, useActivity } from "./use-activity";
-import { useTasks } from "./use-tasks";
-
-const SCENES: { mode: Mode; title: string; body: (blocked: number) => string }[] = [
-  { mode: "status", title: "에이전트의 현재 작업.", body: () => "에이전트가 도구를 쓸 때마다 이 패널이 바뀝니다. 10분 넘게 기록이 없으면 대기 중으로 표시합니다." },
-  { mode: "log", title: "한 줄씩, 실시간으로.", body: () => "파일 이름과 하는 일만 보입니다. 명령 · 파일 내용 · 비밀값은 전송하지 않습니다." },
-  { mode: "blocked", title: "차단된 작업도 공개합니다.", body: (n) => (n > 0 ? `오늘 하네스가 차단한 횟수: ${n}회.` : "오늘 하네스가 차단한 작업은 없습니다.") },
-];
+import { TodayPatches } from "./today-patches";
+import { useLogView } from "./use-log-view";
 
 export function LogBody({ buildTasks }: { buildTasks: Fetched<TasksSummary> }) {
-  const activity = useActivity();
-  const tasks = useTasks(buildTasks);
-  const names = tasks.ok ? tasks.data.names : {};
-  // activity.now 는 브라우저에서만 채워짐 — 그 전(빌드 그림)에는 0 이라 날짜가 달라 0 으로 보임
-  const patches = todayPatchCounts(tasks.ok ? tasks.data.done : [], activity.now);
-  const stats = todayStats(activity.events, activity.now);
-  const reduce = useReducedMotion();
-  const mood = moodOf(liveStatus(activity.events, activity.now));
-  const props = { activity, names, blocked: stats.blocked, mood };
+  const { activity, tasks, names, blocked, mood, reduce, patches } = useLogView(buildTasks);
+  const props = { activity, names, blocked, mood };
 
   return (
     <>
       <PatchLog tasks={tasks} />
       {reduce ? <StackedScenes {...props} /> : <PinnedScenes {...props} />}
       <TaskDesks activity={activity} tasks={tasks} />
-      {/* 블록 탑 · 머지 수 칸은 뺌 (2026-11-05 사용자 · 작업 0122) — 오늘 찾아서 고친 것만 */}
-      <section data-surface="elevated" aria-labelledby="today-patch-title" className="bg-surface px-4 py-24 text-fg sm:px-8 sm:py-32">
-        <div className="mx-auto max-w-5xl">
-          <h2 id="today-patch-title" className="text-title font-semibold tracking-tight">
-            오늘 발견된 버그와 보안.
-          </h2>
-          <div className="mt-10 grid gap-10 sm:grid-cols-2">
-            <Stat value={patches.bug} label="오늘 발견된 버그" />
-            <Stat value={patches.security} label="오늘 발견된 보안 문제" />
-          </div>
-          <p className="mt-8 text-sm text-fg-2">찾아서 고쳐 머지한 것만 셉니다. 무엇을 고쳤는지는 위 패치 내역에 있습니다.</p>
-        </div>
-      </section>
+      <TodayPatches counts={patches} />
     </>
-  );
-}
-
-function Stat({ value, label }: { value: number; label: string }) {
-  return (
-    <div>
-      <p className="text-hero font-bold tracking-tighter">
-        <CountUp text={String(value)} className="text-aurora" />
-      </p>
-      <p className="mt-2 text-lead text-fg-2">{label}</p>
-    </div>
-  );
-}
-
-function Caption({ i, blocked }: { i: number; blocked: number }) {
-  return (
-    <div className="text-center">
-      <p className="text-title font-semibold tracking-tight">{SCENES[i].title}</p>
-      <p className="mx-auto mt-3 max-w-xl text-base text-fg-2 sm:text-lead">{SCENES[i].body(blocked)}</p>
-    </div>
-  );
-}
-
-type Props = { activity: Activity; names: Record<string, string>; blocked: number; mood: Mood };
-
-/** 🐱 패널에 걸터앉은 작업 고양이 — 넓은 화면은 패널 오른쪽 옆 · 휴대폰은 패널 오른쪽 위 모서리 */
-function Buddy({ mood }: { mood: Mood }) {
-  return (
-    <WorkerCatLazy
-      mood={mood}
-      label={MOOD_TEXT[mood]}
-      className="pointer-events-none absolute -top-24 -right-2 z-10 size-28 sm:-top-32 sm:size-36 xl:top-auto xl:-right-56 xl:bottom-0 xl:size-56"
-    />
-  );
-}
-
-function PinnedScenes({ activity, names, blocked, mood }: Props) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
-  // 작게 → 크게 (①) · 끝에서 살짝 물러남 (지난 작업으로 넘어감)
-  const scale = useTransform(scrollYProgress, [0, 0.18, 0.88, 1], [0.86, 1, 1, 0.92]);
-  const opacity = useTransform(scrollYProgress, [0.88, 1], [1, 0.35]);
-  const [scene, setScene] = useState(0);
-  useMotionValueEvent(scrollYProgress, "change", (v) => setScene(v < 0.33 ? 0 : v < 0.66 ? 1 : 2));
-
-  // 장면 셋을 넘기는 스크롤 길이 — 휴대폰은 짧게 (330vh 면 같은 패널을 두 화면 넘게 밀어야 했음 · 작업 0111)
-  return (
-    <div ref={ref} data-surface="dark" className="relative h-[230vh] bg-surface text-fg sm:h-[330vh]">
-      <div className="sticky top-20 flex h-[calc(100svh-5rem)] sm:top-13 sm:h-[calc(100svh-3.25rem)] flex-col justify-center gap-8 px-4 sm:px-8">
-        <div className="relative mx-auto h-36 w-full max-w-3xl sm:h-32">
-          {/* initial={false}: 첫 장면은 숨겼다 보여 주지 않음 (JS 전에도 보임 · LCP) */}
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div key={scene} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.4 }}>
-              <Caption i={scene} blocked={blocked} />
-            </motion.div>
-          </AnimatePresence>
-        </div>
-        {/* 고양이가 앉을 자리만큼 위를 비움 — 넓은 화면(xl)은 패널 옆이라 필요 없음 · 전엔 1,100px 안팎에서 설명 글을 가렸음 (작업 0062) */}
-        <motion.div style={{ scale, opacity }} className="relative mx-auto mt-12 w-full max-w-3xl sm:mt-20 xl:mt-0">
-          <Buddy mood={mood} />
-          <LivePanel activity={activity} names={names} mode={SCENES[scene].mode} />
-        </motion.div>
-        <SceneDots scene={scene} />
-      </div>
-    </div>
-  );
-}
-
-function SceneDots({ scene }: { scene: number }) {
-  return (
-    <div className="flex justify-center gap-2" aria-hidden>
-      {SCENES.map((s, i) => (
-        <span key={s.mode} className={`h-1.5 rounded-full transition-all duration-500 ${i === scene ? "w-6 bg-accent" : "w-1.5 bg-line"}`} />
-      ))}
-    </div>
-  );
-}
-
-function StackedScenes({ activity, names, blocked, mood }: Props) {
-  return (
-    <div data-surface="dark" className="space-y-24 bg-surface px-4 py-24 text-fg sm:px-8">
-      {SCENES.map((s, i) => (
-        <div key={s.mode} className="mx-auto max-w-3xl space-y-8">
-          <Caption i={i} blocked={blocked} />
-          <div className={`relative ${i === 0 ? "mt-12 sm:mt-20 xl:mt-0" : ""}`}>
-            {i === 0 && <Buddy mood={mood} />}
-            <LivePanel activity={activity} names={names} mode={s.mode} />
-          </div>
-        </div>
-      ))}
-    </div>
   );
 }

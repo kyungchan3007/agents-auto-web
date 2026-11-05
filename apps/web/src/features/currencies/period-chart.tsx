@@ -2,18 +2,14 @@
 
 // 환율 흐름 — 기간 단추(1개월 · 3개월 · 6개월 · 1년) + 선 그래프 + 그 기간 변화율 (작업 0087)
 //   빌드 때 받은 1년치를 화면에서 자르기만 함 (다시 받지 않음)
-import { useState } from "react";
 import { YearChart } from "@/shared/year-chart";
-import { PERIODS, type PeriodId, changeOf, changeText, sliceDays } from "./periods";
+import { PERIODS } from "./periods";
+import { usePeriodChart } from "./use-period-chart";
 
 const TONE = { up: "text-expensive", down: "text-cheap", flat: "text-fg" } as const;
 
 export function PeriodChart({ rates, unitText }: { rates: { date: string; baseRate: number }[]; unitText: string }) {
-  const [id, setId] = useState<PeriodId>("1y");
-  const period = PERIODS.find((p) => p.id === id) ?? PERIODS[3];
-  const shown = sliceDays(rates, period.days);
-  const change = changeOf(shown);
-  const c = change ? changeText(change.pct) : null;
+  const { id, setId, period, shown, change, changeLabel: c } = usePeriodChart(rates);
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">

@@ -99,7 +99,8 @@ turbo.json                       작업 그래프 (build · lint · typecheck ·
 ## 경계 규칙 → 강제 위치
 | 규칙 | 강제 | 위치 |
 | --- | --- | --- |
-| 슬라이스끼리 import 금지 | (예정) eslint `no-restricted-imports` | `@hav/config` eslint |
+| 슬라이스끼리 import 금지 | 테스트 | `apps/web/src/shared/role-boundary.test.ts` |
+| 화면(`.tsx`)은 그리기만 · 상태 · 효과는 `use-*.ts` · 계산은 순수 `*.ts` | 테스트 (작업 0125) | `apps/web/src/shared/role-boundary.test.ts` |
 | 패키지끼리 `../` import 금지 | (예정) eslint `no-restricted-imports` | `@hav/config` eslint |
 | `apps/web` 은 외부 환율 API를 직접 부르지 않음 | (예정) eslint · 테스트 | `@hav/config` eslint |
 | API 입력은 zod 검증을 거침 | (예정) 슬라이스 테스트 | `apps/api` 테스트 |

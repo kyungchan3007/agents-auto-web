@@ -1,27 +1,22 @@
 "use client";
 
 // 묶음별 나라 목록 — 지역 고르기 · 막대(가운데 선 = 한국) · 오늘 통화 신호 (색만으로 전하지 않고 글자도)
-import { REGIONS, type Region, currencyName } from "@hav/shared/currency";
+import { currencyName } from "@hav/shared/currency";
 import type { Signal } from "@hav/shared/signal";
-import { type Band, type TravelRow, relativeText } from "@hav/shared/travel";
+import { type Band, relativeText } from "@hav/shared/travel";
 import { Flag } from "@hav/ui/flag";
 import { signalLabel } from "@hav/ui/signal-badge";
 import Link from "next/link";
-import { useState } from "react";
+import { SIGNAL_TONE } from "../../shared/signal-tone";
+import type { PriceBand } from "./bands";
+import { usePriceBands } from "./use-price-bands";
 
 const BAR: Record<Band, string> = { cheap: "bg-cheap", similar: "bg-normal", pricey: "bg-expensive" };
-const TONE: Record<Signal, string> = { cheap: "text-cheap", normal: "text-normal", expensive: "text-expensive" };
 
-type Props = { bands: { id: Band; label: string; rows: TravelRow[] }[]; signalOf: Record<string, Signal | null>; latestYear?: number };
+type Props = { bands: PriceBand[]; signalOf: Record<string, Signal | null>; latestYear?: number };
 
 export function PriceBands({ bands, signalOf, latestYear }: Props) {
-  const [region, setRegion] = useState<Region | "all">("all");
-  const all = bands.flatMap((b) => b.rows);
-  const regions = REGIONS.filter((r) => all.some((c) => c.region === r.id));
-  // 막대 길이 = 한국 대비 · 가장 비싼 나라가 끝 · 한국(1)은 가운데 근처 선
-  const max = Math.max(2, ...all.map((r) => r.relative));
-  const korea = `${(1 / max) * 100}%`;
-  const shown = bands.map((b) => ({ ...b, rows: b.rows.filter((r) => region === "all" || r.region === region) })).filter((b) => b.rows.length > 0);
+  const { region, setRegion, regions, koreaAt, barWidth, shown } = usePriceBands(bands);
 
   return (
     <div>
@@ -57,14 +52,14 @@ export function PriceBands({ bands, signalOf, latestYear }: Props) {
                       <span className="ml-auto shrink-0 font-semibold tabular-nums">{relativeText(r.relative)}</span>
                     </div>
                     <div className="relative mt-1.5 h-1.5 rounded-pill bg-surface-2" aria-hidden>
-                      <div className={`h-full rounded-pill ${BAR[r.band]}`} style={{ width: `${Math.min(100, (r.relative / max) * 100)}%` }} />
-                      <div className="absolute -top-1 -bottom-1 w-px bg-fg" style={{ left: korea }} />
+                      <div className={`h-full rounded-pill ${BAR[r.band]}`} style={{ width: `${barWidth(r.relative)}%` }} />
+                      <div className="absolute -top-1 -bottom-1 w-px bg-fg" style={{ left: `${koreaAt}%` }} />
                     </div>
                     <p className="mt-1 flex flex-wrap gap-x-2 text-xs text-fg-2">
                       {r.year !== latestYear && <span>{r.year}년 자료</span>}
                       {r.currency && signal ? (
                         <Link href={`/currencies/${r.currency}`} className="hover:text-fg">
-                          오늘 {currencyName(r.currency)} <span className={`font-semibold ${TONE[signal]}`}>{signalLabel(signal)}</span> →
+                          오늘 {currencyName(r.currency)} <span className={`font-semibold ${SIGNAL_TONE[signal]}`}>{signalLabel(signal)}</span> →
                         </Link>
                       ) : null}
                     </p>

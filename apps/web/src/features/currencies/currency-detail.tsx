@@ -11,7 +11,7 @@ import { FreshnessNote } from "@/shared/freshness-note";
 import { Converter } from "./converter";
 import { describeCurrency } from "./describe";
 import { PeriodChart } from "./period-chart";
-import { changeText } from "./periods";
+import { PeriodTable } from "./period-table";
 import { ShareButton } from "./share-button";
 import { periodRows, showsSummary, summaryOf } from "./summary";
 
@@ -68,31 +68,7 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
         {history.ok ? <PeriodChart rates={days} unitText={t.unit} /> : <p className="rounded-card border border-line p-6 text-sm text-fg-2">1년 기록을 받지 못했습니다 ({history.reason})</p>}
       </div>
 
-      {rows.length > 0 && (
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <caption className="pb-2 text-left text-xs text-fg-2">기간별 변화 · {rows[0].to.date} 기준</caption>
-            <thead className="text-xs text-fg-2">
-              <tr>
-                <th scope="col" className="py-1.5 pr-3 font-normal">기간</th>
-                <th scope="col" className="py-1.5 pr-3 font-normal">시작일</th>
-                <th scope="col" className="py-1.5 pr-3 font-normal">시작 값</th>
-                <th scope="col" className="py-1.5 font-normal">변화</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line border-t border-line text-fg">
-              {rows.map((r) => (
-                <tr key={r.id}>
-                  <th scope="row" className="py-2 pr-3 font-medium">{r.label}</th>
-                  <td className="py-2 pr-3 whitespace-nowrap"><DateText date={r.from.date} /></td>
-                  <td className="py-2 pr-3 whitespace-nowrap">{rateText({ baseRate: r.from.baseRate, unit: rate.unit }).value}</td>
-                  <td className="py-2 whitespace-nowrap">{changeText(r.pct).value}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      {rows.length > 0 && <PeriodTable rows={rows} unit={rate.unit} />}
 
       <dl className="mt-8 grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
         <Stat label="1년 최저" value={range ? rateText({ baseRate: range.min.baseRate, unit: rate.unit }).value : "—"} sub={range && `${t.unit} · ${range.min.date}`} />

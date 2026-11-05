@@ -4,12 +4,11 @@
 import { currencyName, currencySymbol } from "@hav/shared/currency";
 import type { Signal } from "@hav/shared/signal";
 import { signalLabel } from "@hav/ui/signal-badge";
-import { usePathname } from "next/navigation";
 import { CoinLazy } from "../../shared/three-lazy";
-import { codeFromPath } from "./route";
+import { useCurrentCode } from "./use-currency-list";
 
 export function CoinSlot({ signals }: { signals: Record<string, Signal | null> }) {
-  const code = codeFromPath(usePathname());
+  const code = useCurrentCode();
   const signal = signals[code] ?? null;
   return (
     <CoinLazy

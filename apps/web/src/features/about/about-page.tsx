@@ -6,12 +6,14 @@ import { SOURCE_NOTE } from "@hav/shared/currency";
 import type { SignalList } from "@hav/shared/signal";
 import { BAND_EDGE } from "@hav/shared/travel";
 import type { ReactNode } from "react";
-import { DUTY_FREE_USD, RULES_SOURCE } from "../import-calc/rules";
 
 const pct = (n: number) => `${Math.round(n * 100)}%`;
 const LINK = "text-accent underline underline-offset-2 hover:decoration-2";
 
-export function AboutPage({ signals }: { signals: Fetched<SignalList> }) {
+/** 직구 판단 기준 — 기능 폴더끼리 직접 가져오지 않게 라우트에서 받음 */
+export type DutyRules = { usList: number; other: number; source: { name: string; url: string; checked: string } };
+
+export function AboutPage({ signals, duty }: { signals: Fetched<SignalList>; duty: DutyRules }) {
   const rule = signals.ok ? signals.data.rule : null;
   return (
     <>
@@ -46,13 +48,13 @@ export function AboutPage({ signals }: { signals: Fetched<SignalList> }) {
           </Part>
 
           <Part title="직구 계산">
-            <p>면세 한도는 미국발 목록통관 물품 {DUTY_FREE_USD["us-list"]}달러, 그 밖은 {DUTY_FREE_USD.other}달러로 계산합니다.</p>
+            <p>면세 한도는 미국발 목록통관 물품 {duty.usList}달러, 그 밖은 {duty.other}달러로 계산합니다.</p>
             <p>
               근거:{" "}
-              <a href={RULES_SOURCE.url} className={LINK}>
-                {RULES_SOURCE.name}
+              <a href={duty.source.url} className={LINK}>
+                {duty.source.name}
               </a>{" "}
-              (<time dateTime={RULES_SOURCE.checked}>{RULES_SOURCE.checked}</time> 확인)
+              (<time dateTime={duty.source.checked}>{duty.source.checked}</time> 확인)
             </p>
             <p>결과는 예상 금액입니다. 실제 세액은 관세청 과세환율과 품목 분류로 정해집니다. 입력한 값은 브라우저 안에서만 계산하고 어디에도 보내지 않습니다.</p>
           </Part>
