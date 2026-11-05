@@ -8,6 +8,7 @@ import { emptyTemplate } from "./spec-check.mjs";
 import { decide, isOutside, writeTargets } from "./outside-guard.mjs";
 import { englishReason, lastTurnTexts } from "./korean-gate.mjs";
 import { classifyBash, resultOf, safeFile, stripText, taskFor, toActivity } from "./activity.mjs";
+import { summarize as auditSummary } from "./audit-report.mjs";
 import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join as pathJoin } from "node:path";
@@ -217,4 +218,24 @@ test("작업 폴더 찾기: CI(떨어진 HEAD)는 GITHUB_HEAD_REF 로 (작업 01
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("보안 점검: 서비스는 전부 · 개발 도구는 높음 이상만 · 이상한 결과는 실패", () => {
+  const meta = { metadata: { vulnerabilities: { total: 1 } } };
+  const prod = { ...meta, vulnerabilities: { hono: { name: "hono", severity: "low", range: "<4", fixAvailable: true } } };
+  const all = {
+    ...meta,
+    vulnerabilities: {
+      hono: { name: "hono", severity: "low", range: "<4", fixAvailable: true },
+      a: { name: "a", severity: "moderate", range: "*", fixAvailable: true },
+      b: { name: "b", severity: "high", range: "1|2", fixAvailable: false },
+    },
+  };
+  const r = auditSummary(prod, all);
+  assert.equal(r.count, 2);
+  assert.match(r.body, /\| hono \| low \| 서비스 /);
+  assert.match(r.body, /\| b \| high \| 개발 도구 \| 1 2 \| 불가 \|/);
+  assert.doesNotMatch(r.body, /\| a \|/);
+  assert.equal(auditSummary(meta, meta).count, 0);
+  assert.throws(() => auditSummary({ error: "ENOTFOUND" }, meta));
 });

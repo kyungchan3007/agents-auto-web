@@ -66,6 +66,7 @@ flowchart LR
 | 사이트 다시 빌드 | 새 환율을 저장할 때 · 평일 한국 12:30 (예비) | Pages 배포 훅 |
 | 사이트 배포 | main 머지마다 · PR마다 미리보기 | Cloudflare Pages |
 | API 배포 | API 코드가 바뀐 머지 | [`deploy-api.yml`](.github/workflows/deploy-api.yml) |
+| 보안 점검 | 매일 한국 05:30 | [`security-audit.yml`](.github/workflows/security-audit.yml) — `npm audit` · 고칠 것이 있으면 이슈 |
 | 반응형 점검 | 머지 뒤 · 매일 한국 12:40 | [`responsive.yml`](.github/workflows/responsive.yml) — 크롬 · 파이어폭스 · 사파리 × 4개 너비 |
 
 - 방문자가 보는 값은 빌드 때 받은 자료입니다 — 페이지를 열어도 D1을 읽지 않습니다
