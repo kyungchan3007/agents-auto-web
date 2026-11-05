@@ -93,7 +93,7 @@ export function TripScenes({ origin, stops }: { origin: Place; stops: TripStop[]
                   </Link>
                   {s.price && (
                     <Link href={`/prices?country=${s.place.country}#budget`} className="hover:underline">
-                      {country?.name ?? "이 나라"} 여행 예산 어림 →
+                      {country?.name ?? "이 나라"} 여행 예산 계산 →
                     </Link>
                   )}
                   <Link href="/prices" className="hover:underline">

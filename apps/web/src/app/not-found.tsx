@@ -17,7 +17,7 @@ export default function NotFound() {
             <br />
             없습니다.
           </h1>
-          <p className="mt-6 text-lead text-fg-2">주소가 바뀌었거나 잘못 입력됐을 수 있어요.</p>
+          <p className="mt-6 text-lead text-fg-2">주소가 바뀌었거나 잘못 입력되었을 수 있습니다.</p>
           <p className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-accent">
             <Link href="/" className="hover:underline">
               오늘 환율 →

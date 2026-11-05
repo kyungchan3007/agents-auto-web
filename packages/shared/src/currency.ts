@@ -82,7 +82,7 @@ export function percentileText(signal: Signal | null, percentile: number | null,
   if (percentile === 1) return `최근 ${windowDays}일 중 가장 높음`;
   if (signal === "cheap") return `최근 ${windowDays}일 중 ${Math.round((1 - percentile) * 100)}%의 날보다 낮음`;
   if (signal === "expensive") return `최근 ${windowDays}일 중 ${Math.round(percentile * 100)}%의 날보다 높음`;
-  return `최근 ${windowDays}일 가운데쯤`;
+  return `최근 ${windowDays}일 중간 수준`;
 }
 
 /** 표시용 환율 — 엔 · 루피아는 100 단위 그대로 보여 주고 단위를 붙인다 (FX-04) */

@@ -54,7 +54,7 @@ describe("백분위 설명 (SIG-02)", () => {
   it("싼 편 0.02 → 98%의 날보다 낮음 · 비싼 편 0.9 → 90%의 날보다 높음", () => {
     expect(percentileText("cheap", 0.02, 90)).toBe("최근 90일 중 98%의 날보다 낮음");
     expect(percentileText("expensive", 0.9, 90)).toBe("최근 90일 중 90%의 날보다 높음");
-    expect(percentileText("normal", 0.5, 90)).toBe("최근 90일 가운데쯤");
+    expect(percentileText("normal", 0.5, 90)).toBe("최근 90일 중간 수준");
     expect(percentileText(null, null, 90)).toMatch(/모자라/);
   });
 

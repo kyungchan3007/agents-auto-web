@@ -105,7 +105,7 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
         </a>
         {countriesOf(code).length === 1 && (
           <a href={`/prices?country=${countriesOf(code)[0]}#budget`} className="hover:underline">
-            {TRAVEL_COUNTRIES[countriesOf(code)[0]]?.name} 여행 예산 어림 →
+            {TRAVEL_COUNTRIES[countriesOf(code)[0]]?.name} 여행 예산 계산 →
           </a>
         )}
         {countriesOf(code).length > 0 && (

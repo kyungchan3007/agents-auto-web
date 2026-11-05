@@ -1,6 +1,6 @@
 "use client";
 
-// 여행 예산 어림 — 나라 · 한국에서 하루 쓰는 돈 · 일수 → 같은 생활이면 그 나라에서 하루 · 전체 (원 · 현지 통화) (작업 0088)
+// 여행 예산 계산 — 나라 · 한국에서 하루 쓰는 돈 · 일수 → 같은 생활이면 그 나라에서 하루 · 전체 (원 · 현지 통화) (작업 0088)
 //   입력은 이 화면 상태에만 (보내지 않음) · 물가 기준 연도 · 환율 기준일을 같이 (TRV-01 · TRV-03)
 import { currencyName } from "@hav/shared/currency";
 import type { SignalList } from "@hav/shared/signal";
@@ -29,9 +29,9 @@ export function BudgetPlanner({ rows, latestOf }: { rows: TravelRow[]; latestOf:
   return (
     <section id="budget" aria-labelledby="budget-title" className="scroll-mt-20 rounded-card bg-surface-2 p-5 sm:p-8">
       <h2 id="budget-title" className="text-lg font-semibold tracking-tight">
-        여행 예산 어림
+        여행 예산 계산
       </h2>
-      <p className="mt-1 text-sm text-fg-2">한국에서 하루 이만큼 쓰는 생활이면, 그 나라에서는 얼마쯤 들까.</p>
+      <p className="mt-1 text-sm text-fg-2">한국에서의 하루 지출을 기준으로 그 나라의 예상 비용을 계산합니다.</p>
       <form className="mt-5 grid gap-3 sm:grid-cols-[1.2fr_1fr_0.6fr]" onSubmit={(e) => e.preventDefault()}>
         <label className="grid gap-1.5">
           <span className="text-xs text-fg-2">나라</span>
@@ -82,7 +82,7 @@ export function BudgetPlanner({ rows, latestOf }: { rows: TravelRow[]; latestOf:
                   : row.currency
                     ? `${currencyName(row.currency)} 오늘 환율을 받지 못해 원으로만 보여 줍니다 · `
                     : ""}
-                나라 전체 가계 소비 평균(세계은행)이라 숙소 · 항공 · 도시에 따라 크게 다릅니다. 어림값입니다.
+                나라 전체 가계 소비 평균(세계은행)이라 숙소 · 항공 · 도시에 따라 크게 다릅니다. 예상치입니다.
               </p>
             </>
           )

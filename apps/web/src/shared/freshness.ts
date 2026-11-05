@@ -19,6 +19,6 @@ export function freshness(date: string, now: Date = new Date()): Freshness {
   if (date >= today) return { kind: "today" };
   const day = k.getUTCDay();
   if (day === 0 || day === 6) return { kind: "no-release", text: `주말에는 고시가 없어 ${md(date)} 값입니다` };
-  if (k.getUTCHours() < READY_HOUR) return { kind: "before-release", text: `오늘 환율은 낮 12시쯤 나옵니다 · 지금은 ${md(date)} 값입니다` };
+  if (k.getUTCHours() < READY_HOUR) return { kind: "before-release", text: `오늘 환율은 낮 12시경 나옵니다 · 지금은 ${md(date)} 값입니다` };
   return { kind: "late", text: `오늘(${md(today)}) 값 반영이 늦어지고 있습니다 · 지금은 ${md(date)} 값입니다 (공휴일이면 고시가 없습니다)` };
 }

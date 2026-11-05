@@ -1,4 +1,4 @@
-// 여행 물가 페이지 — 밝은 섹션 · 묶음 · 여행 예산 어림(작업 0088) · 물가 · 환율 신호는 빌드 때 받은 값만 · 없으면 이유 (docs/domain/travel-price.md)
+// 여행 물가 페이지 — 밝은 섹션 · 묶음 · 여행 예산 계산(작업 0088) · 물가 · 환율 신호는 빌드 때 받은 값만 · 없으면 이유 (docs/domain/travel-price.md)
 import type { Fetched } from "@/shared/api";
 import { SiteNav } from "@/shared/site-nav";
 import type { PriceLevels } from "@hav/shared/prices";
@@ -20,9 +20,9 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
         <div className="mx-auto max-w-6xl">
           <p className="text-eyebrow font-semibold text-fg-2">여행 물가</p>
           <h1 className="mt-3 text-title font-semibold tracking-tight">
-            같은 돈으로,
+            같은 금액으로,
             <br />
-            어디가 넉넉할까.
+            어느 나라가 저렴한지 확인합니다.
           </h1>
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-fg-2">
             한국 물가를 기준으로 나라별 물가가 얼마나 싼지 · 비싼지 묶었습니다. 막대 가운데 선이 한국입니다. 오늘 그 나라 통화가 싼 편인지도 옆에 같이 적었습니다 — 두 값은
