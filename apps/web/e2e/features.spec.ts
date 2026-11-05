@@ -11,7 +11,7 @@ function watchErrors(page: Page) {
   return errs;
 }
 
-for (const path of ["/", "/currencies/USD", "/prices", "/calc", "/log"]) {
+for (const path of ["/", "/currencies/USD", "/prices", "/calc", "/log", "/about", "/geo"]) {
   test(`${path} — 페이지 오류 없음 · 가로로 넘치지 않음`, async ({ page }) => {
     const errs = watchErrors(page);
     await page.goto(path);

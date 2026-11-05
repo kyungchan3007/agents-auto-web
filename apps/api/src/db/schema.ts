@@ -80,3 +80,16 @@ export const githubItems = sqliteTable("github_items", {
   mergedAt: text("merged_at"), // PR 만
   syncedAt: text("synced_at").notNull(),
 });
+
+/** GEO 방문 집계 — 하루 · 종류 · 이름 · 페이지별 횟수만 (IP · 전체 User-Agent · 쿼리는 저장하지 않음 · 작업 0129) */
+export const geoHits = sqliteTable(
+  "geo_hits",
+  {
+    day: text("day").notNull(), // 한국 날짜
+    kind: text("kind", { enum: ["training", "search", "user", "engine", "referral", "test"] }).notNull(),
+    name: text("name").notNull(), // 봇 이름 또는 AI 서비스 이름
+    path: text("path").notNull(), // 고정 목록 (@hav/shared/geo-visit)
+    hits: integer("hits").notNull().default(0),
+  },
+  (t) => [primaryKey({ columns: [t.day, t.kind, t.name, t.path] })],
+);

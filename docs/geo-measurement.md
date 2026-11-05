@@ -12,11 +12,15 @@
 - 넣지 않은 통화: AUD · CAD · CNH · EUR · HKD · JPY · MYR · NZD · SEK · THB
 - 소개 페이지 · `<time>` · 출처 표기는 사이트 전체에 적용돼 이 비교에 들어가지 않음
 
-## AI 봇 방문 · AI 서비스 유입을 보는 방법
-- AI 서비스 유입: Cloudflare Web Analytics 켬 (2026-11-05 · Pages 프로젝트 메트릭) — 넘어온 곳(referrer)으로 봄 · 스크립트를 실행한 방문만 잡힘
-- AI 봇 방문: 지금은 볼 수 없음 — 봇은 스크립트를 대체로 실행하지 않고, 페이지가 정적 파일이라 우리 코드를 거치지 않음
-- AI Crawl Control: 계정 메뉴에 없음 · 도메인(zone) 기능으로 보이며 tripfx.pages.dev 는 zone 이 아님 — 도메인을 연결하면 다시 확인
-- 봇까지 재려면 모든 요청을 Pages Functions 로 거쳐야 해서 함수 호출이 크게 늘어남 — 필요할 때 다시 판단
+## AI 봇 방문 · AI 서비스 유입
+- 공개 페이지 [`/geo`](https://tripfx.pages.dev/geo) (2026-11-05 시작 · 작업 0129)
+- 페이지 요청의 봇 이름 · 유입 주소를 하루 · 이름 · 페이지별 횟수로 집계 (`geo_hits`) · IP · 전체 User-Agent · 쿼리는 저장하지 않음
+- 봇 이름은 위조될 수 있어 추정치 · AI 답변 인용 여부는 알 수 없음
+- Cloudflare Web Analytics 도 켬 (사람 방문 · 유입)
+- AI Crawl Control: 계정 메뉴에 없음 · 도메인(zone) 기능으로 보이며 tripfx.pages.dev 는 zone 이 아님
+
+## 새로 측정하면
+- 이 문서 "기록" 과 `apps/web/src/features/geo/geo-view.ts` 의 `MEASUREMENTS` 에 같이 더함
 
 ## 기록
 

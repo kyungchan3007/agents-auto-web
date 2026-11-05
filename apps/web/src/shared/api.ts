@@ -2,6 +2,7 @@
 import { FxChanges, FxHistory, FxLatest } from "@hav/shared/fx";
 import { PriceLevels } from "@hav/shared/prices";
 import { CurrencySignal, SignalList } from "@hav/shared/signal";
+import { GeoReport } from "@hav/shared/geo";
 import { SiteStatus } from "@hav/shared/status";
 import { TasksSummary } from "@hav/shared/tasks";
 import type { z } from "zod";
@@ -64,4 +65,5 @@ export const api = {
   priceLevels: (o?: ApiOptions) => getJson("/prices/levels?base=KOR", PriceLevels, o),
   tasks: (o?: ApiOptions) => getJson("/tasks", TasksSummary, o),
   status: (o?: ApiOptions) => getJson("/status", SiteStatus, o),
+  geo: (o?: ApiOptions) => getJson("/geo", GeoReport, o),
 };

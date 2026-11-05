@@ -62,6 +62,9 @@ export function AboutPage({ signals, duty }: { signals: Fetched<SignalList>; dut
 
           <Part title="방문 통계">
             <p>어느 페이지를 얼마나 보는지와 어디서 넘어왔는지를 Cloudflare Web Analytics로 집계합니다. 로그인이 없고, 직구 계산기 · 여행 예산에 넣은 값은 보내지 않습니다.</p>
+            <p>
+              AI 봇과 AI 서비스 유입은 이름 · 페이지별 횟수만 집계해{" "}
+              <TextLink href="/geo">GEO 측정</TextLink> 페이지에 공개합니다. IP 주소는 저장하지 않습니다.</p>
           </Part>
 
           <Part title="누가 만드나요">
