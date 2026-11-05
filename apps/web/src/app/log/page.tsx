@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { LogPage } from "@/features/log/log-page";
+import { LogPage } from "@/features/log/components/log-page";
 import { api } from "@/shared/api";
 
 // 탭 제목에서 "만드는 중" 은 뺌 (2026-10-30 사용자 · 작업 0105) · 검색에서 구별되게 페이지 이름만 (작업 0114)

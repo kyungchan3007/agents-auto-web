@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { AboutPage } from "@/features/about/about-page";
-import { DUTY_FREE_USD, RULES_SOURCE } from "@/features/import-calc/rules";
+import { AboutPage } from "@/features/about/components/about-page";
+import { DUTY_FREE_USD, RULES_SOURCE } from "@/features/import-calc/lib/rules";
 import { api } from "@/shared/api";
 
 export const metadata: Metadata = {

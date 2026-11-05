@@ -7,8 +7,8 @@ import { cached } from "../../db/cache";
 import type { Env } from "../../env";
 import { validate } from "../../validate";
 import { changesOf } from "./changes";
-import { collectDay } from "./collect";
-import { ensureToday } from "./ensure";
+import { collectDay } from "./collect/collect";
+import { ensureToday } from "./collect/ensure";
 import { d1RateStore, fallbackDate, hasOfficialRates, hasRates, lastFxRunAt, latestRates, rateHistory, ratesSince } from "./store";
 
 export const fxRoutes = new Hono<{ Bindings: Env }>()

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CalcPage } from "@/features/import-calc/calc-page";
+import { CalcPage } from "@/features/import-calc/components/calc-page";
 import { api } from "@/shared/api";
 
 export const metadata: Metadata = {

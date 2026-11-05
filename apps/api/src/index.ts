@@ -5,7 +5,7 @@ import { Hono } from "hono";
 import { dbAlive } from "./db/health";
 import type { Env } from "./env";
 import { activityRoutes } from "./features/activity/routes";
-import { type DailyResult, dailyFx } from "./features/fx/daily";
+import { type DailyResult, dailyFx } from "./features/fx/collect/daily";
 import { fxRoutes } from "./features/fx/routes";
 import { d1RateStore, hasOfficialRates, hasRates } from "./features/fx/store";
 import { collectPriceLevels } from "./features/prices/collect";

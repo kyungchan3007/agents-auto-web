@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { currencyName } from "@hav/shared/currency";
-import { CurrencyDetail } from "@/features/currencies/currency-detail";
-import { describeCurrency } from "@/features/currencies/describe";
-import { loadDetail } from "@/features/currencies/load";
-import { DEFAULT_CODE } from "@/features/currencies/route";
+import { CurrencyDetail } from "@/features/currencies/components/currency-detail";
+import { describeCurrency } from "@/features/currencies/lib/describe";
+import { loadDetail } from "@/features/currencies/lib/load";
+import { DEFAULT_CODE } from "@/features/currencies/lib/route";
 import { api, mustHave } from "@/shared/api";
 
 // 통화마다 정적 페이지 — API 가 준 통화 전부 (FX-03) · API 가 안 되면 달러 하나만 ("자료 없음")

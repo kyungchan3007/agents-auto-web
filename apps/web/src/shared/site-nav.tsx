@@ -1,6 +1,6 @@
 // 이 사이트(Tripfx)의 상단 메뉴 — 모든 페이지가 같이 씀
-// 메뉴 모양은 디자인 시스템(@hav/ui/nav-bar) · 사이트 이름 · 링크 같은 이 사이트 설정만 여기 (디자인 시스템은 사이트를 모름)
-import { NavBar } from "@hav/ui/nav-bar";
+// 메뉴 모양은 디자인 시스템(@hav/ui/layout/nav-bar) · 사이트 이름 · 링크 같은 이 사이트 설정만 여기 (디자인 시스템은 사이트를 모름)
+import { NavBar } from "@hav/ui/layout/nav-bar";
 import Link from "next/link";
 
 export type Page = "home" | "currencies" | "prices" | "calc" | "log" | "about" | "geo";

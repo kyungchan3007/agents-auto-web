@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteNav } from "@/shared/site-nav";
-import { Eyebrow, Title } from "@hav/ui/heading";
-import { LinkRow } from "@hav/ui/link-row";
+import { Eyebrow, Title } from "@hav/ui/text/heading";
+import { LinkRow } from "@hav/ui/text/link-row";
 
 // 없는 주소 — 기본 화면은 영어("This page could not be found")라 한국어로 (사용자에게 보이는 글은 모두 한국어)
 export const metadata: Metadata = { title: "없는 페이지 · Tripfx", robots: { index: false } };

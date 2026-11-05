@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Home } from "@/features/home/home";
+import { Home } from "@/features/home/components/home";
 import { api, mustHave } from "@/shared/api";
 
 export const metadata: Metadata = {

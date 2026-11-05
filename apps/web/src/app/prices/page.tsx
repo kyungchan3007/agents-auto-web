@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PricePage } from "@/features/travel-price/price-page";
+import { PricePage } from "@/features/travel-price/components/price-page";
 import { api } from "@/shared/api";
 
 export const metadata: Metadata = {
