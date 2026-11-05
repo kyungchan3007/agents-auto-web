@@ -4,7 +4,7 @@
 import { groupByRegion } from "@hav/shared/currency";
 import type { FxRate } from "@hav/shared/fx";
 import { type ChangeEvent, useState } from "react";
-import { useQueryParam } from "../../shared/use-query-param";
+import { useQueryParam } from "@hav/ui/hooks/use-query-param";
 import { type CalcInput, calc, catMood } from "./calc";
 
 export function useCalcForm(rates: FxRate[]) {

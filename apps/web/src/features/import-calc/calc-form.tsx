@@ -3,7 +3,7 @@
 // 직구 계산기 화면 — 입력은 이 화면 상태에만 (보내지 않음 · 저장하지 않음 IMP-01) · 결과 옆에 환율 기준일 · 출처 (IMP-02) · "예상" 안내 (IMP-04)
 import { currencyName } from "@hav/shared/currency";
 import type { FxRate } from "@hav/shared/fx";
-import { Input, Select } from "@hav/ui/field";
+import { Input, Select, UnitInput } from "@hav/ui/field";
 import type { ReactNode } from "react";
 import { CalcResult } from "./calc-result";
 import { DUTY_FREE_USD, ROUTE_LABEL, RULES_SOURCE, type Route } from "./rules";
@@ -25,10 +25,7 @@ export function CalcForm({ rates }: { rates: FxRate[] }) {
           </Select>
         </Field>
         <Field label="물건 값" hint="현지 세금 · 현지 배송비까지 넣은 값" htmlFor="price" error={err("price")}>
-          <div className="relative">
-            <Input id="price" inputMode="decimal" autoComplete="off" value={input.price} onChange={set("price")} placeholder="180" className="pr-14" />
-            <span className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-sm text-fg-2">{input.currency}</span>
-          </div>
+          <UnitInput unit={input.currency} id="price" inputMode="decimal" autoComplete="off" value={input.price} onChange={set("price")} placeholder="180" />
         </Field>
         <Field label="보내는 곳" hint="미국에서 오는 목록통관 물품만 200달러 · 건강기능식품 · 의약품 등은 일반통관이라 150달러" htmlFor="route">
           <Select id="route" value={input.route} onChange={set("route")}>

@@ -2,7 +2,7 @@
 
 // 환율 흐름 — 기간 단추(1개월 · 3개월 · 6개월 · 1년) + 선 그래프 + 그 기간 변화율 (작업 0087)
 //   빌드 때 받은 1년치를 화면에서 자르기만 함 (다시 받지 않음)
-import { YearChart } from "@/shared/year-chart";
+import { YearChart } from "@hav/ui/year-chart";
 import { PERIODS } from "./periods";
 import { usePeriodChart } from "./use-period-chart";
 

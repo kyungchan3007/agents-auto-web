@@ -1,5 +1,6 @@
 // 환율 API — 읽기는 누구나 · 수집은 관리 토큰이 있을 때만 · 요청 · 응답 모양은 @hav/shared/fx
 import { type CollectResult, CollectQuery, CurrencyParam, type FxChanges, FxChangesQuery, type FxHistory, FxHistoryQuery, type FxLatest } from "@hav/shared/fx";
+import { kstDate } from "@hav/shared/date";
 import { Hono } from "hono";
 import { adminGuard } from "../../admin";
 import { cached } from "../../db/cache";
@@ -8,7 +9,6 @@ import { validate } from "../../validate";
 import { changesOf } from "./changes";
 import { collectDay } from "./collect";
 import { ensureToday } from "./ensure";
-import { kstDate } from "./rate";
 import { d1RateStore, fallbackDate, hasOfficialRates, hasRates, lastFxRunAt, latestRates, rateHistory, ratesSince } from "./store";
 
 export const fxRoutes = new Hono<{ Bindings: Env }>()

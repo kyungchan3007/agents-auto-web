@@ -4,7 +4,7 @@
 import { MONEY_MOODS, type MoneyMood } from "@hav/ui/three/money-cat";
 import { MOODS, type Mood } from "@hav/ui/three/worker-cat";
 import { useState } from "react";
-import { MoneyCatLazy, WorkerCatLazy } from "../../shared/three-lazy";
+import { MoneyCatLazy, WorkerCatLazy } from "@hav/ui/three/lazy";
 
 export function Characters() {
   const [work, setWork] = useState<Mood>("typing");

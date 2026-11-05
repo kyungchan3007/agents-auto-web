@@ -5,11 +5,11 @@ import { currencyName } from "@hav/shared/currency";
 import type { Signal } from "@hav/shared/signal";
 import { type Band, relativeText } from "@hav/shared/travel";
 import { Flag } from "@hav/ui/flag";
-import { signalLabel } from "@hav/ui/signal-badge";
+import { SIGNAL_TEXT, signalLabel } from "@hav/ui/signal-badge";
 import Link from "next/link";
-import { SIGNAL_TONE } from "../../shared/signal-tone";
 import type { PriceBand } from "./bands";
 import { usePriceBands } from "./use-price-bands";
+import { FilterChip } from "@hav/ui/filter-chip";
 
 const BAR: Record<Band, string> = { cheap: "bg-cheap", similar: "bg-normal", pricey: "bg-expensive" };
 
@@ -22,15 +22,9 @@ export function PriceBands({ bands, signalOf, latestYear }: Props) {
     <div>
       <div className="flex flex-wrap gap-1.5 text-xs" role="group" aria-label="지역">
         {[{ id: "all" as const, label: "전체" }, ...regions].map((r) => (
-          <button
-            key={r.id}
-            type="button"
-            onClick={() => setRegion(r.id)}
-            aria-pressed={region === r.id}
-            className={`shrink-0 rounded-pill px-3 py-1 font-semibold transition-colors ${region === r.id ? "bg-accent text-on-accent" : "text-fg-2 hover:text-fg"}`}
-          >
+          <FilterChip key={r.id} active={region === r.id} onClick={() => setRegion(r.id)}>
             {r.label}
-          </button>
+          </FilterChip>
         ))}
       </div>
 
@@ -59,7 +53,7 @@ export function PriceBands({ bands, signalOf, latestYear }: Props) {
                       {r.year !== latestYear && <span>{r.year}년 자료</span>}
                       {r.currency && signal ? (
                         <Link href={`/currencies/${r.currency}`} className="hover:text-fg">
-                          오늘 {currencyName(r.currency)} <span className={`font-semibold ${SIGNAL_TONE[signal]}`}>{signalLabel(signal)}</span> →
+                          오늘 {currencyName(r.currency)} <span className={`font-semibold ${SIGNAL_TEXT[signal]}`}>{signalLabel(signal)}</span> →
                         </Link>
                       ) : null}
                     </p>

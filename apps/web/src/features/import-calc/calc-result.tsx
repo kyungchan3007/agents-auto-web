@@ -1,8 +1,8 @@
 // 직구 계산 결과 칸 — 그리기만 · 결과 옆에 환율 기준일 · 출처 (IMP-02) · "예상" 안내 (IMP-04)
 import { SOURCE_NAME } from "@hav/shared/currency";
 import type { FxRate } from "@hav/shared/fx";
-import { MoneyCatLazy } from "../../shared/three-lazy";
-import { DateText } from "../../shared/date-text";
+import { MoneyCatLazy } from "@hav/ui/three/lazy";
+import { DateText } from "@hav/ui/date-text";
 import type { CalcResult as Result, catMood } from "./calc";
 import { RULES_SOURCE } from "./rules";
 

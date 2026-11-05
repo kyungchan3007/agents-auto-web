@@ -6,6 +6,8 @@ import type { TasksSummary } from "@hav/shared/tasks";
 import { REPO_URL } from "@/shared/site";
 import { LogBody } from "./log-body";
 import { StatusBoard } from "./status-board";
+import { TextLink } from "@hav/ui/text-link";
+import { PageFooter } from "@hav/ui/page-footer";
 
 export function LogPage({ tasks, status, builtAt }: { tasks: Fetched<TasksSummary>; status: Fetched<SiteStatus>; builtAt: string }) {
   return (
@@ -20,18 +22,16 @@ export function LogPage({ tasks, status, builtAt }: { tasks: Fetched<TasksSummar
 
       <LogBody buildTasks={tasks} />
 
-      <footer data-surface="dark" className="border-t border-line bg-surface px-4 py-10 text-xs text-fg-2 sm:px-8">
-        <div className="mx-auto max-w-5xl">
+      <PageFooter>
           기록은 에이전트의 도구 사용 훅이 보냅니다 · 공개 일지의 원본은{" "}
-          <a href={REPO_URL} className="text-accent underline underline-offset-2 hover:decoration-2">
+          <TextLink href={REPO_URL}>
             GitHub 커밋 · PR
-          </a>{" "}
+          </TextLink>{" "}
           ·{" "}
-          <a href="/about" className="text-accent underline underline-offset-2 hover:decoration-2">
+          <TextLink href="/about">
             소개 · 판단 기준
-          </a>
-        </div>
-      </footer>
+          </TextLink>
+      </PageFooter>
     </>
   );
 }

@@ -9,6 +9,9 @@ const TONE: Record<Signal, string> = {
   expensive: "text-expensive border-expensive",
 };
 
+/** 신호별 글자 색 */
+export const SIGNAL_TEXT: Record<Signal, string> = { cheap: "text-cheap", normal: "text-normal", expensive: "text-expensive" };
+
 export function signalLabel(signal: Signal): string {
   return LABEL[signal];
 }

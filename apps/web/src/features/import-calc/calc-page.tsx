@@ -3,6 +3,8 @@ import type { Fetched } from "@/shared/api";
 import { SiteNav } from "@/shared/site-nav";
 import type { FxLatest } from "@hav/shared/fx";
 import { CalcForm } from "./calc-form";
+import { Eyebrow, Title } from "@hav/ui/heading";
+import { EmptyState } from "@hav/ui/empty-state";
 
 export function CalcPage({ latest }: { latest: Fetched<FxLatest> }) {
   return (
@@ -10,20 +12,17 @@ export function CalcPage({ latest }: { latest: Fetched<FxLatest> }) {
       <SiteNav page="calc" />
       <section data-surface="light" className="bg-surface px-4 pt-14 pb-24 text-fg sm:px-8 sm:pt-20">
         <div className="mx-auto max-w-6xl">
-          <p className="text-eyebrow font-semibold text-fg-2">직구 계산기</p>
-          <h1 className="mt-3 text-title font-semibold tracking-tight">
+          <Eyebrow>직구 계산기</Eyebrow>
+          <Title as="h1" className="mt-3">
             구매 전에,
             <br />
             세금 부과 여부를 확인합니다.
-          </h1>
+          </Title>
           <div className="mt-10">
             {latest.ok && latest.data.rates.length > 0 ? (
               <CalcForm rates={latest.data.rates} />
             ) : (
-              <div className="rounded-card border border-line p-8">
-                <p className="text-lg font-semibold">자료 없음</p>
-                <p className="mt-2 text-sm text-fg-2">환율을 받지 못해 계산할 수 없습니다 ({latest.ok ? "통화 없음" : latest.reason})</p>
-              </div>
+              <EmptyState>환율을 받지 못해 계산할 수 없습니다 ({latest.ok ? "통화 없음" : latest.reason})</EmptyState>
             )}
           </div>
         </div>

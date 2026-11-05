@@ -2,7 +2,8 @@
 //   브라우저에서 지금 한국 시각과 비교해 왜 그 날짜인지 알려 줌 · 값을 바꾸지는 않음 (FX-02 지어내지 않음)
 //   2026-10-30: 12:00 예약 수집이 돌지 않았는데 사이트는 아무 말 없이 10-29 값을 보여 줌
 
-const KST = 9 * 3600_000;
+import { kstNow } from "./date";
+
 /** 수출입은행 고시(11시 전후) + 수집(12:00) + 다시 빌드 몇 분 → 13:00 KST 부터 "늦음" */
 const READY_HOUR = 13;
 
@@ -14,7 +15,7 @@ const md = (iso: string) => {
 };
 
 export function freshness(date: string, now: Date = new Date()): Freshness {
-  const k = new Date(now.getTime() + KST);
+  const k = kstNow(now);
   const today = k.toISOString().slice(0, 10);
   if (date >= today) return { kind: "today" };
   const day = k.getUTCDay();

@@ -3,7 +3,7 @@
 // 홈 흐름 2 "여행지 고르기" — 지구본은 화면에 고정 · 글 칸이 화면 가운데에 오면 그 도시로 돎 (docs/design.md)
 // 숫자 · 신호는 빌드 때 받은 값만 · 없으면 "자료 없음" 글자 (FX-02 · TRV-02) · 3D 가 없어도 글은 그대로 읽힘
 import type { Place } from "@hav/ui/three/geo";
-import { GlobeLazy } from "@/shared/three-lazy";
+import { GlobeLazy } from "@hav/ui/three/lazy";
 import { EARTH_TEXTURE } from "./places";
 import { TripCard, type TripStop } from "./trip-card";
 import { useActiveStep } from "./use-active-step";

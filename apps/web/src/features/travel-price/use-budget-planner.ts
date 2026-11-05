@@ -4,7 +4,7 @@
 import type { SignalList } from "@hav/shared/signal";
 import type { TravelRow } from "@hav/shared/travel";
 import { useState } from "react";
-import { useQueryParam } from "../../shared/use-query-param";
+import { useQueryParam } from "@hav/ui/hooks/use-query-param";
 import { budgetOf, parseDaily, parseDays } from "./budget";
 
 export type Latest = SignalList["signals"][number]["latest"];

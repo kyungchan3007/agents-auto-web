@@ -9,6 +9,16 @@ export function Input({ className = "", ...rest }: InputHTMLAttributes<HTMLInput
   return <input className={`${fieldClass} ${className}`} {...rest} />;
 }
 
+/** 오른쪽에 단위가 붙는 입력 칸 */
+export function UnitInput({ unit, className = "", ...rest }: InputHTMLAttributes<HTMLInputElement> & { unit: ReactNode }) {
+  return (
+    <div className="relative">
+      <Input className={`pr-14 ${className}`} {...rest} />
+      <span className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-sm text-fg-2">{unit}</span>
+    </div>
+  );
+}
+
 /** 브라우저 기본 화살표 대신 같은 모양의 화살표 (칸마다 화살표 모양이 달랐음) */
 export function Select({ className = "", children, ...rest }: SelectHTMLAttributes<HTMLSelectElement> & { children: ReactNode }) {
   return (

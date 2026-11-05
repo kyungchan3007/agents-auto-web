@@ -6,6 +6,8 @@
   "exports": {
     "./tokens.css": "./src/tokens.css",
     "./contrast": "./src/contrast.ts",
+    "./chart": "./src/chart.ts",
+    "./hooks/*": "./src/hooks/*.ts",
     "./three/geo": "./src/three/geo.ts",
     "./three/*": "./src/three/*.tsx",
     "./*": "./src/components/*.tsx"
@@ -29,6 +31,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
+    "@hav/shared": "*",
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.2",
     "country-flag-icons": "^1.6.20",

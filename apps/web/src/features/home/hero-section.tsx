@@ -4,13 +4,14 @@ import { CountUp } from "@hav/ui/count-up";
 import { Reveal } from "@hav/ui/reveal";
 import { Section } from "@hav/ui/section";
 import { SignalBadge } from "@hav/ui/signal-badge";
-import { CurrencyFlag as Flag } from "@/shared/currency-flag";
-import { DateText } from "@/shared/date-text";
-import { FreshnessNote } from "@/shared/freshness-note";
-import { GlobeLazy } from "@/shared/three-lazy";
+import { CurrencyFlag as Flag } from "@hav/ui/currency-flag";
+import { DateText } from "@hav/ui/date-text";
+import { FreshnessNote } from "@hav/ui/freshness-note";
+import { GlobeLazy } from "@hav/ui/three/lazy";
 import { HERO, type HomeView } from "./home-data";
-import { NoData } from "./no-data";
 import { DESTINATIONS, EARTH_TEXTURE, SEOUL } from "./places";
+import { Eyebrow, Title } from "@hav/ui/heading";
+import { EmptyState } from "@hav/ui/empty-state";
 
 export function HeroSection({ view }: { view: HomeView }) {
   const { hero, heroSignal, problem, windowDays, bySignal } = view;
@@ -20,12 +21,12 @@ export function HeroSection({ view }: { view: HomeView }) {
       {hero ? (
         <Reveal>
           {/* 작은 제목은 큰 제목 바로 위에 붙임 — 섹션 위에 두면 지구본 높이만큼 떨어져 보였음 */}
-          <p className="flex items-center gap-2 text-eyebrow font-semibold text-fg-2">
+          <Eyebrow className="flex items-center gap-2">
             <Flag currency={HERO} />
             오늘의 환율 · <DateText date={hero.date} /> 기준 · {SOURCE_NAME[hero.source]}
-          </p>
+          </Eyebrow>
           <FreshnessNote date={hero.date} className="mt-2" />
-          <h1 className="mt-4 text-title font-semibold tracking-tight text-fg">{headline(HERO, heroSignal?.signal ?? null)}</h1>
+          <Title as="h1" className="mt-4 text-fg">{headline(HERO, heroSignal?.signal ?? null)}</Title>
           <p className="mt-6 text-hero font-bold tracking-tighter whitespace-nowrap">
             <CountUp text={rateText(hero).value} className="text-aurora" />
             <span className="ml-3 text-title font-semibold text-fg">{rateText(hero).unit}</span>
@@ -36,7 +37,7 @@ export function HeroSection({ view }: { view: HomeView }) {
           </div>
         </Reveal>
       ) : (
-        <NoData reason={problem ?? "달러 환율이 아직 수집되지 않았습니다"} />
+        <EmptyState>{problem ?? "달러 환율이 아직 수집되지 않았습니다"}</EmptyState>
       )}
         {/* 🌏 호 색 = 그 나라 통화 신호 · 3D 가 안 되면 이 칸만 빔 (글자는 그대로) */}
         <GlobeLazy

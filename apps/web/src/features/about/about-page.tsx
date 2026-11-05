@@ -6,9 +6,10 @@ import { SOURCE_NOTE } from "@hav/shared/currency";
 import type { SignalList } from "@hav/shared/signal";
 import { BAND_EDGE } from "@hav/shared/travel";
 import type { ReactNode } from "react";
+import { Eyebrow, Title } from "@hav/ui/heading";
+import { TextLink } from "@hav/ui/text-link";
 
 const pct = (n: number) => `${Math.round(n * 100)}%`;
-const LINK = "text-accent underline underline-offset-2 hover:decoration-2";
 
 /** 직구 판단 기준 — 기능 폴더끼리 직접 가져오지 않게 라우트에서 받음 */
 export type DutyRules = { usList: number; other: number; source: { name: string; url: string; checked: string } };
@@ -20,8 +21,8 @@ export function AboutPage({ signals, duty }: { signals: Fetched<SignalList>; dut
       <SiteNav page="about" />
       <main data-surface="dark" className="bg-surface px-4 pt-14 pb-24 text-fg sm:px-8 sm:pt-20">
         <div className="mx-auto max-w-3xl">
-          <p className="text-eyebrow font-semibold text-fg-2">소개</p>
-          <h1 className="mt-3 text-title font-semibold tracking-tight">Tripfx는 어떤 자료를, 어떤 기준으로 보여 주나요.</h1>
+          <Eyebrow>소개</Eyebrow>
+          <Title as="h1" className="mt-3">Tripfx는 어떤 자료를, 어떤 기준으로 보여 주나요.</Title>
           <p className="mt-6 text-lead text-fg-2">Tripfx는 여행과 해외 직구를 앞둔 사람이 환율 · 여행지 물가 · 직구 세금을 한곳에서 확인하는 사이트입니다. 로그인 없이 쓸 수 있습니다.</p>
 
           <Part title="환율">
@@ -51,9 +52,9 @@ export function AboutPage({ signals, duty }: { signals: Fetched<SignalList>; dut
             <p>면세 한도는 미국발 목록통관 물품 {duty.usList}달러, 그 밖은 {duty.other}달러로 계산합니다.</p>
             <p>
               근거:{" "}
-              <a href={duty.source.url} className={LINK}>
+              <TextLink href={duty.source.url}>
                 {duty.source.name}
-              </a>{" "}
+              </TextLink>{" "}
               (<time dateTime={duty.source.checked}>{duty.source.checked}</time> 확인)
             </p>
             <p>결과는 예상 금액입니다. 실제 세액은 관세청 과세환율과 품목 분류로 정해집니다. 입력한 값은 브라우저 안에서만 계산하고 어디에도 보내지 않습니다.</p>
@@ -66,17 +67,17 @@ export function AboutPage({ signals, duty }: { signals: Fetched<SignalList>; dut
           <Part title="누가 만드나요">
             <p>
               개발자는 기획 · 설계 · 정책을 간단히 정하고, 코드의 역할 분담까지만 확인합니다. 코드 작성부터 테스트 · 머지까지는 AI 코딩 에이전트가 맡습니다. 에이전트의 개발 생산성과 효과, GEO(AI 검색 노출)를 확인하기 위한 프로젝트이며, 과정은{" "}
-              <a href="/log" className={LINK}>
+              <TextLink href="/log">
                 작업실
-              </a>
+              </TextLink>
               에 공개합니다. 코드와 작업 기록은{" "}
-              <a href={REPO_URL} className={LINK}>
+              <TextLink href={REPO_URL}>
                 GitHub 저장소
-              </a>
+              </TextLink>
               에 있고, 잘못된 내용은{" "}
-              <a href={`${REPO_URL}/issues`} className={LINK}>
+              <TextLink href={`${REPO_URL}/issues`}>
                 이슈
-              </a>
+              </TextLink>
               로 알려 주세요.
             </p>
           </Part>
