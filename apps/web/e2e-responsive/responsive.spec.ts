@@ -5,7 +5,7 @@ import { expect, test } from "@playwright/test";
 
 const PAGES = ["/", "/currencies", "/currencies/USD", "/prices", "/calc", "/log", "/about", "/geo"];
 const WIDTHS = [320, 375, 768, 1280];
-const MENU = ["오늘 환율", "통화", "여행 물가", "직구 계산", "작업실", "GEO"];
+const MENU = ["오늘 환율", "통화", "여행 물가", "직구 계산", "작업실", "GEO 측정"];
 
 for (const width of WIDTHS) {
   test.describe(`${width}px`, () => {

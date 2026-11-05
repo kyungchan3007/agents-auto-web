@@ -14,7 +14,7 @@ export function NavBar({ title, logo, links, action }: { title: string; logo?: R
           {title}
         </a>
         {/* 휴대폰: 메뉴를 둘째 줄에 펼쳐 다 보이게 (한 줄로 두니 320px 에서 뒤 메뉴 둘이 잘려 안 보였음 · 작업 0109) · 버튼은 넓은 화면에서만 */}
-        <ul className="flex h-8 w-full min-w-0 items-start justify-between gap-3 overflow-x-auto text-xs whitespace-nowrap text-fg-2 [scrollbar-width:none] sm:ml-auto sm:h-auto sm:w-auto sm:items-center sm:justify-start sm:gap-5">
+        <ul className="flex h-8 w-full min-w-0 items-start justify-between gap-2 overflow-x-auto text-xs whitespace-nowrap text-fg-2 [scrollbar-width:none] sm:ml-auto sm:h-auto sm:w-auto sm:items-center sm:justify-start sm:gap-5">
           {links.map((l) => (
             <li key={l.href}>
               <a href={l.href} aria-current={l.current ? "page" : undefined} className={`transition-colors hover:text-fg ${l.current ? "text-fg" : ""}`}>
