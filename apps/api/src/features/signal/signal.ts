@@ -50,3 +50,16 @@ export function computeSignal(points: Point[], rule: SignalRule = SIGNAL_RULE): 
   const signal: Signal = percentile <= rule.cheapAt ? "cheap" : percentile >= rule.expensiveAt ? "expensive" : "normal";
   return { ...base, signal, reason: "ok", percentile, latest, window, range };
 }
+
+/** 1 외화당 원 — 엔처럼 100 단위 고시도, 출처마다 단위가 달라도 같은 기준으로 (FX-04) */
+export const perUnit = (r: { baseRate: number; unit: number }) => r.baseRate / r.unit;
+
+/** 저장된 환율(통화 · 날짜순) → 통화별 신호 */
+export function signalsByCurrency(rows: { currency: string; date: string; baseRate: number; unit: number }[]) {
+  const byCurrency = new Map<string, Point[]>();
+  for (const r of rows) byCurrency.set(r.currency, [...(byCurrency.get(r.currency) ?? []), { date: r.date, value: perUnit(r) }]);
+  return [...byCurrency].map(([currency, points]) => {
+    const { signal, reason, percentile, latest } = computeSignal(points);
+    return { currency, signal, reason, percentile, latest };
+  });
+}

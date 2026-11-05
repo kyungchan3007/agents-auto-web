@@ -1,6 +1,6 @@
 import { TasksSummary } from "@hav/shared/tasks";
 import { describe, expect, it } from "vitest";
-import { summarize } from "./routes";
+import { summarize } from "./summary";
 import { splitTitle, toRows, toSql } from "./sync";
 
 const U = "https://github.com/kyungchan3007/harness-auto-web";

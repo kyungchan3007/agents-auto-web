@@ -104,7 +104,10 @@ turbo.json                       작업 그래프 (build · lint · typecheck ·
 | 화면(`.tsx`)은 그리기만 · 상태 · 효과는 `use-*.ts` · 계산은 순수 `*.ts` | 테스트 (작업 0125) | `apps/web/src/shared/role-boundary.test.ts` |
 | 패키지끼리 `../` import 금지 | (예정) eslint `no-restricted-imports` | `@hav/config` eslint |
 | `apps/web` 은 외부 환율 API를 직접 부르지 않음 | (예정) eslint · 테스트 | `@hav/config` eslint |
-| API 입력은 zod 검증을 거침 | (예정) 슬라이스 테스트 | `apps/api` 테스트 |
+| API 입력은 zod 검증을 거침 | 슬라이스 테스트 | `apps/api` 테스트 |
+| API 라우트에 쿼리 금지 · 쿼리는 기능별 `store.ts` | 테스트 (작업 0127) | `apps/api/src/role-boundary.test.ts` |
+| 로그는 JSON 한 줄 · 비밀값 가림 | 테스트 (작업 0127) | `apps/api/src/log.ts` |
+| 끝나지 않은 Promise 금지 | eslint (작업 0127) | `packages/config/eslint.mjs` |
 | 비밀값은 `.env*` · Wrangler secret · CI Secrets 에만 | `.gitignore` + 보호 파일 | `.gitignore` · `.agents/protected.txt` |
 
 ## 아직 정하지 않은 것
