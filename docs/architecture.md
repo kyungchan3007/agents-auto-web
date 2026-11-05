@@ -37,7 +37,8 @@
 - SSR 은 하지 않음 — 하려면 Workers 로 옮겨 주소가 바뀜 → 주소(tripfx.pages.dev)와 정적 화면 유지 · 빌드 때 데이터 + 하루 한 번 재빌드 그대로
 - `functions/bff/[[path]].ts` (Pages Functions) → `apps/web/src/bff/proxy.ts` → **서비스 바인딩** `API` → API Worker (인터넷을 거치지 않음)
   - 브라우저는 같은 주소만 부름 → CORS 없음 · API 주소가 화면 코드에 없음 · 캐시를 한곳에서 (작업 기록 3초 · 나머지 5분 · 실패는 캐시 안 함)
-  - 읽기 경로만 허용 (`activity` · `fx/latest` · `fx/:통화/history` · `signal` · `prices/levels`) · 쓰기 · 관리 경로는 404/405
+  - 읽기 경로만 허용 (`activity` · `fx/latest` · `fx/:통화/history` · `signal` · `prices/levels` · `tasks` · `status` · `geo`) · 쓰기 · 관리 경로는 404/405
+- `functions/_middleware.ts` → `apps/web/src/bff/track-visit.ts`: GEO 방문 집계 · 경로는 `public/_routes.json` 으로 HTML 만 · Pages 의 D1 바인딩으로 `geo_hits` 에 바로 씀 (공개 쓰기 경로 없음 · 작업 0129)
 - Pages 루트 디렉터리가 저장소 맨 위라 `functions/` · `wrangler.jsonc`(Pages 바인딩 원본)도 맨 위
 - 만드는 중 페이지의 지난 작업 · 작업 이름: **GitHub Actions(`sync-tasks.yml`)** 가 자동 토큰으로 이슈 · 머지된 PR 을 받아 D1 `github_items` 에 저장 → `GET /tasks` → `/bff/tasks` (2026-10-28 · 작업 0052)
   - 처음엔 Pages 빌드에서 GitHub API 를 직접 불렀으나 빌드 서버 IP 공유로 403 → 사람이 만드는 토큰 없이 바꿈 (새 비밀값 없음 · D1 쓰기는 배포용 토큰)

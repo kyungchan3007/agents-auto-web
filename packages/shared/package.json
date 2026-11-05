@@ -14,7 +14,10 @@
     "./currency": "./src/currency.ts",
     "./travel": "./src/travel.ts",
     "./status": "./src/status.ts",
-    "./freshness": "./src/freshness.ts"
+    "./freshness": "./src/freshness.ts",
+    "./kst": "./src/kst.ts",
+    "./geo": "./src/geo.ts",
+    "./geo-visit": "./src/geo-visit.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

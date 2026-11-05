@@ -28,7 +28,9 @@ export function LogPage({ tasks, status, builtAt }: { tasks: Fetched<TasksSummar
             GitHub 커밋 · PR
           </TextLink>{" "}
           ·{" "}
-          <TextLink href="/about">
+          <TextLink href="/geo">GEO 측정</TextLink>{" "}
+        ·{" "}
+        <TextLink href="/about">
             소개 · 판단 기준
           </TextLink>
       </PageFooter>

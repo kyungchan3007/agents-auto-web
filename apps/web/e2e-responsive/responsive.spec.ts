@@ -3,7 +3,7 @@
 //   운영 사이트를 열기만 함 — 빌드하지 않아 D1 을 읽지 않음
 import { expect, test } from "@playwright/test";
 
-const PAGES = ["/", "/currencies", "/currencies/USD", "/prices", "/calc", "/log", "/about"];
+const PAGES = ["/", "/currencies", "/currencies/USD", "/prices", "/calc", "/log", "/about", "/geo"];
 const WIDTHS = [320, 375, 768, 1280];
 const MENU = ["오늘 환율", "통화", "여행 물가", "직구 계산", "작업실"];
 
