@@ -71,6 +71,50 @@
 
 규칙 전문: [AGENTS.md](AGENTS.md) · 바탕: [harness-template](https://github.com/kyungchan3007/harness-template)
 
+## 🔧 장애 기록
+
+### 수출입은행 수집 실패로 영업일 4일간 예비 출처 사용 ([이슈 #128](../../issues/128))
+
+| 항목 | 내용 |
+| --- | --- |
+| 기간 | 2026-11-02 ~ 11-05 |
+| 영향 | 통화 22개 → 21개 · 송금 환율 없음 · 화면은 정상으로 표시되어 알아채지 못함 |
+| 직접 원인 | 12:00 수집이 HTTP 525로 실패하면, 예비 값을 "오늘 값 있음"으로 판단해 재시도를 모두 건너뛰는 코드 결함 |
+| 조치 | 공식 값이 없으면 재시도 · 지난 14일의 예비 값을 공식 값으로 교체 ([#125](../../pull/125)) · 앱 예약이 매일 수집 출처를 확인 |
+| 미확정 | 525의 근본 원인. 은행 서버 로그를 볼 수 없어 확정하지 못함 |
+
+**검증한 내용**
+
+| 가설 | 결과 | 판단 |
+| --- | --- | --- |
+| 우리 코드 · 설정 변경 | 10-30 이후 변경 없음 | 해당 없음 |
+| 은행 인증서 문제 | TLS 1.2 · 유효 기간 2027-03까지 | 해당 없음 |
+| Cloudflare에서 항상 실패 | 임시 미리보기 3회 · 운영 2회 모두 성공 | 항상 실패하지 않음 |
+| 시간 · 경로에 따라 끊김 | 16:50 일부 지점 연결 끊김 · 16:55 54/55 · 55/55 정상 | 간헐적 끊김 관측 |
+
+같은 주소를 5분 간격으로 여러 지점에서 시험한 결과입니다 ([check-host.net](https://check-host.net)).
+
+| 2026-11-05 16:50 | 2026-11-05 16:55 |
+| --- | --- |
+| <img src="docs/images/evidence/check-host-koreaexim-reset.png" alt="일부 지점 연결 끊김"> | <img src="docs/images/evidence/check-host-koreaexim-ok.png" alt="대부분 지점 정상"> |
+
+<details>
+<summary>참고 자료</summary>
+
+Cloudflare 공식 문서는 525를 Cloudflare와 원본 서버 사이의 TLS 연결 실패로 설명합니다. 출처: [Error 525](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-525/)
+
+<img src="docs/images/evidence/cloudflare-525-doc.png" alt="Cloudflare 525 문서" width="560">
+
+Worker에서 외부 API를 호출할 때 525가 발생한 비슷한 사례입니다. 출처: [cloudflare/workerd#776](https://github.com/cloudflare/workerd/issues/776)
+
+<img src="docs/images/evidence/workerd-776-reproduce.png" alt="배포 환경에서만 525 재현" width="560">
+
+<img src="docs/images/evidence/workerd-776-tls-client.png" alt="TLS 클라이언트 호환 문제 언급" width="560">
+
+이 사례는 DeepL API에 관한 것으로, 이번 장애와 원인이 같다고 확인된 것은 아닙니다.
+
+</details>
+
 <details>
 <summary>🏗️ 구조와 일정</summary>
 
