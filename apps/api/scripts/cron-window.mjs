@@ -5,19 +5,24 @@ import { readFileSync } from "node:fs";
 
 export const GUARD_MIN = 16;
 
-/** "1-5" · "*" · "3" · "1,3" 중 하나에 맞는지 */
-function match(field, value) {
+/** "1-5" · "*" · "3" · "1,3" 중 하나에 맞는지 (num: 한 칸 글자 → 숫자) */
+function match(field, value, num = Number) {
   if (field === "*") return true;
   return field.split(",").some((part) => {
-    const [a, b] = part.split("-").map(Number);
+    const [a, b] = part.split("-").map(num);
     return b === undefined ? value === a : value >= a && value <= b;
   });
 }
 
-/** cron 5칸(분 시 일 월 요일 · UTC)이 그 분에 도는지 */
+// 요일 — Cloudflare 규칙: 이름 SUN-SAT · 숫자는 1=일요일 ~ 7=토요일 (일반 cron 의 1=월요일과 다름)
+//   2026-11 "1-5" 가 대시보드에 "Sunday through Thursday" 로 보이고 금요일 예약이 돌지 않았음 (작업 0138)
+const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+const dowNum = (t) => (DAYS.includes(t.toUpperCase()) ? DAYS.indexOf(t.toUpperCase()) : Number(t) - 1);
+
+/** cron 5칸(분 시 일 월 요일 · UTC)이 그 분에 도는지 — Cloudflare 가 읽는 대로 */
 export function fires(cron, d) {
   const [m, h, dom, mon, dow] = cron.trim().split(/\s+/);
-  return match(m, d.getUTCMinutes()) && match(h, d.getUTCHours()) && match(dom, d.getUTCDate()) && match(mon, d.getUTCMonth() + 1) && match(dow, d.getUTCDay());
+  return match(m, d.getUTCMinutes()) && match(h, d.getUTCHours()) && match(dom, d.getUTCDate()) && match(mon, d.getUTCMonth() + 1) && match(dow, d.getUTCDay(), dowNum);
 }
 
 /** now 부터 GUARD_MIN 분 안에 도는 예약이 있으면 그 시각 + 2분까지 남은 초 · 없으면 0 */
