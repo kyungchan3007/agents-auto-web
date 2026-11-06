@@ -16,7 +16,7 @@ export function GeoPage({ build }: { build: Fetched<Report> }) {
     <>
       <SiteNav page="geo" />
       <PageSection as="main" width="max-w-4xl" eyebrow="GEO 측정" title="AI 검색에서 이 사이트가 어떻게 쓰이는지 측정합니다.">
-          <p className="mt-6 text-lead text-fg-2">GEO(AI 검색 노출)를 확인하기 위한 공개 기록입니다. 측정 결과가 낮아도 그대로 공개합니다.</p>
+          <p className="mt-6 text-lead text-fg-2">GEO(AI 검색 노출)를 확인하기 위한 공개 기록입니다.</p>
 
           <div className="mt-12">
             <GeoReport build={build} />
