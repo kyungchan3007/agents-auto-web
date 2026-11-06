@@ -23,6 +23,13 @@
 - `gsc-sync.yml` 이 매일 Search Console 노출 · 클릭 · 순위 · 상위 검색어 · 페이지를 가져옴 (작업 0130) · 서비스 계정 `tripfx-gsc` (제한적 권한) · 키는 GitHub 비밀값 `GSC_SERVICE_ACCOUNT_JSON`
 - AI 답변만 구분한 값이 아님 · 검색어는 노출 2회 이상만 공개
 
+## AI 답변 인용 (자동 · 작업 0139)
+- `geo-ask.yml` 이 매일 한국 05:00 에 아래 "기록" 의 기준선 질문 24개(`apps/api/src/features/geo/questions.ts`)를 AI 검색 API 에 묻는다
+- 서비스: Claude(Anthropic 웹 검색 · `claude-opus-5-5` effort low) · ChatGPT(OpenAI Responses API 웹 검색) · Perplexity(Sonar). 키(GitHub 비밀값 `ANTHROPIC_API_KEY` · `OPENAI_API_KEY` · `PERPLEXITY_API_KEY`)가 있는 서비스만 측정하고, 없는 서비스는 기록하지 않는다 (0 으로 채우지 않음)
+- 기록: 질문마다 "답의 인용 표시에 tripfx 주소가 있음(cited)" · "검색 결과 목록에 있음(found)" · 실패 여부만 `geo_answers` 에 저장 · 답변 본문은 저장하지 않음 · 90일 보관
+- 질문에 사이트 이름을 일부러 넣은 브랜드 질문 8개가 있어, 일반 질문 16개와 나눠 봐야 한다
+- 한계: 같은 질문도 날마다 답이 달라짐 · API 검색은 앱 화면의 답과 다를 수 있음 · 사용료가 질문 수만큼 든다
+
 ## 새로 측정하면
 - 이 문서 "기록" 과 `apps/web/src/features/geo/geo-view.ts` 의 `MEASUREMENTS` 에 같이 더함
 

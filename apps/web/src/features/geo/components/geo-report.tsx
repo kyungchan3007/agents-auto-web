@@ -10,7 +10,7 @@ import { StatTile } from "@hav/ui/data/stat-tile";
 import type { GeoReport as Report } from "@hav/shared/geo";
 import type { ReactNode } from "react";
 import type { Fetched } from "../../../shared/api";
-import { KIND_TEXT, geoView } from "../lib/geo-view";
+import { KIND_TEXT, answerLines, geoView } from "../lib/geo-view";
 import { useGeoReport } from "../hooks/use-geo-report";
 
 export function GeoReport({ build }: { build: Fetched<Report> }) {
@@ -19,9 +19,38 @@ export function GeoReport({ build }: { build: Fetched<Report> }) {
   const r = report.data;
   const { ai, engines, aiHits, engineHits, referralHits } = geoView(r);
   const search = r.search;
+  const answers = answerLines(r);
   return (
     <>
       <section>
+        <SubTitle>AI 답변 인용</SubTitle>
+        <p className="mt-3 text-sm text-fg-2">정해 둔 질문 24개를 AI 검색에 매일 직접 묻고, 답의 출처에 이 사이트가 나왔는지 기록합니다.</p>
+        {answers.length === 0 ? (
+          <p className="mt-3 text-sm text-fg-2">아직 측정한 기록이 없습니다.</p>
+        ) : (
+          <>
+            <div className="mt-3">
+              <DataTable
+                head={["서비스", "측정일", "답에 인용", "검색 결과에 나옴", "실패"]}
+                rows={answers.map((a) => [a.name, a.day, a.cited, a.found, a.failed])}
+                caption="응답을 받은 질문 수 기준"
+              />
+            </div>
+            {answers.some((a) => a.citedQuestions.length > 0) && (
+              <ul className="mt-4 space-y-1 text-sm">
+                {answers.flatMap((a) => a.citedQuestions.map((q) => (
+                  <li key={`${a.name}-${q}`}>
+                    <span className="text-fg-2">{a.name}</span> · {q}
+                  </li>
+                )))}
+              </ul>
+            )}
+          </>
+        )}
+        <p className="mt-3 text-xs text-fg-2">각 서비스의 웹 검색 API 기준 · 같은 질문도 날마다 답이 달라질 수 있어 경향만 봅니다 · 답변 본문은 저장하지 않습니다</p>
+      </section>
+
+      <section className="mt-12">
         <SubTitle>구글 검색</SubTitle>
         {!search ? (
           <p className="mt-3 text-sm text-fg-2">아직 가져온 자료가 없습니다.</p>
