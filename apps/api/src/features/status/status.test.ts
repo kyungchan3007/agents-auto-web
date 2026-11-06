@@ -4,9 +4,9 @@ import { CRON } from "../../index";
 import { type RunRow, reasonOf, scheduleOf, siteStatus } from "./status";
 
 const SLOTS = [
-  { cron: "0 3 * * 1-5", kind: "collect" as const },
-  { cron: "30 4 * * 1-5", kind: "retry" as const },
-  { cron: "0 6 * * 1-5", kind: "retry" as const },
+  { cron: "0 3 * * MON-FRI", kind: "collect" as const },
+  { cron: "30 4 * * MON-FRI", kind: "retry" as const },
+  { cron: "0 6 * * MON-FRI", kind: "retry" as const },
 ];
 const run = (startedAt: string, status: RunRow["status"] = "ok", message: string | null = null, source = "koreaexim"): RunRow => ({ startedAt, source, status, rows: status === "ok" ? 22 : 0, message });
 

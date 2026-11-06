@@ -17,7 +17,7 @@ export function reasonOf(message: string | null): string | null {
 
 const toRun = (r: RunRow): StatusRun => ({ at: r.startedAt, source: r.source, status: r.status, rows: r.rows, reason: reasonOf(r.message) });
 
-/** 평일 cron "분 시 * * 1-5" (UTC) → 한국 시각 */
+/** 평일 cron "분 시 * * MON-FRI" (UTC) → 한국 시각 */
 function slotTime(cron: string): string {
   const [m, h] = cron.split(" ").map(Number);
   const t = (h * 60 + m + 9 * 60) % (24 * 60);

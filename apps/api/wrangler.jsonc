@@ -23,7 +23,7 @@
     // 환율: 수출입은행 영업일 11시 전후 갱신 → 평일 12:00 KST (03:00 UTC) · 놓친 날만 13:30 · 15:00 KST 다시 (작업 0094)
     // 물가: 세계은행 연 단위 자료 → 매달 1일 13:00 KST (04:00 UTC)
     // src/index.ts CRON 과 같은 문자열이어야 함 (index.test.ts 가 검사)
-    "crons": ["0 3 * * 1-5", "30 4 * * 1-5", "0 6 * * 1-5", "0 4 1 * *"]
+    "crons": ["0 3 * * MON-FRI", "30 4 * * MON-FRI", "0 6 * * MON-FRI", "0 4 1 * *"]
   },
   "observability": { "enabled": true },
   // 운영 오류 위치를 소스 줄로 (근거: Cloudflare Workers Best Practices)
