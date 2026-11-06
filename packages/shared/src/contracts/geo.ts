@@ -18,6 +18,26 @@ const GeoSearch = z.object({
   pages: z.array(SearchLine),
 });
 
+/** AI 답변 인용 측정 — 서비스별 최근 측정일 · 측정한 적이 없으면 null (작업 0139) */
+const GeoEngine = z.enum(["claude", "openai", "perplexity"]);
+const GeoAnswers = z.object({
+  engines: z.array(
+    z.object({
+      engine: GeoEngine,
+      day: IsoDate,
+      /** 질문 수 · 응답을 받은 질문 수 (실패는 ok 에 들어가지 않음) */
+      total: z.number().int().nonnegative(),
+      ok: z.number().int().nonnegative(),
+      /** 답의 인용 표시에 tripfx 가 나온 질문 수 · 검색 결과에 나온 질문 수 */
+      cited: z.number().int().nonnegative(),
+      found: z.number().int().nonnegative(),
+      citedQuestions: z.array(z.string()),
+    }),
+  ),
+  /** 날짜 · 서비스별 인용 수 (오래된 날부터) */
+  history: z.array(z.object({ day: IsoDate, engine: GeoEngine, ok: z.number().int().nonnegative(), cited: z.number().int().nonnegative() })),
+});
+
 export const GeoReport = z.object({
   /** 집계 기간 시작일 */
   since: IsoDate,
@@ -30,5 +50,6 @@ export const GeoReport = z.object({
   /** 운영 확인 방문이 마지막으로 기록된 날 — 공개 수치에는 넣지 않음 */
   verifiedDay: IsoDate.nullable().default(null),
   search: GeoSearch.nullable().default(null),
+  answers: GeoAnswers.nullable().default(null),
 });
 export type GeoReport = z.infer<typeof GeoReport>;

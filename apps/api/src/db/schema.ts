@@ -120,3 +120,17 @@ export const gscSync = sqliteTable("gsc_sync", {
   id: integer("id").primaryKey(),
   syncedAt: text("synced_at").notNull(),
 });
+
+/** AI 답변 인용 측정 — 질문마다 출처에 tripfx 가 나왔는지만 (답변 본문은 저장하지 않음) · GitHub Actions(geo-ask.yml)가 넣음 · 작업 0139 */
+export const geoAnswers = sqliteTable(
+  "geo_answers",
+  {
+    day: text("day").notNull(), // 한국 날짜
+    engine: text("engine", { enum: ["claude", "openai", "perplexity"] }).notNull(),
+    question: text("question").notNull(), // 고정 질문 번호 (apps/api/src/features/geo/questions.ts)
+    status: text("status", { enum: ["ok", "error"] }).notNull(),
+    cited: integer("cited").notNull().default(0), // 답의 인용 표시에 tripfx 주소가 있음 (1/0)
+    found: integer("found").notNull().default(0), // 검색 결과 목록에 tripfx 주소가 있음 (1/0)
+  },
+  (t) => [primaryKey({ columns: [t.day, t.engine, t.question] })],
+);

@@ -1,8 +1,8 @@
 // GEO 방문 집계 읽기 — 기본 키(날짜…) 앞부분으로 그 기간만 · 쓰기는 Pages 함수 (apps/web/src/bff/track-visit.ts)
 import { gte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
-import { geoHits, gscDaily, gscSync, gscTop } from "../../db/schema";
-import type { GscInput } from "./summary";
+import { geoAnswers, geoHits, gscDaily, gscSync, gscTop } from "../../db/schema";
+import type { AnswerInput, GscInput } from "./summary";
 
 export async function geoRows(d1: D1Database, since: string) {
   return drizzle(d1).select().from(geoHits).where(gte(geoHits.day, since));
@@ -16,5 +16,14 @@ export async function gscRows(d1: D1Database): Promise<GscInput> {
     return { syncedAt: sync[0]?.syncedAt ?? null, daily, top };
   } catch {
     return { syncedAt: null, daily: [], top: [] };
+  }
+}
+
+/** AI 답변 인용 기록 — 그 기간만 · 표가 아직 없으면(마이그레이션 전) 기록 없음으로 (작업 0139) */
+export async function answerRows(d1: D1Database, since: string): Promise<AnswerInput[]> {
+  try {
+    return await drizzle(d1).select().from(geoAnswers).where(gte(geoAnswers.day, since));
+  } catch {
+    return [];
   }
 }

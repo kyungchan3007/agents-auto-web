@@ -18,3 +18,22 @@ export function geoView(r: GeoReport) {
   const ai = r.bots.filter((b) => b.kind !== "engine");
   return { ai, engines, aiHits: sum(ai), engineHits: sum(engines), referralHits: sum(r.referrals) };
 }
+
+/** AI 답변 인용 측정 서비스 이름 (작업 0139) */
+export const ENGINE_TEXT: Record<NonNullable<GeoReport["answers"]>["engines"][number]["engine"], string> = {
+  claude: "Claude",
+  openai: "ChatGPT",
+  perplexity: "Perplexity",
+};
+
+/** 서비스별 최근 측정 한 줄 — 응답을 받지 못한 질문은 인용 수에 넣지 않고 따로 셈 */
+export function answerLines(r: GeoReport) {
+  return (r.answers?.engines ?? []).map((e) => ({
+    name: ENGINE_TEXT[e.engine],
+    day: e.day,
+    cited: `${e.cited} / ${e.ok}`,
+    found: `${e.found} / ${e.ok}`,
+    failed: e.total - e.ok,
+    citedQuestions: e.citedQuestions,
+  }));
+}
