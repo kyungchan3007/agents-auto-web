@@ -26,14 +26,30 @@ export const ENGINE_TEXT: Record<NonNullable<GeoReport["answers"]>["engines"][nu
   perplexity: "Perplexity",
 };
 
-/** 서비스별 최근 측정 한 줄 — 응답을 받지 못한 질문은 인용 수에 넣지 않고 따로 셈 */
+const ENGINES = ["claude", "openai", "perplexity"] as const;
+const yes = (b: boolean) => (b ? "예" : "아니오");
+
+/** 서비스별 최근 측정 한 줄 — 세 서비스 모두 · 기록이 없는 서비스는 측정 안 함 · 응답을 받지 못한 질문은 인용 수에 넣지 않고 따로 셈 (작업 0139 · 0141) */
 export function answerLines(r: GeoReport) {
-  return (r.answers?.engines ?? []).map((e) => ({
-    name: ENGINE_TEXT[e.engine],
-    day: e.day,
-    cited: `${e.cited} / ${e.ok}`,
-    found: `${e.found} / ${e.ok}`,
-    failed: e.total - e.ok,
-    citedQuestions: e.citedQuestions,
-  }));
+  return ENGINES.map((engine) => {
+    const e = r.answers?.engines.find((x) => x.engine === engine);
+    if (!e) return { engine, name: ENGINE_TEXT[engine], measured: false as const };
+    return {
+      engine,
+      name: ENGINE_TEXT[engine],
+      measured: true as const,
+      day: e.day,
+      saved: e.total,
+      cited: `${e.cited} / ${e.ok}`,
+      found: `${e.found} / ${e.ok}`,
+      failed: e.total - e.ok,
+      citedQuestions: e.citedQuestions,
+      results: e.results.map((q) => [q.question, q.group === "brand" ? "사이트 이름" : "일반", q.status === "ok" ? yes(q.cited) : "-", q.status === "ok" ? yes(q.found) : "-", q.status === "ok" ? "성공" : "실패"]),
+    };
+  });
+}
+
+/** 날짜별 저장 기록 — 최근 날부터 */
+export function answerHistory(r: GeoReport) {
+  return [...(r.answers?.history ?? [])].reverse().map((h) => [h.day, ENGINE_TEXT[h.engine], h.total, h.ok, h.cited]);
 }

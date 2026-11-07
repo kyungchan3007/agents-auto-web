@@ -2,7 +2,7 @@ import type Anthropic from "@anthropic-ai/sdk";
 import { GeoReport } from "@hav/shared/geo";
 import { describe, expect, it } from "vitest";
 import { answersSql, claudeHit, isTripfx, openaiHit, perplexityHit } from "./ask";
-import { QUESTIONS, questionText } from "./questions";
+import { QUESTIONS, questionOf } from "./questions";
 import { type AnswerInput, answersSummary, geoReport } from "./summary";
 
 describe("AI 답변 인용 측정 (작업 0139)", () => {
@@ -68,19 +68,32 @@ describe("AI 답변 인용 측정 (작업 0139)", () => {
 
   it("요약 — 서비스마다 최근 측정일 · 실패는 인용으로 세지 않음 · 기록이 없으면 null", () => {
     const a = (day: string, engine: AnswerInput["engine"], question: string, status: AnswerInput["status"], cited: number, found = cited): AnswerInput => ({ day, engine, question, status, cited, found });
-    expect(answersSummary([], questionText)).toBeNull();
+    expect(answersSummary([], questionOf)).toBeNull();
     const s = answersSummary(
       [a("2026-11-06", "claude", "g1", "ok", 1), a("2026-11-07", "claude", "g1", "ok", 0, 1), a("2026-11-07", "claude", "g2", "ok", 1), a("2026-11-07", "claude", "g3", "error", 0), a("2026-11-07", "perplexity", "b1", "ok", 0)],
-      questionText,
+      questionOf,
     );
     expect(s?.engines).toEqual([
-      { engine: "claude", day: "2026-11-07", total: 3, ok: 2, cited: 1, found: 2, citedQuestions: ["지금 환전해도 될까 달러 최근 90일"] },
-      { engine: "perplexity", day: "2026-11-07", total: 1, ok: 1, cited: 0, found: 0, citedQuestions: [] },
+      {
+        engine: "claude",
+        day: "2026-11-07",
+        total: 3,
+        ok: 2,
+        cited: 1,
+        found: 2,
+        citedQuestions: ["지금 환전해도 될까 달러 최근 90일"],
+        results: [
+          { question: "오늘 달러 환율 싼 편인가요", group: "general", status: "ok", cited: false, found: true },
+          { question: "지금 환전해도 될까 달러 최근 90일", group: "general", status: "ok", cited: true, found: true },
+          { question: "엔화 환율 지금 싼 편인지 확인", group: "general", status: "error", cited: false, found: false },
+        ],
+      },
+      { engine: "perplexity", day: "2026-11-07", total: 1, ok: 1, cited: 0, found: 0, citedQuestions: [], results: [{ question: "Tripfx", group: "brand", status: "ok", cited: false, found: false }] },
     ]);
     expect(s?.history).toEqual([
-      { day: "2026-11-06", engine: "claude", ok: 1, cited: 1 },
-      { day: "2026-11-07", engine: "claude", ok: 2, cited: 1 },
-      { day: "2026-11-07", engine: "perplexity", ok: 1, cited: 0 },
+      { day: "2026-11-06", engine: "claude", total: 1, ok: 1, cited: 1 },
+      { day: "2026-11-07", engine: "claude", total: 3, ok: 2, cited: 1 },
+      { day: "2026-11-07", engine: "perplexity", total: 1, ok: 1, cited: 0 },
     ]);
     expect(() => GeoReport.parse(geoReport([], "2026-10-08", null, s))).not.toThrow();
   });
