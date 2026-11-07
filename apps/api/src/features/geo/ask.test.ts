@@ -98,3 +98,11 @@ describe("AI 답변 인용 측정 (작업 0139)", () => {
     expect(() => GeoReport.parse(geoReport([], "2026-10-08", null, s))).not.toThrow();
   });
 });
+
+describe("질문별 결과 순서 (작업 0142)", () => {
+  it("저장 순서 · 번호 문자열 순이 아니라 질문 목록 순서", () => {
+    const rows: AnswerInput[] = ["g10", "g2", "b1", "g1"].map((question) => ({ day: "2026-11-07", engine: "claude", question, status: "ok", cited: 0, found: 0 }));
+    const s = answersSummary(rows, questionOf);
+    expect(s?.engines[0].results.map((r) => r.question)).toEqual(["Tripfx", "오늘 달러 환율 싼 편인가요", "지금 환전해도 될까 달러 최근 90일", "한국 대비 일본 물가 수준"]);
+  });
+});
