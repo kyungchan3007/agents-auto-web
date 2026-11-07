@@ -30,4 +30,4 @@ export const QUESTIONS: Question[] = [
   { id: "g16", group: "general", text: "직구 타이밍 환율 언제 살까" },
 ];
 
-export const questionText = (id: string) => QUESTIONS.find((q) => q.id === id)?.text ?? null;
+export const questionOf = (id: string): Question | null => QUESTIONS.find((q) => q.id === id) ?? null;

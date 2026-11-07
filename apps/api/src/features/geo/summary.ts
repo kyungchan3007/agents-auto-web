@@ -69,13 +69,14 @@ export type AnswerInput = { day: string; engine: "claude" | "openai" | "perplexi
 const ENGINE_ORDER = ["claude", "openai", "perplexity"] as const;
 
 /** AI 답변 인용 저장값 → 공개 요약 · 서비스마다 가장 최근 측정일 · 측정한 적이 없으면 null (작업 0139) */
-export function answersSummary(rows: AnswerInput[], textOf: (id: string) => string | null): GeoReport["answers"] {
+export function answersSummary(rows: AnswerInput[], questionOf: (id: string) => { text: string; group: "brand" | "general" } | null): GeoReport["answers"] {
   if (rows.length === 0) return null;
   const engines: NonNullable<GeoReport["answers"]>["engines"] = [];
   const history = new Map<string, NonNullable<GeoReport["answers"]>["history"][number]>();
   for (const r of rows) {
     const k = `${r.day}|${r.engine}`;
-    const h = history.get(k) ?? { day: r.day, engine: r.engine, ok: 0, cited: 0 };
+    const h = history.get(k) ?? { day: r.day, engine: r.engine, total: 0, ok: 0, cited: 0 };
+    h.total += 1;
     if (r.status === "ok") h.ok += 1;
     if (r.status === "ok" && r.cited) h.cited += 1;
     history.set(k, h);
@@ -93,7 +94,11 @@ export function answersSummary(rows: AnswerInput[], textOf: (id: string) => stri
       ok: ok.length,
       cited: ok.filter((r) => r.cited).length,
       found: ok.filter((r) => r.found).length,
-      citedQuestions: ok.filter((r) => r.cited).flatMap((r) => textOf(r.question) ?? []),
+      citedQuestions: ok.filter((r) => r.cited).flatMap((r) => questionOf(r.question)?.text ?? []),
+      results: today.flatMap((r) => {
+        const q = questionOf(r.question);
+        return q ? [{ question: q.text, group: q.group, status: r.status, cited: r.status === "ok" && r.cited === 1, found: r.status === "ok" && r.found === 1 }] : [];
+      }),
     });
   }
   const order = (e: string) => ENGINE_ORDER.indexOf(e as (typeof ENGINE_ORDER)[number]);

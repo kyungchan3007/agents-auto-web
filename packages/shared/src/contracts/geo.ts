@@ -32,10 +32,16 @@ const GeoAnswers = z.object({
       cited: z.number().int().nonnegative(),
       found: z.number().int().nonnegative(),
       citedQuestions: z.array(z.string()),
+      /** 그날 질문별 결과 — 저장된 그대로 (작업 0141) */
+      results: z
+        .array(z.object({ question: z.string(), group: z.enum(["brand", "general"]), status: z.enum(["ok", "error"]), cited: z.boolean(), found: z.boolean() }))
+        .default([]),
     }),
   ),
-  /** 날짜 · 서비스별 인용 수 (오래된 날부터) */
-  history: z.array(z.object({ day: IsoDate, engine: GeoEngine, ok: z.number().int().nonnegative(), cited: z.number().int().nonnegative() })),
+  /** 날짜 · 서비스별 저장된 질문 수(total) · 응답 받은 수(ok) · 인용 수 (오래된 날부터) */
+  history: z.array(
+    z.object({ day: IsoDate, engine: GeoEngine, total: z.number().int().nonnegative().default(0), ok: z.number().int().nonnegative(), cited: z.number().int().nonnegative() }),
+  ),
 });
 
 export const GeoReport = z.object({
