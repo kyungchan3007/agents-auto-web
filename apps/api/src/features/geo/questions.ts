@@ -30,4 +30,8 @@ export const QUESTIONS: Question[] = [
   { id: "g16", group: "general", text: "직구 타이밍 환율 언제 살까" },
 ];
 
-export const questionOf = (id: string): Question | null => QUESTIONS.find((q) => q.id === id) ?? null;
+/** 질문 번호 → 질문 · 목록 안 순서(order) */
+export function questionOf(id: string): (Question & { order: number }) | null {
+  const order = QUESTIONS.findIndex((q) => q.id === id);
+  return order < 0 ? null : { ...QUESTIONS[order], order };
+}
