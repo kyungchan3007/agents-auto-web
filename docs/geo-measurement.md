@@ -23,6 +23,11 @@
 - `gsc-sync.yml` 이 매일 Search Console 노출 · 클릭 · 순위 · 상위 검색어 · 페이지를 가져옴 (작업 0130) · 서비스 계정 `tripfx-gsc` (제한적 권한) · 키는 GitHub 비밀값 `GSC_SERVICE_ACCOUNT_JSON`
 - AI 답변만 구분한 값이 아님 · 검색어는 노출 2회 이상만 공개
 
+## 색인 요청 (자동 · 작업 0144)
+- `indexnow.yml` 이 평일 한국 16:00 에 운영 sitemap 에서 그날 바뀐 주소만 IndexNow(`api.indexnow.org`)로 보낸다 · Bing · 네이버 · Yandex 등이 함께 받음
+- 키 파일 `apps/web/public/a6932e161e92d438629d7ca38466be2c.txt` (공개가 원래 방식) · 2026-11-08 전체 29개 주소 1회 전송 → HTTP 200
+- 구글은 IndexNow 를 받지 않음 → Search Console 사이트맵 · 색인 요청으로
+
 ## AI 답변 인용 (자동 · 작업 0139)
 - `geo-ask.yml` 이 매일 한국 05:00 에 아래 "기록" 의 기준선 질문 24개(`apps/api/src/features/geo/questions.ts`)를 AI 검색 API 에 묻는다
 - 서비스: Claude(Anthropic 웹 검색 · `claude-opus-5-5` effort low) · ChatGPT(OpenAI Responses API 웹 검색) · Perplexity(Sonar). 키(GitHub 비밀값 `ANTHROPIC_API_KEY` · `OPENAI_API_KEY` · `PERPLEXITY_API_KEY`)가 있는 서비스만 측정하고, 없는 서비스는 기록하지 않는다 (0 으로 채우지 않음)

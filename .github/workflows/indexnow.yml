@@ -1,0 +1,27 @@
+name: indexnow
+# 바뀐 페이지를 검색 엔진에 알림 — 운영 sitemap 에서 오늘(한국 날짜) 바뀐 주소만 IndexNow 로 (Bing · 네이버 · Yandex 등이 함께 받음 · 작업 0144)
+#   평일 환율 수집 · 재시도 · 다시 빌드가 끝난 뒤 · 바뀐 주소가 없으면 보내지 않음 · 비밀값 없음 (키는 공개 파일)
+on:
+  schedule:
+    - cron: "0 7 * * 1-5" # 한국 16:00
+  workflow_dispatch:
+    inputs:
+      all:
+        description: "바뀐 것과 상관없이 전체 주소 보내기"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: IndexNow 보내기
+        run: node --experimental-strip-types apps/web/scripts/indexnow.ts ${{ inputs.all && '--all' || '' }} | tee -a "$GITHUB_STEP_SUMMARY"

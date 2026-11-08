@@ -163,6 +163,7 @@ flowchart LR
 | API 배포 | API 코드가 바뀐 머지 | [`deploy-api.yml`](.github/workflows/deploy-api.yml) |
 | 보안 점검 | 매일 한국 05:30 | [`security-audit.yml`](.github/workflows/security-audit.yml) |
 | 검색 자료 수집 | 매일 한국 04:20 | [`gsc-sync.yml`](.github/workflows/gsc-sync.yml) — Search Console → D1 |
+| 색인 요청 | 평일 한국 16:00 | [`indexnow.yml`](.github/workflows/indexnow.yml) — 그날 바뀐 주소를 IndexNow 로 (Bing · 네이버 등) |
 | AI 답변 인용 측정 | 매일 한국 05:00 | [`geo-ask.yml`](.github/workflows/geo-ask.yml) — 고정 질문 24개를 AI 검색 API 에 묻고 출처에 tripfx 가 나왔는지 → D1 |
 | 반응형 점검 | 머지 뒤 · 매일 한국 12:40 | [`responsive.yml`](.github/workflows/responsive.yml) |
 
