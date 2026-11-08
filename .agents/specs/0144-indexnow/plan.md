@@ -12,9 +12,7 @@
 
 ## 파일 계획
 <!-- tsconfig: 스크립트가 .ts 경로로 가져오도록 allowImportingTsExtensions (noEmit 이라 빌드 영향 없음) · indexnow.yml 은 보호 파일 -->
-- apps/web/src/shared/indexnow.ts
-- apps/web/src/shared/indexnow.test.ts
-- apps/web/scripts/indexnow.ts
+- apps/web/scripts/**
 - apps/web/tsconfig.json
 - .github/workflows/indexnow.yml
 - docs/geo-measurement.md
@@ -29,4 +27,6 @@
 - [ ] 머지 뒤 평일 첫 자동 실행 결과 확인
 
 ## 허점
+- 처음에 순수 함수를 앱 공용 폴더(src/shared)에 두어 역할 분담 테스트가 실패 → 스크립트 옆(scripts/indexnow-lib.ts)으로 옮김. 게이트 결과를 끝 몇 줄만 보고 이 실패를 한 번 놓쳤다
+- 요청 원문이 # 으로 시작해 게이트가 제목 줄로 보고 빈 기록으로 판단 → 따옴표로 감쌈
 - 작업 0133 에서 IndexNow 를 한 번만 보내고 자동화를 미뤄, 그 뒤 바뀐 페이지는 알리지 않았다

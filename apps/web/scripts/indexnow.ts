@@ -1,7 +1,7 @@
 // GitHub Actions 가 부름: 운영 sitemap 에서 오늘(한국 날짜) 바뀐 주소를 IndexNow 로 알림 (작업 0144)
 //   node --experimental-strip-types apps/web/scripts/indexnow.ts [--all]
 //   응답은 상태 코드만 출력 · 바뀐 주소가 없으면 보내지 않음
-import { INDEXNOW_ENDPOINT, changedUrls, indexNowBody, parseSitemap } from "../src/shared/indexnow.ts";
+import { INDEXNOW_ENDPOINT, changedUrls, indexNowBody, parseSitemap } from "./indexnow-lib.ts";
 import { SITE_URL } from "../src/shared/site.ts";
 
 const all = process.argv.includes("--all");

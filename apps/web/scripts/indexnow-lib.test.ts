@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { INDEXNOW_KEY, changedUrls, indexNowBody, parseSitemap } from "./indexnow";
-import { SITE_URL } from "./site";
+import { INDEXNOW_KEY, changedUrls, indexNowBody, parseSitemap } from "./indexnow-lib";
+import { SITE_URL } from "../src/shared/site";
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -37,7 +37,7 @@ describe("IndexNow 색인 요청 (작업 0144)", () => {
     });
   });
   it("키 파일이 public 에 있고 내용이 키와 같음 (다르면 403)", () => {
-    const file = readFileSync(fileURLToPath(new URL(`../../public/${INDEXNOW_KEY}.txt`, import.meta.url)), "utf8");
+    const file = readFileSync(fileURLToPath(new URL(`../public/${INDEXNOW_KEY}.txt`, import.meta.url)), "utf8");
     expect(file.trim()).toBe(INDEXNOW_KEY);
   });
 });

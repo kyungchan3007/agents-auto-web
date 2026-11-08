@@ -1,6 +1,6 @@
 // IndexNow 색인 요청 — sitemap 에서 바뀐 주소만 골라 요청 본문을 만든다 (순수 함수 · 작업 0144)
 //   IndexNow 는 Bing · 네이버 · Yandex 등이 함께 받는다 · 키는 공개 파일(public/<키>.txt)이 원래 방식이라 비밀값이 아님
-//   보내기는 scripts/indexnow.ts (GitHub Actions indexnow.yml) · node 가 바로 읽도록 import 없이 사이트 주소를 인자로 받음
+//   보내기는 indexnow.ts (GitHub Actions indexnow.yml) · node 가 바로 읽도록 import 없이 사이트 주소를 인자로 받음
 
 export const INDEXNOW_KEY = "a6932e161e92d438629d7ca38466be2c";
 export const INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow";
