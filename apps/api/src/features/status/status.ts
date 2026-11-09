@@ -27,7 +27,8 @@ function slotTime(cron: string): string {
 /**
  * 오늘 예약 회차 상태
  * - 회차 시각부터 5분 안에 시작한 수집 기록 → 그 결과 (예약은 30초 안에 시작 · 20분으로 두니 15:09 예비 메우기(ensure-fx)가 15:00 회차로 잡혔음 · 작업 0107)
- * - 기록이 없고 다시 하는 회차인데 그 전에 오늘 값이 있었으면 → not-needed (다시 하는 예약은 값이 있으면 기록 없이 끝남)
+ * - 기록이 없고 다시 하는 회차인데 그 전에 오늘 공식 값이 있었으면 → not-needed (다시 하는 예약은 공식 값이 있으면 기록 없이 끝남)
+ *   firstRateAt 은 오늘 공식 값이 처음 저장된 시각 — 예비 값만 있으면 null (2026-11-09 예비 값만 있는데 "필요 없음"으로 보였음 · 작업 0145)
  * - 그 밖에 시각이 5분 넘게 지났으면 missed · 아니면 upcoming
  */
 export function scheduleOf(slots: Slot[], runs: RunRow[], now: Date, firstRateAt: string | null): StatusSlot[] {

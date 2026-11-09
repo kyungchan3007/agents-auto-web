@@ -37,7 +37,12 @@ export type Headline = { tone: "ok" | "warn" | "bad" | "rest"; text: string };
 
 /** 맨 위 한 줄 — 오늘 값이 있으면 정상 · 주말은 쉼 · 회차가 놓쳤으면 경고 */
 export function headlineOf(s: SiteStatus): Headline {
-  if (s.latestDate === s.today) return { tone: "ok", text: "오늘 환율이 들어왔습니다" };
+  if (s.latestDate === s.today) {
+    // 오늘 마지막 성공 수집이 예비 출처면 경고 — 화면이 정상으로 보여 4일간 몰랐음 (#128 · 작업 0145)
+    const last = s.todayRuns.find((r) => r.status === "ok");
+    if (last && last.source !== "koreaexim") return { tone: "warn", text: "오늘 환율은 예비 출처 값입니다 · 수출입은행 값은 아직 없습니다" };
+    return { tone: "ok", text: "오늘 환율이 들어왔습니다" };
+  }
   if (s.schedule.length === 0) return { tone: "rest", text: `주말이라 고시가 없습니다 · ${s.latestDate ? md(s.latestDate) : "—"} 값` };
   if (s.schedule.some((x) => x.state === "missed" || x.state === "error")) return { tone: "bad", text: `오늘 환율이 아직 없습니다 · 지금은 ${s.latestDate ? md(s.latestDate) : "—"} 값` };
   if (s.schedule.every((x) => x.state === "upcoming")) return { tone: "warn", text: "오늘 환율은 낮 12시에 수집합니다" };

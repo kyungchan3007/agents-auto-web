@@ -24,3 +24,17 @@ describe("점검판 글 (작업 0105)", () => {
     expect(lastRunText({ ...base, lastRun: { at: "2026-10-29T03:00:30Z", source: "koreaexim", status: "ok", rows: 22, reason: null } })).toBe("10월 29일 12:00 · 한국수출입은행 · 22개 통화");
   });
 });
+
+describe("예비 값만 있는 날 (작업 0145)", () => {
+  const run = (source: string, status: "ok" | "error" = "ok") => ({ at: "2026-11-09T03:00:17Z", source, status, rows: status === "ok" ? 22 : 0, reason: "http-525" });
+  const today = { ...base, today: "2026-11-09", latestDate: "2026-11-09" };
+  it("오늘 마지막 성공 수집이 예비 출처면 경고", () => {
+    expect(headlineOf({ ...today, todayRuns: [run("koreaexim→frankfurter")] })).toEqual({ tone: "warn", text: "오늘 환율은 예비 출처 값입니다 · 수출입은행 값은 아직 없습니다" });
+  });
+  it("뒤에 수출입은행 수집이 성공하면 정상 (최근 기록이 앞)", () => {
+    expect(headlineOf({ ...today, todayRuns: [run("koreaexim"), run("koreaexim→frankfurter")] }).tone).toBe("ok");
+  });
+  it("재시도가 실패해도 마지막 성공이 예비면 경고 유지", () => {
+    expect(headlineOf({ ...today, todayRuns: [run("koreaexim", "error"), run("koreaexim→frankfurter")] }).tone).toBe("warn");
+  });
+});
