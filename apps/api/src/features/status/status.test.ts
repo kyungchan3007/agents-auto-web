@@ -63,3 +63,16 @@ describe("사이트 상태 (작업 0105)", () => {
     expect(s.lastRun?.at).toBe("2026-10-30T06:09:52Z");
   });
 });
+
+describe("예비 값만 있는 날 (작업 0145)", () => {
+  it("2026-11-09 실제: 12:00 예비로 저장 · 공식 값 없음(firstRateAt null) → 다시 하는 회차는 예정", () => {
+    const runs = [run("2026-11-09T03:00:17Z", "ok", "koreaexim http-525: HTTP 525", "koreaexim→frankfurter")];
+    const s = scheduleOf(SLOTS, runs, new Date("2026-11-09T03:08:36Z"), null);
+    expect(s.map((x) => x.state)).toEqual(["done", "upcoming", "upcoming"]);
+  });
+  it("13:30 공식 값으로 교체 → 15:00 은 필요 없음", () => {
+    const runs = [run("2026-11-09T04:30:12Z"), run("2026-11-09T03:00:17Z", "ok", "koreaexim http-525: HTTP 525", "koreaexim→frankfurter")];
+    const s = scheduleOf(SLOTS, runs, new Date("2026-11-09T05:00:00Z"), "2026-11-09T04:30:14Z");
+    expect(s.map((x) => x.state)).toEqual(["done", "done", "not-needed"]);
+  });
+});
