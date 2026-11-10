@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="720" viewBox="0 0 1320 720" font-family="Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#57606A"/></marker>
+  </defs>
+  <rect width="1320" height="720" fill="#FFFFFF"/>
+  <text x="40" y="48" font-size="24" font-weight="700" fill="#1F2328">Tripfx 아키텍처</text>
+  <text x="40" y="74" font-size="14" fill="#57606A">수집 · 저장 · 화면은 Cloudflare, 개발 · 자동 작업은 GitHub</text>
+
+  <text x="40" y="128" font-size="14" font-weight="700" fill="#57606A">외부 데이터</text>
+  <g font-size="15" fill="#1F2328" text-anchor="middle">
+    <rect x="40" y="142" width="200" height="56" rx="10" fill="#F6F8FA" stroke="#D0D7DE"/>
+    <text x="140" y="175">한국수출입은행 API</text>
+    <rect x="40" y="214" width="200" height="56" rx="10" fill="#F6F8FA" stroke="#D0D7DE"/>
+    <text x="140" y="241">Frankfurter</text>
+    <text x="140" y="259" font-size="12" fill="#57606A">예비 출처</text>
+    <rect x="40" y="286" width="200" height="56" rx="10" fill="#F6F8FA" stroke="#D0D7DE"/>
+    <text x="140" y="319">세계은행 API</text>
+  </g>
+
+  <rect x="290" y="104" width="630" height="370" rx="16" fill="#FFF7F0" stroke="#F38020" stroke-width="1.5"/>
+  <text x="312" y="132" font-size="15" font-weight="700" fill="#C2410C">Cloudflare</text>
+
+  <g text-anchor="middle">
+    <rect x="320" y="150" width="240" height="110" rx="12" fill="#FFFFFF" stroke="#F38020"/>
+    <text x="440" y="190" font-size="17" font-weight="700" fill="#1F2328">API Worker</text>
+    <text x="440" y="214" font-size="13" fill="#57606A">Hono · 조회 API</text>
+    <text x="440" y="234" font-size="13" fill="#57606A">Cron 수집 · 재시도 예약</text>
+
+    <rect x="320" y="350" width="240" height="94" rx="12" fill="#FFFFFF" stroke="#F38020"/>
+    <text x="440" y="388" font-size="17" font-weight="700" fill="#1F2328">D1 (SQLite)</text>
+    <text x="440" y="412" font-size="13" fill="#57606A">환율 · 물가 · 작업 기록 · 측정 결과</text>
+
+    <rect x="660" y="150" width="230" height="110" rx="12" fill="#FFFFFF" stroke="#F38020"/>
+    <text x="775" y="190" font-size="17" font-weight="700" fill="#1F2328">Pages 정적 사이트</text>
+    <text x="775" y="214" font-size="13" fill="#57606A">Next.js 정적 내보내기</text>
+    <text x="775" y="234" font-size="13" fill="#57606A">빌드 시 API 데이터 반영</text>
+
+    <rect x="660" y="350" width="230" height="94" rx="12" fill="#FFFFFF" stroke="#F38020"/>
+    <text x="775" y="388" font-size="17" font-weight="700" fill="#1F2328">BFF</text>
+    <text x="775" y="412" font-size="13" fill="#57606A">Pages Functions · 실시간 조회</text>
+
+    <rect x="1010" y="150" width="150" height="56" rx="28" fill="#F6F8FA" stroke="#D0D7DE"/>
+    <text x="1085" y="184" font-size="15" fill="#1F2328">방문자</text>
+  </g>
+
+  <rect x="290" y="520" width="990" height="170" rx="16" fill="#F6F8FA" stroke="#8C959F" stroke-width="1.5"/>
+  <text x="312" y="548" font-size="15" font-weight="700" fill="#424A53">GitHub</text>
+
+  <g font-size="14" fill="#1F2328" text-anchor="middle">
+    <rect x="320" y="580" width="140" height="70" rx="10" fill="#F5EEFF" stroke="#8A2BE2"/>
+    <text x="390" y="610" font-weight="700">AI 에이전트</text>
+    <text x="390" y="631" font-size="12" fill="#57606A">Claude Code · Codex</text>
+    <rect x="484" y="580" width="140" height="70" rx="10" fill="#FFFFFF" stroke="#8C959F"/>
+    <text x="554" y="610" font-weight="700">PR · 게이트</text>
+    <text x="554" y="631" font-size="12" fill="#57606A">타입 · 린트 · 테스트</text>
+    <rect x="648" y="580" width="140" height="70" rx="10" fill="#FFFFFF" stroke="#8C959F"/>
+    <text x="718" y="610" font-weight="700">개발자 검증</text>
+    <text x="718" y="631" font-size="12" fill="#57606A">원인 · 근거 확인 · 승인</text>
+    <rect x="812" y="580" width="110" height="70" rx="10" fill="#FFFFFF" stroke="#8C959F"/>
+    <text x="867" y="610" font-weight="700">main 머지</text>
+    <text x="867" y="631" font-size="12" fill="#57606A">자동 배포</text>
+  </g>
+
+  <rect x="950" y="566" width="310" height="104" rx="12" fill="#FFFFFF" stroke="#8C959F"/>
+  <text x="1105" y="590" text-anchor="middle" font-size="15" font-weight="700" fill="#1F2328">GitHub Actions</text>
+  <g font-size="12.5" fill="#57606A">
+    <text x="968" y="613">· 보안 점검 → 이슈</text>
+    <text x="968" y="631">· Search Console 자료 · 작업 기록 → D1</text>
+    <text x="968" y="649">· 바뀐 페이지 색인 요청 (IndexNow)</text>
+    <text x="968" y="664" dy="0">· 세션 측정 결과 저장 · 수집 예비</text>
+  </g>
+
+  <g stroke="#57606A" stroke-width="1.6" fill="none" marker-end="url(#a)">
+    <path d="M240 170 L318 190"/>
+    <path d="M240 242 L318 205"/>
+    <path d="M240 314 L318 225"/>
+    <path d="M440 262 L440 348" marker-start="url(#a)"/>
+    <path d="M562 205 L658 205"/>
+    <path d="M658 372 L564 256"/>
+    <path d="M1008 178 L892 190"/>
+    <path d="M1040 208 L892 372"/>
+    <path d="M460 615 L482 615"/>
+    <path d="M624 615 L646 615"/>
+    <path d="M788 615 L810 615"/>
+    <path d="M867 578 L867 476"/>
+    <path d="M1010 564 L924 446"/>
+  </g>
+  <g font-size="12" fill="#57606A">
+    <text x="258" y="160">수집</text>
+    <text x="450" y="310">저장 · 조회</text>
+    <text x="610" y="196" text-anchor="middle">빌드 데이터</text>
+    <text x="610" y="224" text-anchor="middle">배포 훅</text>
+    <text x="620" y="300">서비스</text>
+    <text x="620" y="316">바인딩</text>
+    <text x="858" y="504" text-anchor="end">사이트 · API 배포</text>
+    <text x="978" y="500">기록 · 측정 결과 → D1</text>
+  </g>
+</svg>

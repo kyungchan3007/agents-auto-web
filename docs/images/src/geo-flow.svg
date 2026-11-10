@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="640" viewBox="0 0 1320 640" font-family="Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#57606A"/></marker>
+  </defs>
+  <rect width="1320" height="640" fill="#FFFFFF"/>
+  <text x="40" y="48" font-size="24" font-weight="700" fill="#1F2328">GEO 측정 흐름</text>
+  <text x="40" y="74" font-size="14" fill="#57606A">사이트 준비 → 검색 엔진 등록 · 알림 → 단계별 측정 → 저장 · 공개</text>
+
+  <!-- 단계 제목 -->
+  <g font-size="15" font-weight="700" fill="#424A53">
+    <text x="40" y="124">① 사이트 준비</text>
+    <text x="350" y="124">② 검색 엔진 등록 · 알림</text>
+    <text x="700" y="124">③ 단계별 측정</text>
+    <text x="1060" y="124">④ 저장 · 공개</text>
+  </g>
+
+  <!-- ① -->
+  <rect x="40" y="140" width="260" height="350" rx="14" fill="#F6F8FA" stroke="#D0D7DE"/>
+  <g font-size="14" fill="#1F2328">
+    <text x="62" y="180" font-weight="700">검색 엔진용 파일</text>
+    <text x="62" y="204" fill="#57606A">· robots.txt</text>
+    <text x="62" y="226" fill="#57606A">· sitemap.xml</text>
+    <text x="62" y="248" fill="#57606A">· IndexNow 키 파일</text>
+    <text x="62" y="298" font-weight="700">소유 확인</text>
+    <text x="62" y="322" fill="#57606A">· 구글 · Bing 확인 메타 태그</text>
+    <text x="62" y="372" font-weight="700">인용용 콘텐츠</text>
+    <text x="62" y="396" fill="#57606A">· 자료 출처 · 판단 기준 소개</text>
+    <text x="62" y="418" fill="#57606A">· 통화별 요약 문장 · 기간별 표</text>
+    <text x="62" y="440" fill="#57606A">· 기계가 읽는 날짜 표기</text>
+    <text x="62" y="462" fill="#57606A">· 통화 절반에만 적용 (비교군)</text>
+  </g>
+
+  <!-- ② -->
+  <g font-size="14" fill="#1F2328">
+    <rect x="350" y="140" width="290" height="120" rx="12" fill="#FFFFFF" stroke="#4285F4"/>
+    <text x="372" y="172" font-size="16" font-weight="700">Google Search Console</text>
+    <text x="372" y="198" fill="#57606A">· 소유 확인 · 사이트맵 제출</text>
+    <text x="372" y="220" fill="#57606A">· 페이지별 색인 요청</text>
+    <text x="372" y="242" fill="#57606A">· 서비스 계정으로 자료 조회 권한</text>
+
+    <rect x="350" y="290" width="290" height="96" rx="12" fill="#FFFFFF" stroke="#00809D"/>
+    <text x="372" y="322" font-size="16" font-weight="700">Bing Webmaster Tools</text>
+    <text x="372" y="348" fill="#57606A">· 소유 확인 · 사이트맵 제출</text>
+    <text x="372" y="370" fill="#57606A">· Bing 색인은 여러 AI 검색이 활용</text>
+
+    <rect x="350" y="416" width="290" height="96" rx="12" fill="#FFFFFF" stroke="#8C959F"/>
+    <text x="372" y="448" font-size="16" font-weight="700">IndexNow</text>
+    <text x="372" y="474" fill="#57606A">· 평일 바뀐 페이지 자동 전송</text>
+    <text x="372" y="496" fill="#57606A">· Bing · 네이버 · Yandex 공동 수신</text>
+  </g>
+
+  <!-- ③ -->
+  <g font-size="14" fill="#1F2328">
+    <rect x="700" y="140" width="300" height="96" rx="12" fill="#FFFFFF" stroke="#F38020"/>
+    <text x="722" y="170" font-size="16" font-weight="700">봇 방문</text>
+    <text x="722" y="196" fill="#57606A">· 페이지 요청의 봇 이름을 집계</text>
+    <text x="722" y="218" fill="#57606A">· AI 봇 · 검색 엔진 봇 구분</text>
+
+    <rect x="700" y="250" width="300" height="96" rx="12" fill="#FFFFFF" stroke="#4285F4"/>
+    <text x="722" y="280" font-size="16" font-weight="700">검색 노출</text>
+    <text x="722" y="306" fill="#57606A">· 노출 · 클릭 · 순위 · 검색어</text>
+    <text x="722" y="328" fill="#57606A">· 매일 Search Console에서 수집</text>
+
+    <rect x="700" y="360" width="300" height="110" rx="12" fill="#FFFFFF" stroke="#8A2BE2"/>
+    <text x="722" y="390" font-size="16" font-weight="700">AI 답변 인용</text>
+    <text x="722" y="416" fill="#57606A">· 고정 질문을 에이전트가 웹 검색</text>
+    <text x="722" y="438" fill="#57606A">· 결과 · 출처에 사이트 포함 여부</text>
+    <text x="722" y="460" fill="#57606A">· 결과 파일 PR → 머지 시 저장</text>
+
+    <rect x="700" y="484" width="300" height="96" rx="12" fill="#FFFFFF" stroke="#F38020"/>
+    <text x="722" y="514" font-size="16" font-weight="700">AI 서비스 유입</text>
+    <text x="722" y="540" fill="#57606A">· AI 서비스에서 넘어온 방문을 집계</text>
+    <text x="722" y="562" fill="#57606A">· ChatGPT · Perplexity 등</text>
+  </g>
+
+  <!-- ④ -->
+  <g text-anchor="middle">
+    <rect x="1060" y="250" width="220" height="80" rx="12" fill="#FFF7F0" stroke="#F38020"/>
+    <text x="1170" y="284" font-size="16" font-weight="700" fill="#1F2328">D1</text>
+    <text x="1170" y="308" font-size="13" fill="#57606A">날짜별 측정 결과 보관</text>
+    <rect x="1060" y="390" width="220" height="80" rx="12" fill="#FFFFFF" stroke="#1F2328"/>
+    <text x="1170" y="424" font-size="16" font-weight="700" fill="#1F2328">GEO 측정 페이지</text>
+    <text x="1170" y="448" font-size="13" fill="#57606A">/geo 에 공개</text>
+  </g>
+
+  <g stroke="#57606A" stroke-width="1.6" fill="none" marker-end="url(#a)">
+    <path d="M300 315 L348 315"/>
+    <path d="M640 235 L698 290"/>
+    <path d="M1000 188 L1058 280"/>
+    <path d="M1000 298 L1058 292"/>
+    <path d="M1000 414 L1058 304"/>
+    <path d="M1000 532 L1058 316"/>
+    <path d="M1170 332 L1170 388"/>
+  </g>
+  <g font-size="12" fill="#57606A">
+    <text x="660" y="222">자료 조회</text>
+    <text x="1280" y="616" text-anchor="end">집계 방식: Pages 미들웨어(봇 방문 · AI 서비스 유입) · GitHub Actions(검색 노출 · AI 답변 인용)</text>
+  </g>
+</svg>
