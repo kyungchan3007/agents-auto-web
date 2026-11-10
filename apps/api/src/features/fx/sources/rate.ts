@@ -12,12 +12,13 @@ export type RateRow = {
 
 /** 출처가 "데이터 없음"이 아니라 "실패"를 알렸을 때 — 예비 출처로 넘어갈 이유 */
 export class SourceError extends Error {
-  constructor(
-    readonly source: RateRow["source"],
-    readonly code: string,
-    message: string,
-  ) {
+  // 필드로 씀 — 생성자 매개변수 속성은 node 타입 지우기 실행에서 못 읽음 (erasableSyntaxOnly · 작업 0148)
+  readonly source: RateRow["source"];
+  readonly code: string;
+  constructor(source: RateRow["source"], code: string, message: string) {
     super(message);
+    this.source = source;
+    this.code = code;
   }
 }
 
