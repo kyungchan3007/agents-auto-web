@@ -1,17 +1,17 @@
-// GitHub Actions 가 부름: 운영 sitemap 에서 오늘(한국 날짜) 바뀐 주소를 IndexNow 로 알림 (작업 0144)
+// GitHub Actions 가 부름: 운영 sitemap 에서 어제 · 오늘(한국 날짜) 바뀐 주소를 IndexNow 로 알림 (작업 0144 · 0146)
 //   node --experimental-strip-types apps/web/scripts/indexnow.ts [--all]
 //   응답은 상태 코드만 출력 · 바뀐 주소가 없으면 보내지 않음
-import { INDEXNOW_ENDPOINT, changedUrls, indexNowBody, parseSitemap } from "./indexnow-lib.ts";
+import { INDEXNOW_ENDPOINT, changedUrls, indexNowBody, parseSitemap, sinceDate } from "./indexnow-lib.ts";
 import { SITE_URL } from "../src/shared/site.ts";
 
 const all = process.argv.includes("--all");
-const today = new Date(Date.now() + 9 * 3600_000).toISOString().slice(0, 10);
+const since = sinceDate(new Date());
 
 const res = await fetch(`${SITE_URL}/sitemap.xml`, { signal: AbortSignal.timeout(30_000) });
 if (!res.ok) throw new Error(`sitemap 받기 실패: HTTP ${res.status}`);
-const urls = changedUrls(parseSitemap(await res.text(), SITE_URL), today, all);
+const urls = changedUrls(parseSitemap(await res.text(), SITE_URL), since, all);
 if (urls.length === 0) {
-  console.log(`오늘(${today}) 바뀐 주소가 없어 보내지 않음`);
+  console.log(`${since} 이후 바뀐 주소가 없어 보내지 않음`);
   process.exit(0);
 }
 const sent = await fetch(INDEXNOW_ENDPOINT, {

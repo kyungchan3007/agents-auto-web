@@ -24,6 +24,11 @@ export function changedUrls(entries: SitemapEntry[], since: string, all = false)
   return [...new Set(entries.filter((e) => all || (e.lastmod !== null && e.lastmod >= since)).map((e) => e.loc))].slice(0, MAX_URLS);
 }
 
+/** 보낼 범위의 첫날 — 실행 시각의 한국 날짜 하루 전 · GitHub 예약이 몇 시간씩 늦어 밤 12시를 넘겨도 전날 바뀐 주소가 빠지지 않게 (2026-11-09 16:00 예약이 11-10 02:18 에 돎 · 작업 0146) */
+export function sinceDate(now: Date): string {
+  return new Date(now.getTime() + 9 * 3600_000 - 86400_000).toISOString().slice(0, 10);
+}
+
 export function indexNowBody(urls: string[], site: string) {
   return { host: new URL(site).host, key: INDEXNOW_KEY, keyLocation: `${site}/${INDEXNOW_KEY}.txt`, urlList: urls };
 }

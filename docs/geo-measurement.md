@@ -24,7 +24,7 @@
 - AI 답변만 구분한 값이 아님 · 검색어는 노출 2회 이상만 공개
 
 ## 색인 요청 (자동 · 작업 0144)
-- `indexnow.yml` 이 평일 한국 16:00 에 운영 sitemap 에서 그날 바뀐 주소만 IndexNow(`api.indexnow.org`)로 보낸다 · Bing · 네이버 · Yandex 등이 함께 받음
+- `indexnow.yml` 이 평일 한국 16:00 에 운영 sitemap 에서 어제 · 오늘 바뀐 주소만 IndexNow(`api.indexnow.org`)로 보낸다 · Bing · 네이버 · Yandex 등이 함께 받음
 - 키 파일 `apps/web/public/a6932e161e92d438629d7ca38466be2c.txt` (공개가 원래 방식) · 2026-11-08 전체 29개 주소 1회 전송 → HTTP 200
 - 구글은 IndexNow 를 받지 않음 → Search Console 사이트맵 · 색인 요청으로
 

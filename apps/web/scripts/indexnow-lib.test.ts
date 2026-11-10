@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { INDEXNOW_KEY, changedUrls, indexNowBody, parseSitemap } from "./indexnow-lib";
+import { INDEXNOW_KEY, changedUrls, indexNowBody, parseSitemap, sinceDate } from "./indexnow-lib";
 import { SITE_URL } from "../src/shared/site";
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -39,5 +39,17 @@ describe("IndexNow 색인 요청 (작업 0144)", () => {
   it("키 파일이 public 에 있고 내용이 키와 같음 (다르면 403)", () => {
     const file = readFileSync(fileURLToPath(new URL(`../public/${INDEXNOW_KEY}.txt`, import.meta.url)), "utf8");
     expect(file.trim()).toBe(INDEXNOW_KEY);
+  });
+});
+
+describe("보낼 범위 — 어제 · 오늘 (작업 0146)", () => {
+  it("2026-11-09 16:00 예약이 11-10 02:18 (한국)에 돌아도 11-09 바뀐 주소를 보냄", () => {
+    const since = sinceDate(new Date("2026-11-09T17:18:20Z"));
+    expect(since).toBe("2026-11-09");
+    const entries = parseSitemap(xml, SITE_URL);
+    expect(changedUrls(entries, since)).toEqual(["https://tripfx.pages.dev/", "https://tripfx.pages.dev/currencies/USD"]);
+  });
+  it("제때 돌면(16:00 한국) 어제부터", () => {
+    expect(sinceDate(new Date("2026-11-10T07:00:00Z"))).toBe("2026-11-09");
   });
 });
