@@ -25,7 +25,7 @@ export function GeoReport({ build }: { build: Fetched<Report> }) {
     <>
       <section>
         <SubTitle>AI 답변 인용</SubTitle>
-        <p className="mt-3 text-sm text-fg-2">정해 둔 질문 24개를 AI 검색에 매일 직접 묻고, 답의 출처에 이 사이트가 나왔는지 기록합니다.</p>
+        <p className="mt-3 text-sm text-fg-2">정해 둔 질문 24개를 Claude 웹 검색으로 직접 묻고, 검색 결과와 답의 출처에 이 사이트가 나왔는지 기록합니다.</p>
         <div className="mt-3">
           <DataTable
             head={["서비스", "최근 측정일", "저장된 질문", "답에 인용", "검색 결과에 나옴", "실패"]}

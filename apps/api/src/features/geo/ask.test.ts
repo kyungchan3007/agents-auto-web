@@ -1,7 +1,7 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { GeoReport } from "@hav/shared/geo";
 import { describe, expect, it } from "vitest";
-import { answersSql, claudeHit, failReason, isTripfx, openaiHit, perplexityHit, shouldStop } from "./ask";
+import { answersSql, claudeHit, failReason, isTripfx, openaiHit, perplexityHit, sessionRows, shouldStop } from "./ask";
 import { QUESTIONS, questionOf } from "./questions";
 import { type AnswerInput, answersSummary, geoReport } from "./summary";
 
@@ -121,5 +121,22 @@ describe("실패 이유 · 조기 중단 (작업 0147)", () => {
     expect(shouldStop([400, 400])).toBe(false);
     expect(shouldStop([400, 500, 400])).toBe(false);
     expect(shouldStop([undefined, 400, 400])).toBe(false);
+  });
+});
+
+describe("세션 측정 결과 파일 (작업 0149)", () => {
+  const known = (id: string) => questionOf(id) !== null;
+  it("질문별 결과 → 저장할 줄 · 인용이면 검색 결과에도 나온 것으로", () => {
+    const rows = sessionRows({ day: "2026-11-10", engine: "claude", results: [{ question: "b1", found: true, cited: false }, { question: "g1", found: false, cited: true }] }, known);
+    expect(rows).toEqual([
+      { day: "2026-11-10", engine: "claude", question: "b1", status: "ok", cited: false, found: true },
+      { day: "2026-11-10", engine: "claude", question: "g1", status: "ok", cited: true, found: true },
+    ]);
+  });
+  it("모르는 질문 · 이상한 값 · 이상한 날짜 · 서비스는 버림", () => {
+    expect(sessionRows({ day: "2026-11-10", engine: "claude", results: [{ question: "z9", found: true, cited: true }, { question: "b2", found: "yes", cited: false }] }, known)).toEqual([]);
+    expect(sessionRows({ day: "11/10", engine: "claude", results: [{ question: "b1", found: true, cited: true }] }, known)).toEqual([]);
+    expect(sessionRows({ day: "2026-11-10", engine: "gemini", results: [{ question: "b1", found: true, cited: true }] }, known)).toEqual([]);
+    expect(sessionRows(null, known)).toEqual([]);
   });
 });

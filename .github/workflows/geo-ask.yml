@@ -2,9 +2,13 @@ name: geo-ask
 # AI 답변 인용 측정 — 고정 질문 24개를 AI 검색 API 에 묻고 출처에 tripfx 가 나왔는지 D1 에 저장 → /geo (작업 0139)
 #   키는 사람이 등록한 비밀값 (ANTHROPIC_API_KEY · OPENAI_API_KEY · PERPLEXITY_API_KEY) · 키가 있는 서비스만 측정 · 하나도 없으면 건너뜀
 #   응답은 외부 데이터 — 출처 주소의 도메인만 보고 본문은 저장하지 않음 · 키 · 답변은 출력하지 않음
+#   2026-11-10 부터 매일 예약은 끔 (API 크레딧 소진) → 사용자가 말하면 Claude Code 세션이 직접 웹 검색해
+#   apps/api/data/geo-answers/날짜.json 을 PR 로 올리고, 머지되면 이 워크플로가 그 파일을 D1 에 저장 (작업 0149)
+#   손으로 실행하면 예전처럼 API 로 측정 (키가 있을 때)
 on:
-  schedule:
-    - cron: "0 20 * * *" # 한국 05:00
+  push:
+    branches: [main]
+    paths: ["apps/api/data/geo-answers/**"]
   workflow_dispatch:
 
 permissions:
@@ -21,7 +25,7 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      HAS_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' || secrets.OPENAI_API_KEY != '' || secrets.PERPLEXITY_API_KEY != '' }}
+      HAS_KEY: ${{ github.event_name == 'push' || secrets.ANTHROPIC_API_KEY != '' || secrets.OPENAI_API_KEY != '' || secrets.PERPLEXITY_API_KEY != '' }}
     steps:
       - name: 비밀값 확인
         id: secrets
@@ -40,8 +44,13 @@ jobs:
           node-version: 22
       - if: steps.secrets.outputs.ok == 'true'
         run: npm ci
+      - name: 세션 측정 결과 파일 → SQL
+        if: steps.secrets.outputs.ok == 'true' && github.event_name == 'push'
+        run: |
+          mkdir -p .tmp
+          node --experimental-strip-types apps/api/scripts/geo-ask.ts --from apps/api/data/geo-answers > .tmp/geo-ask.sql 2>> "$GITHUB_STEP_SUMMARY"
       - name: AI 검색 질문 → SQL
-        if: steps.secrets.outputs.ok == 'true'
+        if: steps.secrets.outputs.ok == 'true' && github.event_name != 'push'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

@@ -164,7 +164,7 @@ flowchart LR
 | 보안 점검 | 매일 한국 05:30 | [`security-audit.yml`](.github/workflows/security-audit.yml) |
 | 검색 자료 수집 | 매일 한국 04:20 | [`gsc-sync.yml`](.github/workflows/gsc-sync.yml) — Search Console → D1 |
 | 색인 요청 | 평일 한국 16:00 | [`indexnow.yml`](.github/workflows/indexnow.yml) — 어제 · 오늘 바뀐 주소를 IndexNow 로 (예약이 늦어도 빠지지 않게) (Bing · 네이버 등) |
-| AI 답변 인용 측정 | 매일 한국 05:00 | [`geo-ask.yml`](.github/workflows/geo-ask.yml) — 고정 질문 24개를 AI 검색 API 에 묻고 출처에 tripfx 가 나왔는지 → D1 |
+| AI 답변 인용 측정 | 세션 측정 결과 PR 머지 | [`geo-ask.yml`](.github/workflows/geo-ask.yml) — 세션이 고정 질문 24개를 웹 검색한 결과 파일 → D1 |
 | 반응형 점검 | 머지 뒤 · 매일 한국 12:40 | [`responsive.yml`](.github/workflows/responsive.yml) |
 
 - 환율 · 물가 값은 빌드 때 받아 정적 페이지에 넣습니다
