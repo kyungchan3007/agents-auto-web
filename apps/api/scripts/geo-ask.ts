@@ -2,7 +2,7 @@
 //   키가 있는 서비스만 측정 · 없으면 그 서비스는 기록하지 않음(측정 안 함) · 키 · 답변 본문은 출력하지 않음
 //   ANTHROPIC_API_KEY=... OPENAI_API_KEY=... PERPLEXITY_API_KEY=... node --experimental-strip-types apps/api/scripts/geo-ask.ts > .tmp/geo-ask.sql
 import Anthropic from "@anthropic-ai/sdk";
-import { type AnswerRow, type Engine, type Hit, answersSql, claudeHit, openaiHit, perplexityHit } from "../src/features/geo/ask.ts";
+import { type AnswerRow, type Engine, type Hit, answersSql, claudeHit, failReason, openaiHit, perplexityHit, shouldStop } from "../src/features/geo/ask.ts";
 import { QUESTIONS } from "../src/features/geo/questions.ts";
 
 const KEEP_DAYS = 90;
@@ -34,6 +34,15 @@ async function askClaude(q: string): Promise<Hit> {
   return claudeHit(content);
 }
 
+class HttpError extends Error {
+  constructor(
+    readonly status: number,
+    readonly body: unknown,
+  ) {
+    super(`HTTP ${status}`);
+  }
+}
+
 async function postJson(url: string, key: string, body: unknown): Promise<unknown> {
   const res = await fetch(url, {
     method: "POST",
@@ -41,7 +50,7 @@ async function postJson(url: string, key: string, body: unknown): Promise<unknow
     body: JSON.stringify(body),
     signal: AbortSignal.timeout(TIMEOUT_MS),
   });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  if (!res.ok) throw new HttpError(res.status, await res.json().catch(() => null));
   return res.json();
 }
 
@@ -72,18 +81,29 @@ for (const e of engines) {
   }
   let cited = 0;
   let errors = 0;
+  const failed: (number | undefined)[] = []; // 처음 3개 질문의 결과 상태 (성공은 200)
   for (const q of QUESTIONS) {
+    if (shouldStop(failed)) {
+      errors++;
+      rows.push({ day, engine: e.engine, question: q.id, status: "error", cited: false, found: false });
+      continue;
+    }
     try {
       const hit = await e.ask(q.text, e.key);
       rows.push({ day, engine: e.engine, question: q.id, status: "ok", ...hit });
       if (hit.cited) cited++;
+      if (failed.length < 3) failed.push(200);
     } catch (err) {
       errors++;
-      const why = err instanceof Anthropic.APIError ? `HTTP ${err.status}` : err instanceof Error ? err.message.slice(0, 80) : "알 수 없음";
+      const status = err instanceof Anthropic.APIError || err instanceof HttpError ? err.status : undefined;
+      const body = err instanceof Anthropic.APIError ? err.error : err instanceof HttpError ? err.body : null;
+      const why = failReason(status, body, err instanceof Error ? err.message : "알 수 없음");
+      if (failed.length < 3) failed.push(status);
       process.stderr.write(`${e.engine} ${q.id}: 실패 (${why})\n`);
       rows.push({ day, engine: e.engine, question: q.id, status: "error", cited: false, found: false });
     }
   }
+  if (shouldStop(failed)) process.stderr.write(`${e.engine}: 처음 3개 질문이 요청 오류로 실패해 나머지는 묻지 않음\n`);
   process.stderr.write(`${e.engine}: 질문 ${QUESTIONS.length}개 · 인용 ${cited} · 실패 ${errors}\n`);
 }
 
