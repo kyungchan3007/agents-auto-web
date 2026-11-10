@@ -15,58 +15,23 @@
 
 </div>
 
-## 🙋 무엇인가
+## 🎯 프로젝트 개요
 
-여행 가기 전 **언제 환전할지**, **그 나라 물가가 어느 정도인지**, 해외 직구할 때 **원화로 얼마이고 세금이 붙는지**를 공개 데이터로 보여 줍니다. 로그인 없이 바로 쓸 수 있습니다.
+AI 코딩 에이전트로 실제 서비스를 개발 · 운영하는 방법을 학습하고 검증하기 위한 개인 프로젝트입니다. 서비스는 여행 · 직구에 필요한 오늘 환율, 여행지 물가, 직구 세금을 공개 데이터로 보여 주는 [대시보드](https://tripfx.pages.dev)입니다.
 
-## 🎯 프로젝트 목적
+**검증 항목**
 
-AI 코딩 에이전트로 실제 서비스를 개발 · 운영하는 방법을 학습하고 검증하기 위한 개인 프로젝트입니다. 검증 항목은 두 가지입니다.
-
-1. **에이전트 개발 · 운영:** 개발자는 기획 · 설계 · 정책, 머지 전 검증, 위험 변경 승인을 담당하고, 구현 · 테스트 · 배포 · 운영 점검은 에이전트가 수행합니다. 요청 원문, 계획, 오류, 수정 이력은 저장소와 [작업실](https://tripfx.pages.dev/log)에 기록합니다.
+1. **에이전트 개발 · 운영:** 구현부터 배포 · 운영 점검까지 에이전트에게 맡기고, 요청 원문 · 계획 · 오류 · 수정 이력을 저장소와 [작업실](https://tripfx.pages.dev/log)에 기록합니다.
 2. **GEO(AI 검색 노출):** 이 사이트가 검색 엔진과 AI 검색에서 노출 · 인용되는지 측정하고, 개선 방법을 시험합니다. 진행 상황은 [GEO 실험](#-geo-실험)에 정리합니다.
 
-## ✨ 기능
+**역할 분담**
 
-| 페이지 | 할 수 있는 것 |
-| --- | --- |
-| 🏠 [홈](https://tripfx.pages.dev) | 오늘 달러 환율 · 지구본으로 여행지 고르기 · 모든 통화 · 달러 1년 흐름 |
-| 💹 [통화](https://tripfx.pages.dev/currencies) | 통화 찾기 · 즐겨찾기 · 변화 순 정렬 · 환율 계산기 · 1개월~1년 그래프 · 공유 |
-| ✈️ [여행 물가](https://tripfx.pages.dev/prices) | 한국 대비 나라별 물가 수준 · 여행 예산 계산 |
-| 🛒 [직구 계산](https://tripfx.pages.dev/calc) | 외화 → 원화 · 면세 한도 · 예상 관부가세 |
-| 🛠️ [작업실](https://tripfx.pages.dev/log) | 사이트 상태 · 패치 내역 · 에이전트 실시간 활동 · 머지된 작업 |
-| 📡 [GEO 측정](https://tripfx.pages.dev/geo) | 구글 검색 노출 · AI 봇 방문 · AI 서비스 유입 · AI 검색 인용 측정 기록 |
-| ℹ️ [소개](https://tripfx.pages.dev/about) | 자료 출처와 판단 기준 |
-
-<table>
-  <tr>
-    <td><img src="docs/images/currency.png" alt="통화 상세 — 환율 · 신호 · 요약 · 계산기"></td>
-    <td><img src="docs/images/workroom.png" alt="작업실 — 사이트 상태와 패치 내역"></td>
-  </tr>
-</table>
-
-## 🧾 믿고 볼 수 있게
-
-- **숫자를 지어내지 않습니다.** 받지 못한 값은 "자료 없음"으로 표시합니다
-- **예측하지 않습니다.** 싼 편 · 비싼 편은 최근 90일 안에서 오늘 값의 위치일 뿐이며, 투자 · 금융 조언이 아닙니다 ([규칙](docs/domain/signal.md))
-- **입력값을 보내지 않습니다.** 직구 계산과 여행 예산은 브라우저 안에서만 계산합니다
-- **계정이 없습니다.** 즐겨찾기는 이 브라우저에만 저장합니다
-- **방문 통계만 봅니다.** 페이지 조회와 유입 경로를 Cloudflare Web Analytics로 집계합니다
-- **봇 집계에 개인 정보를 넣지 않습니다.** AI 봇 · AI 서비스 유입은 이름과 페이지별 횟수만 저장합니다
-
-| 자료 | 출처 | 갱신 |
-| --- | --- | --- |
-| 환율 | 한국수출입은행 (예비: Frankfurter) | 평일 하루 한 번 |
-| 물가 수준 | 세계은행 | 매달 1일 확인 |
+- **개발자(본인):** 기획 · 설계 · 정책 결정, 보호 파일 변경 승인(`harness-approved` 라벨), 머지 전 검증(원인 분석 · 근거 자료 조사), 머지 승인
+- **에이전트:** 요청 원문 기록, 계획 작성, 구현 · 테스트, 게이트 통과 확인, PR 작성, 운영 점검과 장애 대응
 
 ## 🤖 에이전트 운영 방식
 
 에이전트 디자인은 프로젝트 규모가 작아 그에 맞게 약식으로 구성했습니다.
-
-### 역할 분담
-
-- **개발자:** 기획 · 설계 · 정책 결정, 보호 파일 변경 승인(`harness-approved` 라벨), 머지 전 검증(원인 분석 · 근거 자료 조사), 머지 승인
-- **에이전트:** 요청 원문 기록, 계획 작성, 구현 · 테스트, 게이트 통과 확인, PR 작성, 운영 점검과 장애 대응
 
 ### 에이전트 구성
 
@@ -75,7 +40,7 @@ AI 코딩 에이전트로 실제 서비스를 개발 · 운영하는 방법을 �
 - **검증:** 완료 여부는 작업한 에이전트가 판단하지 않고, 게이트와 CI가 판정합니다. 보호 파일과 머지는 개발자가 승인합니다
 - **자동 작업:** 수집 · 점검 · 배포는 AI가 아닌 스크립트(Worker 예약 · GitHub Actions)가 수행합니다
 
-### 도메인 경계
+### 도메인 경계 (개발자 설계 작업)
 
 - **기능 단위 분리:** 환율 · 신호 · 직구 계산 · 여행 물가 · 작업 기록 · GEO를 기능별 슬라이스(`features/<기능>/`)로 나눕니다. 슬라이스끼리는 직접 가져다 쓰지 않고, 공통 코드는 `packages/shared` · `packages/ui`에 둡니다
 - **규칙 원본:** 기능별 업무 규칙은 [docs/domain/](docs/domain/)에 한 곳만 둡니다. 코드 · 테스트 · 주석은 규칙 ID(`FX-05` 등)로만 참조합니다
@@ -83,7 +48,7 @@ AI 코딩 에이전트로 실제 서비스를 개발 · 운영하는 방법을 �
 - **계층 분리:** API 라우트는 요청 처리만 하고, DB 조회는 기능별 `store.ts`에 둡니다
 - 경계 규칙은 문서가 아닌 테스트 · 린트로 강제합니다. 근거와 강제 위치: [docs/architecture.md](docs/architecture.md)
 
-### 컨텍스트 전달
+### 컨텍스트 전달 (개발자 설계 작업)
 
 - **진입점:** 모든 에이전트는 `AGENTS.md`(50줄 이내)를 먼저 읽고, 필요한 상세 문서는 링크로 찾아갑니다. `CLAUDE.md`는 `AGENTS.md`를 그대로 불러옵니다
 - **작업 폴더:** 작업마다 `.agents/specs/NNNN-이름/`을 만들고, 요청 원문(`request.md`)을 요약하지 않고 그대로 남깁니다. 작은 작업은 `plan.md`, 경계 · 계약이 바뀌는 큰 작업은 `prd.md` · `sdd.md` · `trace.md`를 씁니다
@@ -184,22 +149,38 @@ AI 코딩 에이전트로 실제 서비스를 개발 · 운영하는 방법을 �
 | --- | --- |
 | <img src="docs/images/evidence/check-host-koreaexim-reset.png" alt="일부 지점 연결 끊김"> | <img src="docs/images/evidence/check-host-koreaexim-ok.png" alt="대부분 지점 정상"> |
 
-<details>
-<summary>참고 자료</summary>
+## ✨ 기능
 
-Cloudflare 공식 문서는 525를 Cloudflare와 원본 서버 사이의 TLS 연결 실패로 설명합니다. 출처: [Error 525](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-525/)
+| 페이지 | 주요 기능 |
+| --- | --- |
+| 🏠 [홈](https://tripfx.pages.dev) | 오늘 달러 환율 · 지구본으로 여행지 고르기 · 모든 통화 · 달러 1년 흐름 |
+| 💹 [통화](https://tripfx.pages.dev/currencies) | 통화 찾기 · 즐겨찾기 · 변화 순 정렬 · 환율 계산기 · 1개월~1년 그래프 · 공유 |
+| ✈️ [여행 물가](https://tripfx.pages.dev/prices) | 한국 대비 나라별 물가 수준 · 여행 예산 계산 |
+| 🛒 [직구 계산](https://tripfx.pages.dev/calc) | 외화 → 원화 · 면세 한도 · 예상 관부가세 |
+| 🛠️ [작업실](https://tripfx.pages.dev/log) | 사이트 상태 · 패치 내역 · 에이전트 실시간 활동 · 머지된 작업 |
+| 📡 [GEO 측정](https://tripfx.pages.dev/geo) | 구글 검색 노출 · AI 봇 방문 · AI 서비스 유입 · AI 검색 인용 측정 기록 |
+| ℹ️ [소개](https://tripfx.pages.dev/about) | 자료 출처와 판단 기준 |
 
-<img src="docs/images/evidence/cloudflare-525-doc.png" alt="Cloudflare 525 문서" width="560">
+<table>
+  <tr>
+    <td><img src="docs/images/currency.png" alt="통화 상세 — 환율 · 신호 · 요약 · 계산기"></td>
+    <td><img src="docs/images/workroom.png" alt="작업실 — 사이트 상태와 패치 내역"></td>
+  </tr>
+</table>
 
-Worker에서 외부 API를 호출할 때 525가 발생한 비슷한 사례입니다. 출처: [cloudflare/workerd#776](https://github.com/cloudflare/workerd/issues/776)
+## 🧾 데이터 원칙
 
-<img src="docs/images/evidence/workerd-776-reproduce.png" alt="배포 환경에서만 525 재현" width="560">
+- **숫자를 지어내지 않습니다.** 받지 못한 값은 "자료 없음"으로 표시합니다
+- **예측하지 않습니다.** 싼 편 · 비싼 편은 최근 90일 안에서 오늘 값의 위치일 뿐이며, 투자 · 금융 조언이 아닙니다 ([규칙](docs/domain/signal.md))
+- **입력값을 보내지 않습니다.** 직구 계산과 여행 예산은 브라우저 안에서만 계산합니다
+- **계정이 없습니다.** 즐겨찾기는 이 브라우저에만 저장합니다
+- **방문 통계만 봅니다.** 페이지 조회와 유입 경로를 Cloudflare Web Analytics로 집계합니다
+- **봇 집계에 개인 정보를 넣지 않습니다.** AI 봇 · AI 서비스 유입은 이름과 페이지별 횟수만 저장합니다
 
-<img src="docs/images/evidence/workerd-776-tls-client.png" alt="TLS 클라이언트 호환 문제 언급" width="560">
-
-이 사례는 DeepL API에 관한 것으로, 이번 장애와 원인이 같다고 확인된 것은 아닙니다.
-
-</details>
+| 자료 | 출처 | 갱신 |
+| --- | --- | --- |
+| 환율 | 한국수출입은행 (예비: Frankfurter) | 평일 하루 한 번 |
+| 물가 수준 | 세계은행 | 매달 1일 확인 |
 
 <details>
 <summary>🏗️ 구조와 일정</summary>
