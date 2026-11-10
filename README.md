@@ -143,12 +143,6 @@ AI 코딩 에이전트로 실제 서비스를 개발 · 운영하는 방법을 �
 | Cloudflare에서 항상 실패 | 임시 미리보기 3회 · 운영 2회 모두 성공 | 항상 실패하지 않음 |
 | 시간 · 경로에 따라 끊김 | 16:50 일부 지점 연결 끊김 · 16:55 54/55 · 55/55 정상 | 간헐적 끊김 관측 |
 
-같은 주소를 5분 간격으로 여러 지점에서 시험한 결과입니다 ([check-host.net](https://check-host.net)).
-
-| 2026-11-05 16:50 | 2026-11-05 16:55 |
-| --- | --- |
-| <img src="docs/images/evidence/check-host-koreaexim-reset.png" alt="일부 지점 연결 끊김"> | <img src="docs/images/evidence/check-host-koreaexim-ok.png" alt="대부분 지점 정상"> |
-
 ## ✨ 기능
 
 | 페이지 | 주요 기능 |
