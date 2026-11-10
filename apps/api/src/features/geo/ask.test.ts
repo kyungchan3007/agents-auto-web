@@ -1,7 +1,7 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { GeoReport } from "@hav/shared/geo";
 import { describe, expect, it } from "vitest";
-import { answersSql, claudeHit, isTripfx, openaiHit, perplexityHit } from "./ask";
+import { answersSql, claudeHit, failReason, isTripfx, openaiHit, perplexityHit, shouldStop } from "./ask";
 import { QUESTIONS, questionOf } from "./questions";
 import { type AnswerInput, answersSummary, geoReport } from "./summary";
 
@@ -104,5 +104,22 @@ describe("질문별 결과 순서 (작업 0142)", () => {
     const rows: AnswerInput[] = ["g10", "g2", "b1", "g1"].map((question) => ({ day: "2026-11-07", engine: "claude", question, status: "ok", cited: 0, found: 0 }));
     const s = answersSummary(rows, questionOf);
     expect(s?.engines[0].results.map((r) => r.question)).toEqual(["Tripfx", "오늘 달러 환율 싼 편인가요", "지금 환전해도 될까 달러 최근 90일", "한국 대비 일본 물가 수준"]);
+  });
+});
+
+describe("실패 이유 · 조기 중단 (작업 0147)", () => {
+  it("상태 코드 · 오류 종류 · 메시지 앞부분 · 키처럼 보이는 값은 가림", () => {
+    expect(failReason(400, { type: "error", error: { type: "invalid_request_error", message: "bad  \n field" } }, "x")).toBe("HTTP 400 · invalid_request_error · bad field");
+    expect(failReason(401, { error: { type: "authentication_error", message: "key sk-ant-abcdefgh123 invalid" } }, "x")).toBe("HTTP 401 · authentication_error · key sk-… invalid");
+    expect(failReason(undefined, null, "timeout")).toBe("timeout");
+    expect(failReason(500, "이상한 응답", "x")).toBe("HTTP 500");
+    expect(failReason(400, { error: { message: "가".repeat(300) } }, "x").length).toBeLessThan(180);
+  });
+  it("처음 3개가 요청 오류면 멈춤 · 서버 오류 · 시간 초과는 계속", () => {
+    expect(shouldStop([400, 400, 400])).toBe(true);
+    expect(shouldStop([400, 401, 403])).toBe(true);
+    expect(shouldStop([400, 400])).toBe(false);
+    expect(shouldStop([400, 500, 400])).toBe(false);
+    expect(shouldStop([undefined, 400, 400])).toBe(false);
   });
 });

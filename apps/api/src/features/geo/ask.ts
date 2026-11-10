@@ -69,3 +69,18 @@ export function answersSql(rows: AnswerRow[], keepFrom: string): string {
   }
   return `${lines.join("\n")}\n`;
 }
+
+/** 실패 이유 한 줄 — 상태 코드 · 오류 종류 · 메시지 앞부분 (외부 응답이라 출력만 · 키처럼 보이는 값은 가림 · 작업 0147)
+ *  2026-11-08 ~ 10 "HTTP 400" 만 남아 원인을 알 수 없었음 */
+export function failReason(status: number | undefined, body: unknown, fallback: string): string {
+  const e = (body as { error?: { type?: unknown; message?: unknown } } | null)?.error;
+  const type = typeof e?.type === "string" ? e.type.slice(0, 40) : null;
+  const msg = typeof e?.message === "string" ? e.message.replace(/sk-[A-Za-z0-9_-]{8,}/g, "sk-…").replace(/\s+/g, " ").slice(0, 160) : null;
+  const head = status ? `HTTP ${status}` : fallback.slice(0, 80);
+  return [head, type, msg].filter(Boolean).join(" · ");
+}
+
+/** 처음 몇 질문이 요청 자체의 문제(400 · 401 · 403 · 404)로 연달아 실패하면 나머지는 묻지 않음 — 매일 같은 실패를 반복하지 않게 */
+export function shouldStop(statuses: (number | undefined)[], first = 3): boolean {
+  return statuses.length >= first && statuses.slice(0, first).every((s) => s === 400 || s === 401 || s === 403 || s === 404);
+}
