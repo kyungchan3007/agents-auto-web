@@ -28,8 +28,11 @@
 - 키 파일 `apps/web/public/a6932e161e92d438629d7ca38466be2c.txt` (공개가 원래 방식) · 2026-11-08 전체 29개 주소 1회 전송 → HTTP 200
 - 구글은 IndexNow 를 받지 않음 → Search Console 사이트맵 · 색인 요청으로
 
-## AI 답변 인용 (자동 · 작업 0139)
-- `geo-ask.yml` 이 매일 한국 05:00 에 아래 "기록" 의 기준선 질문 24개(`apps/api/src/features/geo/questions.ts`)를 AI 검색 API 에 묻는다
+## AI 답변 인용 (작업 0139 · 0149)
+- 2026-11-10 부터: 사용자가 말하면 Claude Code 세션이 기준선 질문 24개(`apps/api/src/features/geo/questions.ts`)를 직접 웹 검색해 `apps/api/data/geo-answers/날짜.json` 을 PR 로 올린다 → 머지되면 `geo-ask.yml` 이 D1 에 저장 (작업 0149)
+  - found = 검색 결과에 tripfx.pages.dev 주소가 있음 · cited = 세션이 답의 출처로 그 주소를 씀 · 검색하지 않은 질문은 파일에 넣지 않는다 (지어내지 않음)
+  - 매일 05:00 API 예약은 끔 — 2026-11-08 ~ 10 Anthropic API 크레딧 소진(HTTP 400)으로 모두 실패했고, 충전하지 않기로 함
+- 처음(작업 0139): `geo-ask.yml` 이 매일 한국 05:00 에 같은 질문을 AI 검색 API 에 물었다 (지금은 손으로 실행할 때만)
 - 서비스: Claude(Anthropic 웹 검색 · `claude-opus-5-5` effort low) · ChatGPT(OpenAI Responses API 웹 검색) · Perplexity(Sonar). 키(GitHub 비밀값 `ANTHROPIC_API_KEY` · `OPENAI_API_KEY` · `PERPLEXITY_API_KEY`)가 있는 서비스만 측정하고, 없는 서비스는 기록하지 않는다 (0 으로 채우지 않음)
 - 기록: 질문마다 "답의 인용 표시에 tripfx 주소가 있음(cited)" · "검색 결과 목록에 있음(found)" · 실패 여부만 `geo_answers` 에 저장 · 답변 본문은 저장하지 않음 · 90일 보관
 - 질문에 사이트 이름을 일부러 넣은 브랜드 질문 8개가 있어, 일반 질문 16개와 나눠 봐야 한다

@@ -84,3 +84,19 @@ export function failReason(status: number | undefined, body: unknown, fallback: 
 export function shouldStop(statuses: (number | undefined)[], first = 3): boolean {
   return statuses.length >= first && statuses.slice(0, first).every((s) => s === 400 || s === 401 || s === 403 || s === 404);
 }
+
+/** 세션 측정 결과 파일 한 개 → 저장할 줄 (작업 0149)
+ *  API 크레딧 대신 사용자가 말하면 Claude Code 세션이 질문을 직접 웹 검색해 apps/api/data/geo-answers/날짜.json 으로 PR → 머지되면 저장
+ *  모르는 질문 번호 · 이상한 값은 버림 (지어낸 값이 들어가지 않게 모양만 받음) */
+export function sessionRows(json: unknown, known: (id: string) => boolean): AnswerRow[] {
+  const j = json as { day?: unknown; engine?: unknown; results?: unknown };
+  if (typeof j?.day !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(j.day)) return [];
+  if (!ENGINES.includes(j.engine as Engine)) return [];
+  const out: AnswerRow[] = [];
+  for (const r of Array.isArray(j.results) ? j.results : []) {
+    const x = r as { question?: unknown; found?: unknown; cited?: unknown };
+    if (typeof x.question !== "string" || !known(x.question) || typeof x.found !== "boolean" || typeof x.cited !== "boolean") continue;
+    out.push({ day: j.day, engine: j.engine as Engine, question: x.question, status: "ok", cited: x.cited, found: x.found || x.cited });
+  }
+  return out;
+}

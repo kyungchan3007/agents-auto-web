@@ -1,9 +1,12 @@
 // GitHub Actions 가 부름: AI 검색에 고정 질문 → 출처에 tripfx 가 나왔는지 → SQL (표준 출력) · 진행은 표준 오류 (작업 0139)
+//   --from <폴더>: API 를 부르지 않고 세션 측정 결과 파일(apps/api/data/geo-answers/*.json)만 SQL 로 (작업 0149)
 //   키가 있는 서비스만 측정 · 없으면 그 서비스는 기록하지 않음(측정 안 함) · 키 · 답변 본문은 출력하지 않음
 //   ANTHROPIC_API_KEY=... OPENAI_API_KEY=... PERPLEXITY_API_KEY=... node --experimental-strip-types apps/api/scripts/geo-ask.ts > .tmp/geo-ask.sql
 import Anthropic from "@anthropic-ai/sdk";
-import { type AnswerRow, type Engine, type Hit, answersSql, claudeHit, failReason, openaiHit, perplexityHit, shouldStop } from "../src/features/geo/ask.ts";
-import { QUESTIONS } from "../src/features/geo/questions.ts";
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+import { type AnswerRow, type Engine, type Hit, answersSql, claudeHit, failReason, openaiHit, perplexityHit, sessionRows, shouldStop } from "../src/features/geo/ask.ts";
+import { QUESTIONS, questionOf } from "../src/features/geo/questions.ts";
 
 const KEEP_DAYS = 90;
 const TIMEOUT_MS = 120_000;
@@ -76,6 +79,18 @@ const engines: { engine: Engine; key: string | undefined; ask: (q: string, key: 
 ];
 
 const rows: AnswerRow[] = [];
+const fromAt = process.argv.indexOf("--from");
+if (fromAt > 0) {
+  const dir = process.argv[fromAt + 1];
+  const keepFrom = kstDay(Date.now() - KEEP_DAYS * 86400_000);
+  for (const f of readdirSync(dir).filter((n) => /^\d{4}-\d{2}-\d{2}\.json$/.test(n) && n.slice(0, 10) >= keepFrom).sort()) {
+    const got = sessionRows(JSON.parse(readFileSync(join(dir, f), "utf8")), (id) => questionOf(id) !== null);
+    process.stderr.write(`${f}: ${got.length}개 질문 · 인용 ${got.filter((r) => r.cited).length} · 검색 결과에 나옴 ${got.filter((r) => r.found).length}\n`);
+    rows.push(...got);
+  }
+  process.stdout.write(answersSql(rows, keepFrom));
+  process.exit(0);
+}
 for (const e of engines) {
   if (!e.key) {
     process.stderr.write(`${e.engine}: 키가 없어 측정하지 않음\n`);
