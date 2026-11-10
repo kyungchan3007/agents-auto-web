@@ -150,16 +150,58 @@
 
 ---
 
-## 구조
+## 🏗️ 아키텍처
 
-```mermaid
-flowchart LR
-    A[🌐 수출입은행 · 세계은행] -->|수집 · 형식 검사| B[(☁️ D1)]
-    B --> C[⚙️ API<br/>Hono · Workers]
-    C -->|빌드할 때| D[📄 사이트<br/>Next.js 정적 · Pages]
-    C -->|서비스 바인딩| E[🔁 /bff/*<br/>Pages Functions]
-    E -->|작업실 실시간| D
-```
+- **API (Cloudflare Workers)** — 환율 · 물가 수집 예약, 조회 API, D1 저장을 담당합니다
+- **사이트 (Cloudflare Pages)** — 빌드할 때 API 데이터를 받아 정적 페이지를 생성하고, 새 환율이 저장되면 다시 빌드됩니다
+- **BFF (Pages Functions)** — 작업실의 실시간 조회를 같은 주소의 `/bff`로 받고, 서비스 바인딩으로 API를 호출합니다
+- **GitHub** — 에이전트 작업이 PR · 게이트 · 개발자 검증을 거쳐 머지되고, Actions가 보안 점검 · 검색 자료 수집 · 색인 요청을 수행합니다
+
+<img src="docs/images/architecture.png" width="100%" alt="Tripfx 아키텍처: 외부 데이터 · API Worker · D1 · Pages 정적 사이트 · BFF · GitHub(에이전트 · PR · 게이트 · 개발자 검증 · Actions)" />
+
+---
+
+## 📡 GEO 측정 흐름
+
+- **사이트 준비** — robots.txt · sitemap.xml · IndexNow 키 파일, 구글 · Bing 소유 확인 태그, 인용용 콘텐츠(통화 절반만 적용한 비교군 포함)
+- **검색 엔진 등록 · 알림** — Google Search Console · Bing Webmaster Tools에 등록하고, 평일마다 바뀐 페이지를 IndexNow로 전송
+- **단계별 측정** — 봇 방문, 검색 노출, AI 답변 인용, AI 서비스 유입을 나눠 측정
+- **저장 · 공개** — 측정 결과를 D1에 날짜별로 보관하고 [GEO 측정 페이지](https://tripfx.pages.dev/geo)에 공개
+
+<img src="docs/images/geo-flow.png" width="100%" alt="GEO 측정 흐름: 사이트 준비 → 검색 엔진 등록 · 알림 → 단계별 측정 → 저장 · 공개" />
+
+---
+
+## ⚖️ 기술 선택과 비용 검토
+
+| 결정 | 비교 | 선택 |
+| --- | --- | --- |
+| 화면 렌더링 | Workers SSR vs Pages 정적 생성 + BFF | 정적 생성 + BFF |
+| 데이터베이스 | PostgreSQL vs D1(SQLite) + Drizzle | D1 + Drizzle |
+| 브라우저의 API 호출 | API 직접 호출 vs 같은 주소의 BFF | BFF (서비스 바인딩) |
+| 환율 수집 실행 | GitHub Actions 예약 vs Worker Cron | Worker Cron · Actions는 예비 |
+| 작업 기록 수집 | Pages 빌드 중 GitHub API 호출 vs Actions가 D1에 저장 | Actions → D1 |
+| AI 답변 측정 | AI 검색 API 자동 측정 vs 에이전트 세션 직접 검색 | 세션 측정 |
+| 주소 | 개인 도메인 vs Cloudflare 무료 주소 | 무료 주소 |
+
+> **렌더링 · 주소** — 데이터가 하루 한 번 바뀌는 서비스여서 정적 생성으로 충분했습니다. SSR로 전환하면 Workers로 옮겨 주소가 바뀌기 때문에, 무료 주소와 정적 화면을 유지하고 실시간 조회가 필요한 작업실만 BFF로 처리했습니다. 도메인은 구입 후 연결만 변경하면 되도록 했습니다.
+
+> **D1 읽기 한도** — 무료 요금제의 하루 읽기 한도를 사이트 빌드 반복으로 초과해, API가 오류를 반환한 사례가 있었습니다. 기본 키 순서(날짜, 통화) 때문에 한 통화를 조회해도 전체를 읽는 구조였고, (통화, 날짜) 색인을 추가했습니다. 이후 API 응답 캐시를 적용하고 빌드 횟수를 관리했습니다.
+
+> **예약 실행 위치** — GitHub Actions 예약은 몇 시간씩 지연될 수 있어, 정시 수집은 Worker Cron이 맡고 Actions는 예비 실행만 맡도록 했습니다. 작업 기록 수집은 Pages 빌드 서버의 IP 공유로 GitHub API가 403을 반환해, Actions가 D1에 저장하는 방식으로 변경했습니다.
+
+---
+
+## 🧰 기술 스택
+
+| 영역 | 기술 |
+| --- | --- |
+| 사이트 | Next.js 16 (정적 내보내기) · React · TypeScript · Tailwind CSS · three.js |
+| API | Hono · Cloudflare Workers · Zod |
+| 데이터 | Cloudflare D1 · Drizzle ORM |
+| 배포 · 자동화 | Cloudflare Pages · Pages Functions · GitHub Actions · Turborepo |
+| 검증 | Vitest · Playwright |
+| AI 에이전트 | Claude Code · Codex |
 
 ---
 
