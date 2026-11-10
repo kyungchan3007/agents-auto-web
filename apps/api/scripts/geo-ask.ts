@@ -34,12 +34,14 @@ async function askClaude(q: string): Promise<Hit> {
   return claudeHit(content);
 }
 
+// 생성자 매개변수 속성(readonly status)은 node --experimental-strip-types 가 못 읽어 시작하자마자 멈춤 — 필드로 씀 (작업 0148)
 class HttpError extends Error {
-  constructor(
-    readonly status: number,
-    readonly body: unknown,
-  ) {
+  status: number;
+  body: unknown;
+  constructor(status: number, body: unknown) {
     super(`HTTP ${status}`);
+    this.status = status;
+    this.body = body;
   }
 }
 

@@ -2,7 +2,9 @@
   "extends": "@hav/config/tsconfig/base.json",
   "compilerOptions": {
     "lib": ["esnext"],
-    "types": ["@cloudflare/workers-types", "node"]
+    "types": ["@cloudflare/workers-types", "node"],
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true
   },
-  "include": ["src", "worker-configuration.d.ts", "drizzle.config.ts", "vitest.config.ts"]
+  "include": ["src", "scripts", "worker-configuration.d.ts", "drizzle.config.ts", "vitest.config.ts"]
 }
