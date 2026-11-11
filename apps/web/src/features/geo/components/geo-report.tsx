@@ -48,7 +48,7 @@ export function GeoReport({ build }: { build: Fetched<Report> }) {
         <Block title="저장 기록" empty={history.length === 0}>
           <DataTable head={["날짜", "서비스", "저장된 질문", "응답 받음", "답에 인용"]} rows={history} caption="측정한 날마다 D1 에 저장된 질문 수" />
         </Block>
-        <p className="mt-3 text-xs text-fg-2">각 서비스의 웹 검색 API 기준 · 같은 질문도 날마다 답이 달라질 수 있어 경향만 봅니다 · 답변 본문은 저장하지 않습니다</p>
+        <p className="mt-3 text-xs text-fg-2">에이전트 세션의 웹 검색 기준 (2026-11-07 ~ 09는 API 측정) · 같은 질문도 날마다 결과가 달라질 수 있어 경향만 봅니다 · 답변 본문은 저장하지 않습니다</p>
       </section>
 
       <section className="mt-12">

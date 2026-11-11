@@ -1,3 +1,6 @@
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import type Anthropic from "@anthropic-ai/sdk";
 import { GeoReport } from "@hav/shared/geo";
 import { describe, expect, it } from "vitest";
@@ -138,5 +141,19 @@ describe("세션 측정 결과 파일 (작업 0149)", () => {
     expect(sessionRows({ day: "11/10", engine: "claude", results: [{ question: "b1", found: true, cited: true }] }, known)).toEqual([]);
     expect(sessionRows({ day: "2026-11-10", engine: "gemini", results: [{ question: "b1", found: true, cited: true }] }, known)).toEqual([]);
     expect(sessionRows(null, known)).toEqual([]);
+  });
+});
+
+describe("저장소의 세션 측정 결과 파일 (작업 0155)", () => {
+  const dir = join(fileURLToPath(import.meta.url), "../../../../data/geo-answers");
+  const files = readdirSync(dir).filter((f) => f.endsWith(".json"));
+  it("파일 이름은 날짜 · 내용의 날짜와 같음 · 질문 24개가 모두 읽힘 (모양이 틀리면 저장되지 않으므로 머지 전에 잡음)", () => {
+    expect(files).toContain("2026-11-05.json");
+    for (const f of files) {
+      expect(f).toMatch(/^\d{4}-\d{2}-\d{2}\.json$/);
+      const rows = sessionRows(JSON.parse(readFileSync(join(dir, f), "utf8")), (id) => questionOf(id) !== null);
+      expect(rows, f).toHaveLength(QUESTIONS.length);
+      expect(new Set(rows.map((r) => r.day)), f).toEqual(new Set([f.slice(0, 10)]));
+    }
   });
 });
