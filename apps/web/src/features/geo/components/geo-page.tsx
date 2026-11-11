@@ -1,6 +1,5 @@
 // GEO 측정 페이지 — AI 봇 방문 · AI 서비스 유입 · AI 검색 인용 측정 기록을 공개 (작업 0129 · 이슈 #117)
 import type { GeoReport as Report } from "@hav/shared/geo";
-import { DataTable } from "@hav/ui/data/data-table";
 import { SubTitle } from "@hav/ui/text/heading";
 import { PageFooter } from "@hav/ui/layout/page-footer";
 import { PageSection } from "@hav/ui/layout/page-section";
@@ -9,7 +8,6 @@ import type { Fetched } from "../../../shared/api";
 import { REPO_URL } from "../../../shared/site";
 import { SiteNav } from "../../../shared/site-nav";
 import { GeoReport } from "./geo-report";
-import { MEASUREMENTS } from "../lib/geo-view";
 
 export function GeoPage({ build }: { build: Fetched<Report> }) {
   return (
@@ -22,14 +20,9 @@ export function GeoPage({ build }: { build: Fetched<Report> }) {
             <GeoReport build={build} />
           </div>
 
-          <section className="mt-10">
-            <SubTitle>AI 검색 인용 측정</SubTitle>
-            <p className="mt-2 text-sm text-fg-2">같은 질문 24개를 질문마다 1회 검색해 이 사이트가 결과에 나오는지 확인합니다. 한 번 측정한 표본이며 특정 AI 서비스의 순위가 아닙니다.</p>
-            <DataTable className="mt-3" head={["측정일", "사이트 이름 질문", "일반 질문", "비고"]} rows={MEASUREMENTS.map((m) => [m.date, `${m.brand} / ${m.brandTotal}`, `${m.general} / ${m.generalTotal}`, m.note])} />
-            <p className="mt-3 text-sm">
-              <TextLink href={`${REPO_URL}/blob/main/docs/geo-measurement.md`}>질문 목록과 측정 방법</TextLink>
-            </p>
-          </section>
+          <p className="mt-6 text-sm">
+            <TextLink href={`${REPO_URL}/blob/main/docs/geo-measurement.md`}>질문 목록과 측정 방법</TextLink>
+          </p>
 
           <section className="mt-10">
             <SubTitle>아직 연결하지 않은 자료</SubTitle>

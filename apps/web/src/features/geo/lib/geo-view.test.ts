@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { GeoReport } from "@hav/shared/geo";
-import { MEASUREMENTS, answerHistory, answerLines, geoView } from "./geo-view";
+import { answerHistory, answerLines, geoView } from "./geo-view";
 
 describe("GEO 화면 자료 (작업 0129)", () => {
   it("AI 봇과 일반 검색 엔진을 나눠 합계", () => {
@@ -60,8 +60,5 @@ describe("GEO 화면 자료 (작업 0129)", () => {
       ["2026-11-07", "Claude", 2, 1, 1],
       ["2026-11-06", "Claude", 24, 24, 0],
     ]);
-  });
-  it("측정 기록은 기준선부터", () => {
-    expect(MEASUREMENTS[0]).toMatchObject({ date: "2026-11-05", brand: 0, general: 0 });
   });
 });
