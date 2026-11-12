@@ -15,6 +15,9 @@ export type DailyDeps = {
   deployHook?: string;
   fetcher?: typeof fetch;
   now?: () => Date;
+  /** 첫 예약에서 수출입은행 5xx 일 때 다시 시도할 간격(ms) — 없으면 한 번만 (작업 0156) */
+  retryDelays?: number[];
+  sleep?: (ms: number) => Promise<void>;
 };
 
 export type DailyResult = { skipped: true } | (CollectResult & { skipped: false; rebuild: "requested" | "no-hook" | "failed" | "not-needed" });
@@ -27,7 +30,7 @@ export async function dailyFx(date: string, retry: boolean, deps: DailyDeps): Pr
   if (retry && (await deps.hasOfficialRates(date))) return { skipped: true };
   // 이미 값이 있으면 다시 시도가 실패해도 예비를 또 받지 않음 · 그때는 값이 안 바뀌어 다시 빌드도 없음
   const had = retry && (await deps.hasRates(date));
-  const r = await collectDay(deps.store, date, { koreaeximKey: deps.koreaeximKey, fetcher: deps.fetcher, now: deps.now, fallback: !had });
+  const r = await collectDay(deps.store, date, { koreaeximKey: deps.koreaeximKey, fetcher: deps.fetcher, now: deps.now, fallback: !had, retryDelays: retry ? [] : deps.retryDelays, sleep: deps.sleep });
   if (r.status !== "ok" || r.rows === 0) return { ...r, skipped: false, rebuild: "not-needed" };
   if (!deps.deployHook) return { ...r, skipped: false, rebuild: "no-hook" };
   try {

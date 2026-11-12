@@ -65,16 +65,16 @@ export default {
     }
     // 평일 12:00 KST — 오늘(한국 날짜) 환율 · 결과는 fetch_runs 에 · 새 값이면 사이트 다시 빌드 · 다시 하는 예약은 놓친 날만
     const retry = controller.cron !== CRON.fxDaily;
-    ctx.waitUntil(
-      dailyFx(kstDate(), retry, {
+    // 첫 예약은 수출입은행 5xx 면 30초 · 90초 뒤 다시 시도 (작업 0156) — 기다리는 동안 끝나지 않게 결과를 기다림
+    await dailyFx(kstDate(), retry, {
         store: d1RateStore(env.DB),
         hasRates: (date) => hasRates(env.DB, date),
         hasOfficialRates: (date) => hasOfficialRates(env.DB, date),
         koreaeximKey: env.KOREAEXIM_KEY,
         deployHook: env.PAGES_DEPLOY_HOOK,
+        retryDelays: [30_000, 90_000],
       })
-        .then((r) => logEvent(!r.skipped && r.status === "error" ? "warn" : "info", "fx_scheduled", { cron: controller.cron, ...fxLog(r) }))
-        .catch((e) => logError("fx_scheduled_failed", e, { cron: controller.cron })),
-    );
+      .then((r) => logEvent(!r.skipped && r.status === "error" ? "warn" : "info", "fx_scheduled", { cron: controller.cron, ...fxLog(r) }))
+      .catch((e) => logError("fx_scheduled_failed", e, { cron: controller.cron }));
   },
 } satisfies ExportedHandler<Env>;
