@@ -18,12 +18,13 @@ export type CollectResult = { date: string; status: "ok" | "empty" | "error"; so
 export async function collectDay(
   store: RateStore,
   date: string,
-  opts: { koreaeximKey?: string; fetcher?: typeof fetch; now?: () => Date; fallback?: boolean } = {},
+  opts: { koreaeximKey?: string; fetcher?: typeof fetch; now?: () => Date; fallback?: boolean; retryDelays?: number[]; sleep?: (ms: number) => Promise<void> } = {},
 ): Promise<CollectResult> {
   const now = opts.now ?? (() => new Date());
   const runId = await store.startRun("koreaexim", now().toISOString());
   let source = "koreaexim";
   let message: string | null = null;
+  const retried: string[] = [];
 
   const finish = async (status: CollectResult["status"], rows: number) => {
     await store.finishRun(runId, { source, status, rows, message, finishedAt: now().toISOString() });
@@ -33,11 +34,15 @@ export async function collectDay(
   try {
     let rows: RateRow[];
     try {
-      rows = await fetchKoreaexim(date, opts.koreaeximKey, opts.fetcher, now);
+      rows = await fetchWithRetry(() => fetchKoreaexim(date, opts.koreaeximKey, opts.fetcher, now), opts.retryDelays ?? [], opts.sleep ?? wait, (code) => {
+        retried.push(code);
+      });
+      // 다시 시도해 성공한 날 — 상태는 ok 지만 몇 번 실패했는지 남김 (이슈 #128 · 끊김이 얼마나 이어지는지 보려고)
+      if (retried.length > 0) message = `koreaexim retried-${retried.length}: 앞선 실패 ${retried.join(" · ")}`;
     } catch (e) {
       if (!(e instanceof SourceError)) throw e;
       // 수출입은행 실패 → 예비. 수출입은행처럼 영업일만: 주말은 채우지 않고, 요청한 날짜의 줄만 쓴다 (FX-02)
-      message = `koreaexim ${e.code}: ${e.message}`;
+      message = `koreaexim ${e.code}: ${e.message}${retried.length > 0 ? ` (다시 시도 ${retried.length}회 · ${retried.join(" · ")})` : ""}`;
       // 이미 값이 있는 날을 공식 값으로 바꾸려는 시도 — 예비를 또 받지 않음 (저장 · 캐시 비우기만 늘어남 · 작업 0121)
       if (opts.fallback === false) return finish("error", 0);
       source = "koreaexim→frankfurter";
@@ -51,5 +56,28 @@ export async function collectDay(
   } catch (e) {
     message = [message, e instanceof Error ? e.message : String(e)].filter(Boolean).join(" / ");
     return finish("error", 0);
+  }
+}
+
+const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+/** 서버 쪽 일시 오류(HTTP 5xx)인지 — 인증 · 형식 · 한도 오류는 다시 해도 같으므로 빼고 넘김 */
+export function isTransient(e: unknown): e is SourceError {
+  return e instanceof SourceError && /^http-5\d\d$/.test(e.code);
+}
+
+/**
+ * 일시 오류면 delays 간격으로 다시 시도 · 마지막 실패는 그대로 던짐
+ * 2026-11-09 ~ 12 평일 12:00 수집이 HTTP 525 로 실패하고 13:30 재시도는 성공 — 끊김이 짧은지 같은 실행 안에서 확인 (작업 0156 · 이슈 #128)
+ */
+export async function fetchWithRetry<T>(run: () => Promise<T>, delays: number[], sleep: (ms: number) => Promise<void>, onRetry: (code: string) => void = () => {}): Promise<T> {
+  for (let i = 0; ; i++) {
+    try {
+      return await run();
+    } catch (e) {
+      if (!isTransient(e) || i >= delays.length) throw e;
+      onRetry(e.code);
+      await sleep(delays[i]);
+    }
   }
 }

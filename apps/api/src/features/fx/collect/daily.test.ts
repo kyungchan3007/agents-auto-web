@@ -67,3 +67,18 @@ describe("평일 환율 예약 실행 (작업 0094)", () => {
     expect(t.collected()).toBe(0);
   });
 });
+
+describe("첫 예약만 같은 실행 안에서 다시 시도 (작업 0156)", () => {
+  it("첫 예약 — 525 면 정한 간격만큼 다시 수출입은행을 부름", async () => {
+    const t = deps({ exim: 525 });
+    const waits: number[] = [];
+    await dailyFx("2026-11-12", false, { ...t.d, retryDelays: [30_000, 90_000], sleep: async (ms) => void waits.push(ms) });
+    expect(t.calls.filter((c) => c === "GET koreaexim")).toHaveLength(3);
+    expect(waits).toEqual([30_000, 90_000]);
+  });
+  it("다시 하는 예약(13:30 · 15:00)은 한 번만 — 이미 다음 예약이 있음", async () => {
+    const t = deps({ exim: 525, has: true, official: false });
+    await dailyFx("2026-11-12", true, { ...t.d, retryDelays: [30_000, 90_000], sleep: async () => {} });
+    expect(t.calls.filter((c) => c === "GET koreaexim")).toHaveLength(1);
+  });
+});

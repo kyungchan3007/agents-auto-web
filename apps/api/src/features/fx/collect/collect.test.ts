@@ -118,3 +118,61 @@ describe("collectDay", () => {
     expect(String(runs[1].message)).toMatch(/no-key.*HTTP 503/);
   });
 });
+
+describe("수출입은행 일시 오류 다시 시도 (작업 0156)", () => {
+  const noWait = async () => {};
+
+  it("525 뒤 성공 → 공식 값 저장 · 몇 번 실패했는지 남김 · 예비는 부르지 않음", async () => {
+    const { store, runs, saved } = memoryStore();
+    const answers = [json("", 525), json(EXIM_OK)];
+    const waits: number[] = [];
+    let frank = 0;
+    const r = await collectDay(store, "2026-10-28", {
+      koreaeximKey: "k",
+      now: NOW,
+      retryDelays: [30_000, 90_000],
+      sleep: async (ms) => void waits.push(ms),
+      fetcher: fetcher(() => answers.shift()!, () => (frank++, json(FRANK_OK))),
+    });
+    expect(r).toMatchObject({ status: "ok", source: "koreaexim", rows: 1, message: "koreaexim retried-1: 앞선 실패 http-525" });
+    expect(waits).toEqual([30_000]);
+    expect(frank).toBe(0);
+    expect(saved[0].source).toBe("koreaexim");
+    expect(runs[1].status).toBe("ok");
+  });
+
+  it("계속 525 → 정한 횟수만 다시 하고 예비로", async () => {
+    const { store } = memoryStore();
+    let exim = 0;
+    const r = await collectDay(store, "2026-10-28", {
+      koreaeximKey: "k",
+      now: NOW,
+      retryDelays: [1, 1],
+      sleep: noWait,
+      fetcher: fetcher(() => (exim++, json("", 525)), () => json(FRANK_OK)),
+    });
+    expect(exim).toBe(3);
+    expect(r.source).toBe("koreaexim→frankfurter");
+    expect(r.message).toBe("koreaexim http-525: HTTP 525 (다시 시도 2회 · http-525 · http-525)");
+  });
+
+  it("인증 오류 같은 일시 오류가 아닌 실패는 다시 하지 않음", async () => {
+    const { store } = memoryStore();
+    let exim = 0;
+    await collectDay(store, "2026-10-28", {
+      koreaeximKey: "k",
+      now: NOW,
+      retryDelays: [1, 1],
+      sleep: noWait,
+      fetcher: fetcher(() => (exim++, json([{ result: 3 }])), () => json(FRANK_OK)),
+    });
+    expect(exim).toBe(1);
+  });
+
+  it("간격을 주지 않으면 한 번만 (기존 동작)", async () => {
+    const { store } = memoryStore();
+    let exim = 0;
+    await collectDay(store, "2026-10-28", { koreaeximKey: "k", now: NOW, fetcher: fetcher(() => (exim++, json("", 525)), () => json(FRANK_OK)) });
+    expect(exim).toBe(1);
+  });
+});
