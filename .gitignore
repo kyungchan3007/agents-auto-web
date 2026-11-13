@@ -27,3 +27,12 @@ dist/
 # e2e 결과 (작업 0101)
 test-results/
 playwright-report/
+
+# OpenRig 팀 설정 — 템플릿(rig.template.yaml)에서 만든 실제 경로 파일
+rigs/*/rig.yaml
+
+# OpenRig 실행 시 생기는 이 PC 전용 파일
+CLAUDE.local.md
+.mcp.json
+.openrig/
+.claude/plugins/
