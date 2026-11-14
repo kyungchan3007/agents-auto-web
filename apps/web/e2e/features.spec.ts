@@ -11,7 +11,7 @@ function watchErrors(page: Page) {
   return errs;
 }
 
-for (const path of ["/", "/currencies/USD", "/prices", "/calc", "/log", "/about", "/geo"]) {
+for (const path of ["/", "/currencies/USD", "/prices", "/flights", "/calc", "/log", "/about", "/geo"]) {
   test(`${path} — 페이지 오류 없음 · 가로로 넘치지 않음`, async ({ page }) => {
     const errs = watchErrors(page);
     await page.goto(path);
@@ -66,4 +66,15 @@ test("작업실 — 사이트 상태 점검판이 맨 위 · 탭 제목은 페�
   await expect(board).toContainText("사이트 상태");
   await expect(board).toContainText(/최근 환율|상태를 받지 못했습니다/);
   await expect(page.getByRole("navigation").getByRole("link", { name: "작업실" }).first()).toBeVisible();
+});
+
+// 여행 품목 영역(국제항공료 · 해외단체여행비 · 3D 비행기)은 /prices 에서 /flights 로 옮김 (작업 0164 · 사용자 결정 2026-11-15)
+test("메뉴 '여행 타이밍' → /flights · 여행 품목 영역은 /flights 에만 있음 (작업 0164)", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("banner").getByRole("navigation").getByRole("link", { name: "여행 타이밍", exact: true }).click();
+  await expect(page).toHaveURL(/\/flights\/?$/);
+  await expect(page.locator("#travel-index-title")).toBeVisible();
+  await page.goto("/prices");
+  await expect(page.locator("#travel-index-title")).toHaveCount(0);
+  await expect(page.locator('a[href="/flights"]').first()).toBeVisible(); // /prices 에 /flights 로 가는 링크 한 줄
 });
