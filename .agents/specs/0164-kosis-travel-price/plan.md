@@ -90,11 +90,11 @@
 - packages/ui/src/components/layout/nav-bar.tsx · tokens.css: 메뉴가 7개가 돼 320px 에서 "GEO 측정"이 잘림 → 390px 아래에서만 메뉴를 두 줄로 감싸고(작업 0109 와 같은 방식), 고정 메뉴 높이를 CSS 변수 --hav-nav-h 로 둠 (lead 결정 (나))
 - apps/web/src/features/home/components/trip-scenes.tsx · features/log/components/scenes.tsx · features/travel-price/components/budget-planner.tsx: 메뉴가 두 줄일 때 가려지지 않게 고정 · 앵커 위치(top-20 · sm:top-13 · scroll-mt-20)를 --hav-nav-h 로 바꿈 (넓은 화면 · 390px 이상 값은 그대로)
 - apps/web/src/features/travel-price/components/flights-page.tsx: /flights 화면 컴포넌트 (apps/web/src/features/travel-price/** 안 · 다른 페이지와 같은 "page.tsx 는 얇게 · 화면은 features" 구조)
-<!-- 게이트는 main 과 비교하므로, 이 브랜치의 base 인 작업 0163(PR #178)의 변경(schema.ts · 0010 마이그레이션 · import-calc · packages/shared/package.json 등)이 계획 밖 · 보호 파일로 함께 잡힌다. 0163 이 머지되면 사라진다. -->
+<!-- 0163(PR #178)이 머지된 뒤 main 위로 다시 쌓음 (2026-11-15) — 이제 이 목록은 0164 변경만 -->
+- apps/web/src/features/log/components/scenes.tsx: 위 줄과 같은 이유 (메뉴 두 줄일 때 고정 위치를 --hav-nav-h 로)
 - packages/ui/src/three/scene/lazy.tsx: PlaneLazy 추가 — 다른 3D 장면과 같은 늦게 불러오기 방식 (파일 계획에 빠뜨림)
 - apps/web/src/features/travel-price/lib/plane-model.ts: 모델 주소 · 출처 상수 (apps/web/src/features/travel-price/** 안 · 테스트가 정한 이름)
 - apps/api/src/log.ts: 로그에서 KOSIS 주소의 apiKey= 값 가리기 (인증키가 주소에 들어감 · 규칙 6)
-- (그 밖의 계획 밖 목록은 0163 변경이 base 에 섞여서 나타남 — 이 작업의 변경 아님)
 
 ## 완료 기준
 - [ ] 정상 배열 응답에서 (YYYY-MM, 지수) 를 얻고 숫자 아닌 DT 는 버린다
