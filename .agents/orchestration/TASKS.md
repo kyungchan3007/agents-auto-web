@@ -5,3 +5,4 @@
 | 번호 | 작업 | 역할 · 담당 | 상태 | 브랜치 | 잡은 파일·폴더 |
 | --- | --- | --- | --- | --- | --- |
 | 0161 | 사이트맵 "가져올 수 없음" 원인 조사 (#157) | geo · dev-geo@hav (조사만) | 완료 (#157 댓글) | task/0161-sitemap-investigation | 없음 (조사만 · 파일 수정 없음) |
+| 0162 | 2026-11-14 AI 답변 세션 측정 · #157 이어서 | geo · dev-geo@hav | PR 대기 | task/0162-geo-answers-1114 | apps/api/data/geo-answers/2026-11-14.json |
