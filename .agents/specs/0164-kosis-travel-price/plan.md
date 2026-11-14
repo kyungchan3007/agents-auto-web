@@ -17,6 +17,13 @@
 - 고양이 · 동전은 그대로
 - 밝은 화면에서 안 보임(사용자 피드백) → 오로라 색 옅은 원형 배경판 · drei ContactShadows 그림자 · 크기 키우기(모바일 제목 밀지 않게) · 밝은 테마에서 몸체를 옅은 회청색(파란 꼬리 유지) · 두 테마를 미리보기 배포 캡처로 확인
 
+## 추가: 여행 품목 영역을 새 페이지 /flights 로 (사용자 결정 2026-11-15)
+- 여행 품목 영역(두 품목 지수 · 작년 대비 · 싼 달 · 원/달러 월평균 · 3D 비행기 · 출처)을 /prices 에서 빼고 `apps/web/src/app/flights` 로. /prices 는 원래대로 + /flights 로 가는 링크 한 줄
+- 메뉴 이름: **여행 타이밍** (가정 · "항공권"은 표를 파는 곳처럼 보임 — 이 페이지는 항공료 물가지수로 언제가 싼지를 봄)
+- 페이지 제목 · 설명 메타데이터 · 기존 페이지 구조 · 디자인 그대로
+- sitemap: `PUBLIC_PAGES`(apps/web/src/shared/site.ts)에 넣으면 sitemap.ts 가 자동으로 포함 → geo 는 방문 집계 경로 목록(packages/shared/src/domain/geo-visit.ts)에 /flights 추가 · sitemap 포함 확인
+- 순서: test(e2e 페이지 목록 · 메뉴 수) → builder(이동) → geo(방문 집계 · sitemap 확인)
+
 ## 공식 명세 (확인: 2026-11-15, lead 조사)
 - 출처: 통계자료 가이드 https://kosis.kr/openapi/devGuide/devGuide_0201List.do · 개발가이드 PDF https://kosis.kr/openapi/file/openApi_manual_v1.0.pdf · 통계표설명(메타) https://kosis.kr/openapi/devGuide/devGuide_060104List.do
 - 요청(통계표선택 방식): `GET https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList`
@@ -58,6 +65,14 @@
 - apps/api/src/scheduled-kosis.test.ts
 - apps/web/src/features/travel-price/**
 - apps/web/src/app/prices/page.tsx
+- apps/web/src/app/flights/**
+- apps/web/src/shared/site.ts
+- apps/web/src/shared/site-nav.tsx
+- apps/web/src/shared/*.test.ts
+- apps/web/e2e/features.spec.ts
+- apps/web/e2e-responsive/responsive.spec.ts
+- packages/shared/src/domain/geo-visit.ts
+- packages/shared/src/domain/geo-visit.test.ts
 - apps/web/src/shared/api.ts
 - apps/web/src/bff/**
 - packages/ui/src/three/objects/plane.tsx
@@ -85,6 +100,7 @@
 - [ ] 달별 평균으로 싼 달을 고른다 · 자료가 모자라면 고르지 않는다
 - [ ] 자료가 없으면 화면은 "준비 중"
 - [ ] 비행기: 움직임 줄이기 설정이면 움직이지 않는다
+- [ ] /flights 에 여행 품목 영역이 있고 /prices 에는 링크 한 줄만 · 메뉴에 '여행 타이밍' · sitemap 에 /flights
 - [ ] 비행기: 밝은 · 어두운 화면 모두에서 형체가 보인다 (미리보기 캡처로 확인)
 - [ ] 비행기: 모델 주소를 url prop 으로 받고 도형 목록(PLANE_PARTS)이 없다 · 출처(CC-BY) 문구가 화면에 있다
 - [ ] bash .agents/checks.sh PASS
