@@ -40,17 +40,8 @@ export function cheapMonth(points: IndexPoint[]): number | null {
   return best;
 }
 
-/** 환율 일별 → 달별 평균 (1단위당 원) · 오래된 달부터 · 줄이 없는 달은 만들지 않음 */
-export function fxMonthlyAverage(rows: { date: string; baseRate: number; unit: number }[]): IndexPoint[] {
-  const sums = new Map<string, { sum: number; n: number }>();
-  for (const r of rows) {
-    const s = sums.get(r.date.slice(0, 7)) ?? { sum: 0, n: 0 };
-    s.sum += r.baseRate / r.unit;
-    s.n += 1;
-    sums.set(r.date.slice(0, 7), s);
-  }
-  return [...sums].map(([period, s]) => ({ period, value: s.sum / s.n })).sort(byPeriod);
-}
+/** 환율 일별 → 달별 평균 — 0165 직구 화면과 같은 계산이라 @hav/shared/currency 한 곳에 두고 다시 내보냄 */
+export { fxMonthlyAverage } from "@hav/shared/currency";
 
 export type TravelView = { kind: "preparing" } | { kind: "ready"; trend: IndexPoint[]; latest: IndexPoint; yoy: number | null; cheapMonth: number | null };
 

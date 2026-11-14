@@ -50,6 +50,7 @@
 - docs/domain/import-calc.md
 
 ## 계획 밖 변경 이유
+- apps/web/src/features/travel-price/lib/travel-index.ts · packages/shared/src/domain/currency.ts: 환율 월평균을 0164 함수 재사용으로 정리 — 기능 폴더끼리 직접 가져오면 role-boundary 테스트가 막아, 계산을 @hav/shared/currency 한 곳에 두고 두 기능이 다시 내보냄
 - apps/api/src/log.ts: 로그에서 ECOS 주소 경로의 인증키(/StatisticSearch/<키>/) 가리기 (키가 주소 경로에 들어감 · 규칙 6)
 - (그 밖의 계획 밖 목록은 0163 · 0164 변경이 base 에 섞여서 나타남 — 이 작업의 변경 아님)
 

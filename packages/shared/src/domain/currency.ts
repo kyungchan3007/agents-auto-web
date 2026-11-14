@@ -133,3 +133,16 @@ export function matchCurrency(code: string, query: string): boolean {
 export function toUnit<T extends { baseRate: number; unit: number }>(rates: T[], unit: number): T[] {
   return rates.map((r) => (r.unit === unit ? r : { ...r, baseRate: (r.baseRate / r.unit) * unit, unit }));
 }
+
+/** 환율 일별 → 달별 평균 (1단위당 원 = baseRate / unit) · 오래된 달부터 · 줄이 없는 달은 만들지 않음 (작업 0164 · 0165 가 함께 씀 — 기능 폴더끼리 가져오지 못해 여기 한 곳) */
+export function fxMonthlyAverage(rows: { date: string; baseRate: number; unit: number }[]): { period: string; value: number }[] {
+  const sums = new Map<string, { sum: number; n: number }>();
+  for (const r of rows) {
+    const k = r.date.slice(0, 7);
+    const s = sums.get(k) ?? { sum: 0, n: 0 };
+    s.sum += r.baseRate / r.unit;
+    s.n += 1;
+    sums.set(k, s);
+  }
+  return [...sums].map(([period, s]) => ({ period, value: s.sum / s.n })).sort((a, b) => a.period.localeCompare(b.period));
+}
