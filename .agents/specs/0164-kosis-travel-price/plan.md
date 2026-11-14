@@ -41,11 +41,21 @@
 ## 파일 계획
 - .agents/specs/0164-kosis-travel-price/**
 - .agents/orchestration/TASKS.md
-- apps/api/src/features/indicators/** · apps/api/src/index.ts · apps/api/src/env.ts · apps/api/.dev.vars.example
-- apps/web/src/features/travel-price/** · apps/web/src/app/prices/page.tsx · apps/web/src/shared/api.ts · apps/web/src/bff/**
-- packages/ui/src/three/objects/plane.tsx · packages/ui/src/three/**/*.test.ts
+- apps/api/src/features/indicators/**
+- apps/api/src/index.ts
+- apps/api/src/env.ts
+- apps/api/.dev.vars.example
+- apps/api/src/scheduled-kosis.test.ts
+- apps/web/src/features/travel-price/**
+- apps/web/src/app/prices/page.tsx
+- apps/web/src/shared/api.ts
+- apps/web/src/bff/**
+- packages/ui/src/three/objects/plane.tsx
+- packages/ui/src/three/lib/plane.ts
+- packages/ui/src/three/lib/plane.test.ts
 - packages/shared/src/**
-- docs/domain/travel-price.md · docs/design.md (three.js 표에 비행기 한 줄)
+- docs/domain/travel-price.md
+- docs/design.md
 
 ## 계획 밖 변경 이유
 
