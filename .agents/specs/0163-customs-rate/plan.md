@@ -38,6 +38,7 @@
 - 문서: docs/domain/import-calc.md (과세환율 규칙 · "아직 넣지 않은 것"에서 과세환율 빼기) · apps/api/.dev.vars.example 에 `KCS_KEY=` + 발급처 주석
 
 ## 애매한 곳 (사용자가 자는 중 — 판단해서 정함)
+- 지난 주 과세환율은 계산에 쓰지 않는다 (가정 · test 가 정하고 lead 가 받아들임 — 과세환율은 그 주에만 적용)
 - 공공데이터포털 API 사용 (가정 · 위 이유)
 - 비교 통화: 수출입은행 통화 목록과 겹치는 통화만 저장 (가정 · 표에 없는 통화는 버림)
 - 직구 계산기는 과세환율이 있으면 우선 사용 (확인됨: 요청 원문 "직구 계산기(/calc)도 과세환율을 쓸 수 있게")
@@ -54,7 +55,8 @@
 - apps/api/drizzle/migrations/0010_*.sql · apps/api/drizzle/migrations/meta/** (새 마이그레이션 · 보호 폴더)
 - apps/api/src/features/indicators/**
 - apps/api/src/index.ts · apps/api/src/env.ts · apps/api/.dev.vars.example
-- apps/api/src/index.test.ts
+- apps/api/src/index.test.ts · apps/api/src/scheduled.test.ts
+- apps/api/src/log.ts · apps/api/src/log.test.ts (로그에서 serviceKey= 가리기 — 키가 주소에 들어감)
 - apps/web/src/bff/proxy.ts · apps/web/src/bff/*.test.ts
 - apps/web/src/shared/api.ts
 - apps/web/src/features/import-calc/**
