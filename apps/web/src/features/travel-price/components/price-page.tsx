@@ -6,10 +6,12 @@ import type { SignalList } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES, travelBands } from "@hav/shared/travel";
 import { BudgetPlanner } from "./budget-planner";
 import { PriceBands } from "./price-bands";
+import { type TravelItem, TravelIndexSection } from "./travel-index-section";
+import type { IndexPoint } from "../lib/travel-index";
 import { PageSection } from "@hav/ui/layout/page-section";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
 
-export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; signals: Fetched<SignalList> }) {
+export function PricePage({ levels, signals, travel, fxMonthly }: { levels: Fetched<PriceLevels>; signals: Fetched<SignalList>; travel: TravelItem[]; fxMonthly: IndexPoint[] }) {
   const data = levels.ok ? travelBands(levels.data) : null;
   const signalOf = Object.fromEntries((signals.ok ? signals.data.signals : []).map((s) => [s.currency, s.signal]));
   const latestOf = Object.fromEntries((signals.ok ? signals.data.signals : []).map((s) => [s.currency, s.latest]));
@@ -41,6 +43,10 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
             ) : (
               <EmptyState>물가 자료를 받지 못했습니다 ({levels.ok ? "여행지 나라 자료 없음" : levels.reason})</EmptyState>
             )}
+          </div>
+
+          <div className="mt-16">
+            <TravelIndexSection items={travel} fxMonthly={fxMonthly} />
           </div>
 
           {data && data.bands.length > 0 && (

@@ -1,7 +1,8 @@
 // 과세환율 수집 — 키가 없으면 건너뜀 · 이미 받은 주는 호출하지 않음 · 어떤 실패도 던지지 않음 (환율 수집에 번지지 않게 · 작업 0163)
-import { weekStartOf } from "@hav/shared/date";
+import { kstNow, weekStartOf } from "@hav/shared/date";
 import { redact } from "../../log";
 import { KCS_URL, KcsError, parseKcsXml } from "./kcs";
+import { KOSIS_ITEMS, KOSIS_URL, KosisError, parseKosisJson } from "./kosis";
 
 export type IndicatorPoint = { series: string; period: string; value: number; source: "kcs" | "kosis" | "ecos"; fetchedAt: string };
 
@@ -75,4 +76,70 @@ export async function collectCustomsRates(
     }
   }
   return result;
+}
+
+/** YYYYMM 에서 months 달 전 */
+const monthsBefore = (d: Date, months: number) => {
+  const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() - months, 1));
+  return `${t.getUTCFullYear()}${String(t.getUTCMonth() + 1).padStart(2, "0")}`;
+};
+
+/**
+ * KOSIS 소비자물가(여행 품목) 수집 — 최근 24개월을 다시 받아 덮어씀 (고침 반영 · 발표가 늦은 달 채우기)
+ * 품목마다 따로 요청 · 따로 실행 기록 · 한 품목이 실패해도 다른 품목은 저장 · 어떤 실패도 던지지 않음 (작업 0164)
+ */
+export async function collectKosis(store: IndicatorStore, opts: { key?: string; now?: () => Date; fetcher?: typeof fetch }): Promise<CustomsResult> {
+  const key = opts.key?.trim();
+  if (!key) return { status: "skipped", rows: 0, message: "KOSIS_KEY 가 없어 건너뜀" };
+  const now = opts.now ?? (() => new Date());
+  const doFetch = opts.fetcher ?? ((u: Parameters<typeof fetch>[0], i?: RequestInit) => fetch(u, i));
+  const kst = kstNow(now());
+  const end = monthsBefore(kst, 0);
+  const start = monthsBefore(kst, 23); // 끝 달 포함 24개월
+  let rows = 0;
+  let okItems = 0;
+  const errors: string[] = [];
+
+  for (const item of KOSIS_ITEMS) {
+    let runId: number | null = null;
+    let status: "ok" | "empty" | "error" = "error";
+    let saved = 0;
+    let message: string | null = null;
+    try {
+      runId = await store.startRun("kosis", now().toISOString());
+      const url = new URL(KOSIS_URL);
+      for (const [k, v] of Object.entries({ method: "getList", apiKey: key, orgId: "101", tblId: "DT_1J22001", itmId: "T", objL1: "T10", objL2: item.objL2, prdSe: "M", startPrdDe: start, endPrdDe: end, format: "json", jsonVD: "Y" })) url.searchParams.set(k, v);
+      const res = await doFetch(url.toString(), { signal: AbortSignal.timeout(20_000) });
+      if (!res.ok) throw new KosisError(`http-${res.status}`, `HTTP ${res.status}`);
+      let body: unknown;
+      try {
+        body = JSON.parse(await res.text());
+      } catch {
+        throw new KosisError("shape", "KOSIS 응답이 JSON 이 아닙니다");
+      }
+      const points = parseKosisJson(body);
+      if (points.length === 0) {
+        status = "empty";
+      } else {
+        const fetchedAt = now().toISOString();
+        saved = await store.savePoints(points.map((p) => ({ series: item.series, period: p.period, value: p.value, source: "kosis" as const, fetchedAt })));
+        status = "ok";
+      }
+    } catch (e) {
+      message = scrub(e instanceof Error ? `${e.name}: ${e.message}` : String(e), key);
+      errors.push(`${item.key}: ${message}`);
+    }
+    rows += saved;
+    if (status === "ok") okItems++;
+    if (runId !== null) {
+      try {
+        await store.finishRun(runId, { source: "kosis", status, rows: saved, message, finishedAt: now().toISOString() });
+      } catch {
+        /* 실행 기록 실패는 결과를 바꾸지 않음 */
+      }
+    }
+  }
+  if (okItems > 0) return { status: "ok", rows, message: errors.length > 0 ? errors.join(" · ") : null };
+  if (errors.length > 0) return { status: "error", rows: 0, message: errors.join(" · ") };
+  return { status: "empty", rows: 0, message: "받은 항목 없음" };
 }

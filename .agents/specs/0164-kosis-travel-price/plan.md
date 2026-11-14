@@ -58,6 +58,9 @@
 - docs/design.md
 
 ## 계획 밖 변경 이유
+- packages/ui/src/three/scene/lazy.tsx: PlaneLazy 추가 — 다른 3D 장면과 같은 늦게 불러오기 방식 (파일 계획에 빠뜨림)
+- apps/api/src/log.ts: 로그에서 KOSIS 주소의 apiKey= 값 가리기 (인증키가 주소에 들어감 · 규칙 6)
+- (그 밖의 계획 밖 목록은 0163 변경이 base 에 섞여서 나타남 — 이 작업의 변경 아님)
 
 ## 완료 기준
 - [ ] 정상 배열 응답에서 (YYYY-MM, 지수) 를 얻고 숫자 아닌 DT 는 버린다
