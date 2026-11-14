@@ -14,12 +14,13 @@ export default async function Page() {
   const latest = await api.latest();
   // 관세청 과세환율 (작업 0163) — 통화마다 가장 최근 1주 + 달러 주별 흐름 · 못 받으면 빈 값 (수출입은행 환율 + 예상 금액 안내로 돌아감)
   const codes = latest.ok ? latest.data.rates.map((r) => r.currency) : [];
-  const [trend, ...lasts] = await Promise.all([api.indicator("kcs-import:USD", 26), ...codes.map((c) => api.indicator(`kcs-import:${c}`, 1))]);
+  // 수입물가지수 (한국은행 ECOS · 작업 0165) + 같은 기간 원/달러 — 못 받으면 "준비 중"
+  const [trend, price, usd, ...lasts] = await Promise.all([api.indicator("kcs-import:USD", 26), api.indicator("ecos-import-price:krw", 36), api.history("USD", 1000), ...codes.map((c) => api.indicator(`kcs-import:${c}`, 1))]);
   const customs: Record<string, CustomsRate> = {};
   codes.forEach((c, i) => {
     const f = lasts[i];
     const p = f.ok ? f.data.points.at(-1) : undefined;
     if (p) customs[c] = { perUnit: p.value, weekStart: p.period };
   });
-  return <CalcPage latest={latest} customs={customs} trend={trend.ok ? trend.data.points : null} />;
+  return <CalcPage latest={latest} customs={customs} trend={trend.ok ? trend.data.points : null} usdDays={usd.ok ? usd.data.rates : null} importPrice={price.ok ? price.data.points : null} />;
 }

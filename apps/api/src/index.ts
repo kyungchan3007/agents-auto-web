@@ -8,7 +8,7 @@ import { activityRoutes } from "./features/activity/routes";
 import { type DailyResult, dailyFx } from "./features/fx/collect/daily";
 import { fxRoutes } from "./features/fx/routes";
 import { d1RateStore, hasOfficialRates, hasRates } from "./features/fx/store";
-import { collectCustomsRates, collectKosis } from "./features/indicators/collect";
+import { collectCustomsRates, collectEcos, collectKosis } from "./features/indicators/collect";
 import { indicatorRoutes } from "./features/indicators/routes";
 import { d1IndicatorStore } from "./features/indicators/store";
 import { collectPriceLevels } from "./features/prices/collect";
@@ -59,7 +59,7 @@ export default {
   fetch: app.fetch,
   async scheduled(controller, env, ctx) {
     if (controller.cron === CRON.pricesMonthly) {
-      // 매달 1일 13:00 KST — 세계은행 물가 (연 단위 자료) · KOSIS 소비자물가 (월 단위 · 최근 24개월 다시 받기 · 작업 0164) — 서로 따로 (한쪽이 던져도 다른 쪽은 그대로)
+      // 매달 1일 13:00 KST — 세계은행 물가 (연 단위 자료) · KOSIS 소비자물가 · ECOS 수입물가지수 (월 단위 · 최근 24개월 다시 받기 · 작업 0164) — 서로 따로 (한쪽이 던져도 다른 쪽은 그대로)
       ctx.waitUntil(
         collectPriceLevels(d1PriceStore(env.DB))
           .then(() => logEvent("info", "prices_collected", { cron: controller.cron }))
@@ -70,6 +70,12 @@ export default {
           .then(() => collectKosis(d1IndicatorStore(env.DB), { key: env.KOSIS_KEY }))
           .then((r) => logEvent(r.status === "error" ? "warn" : "info", "kosis_collected", { cron: controller.cron, status: r.status, rows: r.rows, message: r.message }))
           .catch((e) => logError("kosis_collect_failed", e, { cron: controller.cron })),
+      );
+      ctx.waitUntil(
+        Promise.resolve()
+          .then(() => collectEcos(d1IndicatorStore(env.DB), { key: env.ECOS_KEY }))
+          .then((r) => logEvent(r.status === "error" ? "warn" : "info", "ecos_collected", { cron: controller.cron, status: r.status, rows: r.rows, message: r.message }))
+          .catch((e) => logError("ecos_collect_failed", e, { cron: controller.cron })),
       );
       return;
     }

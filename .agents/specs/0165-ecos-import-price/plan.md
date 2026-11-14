@@ -50,6 +50,8 @@
 - docs/domain/import-calc.md
 
 ## 계획 밖 변경 이유
+- apps/api/src/log.ts: 로그에서 ECOS 주소 경로의 인증키(/StatisticSearch/<키>/) 가리기 (키가 주소 경로에 들어감 · 규칙 6)
+- (그 밖의 계획 밖 목록은 0163 · 0164 변경이 base 에 섞여서 나타남 — 이 작업의 변경 아님)
 
 ## 완료 기준
 - [ ] 정상 응답에서 (YYYY-MM, 지수) 를 얻고 null · 숫자 아닌 값은 버린다

@@ -9,3 +9,6 @@ KCS_KEY=
 # KOSIS(통계청) 공유서비스 OpenAPI 인증키 — 소비자물가 여행 품목 (없으면 KOSIS 수집을 건너뜀)
 #   발급: https://kosis.kr/openapi/ → 회원가입 → 로그인 → "활용신청" (자동 발급 · 기간 만료 있음, 연장 가능)
 KOSIS_KEY=
+# 한국은행 ECOS OpenAPI 인증키 — 수입물가지수 (없으면 ECOS 수집을 건너뜀)
+#   발급: https://ecos.bok.or.kr/api/ → 회원가입 → 로그인 → "인증키 신청" (이용기간 2년 · 연장 가능) · 화면에 "한국은행 ECOS" 출처 표시 의무
+ECOS_KEY=

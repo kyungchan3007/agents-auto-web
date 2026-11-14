@@ -2,7 +2,10 @@
 //   비밀값은 남기지 않음 (AGENTS 규칙 6) — 수출입은행 주소의 authkey · 공공데이터포털(과세환율) 주소의 serviceKey · KOSIS 주소의 apiKey 가 오류 글에 섞일 수 있어 가림
 const SECRET = /((?:authkey|servicekey|apikey)=)[^&\s"']+/gi;
 
-export const redact = (text: string) => text.replace(SECRET, "$1***");
+// 한국은행 ECOS 는 인증키가 주소 경로에 들어감 (/StatisticSearch/<키>/...)
+const ECOS_PATH = /(\/StatisticSearch\/)[^/\s"']+/gi;
+
+export const redact = (text: string) => text.replace(SECRET, "$1***").replace(ECOS_PATH, "$1***");
 
 const errorText = (e: unknown) => redact(e instanceof Error ? `${e.name}: ${e.message}` : String(e));
 
