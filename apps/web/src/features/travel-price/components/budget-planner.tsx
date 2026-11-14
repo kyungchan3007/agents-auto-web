@@ -14,7 +14,7 @@ export function BudgetPlanner({ rows, latestOf }: { rows: TravelRow[]; latestOf:
   const { sorted, country, setCountry, daily, setDaily, days, setDays, row, d, n, latest, budget: b } = useBudgetPlanner(rows, latestOf);
 
   return (
-    <section id="budget" aria-labelledby="budget-title" className="scroll-mt-20 rounded-card bg-surface-2 p-5 sm:p-8">
+    <section id="budget" aria-labelledby="budget-title" className="scroll-mt-(--hav-nav-h) rounded-card bg-surface-2 p-5 sm:p-8">
       <SubTitle id="budget-title">여행 예산 계산</SubTitle>
       <p className="mt-1 text-sm text-fg-2">한국에서의 하루 지출을 기준으로 그 나라의 예상 비용을 계산합니다.</p>
       <form className="mt-5 grid gap-3 sm:grid-cols-[1.2fr_1fr_0.6fr]" onSubmit={(e) => e.preventDefault()}>

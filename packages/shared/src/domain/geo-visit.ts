@@ -31,7 +31,7 @@ const REFERRERS: { host: RegExp; name: string }[] = [
 export function visitPath(pathname: string): string | null {
   const p = pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname;
   if (/^\/currencies\/[A-Za-z]{3}$/.test(p)) return "/currencies/*";
-  return ["/", "/currencies", "/prices", "/calc", "/log", "/about", "/geo", "/robots.txt", "/sitemap.xml"].includes(p) ? p : null;
+  return ["/", "/currencies", "/prices", "/flights", "/calc", "/log", "/about", "/geo", "/robots.txt", "/sitemap.xml"].includes(p) ? p : null;
 }
 
 function refererName(referer: string | null): string | null {

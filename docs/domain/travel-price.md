@@ -31,5 +31,6 @@
 ## 담당 경로
 | 경로 |
 | --- |
-| apps/web/src/features/travel-price/** |
+| apps/web/src/features/travel-price/** (`/prices` 와 `/flights`) |
+| apps/web/src/app/flights/** |
 | apps/api/src/features/prices/** |

@@ -1,6 +1,6 @@
 // 구조화 로그 — JSON 한 줄 (Workers Logs 에서 검색 · 근거: Cloudflare Workers Best Practices)
-//   비밀값은 남기지 않음 (AGENTS 규칙 6) — 수출입은행 주소의 authkey · 공공데이터포털(과세환율) 주소의 serviceKey 가 오류 글에 섞일 수 있어 가림
-const SECRET = /((?:authkey|servicekey)=)[^&\s"']+/gi;
+//   비밀값은 남기지 않음 (AGENTS 규칙 6) — 수출입은행 주소의 authkey · 공공데이터포털(과세환율) 주소의 serviceKey · KOSIS 주소의 apiKey 가 오류 글에 섞일 수 있어 가림
+const SECRET = /((?:authkey|servicekey|apikey)=)[^&\s"']+/gi;
 
 export const redact = (text: string) => text.replace(SECRET, "$1***");
 

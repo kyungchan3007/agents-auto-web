@@ -5,6 +5,7 @@
 import { lazyNear } from "../../components/motion/lazy-near";
 import type { CoinProps } from "../objects/coin";
 import type { GlobeProps } from "../objects/globe";
+import type { PlaneProps } from "../objects/plane";
 import type { MoneyCatProps } from "../characters/money-cat";
 import type { StationsProps } from "../objects/stations";
 import type { WorkerCatProps } from "../characters/worker-cat";
@@ -14,3 +15,4 @@ export const WorkerCatLazy = lazyNear<WorkerCatProps>(() => import("../character
 export const StationsLazy = lazyNear<StationsProps>(() => import("../objects/stations"));
 export const CoinLazy = lazyNear<CoinProps>(() => import("../objects/coin"));
 export const MoneyCatLazy = lazyNear<MoneyCatProps>(() => import("../characters/money-cat"));
+export const PlaneLazy = lazyNear<PlaneProps>(() => import("../objects/plane"));

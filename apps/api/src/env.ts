@@ -6,6 +6,8 @@ export type Env = Pick<Cloudflare.Env, "DB"> &
     KOREAEXIM_KEY?: string;
     /** 공공데이터포털 인증키 (관세청 과세환율 · 활용신청 후 발급) — 없으면 과세환율 수집을 건너뜀 (작업 0163) */
     KCS_KEY?: string;
+    /** KOSIS(통계청) 공유서비스 OpenAPI 인증키 (소비자물가 여행 품목 · 활용신청 후 발급) — 없으면 KOSIS 수집을 건너뜀 (작업 0164) */
+    KOSIS_KEY?: string;
     /** 관리용 수집 API(POST /fx/collect) 토큰 — 없으면 그 경로는 꺼짐 */
     ADMIN_TOKEN?: string;
     /** 실시간 작업 기록(POST /activity) 토큰 — 에이전트 훅만 씀 · 없으면 그 경로는 꺼짐 */

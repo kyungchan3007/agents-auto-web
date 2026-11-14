@@ -6,3 +6,6 @@ ADMIN_TOKEN=
 # 공공데이터포털 인증키 — 관세청 과세환율 (없으면 과세환율 수집을 건너뜀)
 #   발급: https://www.data.go.kr/data/15101230/openapi.do → 로그인 → "활용신청" (자동 승인) → 마이페이지에서 일반 인증키 복사
 KCS_KEY=
+# KOSIS(통계청) 공유서비스 OpenAPI 인증키 — 소비자물가 여행 품목 (없으면 KOSIS 수집을 건너뜀)
+#   발급: https://kosis.kr/openapi/ → 회원가입 → 로그인 → "활용신청" (자동 발급 · 기간 만료 있음, 연장 가능)
+KOSIS_KEY=
