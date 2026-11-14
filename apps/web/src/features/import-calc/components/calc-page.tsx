@@ -4,11 +4,13 @@ import { SiteNav } from "@/shared/site-nav";
 import type { FxLatest } from "@hav/shared/fx";
 import { CalcForm } from "./calc-form";
 import { CustomsSection } from "./customs-section";
+import { ImportPriceSection } from "./import-price-section";
+import type { FxDay, MonthPoint } from "../lib/import-price";
 import type { CustomsRate, Point } from "../lib/customs-rate";
 import { PageSection } from "@hav/ui/layout/page-section";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
 
-export function CalcPage({ latest, customs, trend }: { latest: Fetched<FxLatest>; customs: Record<string, CustomsRate>; trend: Point[] | null }) {
+export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { latest: Fetched<FxLatest>; customs: Record<string, CustomsRate>; trend: Point[] | null; usdDays: FxDay[] | null; importPrice: MonthPoint[] | null }) {
   return (
     <>
       <SiteNav page="calc" />
@@ -32,6 +34,7 @@ export function CalcPage({ latest, customs, trend }: { latest: Fetched<FxLatest>
           )}
         </div>
         <CustomsSection points={trend} bank={latest.ok ? latest.data.rates.find((r) => r.currency === "USD") : undefined} />
+        <ImportPriceSection fxRows={usdDays} price={importPrice} />
       </PageSection>
     </>
   );
