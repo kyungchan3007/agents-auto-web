@@ -4,6 +4,8 @@ export type Env = Pick<Cloudflare.Env, "DB"> &
   Partial<Pick<Cloudflare.Env, "CF_VERSION_METADATA">> & {
     /** 한국수출입은행 Open API 인증키 — 없으면 Frankfurter 예비로 */
     KOREAEXIM_KEY?: string;
+    /** 공공데이터포털 인증키 (관세청 과세환율 · 활용신청 후 발급) — 없으면 과세환율 수집을 건너뜀 (작업 0163) */
+    KCS_KEY?: string;
     /** 관리용 수집 API(POST /fx/collect) 토큰 — 없으면 그 경로는 꺼짐 */
     ADMIN_TOKEN?: string;
     /** 실시간 작업 기록(POST /activity) 토큰 — 에이전트 훅만 씀 · 없으면 그 경로는 꺼짐 */

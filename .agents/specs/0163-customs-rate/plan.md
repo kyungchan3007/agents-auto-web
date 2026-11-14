@@ -65,6 +65,8 @@
 - docs/domain/import-calc.md
 
 ## 계획 밖 변경 이유
+- packages/shared/src/utils/date.ts: `weekStartOf` 추가 — API 수집과 화면 선택 함수가 같은 "주 시작(일요일)" 규칙을 쓰게 (파일 계획의 packages/shared/src/** 안)
+- apps/api/src/index.ts: 과세환율을 새로 저장하면 배포 훅 호출 — 환율 수집의 빌드 요청이 이 값을 받기 전에 가서 사이트에 안 보일 수 있어서
 
 ## 완료 기준
 - [ ] 문서 예시 XML 을 파싱해 (통화, 적용 시작일, 1단위당 원) 을 얻는다 · 빈 값 · 숫자 아닌 환율은 버린다

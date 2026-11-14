@@ -16,4 +16,10 @@ export function isoDaysBefore(days: number, from: Date = new Date()): string {
   return new Date(from.getTime() - days * 86400_000).toISOString().slice(0, 10);
 }
 
+/** 그 날이 속한 주의 일요일 (YYYY-MM-DD) — 관세청 과세환율 적용 기간은 일요일 ~ 토요일 (작업 0163) */
+export function weekStartOf(date: string): string {
+  const d = new Date(`${date}T00:00:00Z`);
+  return new Date(d.getTime() - d.getUTCDay() * 86400_000).toISOString().slice(0, 10);
+}
+
 export { kstDate, kstMonthDay, kstNow } from "./kst";

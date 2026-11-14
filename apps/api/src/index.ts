@@ -8,6 +8,9 @@ import { activityRoutes } from "./features/activity/routes";
 import { type DailyResult, dailyFx } from "./features/fx/collect/daily";
 import { fxRoutes } from "./features/fx/routes";
 import { d1RateStore, hasOfficialRates, hasRates } from "./features/fx/store";
+import { collectCustomsRates } from "./features/indicators/collect";
+import { indicatorRoutes } from "./features/indicators/routes";
+import { d1IndicatorStore } from "./features/indicators/store";
 import { collectPriceLevels } from "./features/prices/collect";
 import { priceRoutes } from "./features/prices/routes";
 import { d1PriceStore } from "./features/prices/store";
@@ -25,6 +28,7 @@ export const app = new Hono<{ Bindings: Env }>()
   .route("/fx", fxRoutes)
   .route("/signal", signalRoutes)
   .route("/prices", priceRoutes)
+  .route("/indicators", indicatorRoutes)
   .route("/activity", activityRoutes)
   .route("/tasks", taskRoutes)
   .route("/geo", geoRoutes)
@@ -76,5 +80,15 @@ export default {
       })
       .then((r) => logEvent(!r.skipped && r.status === "error" ? "warn" : "info", "fx_scheduled", { cron: controller.cron, ...fxLog(r) }))
       .catch((e) => logError("fx_scheduled_failed", e, { cron: controller.cron }));
+    // 과세환율(주간) — 환율 수집과 따로 (서로 던져도 영향 없음) · 평일 12:00 첫 회차에서만 · 이미 받은 주는 건너뜀 (작업 0163)
+    if (retry) return;
+    await Promise.resolve()
+      .then(() => collectCustomsRates(d1IndicatorStore(env.DB), { key: env.KCS_KEY, today: kstDate() }))
+      .then(async (r) => {
+        // 새 과세환율을 저장했으면 사이트를 다시 빌드 — 위 환율 수집의 빌드 요청은 이 값을 받기 전에 갔을 수 있음
+        const rebuild = r.status === "ok" && r.rows > 0 && env.PAGES_DEPLOY_HOOK ? await fetch(env.PAGES_DEPLOY_HOOK, { method: "POST" }).then((x) => (x.ok ? "requested" : "failed"), () => "failed") : "not-needed";
+        logEvent(r.status === "error" ? "warn" : "info", "kcs_scheduled", { cron: controller.cron, status: r.status, rows: r.rows, message: r.message, rebuild });
+      })
+      .catch((e) => logError("kcs_scheduled_failed", e, { cron: controller.cron }));
   },
 } satisfies ExportedHandler<Env>;

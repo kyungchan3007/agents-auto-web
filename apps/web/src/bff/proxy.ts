@@ -12,6 +12,7 @@ const ROUTES: [RegExp, number][] = [
   [/^\/fx\/[A-Za-z]{3}\/history$/, 300],
   [/^\/signal(\/[A-Za-z]{3})?$/, 300],
   [/^\/prices\/levels$/, 300],
+  [/^\/indicators\/[a-z0-9-]+:[A-Za-z0-9-]+$/, 300], // 공용 시계열 (과세환율 등 · 작업 0163)
   [/^\/tasks$/, 60], // 지난 작업 · 작업 이름 (GitHub Actions 가 저장)
   [/^\/geo$/, 300], // GEO 측정 — API 가 1시간 구간 캐시 (작업 0129)
   [/^\/status$/, 60], // 사이트 상태 점검판 — API 가 5분 구간 캐시 (작업 0105)

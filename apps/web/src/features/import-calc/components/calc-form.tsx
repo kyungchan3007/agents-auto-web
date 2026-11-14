@@ -7,10 +7,11 @@ import { Input, Select, UnitInput } from "@hav/ui/form/field";
 import type { ReactNode } from "react";
 import { CalcResult } from "./calc-result";
 import { DUTY_FREE_USD, ROUTE_LABEL, RULES_SOURCE, type Route } from "../lib/rules";
+import type { CustomsRate } from "../lib/customs-rate";
 import { useCalcForm } from "../hooks/use-calc-form";
 
-export function CalcForm({ rates }: { rates: FxRate[] }) {
-  const { codes, input, result, mood, rate, set, err } = useCalcForm(rates);
+export function CalcForm({ rates, customs }: { rates: FxRate[]; customs: Record<string, CustomsRate> }) {
+  const { codes, input, result, mood, rate, source, set, err } = useCalcForm(rates, customs);
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-12">
@@ -47,7 +48,7 @@ export function CalcForm({ rates }: { rates: FxRate[] }) {
         </Field>
       </form>
 
-      <CalcResult result={result} mood={mood} rate={rate} dutyRate={input.dutyRate} />
+      <CalcResult result={result} mood={mood} rate={rate} source={source} dutyRate={input.dutyRate} />
     </div>
   );
 }

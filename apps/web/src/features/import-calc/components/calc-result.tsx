@@ -5,12 +5,13 @@ import type { FxRate } from "@hav/shared/fx";
 import { MoneyCatLazy } from "@hav/ui/three/scene/lazy";
 import { DateText } from "@hav/ui/text/date-text";
 import type { CalcResult as Result, catMood } from "../lib/calc";
+import type { RateSource } from "../lib/customs-rate";
 import { RULES_SOURCE } from "../lib/rules";
 
 const MOOD_TEXT = { happy: "면세 한도 안이라 만족한 표정의 고양이", worried: "면세 한도에 가까워 걱정하는 고양이", sad: "면세 한도를 넘어 실망한 표정의 고양이", neutral: "금화를 들고 대기하는 고양이" } as const;
 const usd = (n: number) => numberText(n, { maximumFractionDigits: 2 });
 
-export function CalcResult({ result: r, mood, rate, dutyRate }: { result: Result | null; mood: ReturnType<typeof catMood>; rate: FxRate | undefined; dutyRate: string }) {
+export function CalcResult({ result: r, mood, rate, source, dutyRate }: { result: Result | null; mood: ReturnType<typeof catMood>; rate: FxRate | undefined; source?: RateSource; dutyRate: string }) {
   return (
     <div className="rounded-card bg-surface-2 p-6 sm:p-8" aria-live="polite">
       <div className="flex items-start justify-between gap-4">
@@ -56,7 +57,9 @@ export function CalcResult({ result: r, mood, rate, dutyRate }: { result: Result
           예상 금액입니다. 실제 세액은 관세청 과세환율 · 품목 분류로 정해집니다 · 개별소비세 등 다른 세금 · 같은 날 여러 건 합산은 빼고 계산
         </li>
         <li>
-          {rate ? (
+          {source?.kind === "customs" ? (
+            <>환율 {source.label}</>
+          ) : rate ? (
             <>
               환율 <DateText date={rate.date} /> 기준 · {SOURCE_NAME[rate.source]}
             </>
