@@ -13,7 +13,7 @@
 - 운영 사이트에 보내는 요청은 Tripfx-Verify 헤더를 붙여 방문 통계에서 뺀다 (확인됨: 요청 원문)
 
 ## 파일 계획
-- .agents/specs/0160-sitemap-investigation/**
+- .agents/specs/0161-sitemap-investigation/**
 - .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
@@ -27,3 +27,4 @@
 ## 허점
 - geo 의 "Cloudflare 가 구글 IP 만 막음" 후보는 #157 의 11-11 실제 URL 테스트(구글 쪽에서 정상 수신)로 가능성이 더 낮아진다. 보고가 기존 #157 기록과 맞는지 lead 가 다시 대조해야 한다.
 - 저장소 폴더를 팀이 함께 써서, lead 가 브랜치를 바꾸면 다른 자리 작업에 영향이 갈 수 있다. 여러 작업이 동시에 돌면 worktree 분리가 필요하다.
+- 같은 날 다른 PR(#174 · 작업 0160 패치)과 작업 번호가 겹쳤다. spec:new 는 main 기준으로 번호를 매기므로, 열린 PR 의 번호는 보지 못한다. 2026-11-14 에 0161 로 바꿨다 (git mv).
