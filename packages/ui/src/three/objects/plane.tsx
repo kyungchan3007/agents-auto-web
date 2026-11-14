@@ -51,8 +51,8 @@ function RoomLight() {
   return null;
 }
 
-const BACKDROP_RADIUS = 1.3; // 캔버스 끝에 닿기 전에 완전히 투명해지도록 화면보다 충분히 작게
-const BACKDROP_DISTANCE = 1.2;
+const BACKDROP_RADIUS = 1.35; // 캔버스 끝에 닿기 전에 완전히 투명해지도록 화면보다 충분히 작게
+const BACKDROP_DISTANCE = 1.5;
 
 /** 비행기 뒤 둥근 배경판 — 오로라 색 그라데이션 · 가장자리로 갈수록 투명 · 항상 카메라를 봄 */
 function Backdrop({ theme }: { theme: PlaneTheme }) {
@@ -155,7 +155,7 @@ function Scene({ url, animate }: { url: string; animate: boolean }) {
 
 export default function Plane({ url, className = "", label }: PlaneProps) {
   return (
-    <Stage className={className} camera={{ position: [3.7, 1.3, 3.1], fov: 35 }} label={label}>
+    <Stage className={className} camera={{ position: [3.15, 1.1, 2.64], fov: 35 }} label={label}>
       {(animate) => <Scene url={url} animate={animate} />}
     </Stage>
   );
