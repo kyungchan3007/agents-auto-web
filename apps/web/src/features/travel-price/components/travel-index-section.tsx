@@ -16,7 +16,7 @@ const chart = (points: IndexPoint[]) => points.map((p) => ({ date: p.period, bas
 export function TravelIndexSection({ items, fxMonthly }: { items: TravelItem[]; fxMonthly: IndexPoint[] }) {
   return (
     <section aria-labelledby="travel-index-title">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h2 id="travel-index-title" className="text-title font-semibold tracking-tight">
             여행 품목 물가 — 항공료 · 단체여행비
@@ -25,7 +25,7 @@ export function TravelIndexSection({ items, fxMonthly }: { items: TravelItem[]; 
             통계청이 매달 발표하는 소비자물가지수 중 여행 품목입니다 (2020년 = 100). 작년 같은 달과 비교하고, 최근 3년 평균으로 어느 달이 싼 편인지 봅니다. 원/달러 환율 월평균을 같이 놓았습니다.
           </p>
         </div>
-        <PlaneLazy url={PLANE_MODEL_URL} label="떠다니는 비행기" className="size-24 shrink-0 sm:size-32" />
+        <PlaneLazy url={PLANE_MODEL_URL} label="떠다니는 비행기" className="size-44 shrink-0 self-center sm:size-52 sm:self-start" />
       </div>
 
       <div className="mt-8 grid gap-10">
