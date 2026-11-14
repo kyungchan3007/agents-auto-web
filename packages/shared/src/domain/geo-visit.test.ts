@@ -28,6 +28,8 @@ describe("GEO 방문 분류 (작업 0129)", () => {
   it("페이지는 고정 목록 — 위조 요청이 행을 늘리지 못함", () => {
     expect(visitPath("/currencies/USD")).toBe("/currencies/*");
     expect(visitPath("/about/")).toBe("/about");
+    expect(visitPath("/flights")).toBe("/flights");
+    expect(visitPath("/flights/")).toBe("/flights");
     expect(visitPath("/wp-admin")).toBeNull();
     expect(visitPath("/bff/status")).toBeNull();
     expect(v("/없는곳", "GPTBot")).toBeNull();
