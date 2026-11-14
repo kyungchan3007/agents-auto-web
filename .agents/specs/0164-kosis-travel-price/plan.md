@@ -7,6 +7,15 @@
 - 여행 품목 영역에 **3D 비행기**(사용자 추가 요청)를 넣는다 — packages/ui 의 three/objects/plane.tsx (동전과 같은 방식 · 같은 라이브러리 · 코드 도형).
 - 0163 이 만든 공용 시계열 테이블 `indicator_points` 위에 쌓는다 (보호 파일 변경 없음).
 
+## 추가: 비행기를 3D 모델 파일로 (사용자 결정 2026-11-15)
+- 코드 도형 대신 glTF 모델: "Airplane" by Poly by Google · CC-BY 4.0 · https://poly.pizza/m/8ciDd9k8wha · 236,520 바이트
+- 파일은 `.tmp/model-trial/plane.glb` 를 `apps/web/public/models/plane.glb` 로 복사 (다시 내려받지 않음). 주소는 사이트가 넘기고 `packages/ui` 컴포넌트는 `url` prop 으로 받음 (지구 사진과 같은 방식)
+- 불러오기: drei `useGLTF` (새 의존성 없음) · 크기 · 가운데 맞추기 · ACES 톤매핑 (참고: `.tmp/model-trial/tpl.html`)
+- 조명: three 의 `RoomEnvironment` 환경 조명 + 사이트 오로라 점광(청록 · 보라 · 분홍). drei `Environment preset` 은 HDR 을 외부에서 받아 오므로 쓰지 않음 (가정)
+- 움직임 줄이기 · 화면 밖이면 그리지 않기(Stage) · 늦게 불러오기(PlaneLazy) 유지 · `PLANE_PARTS` 삭제
+- 출처 표시: 여행 물가 영역 출처 문단에 "3D 비행기: Airplane · Poly by Google (CC-BY 4.0)" + 원본 링크
+- 고양이 · 동전은 그대로
+
 ## 공식 명세 (확인: 2026-11-15, lead 조사)
 - 출처: 통계자료 가이드 https://kosis.kr/openapi/devGuide/devGuide_0201List.do · 개발가이드 PDF https://kosis.kr/openapi/file/openApi_manual_v1.0.pdf · 통계표설명(메타) https://kosis.kr/openapi/devGuide/devGuide_060104List.do
 - 요청(통계표선택 방식): `GET https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList`
@@ -51,6 +60,8 @@
 - apps/web/src/shared/api.ts
 - apps/web/src/bff/**
 - packages/ui/src/three/objects/plane.tsx
+- packages/ui/src/three/scene/lazy.tsx
+- apps/web/public/models/plane.glb
 - packages/ui/src/three/lib/plane.ts
 - packages/ui/src/three/lib/plane.test.ts
 - packages/shared/src/**
@@ -72,4 +83,5 @@
 - [ ] 달별 평균으로 싼 달을 고른다 · 자료가 모자라면 고르지 않는다
 - [ ] 자료가 없으면 화면은 "준비 중"
 - [ ] 비행기: 움직임 줄이기 설정이면 움직이지 않는다
+- [ ] 비행기: 모델 주소를 url prop 으로 받고 도형 목록(PLANE_PARTS)이 없다 · 출처(CC-BY) 문구가 화면에 있다
 - [ ] bash .agents/checks.sh PASS
