@@ -15,6 +15,7 @@
 - 움직임 줄이기 · 화면 밖이면 그리지 않기(Stage) · 늦게 불러오기(PlaneLazy) 유지 · `PLANE_PARTS` 삭제
 - 출처 표시: 여행 물가 영역 출처 문단에 "3D 비행기: Airplane · Poly by Google (CC-BY 4.0)" + 원본 링크
 - 고양이 · 동전은 그대로
+- 밝은 화면에서 안 보임(사용자 피드백) → 오로라 색 옅은 원형 배경판 · drei ContactShadows 그림자 · 크기 키우기(모바일 제목 밀지 않게) · 밝은 테마에서 몸체를 옅은 회청색(파란 꼬리 유지) · 두 테마를 미리보기 배포 캡처로 확인
 
 ## 공식 명세 (확인: 2026-11-15, lead 조사)
 - 출처: 통계자료 가이드 https://kosis.kr/openapi/devGuide/devGuide_0201List.do · 개발가이드 PDF https://kosis.kr/openapi/file/openApi_manual_v1.0.pdf · 통계표설명(메타) https://kosis.kr/openapi/devGuide/devGuide_060104List.do
@@ -84,5 +85,6 @@
 - [ ] 달별 평균으로 싼 달을 고른다 · 자료가 모자라면 고르지 않는다
 - [ ] 자료가 없으면 화면은 "준비 중"
 - [ ] 비행기: 움직임 줄이기 설정이면 움직이지 않는다
+- [ ] 비행기: 밝은 · 어두운 화면 모두에서 형체가 보인다 (미리보기 캡처로 확인)
 - [ ] 비행기: 모델 주소를 url prop 으로 받고 도형 목록(PLANE_PARTS)이 없다 · 출처(CC-BY) 문구가 화면에 있다
 - [ ] bash .agents/checks.sh PASS
