@@ -83,8 +83,12 @@
 - packages/shared/src/**
 - docs/domain/travel-price.md
 - docs/design.md
+- packages/ui/src/components/layout/nav-bar.tsx
+- packages/ui/src/tokens.css
 
 ## 계획 밖 변경 이유
+- packages/ui/src/components/layout/nav-bar.tsx · tokens.css: 메뉴가 7개가 돼 320px 에서 "GEO 측정"이 잘림 → 390px 아래에서만 메뉴를 두 줄로 감싸고(작업 0109 와 같은 방식), 고정 메뉴 높이를 CSS 변수 --hav-nav-h 로 둠 (lead 결정 (나))
+- apps/web/src/features/home/components/trip-scenes.tsx · features/log/components/scenes.tsx · features/travel-price/components/budget-planner.tsx: 메뉴가 두 줄일 때 가려지지 않게 고정 · 앵커 위치(top-20 · sm:top-13 · scroll-mt-20)를 --hav-nav-h 로 바꿈 (넓은 화면 · 390px 이상 값은 그대로)
 - apps/web/src/features/travel-price/components/flights-page.tsx: /flights 화면 컴포넌트 (apps/web/src/features/travel-price/** 안 · 다른 페이지와 같은 "page.tsx 는 얇게 · 화면은 features" 구조)
 <!-- 게이트는 main 과 비교하므로, 이 브랜치의 base 인 작업 0163(PR #178)의 변경(schema.ts · 0010 마이그레이션 · import-calc · packages/shared/package.json 등)이 계획 밖 · 보호 파일로 함께 잡힌다. 0163 이 머지되면 사라진다. -->
 - packages/ui/src/three/scene/lazy.tsx: PlaneLazy 추가 — 다른 3D 장면과 같은 늦게 불러오기 방식 (파일 계획에 빠뜨림)
