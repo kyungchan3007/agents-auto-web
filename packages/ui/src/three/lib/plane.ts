@@ -3,7 +3,7 @@
 //   모델 출처: "Airplane" by Poly by Google · CC-BY 4.0 (화면에 출처 표시 · apps/web travel-price/lib/plane-model.ts)
 
 /** 모델의 가장 긴 변 — 밝은 화면에서 작아서 묻힌다는 피드백으로 시험판(1.6)보다 키움 (작업 0164) */
-export const PLANE_TARGET_SIZE = 2;
+export const PLANE_TARGET_SIZE = 1.8;
 
 export type Vec3 = [number, number, number];
 export type Box3Like = { min: Vec3; max: Vec3 };
@@ -48,7 +48,7 @@ export const PLANE_BACKDROP: { colors: readonly [string, string, string]; opacit
 export const PLANE_SHADOW: { opacity: Record<PlaneTheme, number>; blur: number; scale: number } = {
   opacity: { light: 0.5, dark: 0.3 },
   blur: 2.4,
-  scale: 5,
+  scale: 3.2, // 캔버스 안에 다 들어가게 (아래 끝에서 잘리지 않도록)
 };
 
 const BOB = 0.12; // 위아래 흔들림 (한쪽 최대 0.3 보다 작게)

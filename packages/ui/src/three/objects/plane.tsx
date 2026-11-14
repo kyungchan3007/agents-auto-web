@@ -51,6 +51,9 @@ function RoomLight() {
   return null;
 }
 
+const BACKDROP_RADIUS = 1.3; // 캔버스 끝에 닿기 전에 완전히 투명해지도록 화면보다 충분히 작게
+const BACKDROP_DISTANCE = 1.2;
+
 /** 비행기 뒤 둥근 배경판 — 오로라 색 그라데이션 · 가장자리로 갈수록 투명 · 항상 카메라를 봄 */
 function Backdrop({ theme }: { theme: PlaneTheme }) {
   const mesh = useRef<Mesh>(null);
@@ -75,10 +78,16 @@ function Backdrop({ theme }: { theme: PlaneTheme }) {
     return t;
   }, []);
   useEffect(() => () => texture.dispose(), [texture]);
-  useFrame(({ camera }) => mesh.current?.lookAt(camera.position));
+  // 카메라 반대편 한가운데에 두고 카메라를 봄 — 비스듬히 봐도 비행기 뒤 정중앙 · 원 전체가 캔버스 안
+  useFrame(({ camera }) => {
+    const m = mesh.current;
+    if (!m) return;
+    m.position.copy(camera.position).normalize().multiplyScalar(-BACKDROP_DISTANCE);
+    m.lookAt(camera.position);
+  });
   return (
-    <mesh ref={mesh} position={[0, 0, -1.2]} renderOrder={-1}>
-      <circleGeometry args={[1.9, 48]} />
+    <mesh ref={mesh} renderOrder={-1}>
+      <circleGeometry args={[BACKDROP_RADIUS, 48]} />
       <meshBasicMaterial map={texture} transparent opacity={PLANE_BACKDROP.opacity[theme]} depthWrite={false} toneMapped={false} />
     </mesh>
   );
@@ -136,7 +145,7 @@ function Scene({ url, animate }: { url: string; animate: boolean }) {
       ))}
       <Backdrop theme={theme} />
       {/* 바닥 그림자 — 밝은 배경에서 비행기가 떠 보이게 */}
-      <ContactShadows position={[0, -1.15, 0]} opacity={PLANE_SHADOW.opacity[theme]} blur={PLANE_SHADOW.blur} scale={PLANE_SHADOW.scale} far={2.5} resolution={256} color="#1d1d1f" />
+      <ContactShadows position={[0, -0.95, 0]} opacity={PLANE_SHADOW.opacity[theme]} blur={PLANE_SHADOW.blur} scale={PLANE_SHADOW.scale} far={1.6} resolution={256} color="#1d1d1f" />
       <Suspense fallback={null}>
         <Model url={url} animate={animate} theme={theme} />
       </Suspense>
@@ -146,7 +155,7 @@ function Scene({ url, animate }: { url: string; animate: boolean }) {
 
 export default function Plane({ url, className = "", label }: PlaneProps) {
   return (
-    <Stage className={className} camera={{ position: [2.5, 0.9, 2.1], fov: 35 }} label={label}>
+    <Stage className={className} camera={{ position: [3.7, 1.3, 3.1], fov: 35 }} label={label}>
       {(animate) => <Scene url={url} animate={animate} />}
     </Stage>
   );
