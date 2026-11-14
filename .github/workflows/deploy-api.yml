@@ -2,6 +2,7 @@ name: deploy-api
 # main 의 게이트(checks)가 통과하면 API(Worker) 를 배포한다 — D1 마이그레이션 먼저
 # 비밀값(CLOUDFLARE_API_TOKEN · CLOUDFLARE_ACCOUNT_ID)이 없으면 배포는 건너뛴다 (실패 아님)
 # API 와 상관없는 머지(화면 · 문서)는 배포하지 않음 — 배포마다 예약(cron)이 다시 걸리는데, 2026-10-30 12:00 KST 직전(02:56 UTC) 배포 뒤 예약 수집이 돌지 않았음 (작업 0094)
+# 단, 이 배포 파일 자체가 바뀐 머지는 배포함 — 배포 방식(인증키를 Worker secret 으로 넣는 단계 등)이 바뀐 것이므로 실제로 돌려 확인 (작업 0166)
 on:
   workflow_run:
     workflows: [checks]
@@ -21,6 +22,9 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       PAGES_DEPLOY_HOOK: ${{ secrets.PAGES_DEPLOY_HOOK }}
+      KCS_KEY: ${{ secrets.KCS_KEY }}
+      KOSIS_KEY: ${{ secrets.KOSIS_KEY }}
+      ECOS_KEY: ${{ secrets.ECOS_KEY }}
     steps:
       - name: 비밀값 확인
         id: secrets
@@ -40,7 +44,7 @@ jobs:
         id: changed
         if: steps.secrets.outputs.ok == 'true'
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || ! git diff --quiet HEAD~1 HEAD -- apps/api packages/shared package-lock.json; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || ! git diff --quiet HEAD~1 HEAD -- apps/api packages/shared package-lock.json .github/workflows/deploy-api.yml; then
             echo "go=true" >> "$GITHUB_OUTPUT"
           else
             echo "API · 공용 패키지 변경 없음 — 배포 건너뜀" >> "$GITHUB_STEP_SUMMARY"
@@ -80,6 +84,19 @@ jobs:
             printf '%s' "$PAGES_DEPLOY_HOOK" | npx wrangler secret put PAGES_DEPLOY_HOOK
             echo "PAGES_DEPLOY_HOOK 넣음 — 새 환율을 저장하면 Worker 가 사이트를 다시 빌드" >> "$GITHUB_STEP_SUMMARY"
           fi
+      - name: 공공 자료 인증키 3개를 Worker 에 (관세청 · KOSIS · ECOS · 값이 있으면 매번 덮어씀 · 값은 로그에 안 나옴)
+        if: steps.changed.outputs.go == 'true'
+        working-directory: apps/api
+        run: |
+          for name in KCS_KEY KOSIS_KEY ECOS_KEY; do
+            value="${!name}"
+            if [ -n "$value" ]; then
+              printf '%s' "$value" | npx wrangler secret put "$name" > /dev/null
+              echo "$name 넣음" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "$name 없음 (저장소 Secrets 에 없어 건너뜀 · 그 자료 수집은 꺼진 채)" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
       - name: 배포 확인
         if: steps.changed.outputs.go == 'true'
         run: |
