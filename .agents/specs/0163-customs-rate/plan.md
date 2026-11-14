@@ -49,19 +49,26 @@
 - builder: 구현 (schema.ts · 새 마이그레이션은 이 작업에 한해 lead 가 허용 — PR 에 "보호 파일 변경 — 사람 승인 필요"로 표시)
 
 ## 파일 계획
+<!-- 보호 파일(사람 승인 필요): schema.ts · 0010 마이그레이션 · meta · log.ts 는 로그에서 serviceKey= 가리기 (키가 주소에 들어감) -->
 - .agents/specs/0163-customs-rate/**
 - .agents/orchestration/TASKS.md
-- apps/api/src/db/schema.ts (보호 파일 · 사람 승인 필요)
-- apps/api/drizzle/migrations/0010_*.sql · apps/api/drizzle/migrations/meta/** (새 마이그레이션 · 보호 폴더)
+- apps/api/src/db/schema.ts
+- apps/api/drizzle/migrations/0010_*.sql
+- apps/api/drizzle/migrations/meta/**
 - apps/api/src/features/indicators/**
-- apps/api/src/index.ts · apps/api/src/env.ts · apps/api/.dev.vars.example
-- apps/api/src/index.test.ts · apps/api/src/scheduled.test.ts
-- apps/api/src/log.ts · apps/api/src/log.test.ts (로그에서 serviceKey= 가리기 — 키가 주소에 들어감)
-- apps/web/src/bff/proxy.ts · apps/web/src/bff/*.test.ts
+- apps/api/src/index.ts
+- apps/api/src/env.ts
+- apps/api/.dev.vars.example
+- apps/api/src/index.test.ts
+- apps/api/src/scheduled.test.ts
+- apps/api/src/log.ts
+- apps/api/src/log.test.ts
+- apps/web/src/bff/proxy.ts
+- apps/web/src/bff/*.test.ts
 - apps/web/src/shared/api.ts
 - apps/web/src/features/import-calc/**
 - apps/web/src/app/calc/page.tsx
-- packages/shared/src/** (계약 · 타입)
+- packages/shared/src/**
 - packages/shared/package.json
 - docs/domain/import-calc.md
 
@@ -81,4 +88,4 @@
 - [ ] bash .agents/checks.sh — 보호 파일 검사 외 모두 PASS (보호 파일은 사람 승인 대기)
 
 ## 허점
--
+- 파일 계획 한 줄에 경로를 여러 개(·) 쓰거나 괄호 설명을 붙이면 범위 검사가 경로로 읽지 못한다. 한 줄에 경로 하나만 쓴다 (설명은 주석으로).
