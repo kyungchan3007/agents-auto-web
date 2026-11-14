@@ -71,12 +71,10 @@
 - packages/shared/src/**
 - packages/shared/package.json
 - docs/domain/import-calc.md
-- .github/workflows/deploy-api.yml
 
 ## 계획 밖 변경 이유
 - packages/shared/src/utils/date.ts: `weekStartOf` 추가 — API 수집과 화면 선택 함수가 같은 "주 시작(일요일)" 규칙을 쓰게 (파일 계획의 packages/shared/src/** 안)
 - packages/shared/package.json: "./indicators" 내보내기 추가 (lead 허용)
-- .github/workflows/deploy-api.yml: KCS_KEY · KOSIS_KEY · ECOS_KEY 를 Worker secret 으로 넘김 (보호 파일 · lead 허용 · 사람 승인 필요 — Worker 크론이 읽으려면 Worker secret 이 필요)
 
 ## 완료 기준
 - [ ] 문서 예시 XML 을 파싱해 (통화, 적용 시작일, 1단위당 원) 을 얻는다 · 빈 값 · 숫자 아닌 환율은 버린다
