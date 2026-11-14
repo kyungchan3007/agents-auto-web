@@ -57,7 +57,8 @@ const spyFetch = (respond: () => Response | Promise<Response>) => {
   const fetcher: typeof fetch = async (u) => (urls.push(new URL(String(u))), respond());
   return { fetcher, urls };
 };
-const run = (store: IndicatorStore, fetcher: typeof fetch, key: string | undefined = KEY): Promise<CustomsResult> => collectCustomsRates(store, { key, today: TODAY, fetcher, now: NOW });
+// 키를 안 넘기면 KEY · undefined 를 넘기면 그대로 undefined (기본값 매개변수는 undefined 를 KEY 로 바꿔서 쓰지 않음)
+const run = (store: IndicatorStore, fetcher: typeof fetch, ...k: [key?: string | undefined]): Promise<CustomsResult> => collectCustomsRates(store, { key: k.length > 0 ? k[0] : KEY, today: TODAY, fetcher, now: NOW });
 
 describe("과세환율 수집 — 정상", () => {
   it("저장: series kcs-import:통화 · period 적용 시작일 · value 1단위당 원 · source kcs", async () => {

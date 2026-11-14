@@ -39,7 +39,8 @@ describe("indicator_points 저장", () => {
     const { d1, calls } = fakeD1();
     const n = await d1IndicatorStore(d1).savePoints([point("kcs-import:USD", "2026-11-15", 1400.5)]);
     expect(n).toBe(1);
-    const ins = calls.find((c) => /insert into "?indicator_points"?/i.test(c.sql));
+    // 가짜 D1 은 prepare 때(바인딩 없음)와 bind 때 둘 다 기록함 — 값이 바인딩된 기록을 고름
+    const ins = calls.findLast((c) => /insert into "?indicator_points"?/i.test(c.sql) && c.binds.length > 0);
     expect(ins, "insert 문이 있어야 함").toBeDefined();
     expect(ins?.sql).toMatch(/on conflict/i);
     expect(ins?.sql).toMatch(/do update/i);
