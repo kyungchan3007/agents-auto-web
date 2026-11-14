@@ -1,5 +1,5 @@
 // 시계열 API — 읽기 전용 (쓰기 · 수집 경로 없음 · 수집은 예약 실행만) · 작업 0163
-import { IndicatorParam, IndicatorQuery, type IndicatorSeries } from "@hav/shared/prices";
+import { IndicatorParam, IndicatorQuery, type IndicatorSeries } from "@hav/shared/indicators";
 import { Hono } from "hono";
 import { cached } from "../../db/cache";
 import type { Env } from "../../env";

@@ -1,9 +1,6 @@
 // 물가 API 계약
 import { z } from "zod";
 
-// 공용 시계열(작업 0163)도 이 경로로 내보냄 — package.json 의 exports 는 builder 범위 밖이라 lead 에게 "./indicators" 추가를 요청
-export * from "./indicators";
-
 /** ISO 3166-1 alpha-3 — 소문자로 와도 대문자로 */
 export const CountryCode = z
   .string()

@@ -84,11 +84,7 @@ export default {
     if (retry) return;
     await Promise.resolve()
       .then(() => collectCustomsRates(d1IndicatorStore(env.DB), { key: env.KCS_KEY, today: kstDate() }))
-      .then(async (r) => {
-        // 새 과세환율을 저장했으면 사이트를 다시 빌드 — 위 환율 수집의 빌드 요청은 이 값을 받기 전에 갔을 수 있음
-        const rebuild = r.status === "ok" && r.rows > 0 && env.PAGES_DEPLOY_HOOK ? await fetch(env.PAGES_DEPLOY_HOOK, { method: "POST" }).then((x) => (x.ok ? "requested" : "failed"), () => "failed") : "not-needed";
-        logEvent(r.status === "error" ? "warn" : "info", "kcs_scheduled", { cron: controller.cron, status: r.status, rows: r.rows, message: r.message, rebuild });
-      })
+      .then((r) => logEvent(r.status === "error" ? "warn" : "info", "kcs_scheduled", { cron: controller.cron, status: r.status, rows: r.rows, message: r.message }))
       .catch((e) => logError("kcs_scheduled_failed", e, { cron: controller.cron }));
   },
 } satisfies ExportedHandler<Env>;

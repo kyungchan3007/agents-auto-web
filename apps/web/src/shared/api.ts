@@ -1,7 +1,8 @@
 // API 받기 — 빌드 때 부르고 @hav/shared 스키마로 검사 · 실패해도 던지지 않고 이유를 돌려준다 (빌드가 깨지지 않게)
 import { type Fetched, type FetchOptions, fetchJson } from "@hav/shared/fetched";
 import { FxChanges, FxHistory, FxLatest } from "@hav/shared/fx";
-import { IndicatorSeries, PriceLevels } from "@hav/shared/prices";
+import { IndicatorSeries } from "@hav/shared/indicators";
+import { PriceLevels } from "@hav/shared/prices";
 import { CurrencySignal, SignalList } from "@hav/shared/signal";
 import { GeoReport } from "@hav/shared/geo";
 import { SiteStatus } from "@hav/shared/status";
