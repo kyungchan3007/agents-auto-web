@@ -6,4 +6,4 @@ export const REPO_URL = "https://github.com/kyungchan3007/agents-auto-web";
 export const SITE_DESCRIPTION = "환율 · 물가를 매일 받아 여행 · 직구 타이밍을 보여 주는 대시보드";
 
 /** 검색에 내보낼 페이지 — 개발용 /design 은 뺌 · 통화 상세는 sitemap 이 API 에서 더함 */
-export const PUBLIC_PAGES = ["/", "/currencies", "/prices", "/calc", "/log", "/about", "/geo"] as const;
+export const PUBLIC_PAGES = ["/", "/currencies", "/prices", "/flights", "/calc", "/log", "/about", "/geo"] as const;

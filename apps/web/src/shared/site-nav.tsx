@@ -3,7 +3,7 @@
 import { NavBar } from "@hav/ui/layout/nav-bar";
 import Link from "next/link";
 
-export type Page = "home" | "currencies" | "prices" | "calc" | "log" | "about" | "geo";
+export type Page = "home" | "currencies" | "prices" | "flights" | "calc" | "log" | "about" | "geo";
 
 export function SiteNav({ page }: { page: Page }) {
   return (
@@ -15,6 +15,7 @@ export function SiteNav({ page }: { page: Page }) {
         { href: "/#today", label: "오늘 환율" },
         { href: "/currencies", label: "통화", current: page === "currencies" },
         { href: "/prices", label: "여행 물가", current: page === "prices" },
+        { href: "/flights", label: "여행 타이밍", current: page === "flights" },
         { href: "/calc", label: "직구 계산", current: page === "calc" },
         { href: "/log", label: "작업실", current: page === "log" }, // 예전 "만드는 중" (2026-10-30 사용자 · 작업 0105)
         { href: "/geo", label: "GEO 측정", current: page === "geo" },
