@@ -134,3 +134,16 @@ export const geoAnswers = sqliteTable(
   },
   (t) => [primaryKey({ columns: [t.day, t.engine, t.question] })],
 );
+
+/** 공용 시계열 — 관세청 과세환율(주간) · KOSIS · ECOS(월간)가 함께 씀 · 같은 (series, period) 는 덮어씀 · 받지 못한 기간은 행을 만들지 않음 (FX-02) · 작업 0163 */
+export const indicatorPoints = sqliteTable(
+  "indicator_points",
+  {
+    series: text("series").notNull(), // 예: kcs-import:USD · kosis-cpi:air-fare · ecos-import-price:krw
+    period: text("period").notNull(), // 주간은 적용 시작일 YYYY-MM-DD · 월간은 YYYY-MM
+    value: real("value").notNull(),
+    source: text("source", { enum: ["kcs", "kosis", "ecos"] }).notNull(),
+    fetchedAt: text("fetched_at").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.series, t.period] })],
+);

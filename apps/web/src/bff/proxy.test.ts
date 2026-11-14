@@ -61,3 +61,23 @@ describe("BFF 캐시 · 실패", () => {
     expect((await handleBff(get("/bff/fx/latest"), api)).status).toBe(502);
   });
 });
+
+describe("과세환율 시계열 경로 (작업 0163)", () => {
+  it("/bff/indicators/<series> 는 API 로 넘기고 쿼리도 그대로 · 5분 캐시", async () => {
+    const { api, seen } = fakeApi();
+    const res = await handleBff(get("/bff/indicators/kcs-import:USD?limit=26"), api);
+    expect(res.status).toBe(200);
+    expect(res.headers.get("cache-control")).toBe("public, max-age=300");
+    expect(new URL(seen[0].url).pathname + new URL(seen[0].url).search).toBe("/indicators/kcs-import:USD?limit=26");
+    expect((await handleBff(get("/bff/indicators/kosis-cpi:air-fare"), api)).status).toBe(200);
+  });
+
+  it("목록 · 모르는 모양 · 쓰기는 API 에 닿지도 않음", async () => {
+    const { api, seen } = fakeApi();
+    for (const p of ["/bff/indicators", "/bff/indicators/", "/bff/indicators/a:b/c", "/bff/indicators/collect", "/bff/indicators/../fx/collect"]) {
+      expect((await handleBff(get(p), api)).status, p).toBe(404);
+    }
+    expect((await handleBff(get("/bff/indicators/kcs-import:USD", { method: "POST", body: "{}" }), api)).status).toBe(405);
+    expect(seen).toHaveLength(0);
+  });
+});

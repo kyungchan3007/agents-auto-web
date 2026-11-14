@@ -1,6 +1,7 @@
 // API 받기 — 빌드 때 부르고 @hav/shared 스키마로 검사 · 실패해도 던지지 않고 이유를 돌려준다 (빌드가 깨지지 않게)
 import { type Fetched, type FetchOptions, fetchJson } from "@hav/shared/fetched";
 import { FxChanges, FxHistory, FxLatest } from "@hav/shared/fx";
+import { IndicatorSeries } from "@hav/shared/indicators";
 import { PriceLevels } from "@hav/shared/prices";
 import { CurrencySignal, SignalList } from "@hav/shared/signal";
 import { GeoReport } from "@hav/shared/geo";
@@ -39,6 +40,8 @@ export const api = {
   signals: (o?: ApiOptions) => getJson("/signal", SignalList, o),
   signal: (currency: string, o?: ApiOptions) => getJson(`/signal/${encodeURIComponent(currency)}`, CurrencySignal, o),
   priceLevels: (o?: ApiOptions) => getJson("/prices/levels?base=KOR", PriceLevels, o),
+  /** 공용 시계열 (과세환율 kcs-import:USD 등) — 오래된 것부터 · 자료가 없으면 points 빈 배열 */
+  indicator: (series: string, limit: number, o?: ApiOptions) => getJson(`/indicators/${series}?limit=${limit}`, IndicatorSeries, o),
   tasks: (o?: ApiOptions) => getJson("/tasks", TasksSummary, o),
   status: (o?: ApiOptions) => getJson("/status", SiteStatus, o),
   geo: (o?: ApiOptions) => getJson("/geo", GeoReport, o),

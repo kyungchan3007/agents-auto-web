@@ -10,6 +10,7 @@
     "./fx": "./src/contracts/fx.ts",
     "./signal": "./src/contracts/signal.ts",
     "./prices": "./src/contracts/prices.ts",
+    "./indicators": "./src/contracts/indicators.ts",
     "./errors": "./src/contracts/errors.ts",
     "./activity": "./src/contracts/activity.ts",
     "./tasks": "./src/contracts/tasks.ts",

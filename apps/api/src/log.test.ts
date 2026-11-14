@@ -19,4 +19,11 @@ describe("구조화 로그 (작업 0127)", () => {
     logEvent("info", "run", { message: "authkey=SECRET" });
     expect(String(log.mock.calls[0][0])).not.toContain("SECRET");
   });
+
+  it("공공데이터포털 인증키(serviceKey)도 가림 — 과세환율 주소에 들어 있음 (작업 0163)", () => {
+    expect(redact("https://apis.data.go.kr/1220000/x?serviceKey=SECRET%2Bkey%3D%3D&aplyBgnDt=20261118")).toBe("https://apis.data.go.kr/1220000/x?serviceKey=***&aplyBgnDt=20261118");
+    const err = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    logError("kcs_fail", new Error("fetch failed https://apis.data.go.kr/x?aplyBgnDt=1&serviceKey=SECRET"));
+    expect(String(err.mock.calls[0][0])).not.toContain("SECRET");
+  });
 });
