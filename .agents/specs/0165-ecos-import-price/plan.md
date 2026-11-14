@@ -22,6 +22,9 @@
 - 화면 /calc (직구 화면 · 0163 과세환율 영역 아래): 원/달러 월평균과 수입물가지수를 한 차트(두 축 또는 같은 기준으로 지수화 — 기존 차트 컴포넌트가 지원하는 쪽)에. 출처 "한국은행 ECOS" 표시. 자료 없으면 "준비 중"
 
 ## 애매한 곳 (사용자가 자는 중 — 판단해서 정함)
+- ECOS INFO-200(데이터 없음)은 오류로 기록 (가정 · 24개월 범위에서 하나도 없으면 이상한 상황)
+- 환율 월평균 계산은 0164 의 travel-price 함수를 다시 씀 (가정 · 같은 계산 중복 방지)
+- 0165 는 0164 위에 쌓음 (같은 collect.ts · index.ts 월간 회차를 고쳐 충돌 방지)
 - 원화기준(W) 총지수 사용 (가정 · 환율 영향이 들어간 지수라 요청 취지에 맞음)
 - 화면은 /calc (가정 · 수입물가가 직구 비용과 직접 이어짐)
 - 1일 회차만 쓰므로 ECOS(15일경 발표)는 약 2주 ~ 한 달 반 늦게 반영 (가정 · wrangler 변경 금지 조건)
@@ -33,8 +36,16 @@
 ## 파일 계획
 - .agents/specs/0165-ecos-import-price/**
 - .agents/orchestration/TASKS.md
-- apps/api/src/features/indicators/** · apps/api/src/index.ts · apps/api/src/env.ts · apps/api/.dev.vars.example
-- apps/web/src/features/import-calc/** · apps/web/src/app/calc/page.tsx · apps/web/src/shared/api.ts · apps/web/src/bff/**
+- apps/api/src/features/indicators/**
+- apps/api/src/index.ts
+- apps/api/src/env.ts
+- apps/api/.dev.vars.example
+- apps/api/src/scheduled-ecos.test.ts
+- apps/web/src/features/import-calc/**
+- apps/web/src/features/travel-price/lib/**
+- apps/web/src/app/calc/page.tsx
+- apps/web/src/shared/api.ts
+- apps/web/src/bff/**
 - packages/shared/src/**
 - docs/domain/import-calc.md
 
