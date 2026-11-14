@@ -5,6 +5,7 @@ import { StatTile } from "@hav/ui/data/stat-tile";
 import { YearChart } from "@hav/ui/data/year-chart";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
 import { PlaneLazy } from "@hav/ui/three/scene/lazy";
+import { PLANE_CREDIT, PLANE_MODEL_URL } from "../lib/plane-model";
 import { type IndexPoint, travelView } from "../lib/travel-index";
 
 export type TravelItem = { key: string; name: string; points: IndexPoint[] | null };
@@ -24,7 +25,7 @@ export function TravelIndexSection({ items, fxMonthly }: { items: TravelItem[]; 
             통계청이 매달 발표하는 소비자물가지수 중 여행 품목입니다 (2020년 = 100). 작년 같은 달과 비교하고, 최근 3년 평균으로 어느 달이 싼 편인지 봅니다. 원/달러 환율 월평균을 같이 놓았습니다.
           </p>
         </div>
-        <PlaneLazy label="떠다니는 비행기" className="size-24 shrink-0 sm:size-32" />
+        <PlaneLazy url={PLANE_MODEL_URL} label="떠다니는 비행기" className="size-24 shrink-0 sm:size-32" />
       </div>
 
       <div className="mt-8 grid gap-10">
@@ -34,6 +35,15 @@ export function TravelIndexSection({ items, fxMonthly }: { items: TravelItem[]; 
       </div>
       <p className="mt-6 text-xs leading-relaxed text-fg-2">
         출처: 통계청 KOSIS 소비자물가지수 (지출목적별 · 품목포함 · 전국) · 한 달 늦게 반영될 수 있습니다 · 지수는 값이 클수록 비싸다는 뜻이며 실제 요금이 아닙니다
+        {" · "}
+        <a href={PLANE_CREDIT.sourceUrl} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:decoration-2">
+          {PLANE_CREDIT.text}
+        </a>{" "}
+        (
+        <a href={PLANE_CREDIT.licenseUrl} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:decoration-2">
+          라이선스
+        </a>
+        )
       </p>
     </section>
   );

@@ -71,6 +71,7 @@
 ## 계획 밖 변경 이유
 <!-- 게이트는 main 과 비교하므로, 이 브랜치의 base 인 작업 0163(PR #178)의 변경(schema.ts · 0010 마이그레이션 · import-calc · packages/shared/package.json 등)이 계획 밖 · 보호 파일로 함께 잡힌다. 0163 이 머지되면 사라진다. -->
 - packages/ui/src/three/scene/lazy.tsx: PlaneLazy 추가 — 다른 3D 장면과 같은 늦게 불러오기 방식 (파일 계획에 빠뜨림)
+- apps/web/src/features/travel-price/lib/plane-model.ts: 모델 주소 · 출처 상수 (apps/web/src/features/travel-price/** 안 · 테스트가 정한 이름)
 - apps/api/src/log.ts: 로그에서 KOSIS 주소의 apiKey= 값 가리기 (인증키가 주소에 들어감 · 규칙 6)
 - (그 밖의 계획 밖 목록은 0163 변경이 base 에 섞여서 나타남 — 이 작업의 변경 아님)
 
