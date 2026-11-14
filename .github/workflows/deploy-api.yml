@@ -2,6 +2,7 @@ name: deploy-api
 # main 의 게이트(checks)가 통과하면 API(Worker) 를 배포한다 — D1 마이그레이션 먼저
 # 비밀값(CLOUDFLARE_API_TOKEN · CLOUDFLARE_ACCOUNT_ID)이 없으면 배포는 건너뛴다 (실패 아님)
 # API 와 상관없는 머지(화면 · 문서)는 배포하지 않음 — 배포마다 예약(cron)이 다시 걸리는데, 2026-10-30 12:00 KST 직전(02:56 UTC) 배포 뒤 예약 수집이 돌지 않았음 (작업 0094)
+# 단, 이 배포 파일 자체가 바뀐 머지는 배포함 — 배포 방식(인증키를 Worker secret 으로 넣는 단계 등)이 바뀐 것이므로 실제로 돌려 확인 (작업 0166)
 on:
   workflow_run:
     workflows: [checks]
@@ -43,7 +44,7 @@ jobs:
         id: changed
         if: steps.secrets.outputs.ok == 'true'
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || ! git diff --quiet HEAD~1 HEAD -- apps/api packages/shared package-lock.json; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || ! git diff --quiet HEAD~1 HEAD -- apps/api packages/shared package-lock.json .github/workflows/deploy-api.yml; then
             echo "go=true" >> "$GITHUB_OUTPUT"
           else
             echo "API · 공용 패키지 변경 없음 — 배포 건너뜀" >> "$GITHUB_STEP_SUMMARY"
