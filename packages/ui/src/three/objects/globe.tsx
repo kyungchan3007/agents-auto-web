@@ -135,7 +135,7 @@ function Earth({ origin, arcs, focus, animate, texture }: { origin: Place; arcs:
         {!map && <Graticule />}
         <mesh position={seoul}>
           <sphereGeometry args={[0.02, 16, 16]} />
-          <meshBasicMaterial color={tokenColor("--hav-accent", "#4ff0e0")} />
+          <meshBasicMaterial color={tokenColor("--hav-3d-arc", "#4ff0e0")} />
         </mesh>
         {arcs.map((a, i) => (
           // 빛이 한꺼번에 출발하지 않게 호마다 시작점을 어긋나게

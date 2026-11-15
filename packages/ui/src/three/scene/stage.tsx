@@ -6,7 +6,7 @@ import { Canvas } from "@react-three/fiber";
 import { useInView, useReducedMotion } from "motion/react";
 import { type ReactNode, useRef, useState } from "react";
 
-/** 색의 원본은 tokens.css — 화면에서 CSS 변수로 읽고, 못 읽으면 같은 값 */
+/** 색의 원본은 tokens.css — 화면에서 CSS 변수로 읽고, 못 읽으면 같은 값 · 지구 · 비행기는 사이트 테마가 아니라 3D 전용 고정 토큰(--hav-3d-*)만 읽음 (작업 0168 · R7) */
 export function tokenColor(name: string, fallback: string): string {
   if (typeof window === "undefined") return fallback;
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
@@ -14,7 +14,7 @@ export function tokenColor(name: string, fallback: string): string {
 
 export type Tone = "cheap" | "normal" | "expensive";
 export const toneColor = (t: Tone | null) =>
-  t === "cheap" ? tokenColor("--hav-cheap", "#4c9bff") : t === "expensive" ? tokenColor("--hav-expensive", "#ff5a5f") : tokenColor("--hav-normal", "#c7c7cc");
+  t === "cheap" ? tokenColor("--hav-3d-cheap", "#4c9bff") : t === "expensive" ? tokenColor("--hav-3d-expensive", "#ff5a5f") : tokenColor("--hav-3d-normal", "#c7c7cc");
 
 export function canUseWebGL(): boolean {
   try {
