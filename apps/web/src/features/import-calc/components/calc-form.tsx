@@ -7,7 +7,7 @@ import { Input, Select, UnitInput } from "@hav/ui/form/field";
 import { Title } from "@hav/ui/text/heading";
 import type { ReactNode } from "react";
 import { CalcResult } from "./calc-result";
-import { DUTY_FREE_USD, ROUTE_LABEL, RULES_SOURCE, type Route } from "../lib/rules";
+import { DUTY_FREE_USD, ROUTE_LABEL, type Route } from "../lib/rules";
 import type { CustomsRate } from "../lib/customs-rate";
 import { calcHeadline } from "../lib/calc-copy";
 import { useCalcForm } from "../hooks/use-calc-form";
@@ -19,11 +19,11 @@ export function CalcForm({ rates, customs }: { rates: FxRate[]; customs: Record<
   const tone = !result || !result.ok ? "text-fg-2" : result.over ? "text-expensive" : "text-cheap";
   return (
     <>
-      <Title as="h1" size="page" className={`mt-3 ${tone}`}>
+      <Title as="h1" size="page" className={`mt-6 ${tone}`}>
         {calcHeadline(result, input)}
       </Title>
-      <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-14">
-      <form data-testid="calc-input" className="grid content-start gap-5" onSubmit={(e) => e.preventDefault()} aria-label="직구 계산 입력">
+      <div className="mt-6 grid items-start gap-4 lg:grid-cols-2">
+      <form data-testid="calc-input" className="grid content-start gap-4 rounded-card bg-card px-6 py-6" onSubmit={(e) => e.preventDefault()} aria-label="직구 계산 입력">
         <Field label="통화" htmlFor="currency">
           <Select id="currency" value={input.currency} onChange={set("currency")}>
             {codes.map((c) => (
@@ -36,7 +36,7 @@ export function CalcForm({ rates, customs }: { rates: FxRate[]; customs: Record<
         <Field label="물건 값" hint="현지 세금 · 현지 배송비까지 넣은 값" htmlFor="price" error={err("price")}>
           <UnitInput unit={input.currency} id="price" inputMode="decimal" autoComplete="off" value={input.price} onChange={set("price")} placeholder="180" />
         </Field>
-        <Field label="보내는 곳" hint="미국에서 오는 목록통관 물품만 200달러 · 건강기능식품 · 의약품 등은 일반통관이라 150달러" htmlFor="route">
+        <Field label="보내는 곳" htmlFor="route">
           <Select id="route" value={input.route} onChange={set("route")}>
             {(Object.keys(ROUTE_LABEL) as Route[]).map((k) => (
               <option key={k} value={k}>
@@ -50,9 +50,6 @@ export function CalcForm({ rates, customs }: { rates: FxRate[]; customs: Record<
         </Field>
         <Field label="관세율 (%)" hint="품목마다 다름 · 모르면 비워 두기" htmlFor="duty" error={err("dutyRate")}>
           <Input id="duty" inputMode="decimal" autoComplete="off" value={input.dutyRate} onChange={set("dutyRate")} placeholder="모르면 비워 두기" />
-          <a href={RULES_SOURCE.url} target="_blank" rel="noreferrer" className="mt-2 inline-flex text-sm text-accent hover:underline">
-            관세청에서 품목 세율 찾기 ↗
-          </a>
         </Field>
       </form>
 
@@ -65,11 +62,11 @@ export function CalcForm({ rates, customs }: { rates: FxRate[]; customs: Record<
 function Field({ label, hint, htmlFor, error, children }: { label: string; hint?: string; htmlFor: string; error?: string | null; children: ReactNode }) {
   return (
     <div>
-      <label htmlFor={htmlFor} className="text-sm font-semibold text-fg">
+      <label htmlFor={htmlFor} className="text-small text-fg-2">
         {label}
       </label>
-      {hint && <p className="mt-0.5 text-xs text-fg-2">{hint}</p>}
-      <div className="mt-2">{children}</div>
+      <div className="mt-1.5">{children}</div>
+      {hint && <p className="mt-1.5 text-small text-fg-2">{hint}</p>}
       {error && <p className="mt-1.5 text-sm text-expensive">{error}</p>}
     </div>
   );
