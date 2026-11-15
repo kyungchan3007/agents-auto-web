@@ -1,5 +1,6 @@
 // 오늘(2026-10-30) 만든 기능이 실제 브라우저에서 도는지 — 값은 날마다 바뀌어서 동작 · 모양만 봄 (작업 0101)
 import { type Page, expect, test } from "@playwright/test";
+import { openMenuIfCollapsed } from "./helpers";
 
 /** 페이지 오류 · 하이드레이션 어긋남 모으기 */
 function watchErrors(page: Page) {
@@ -65,16 +66,19 @@ test("작업실 — 사이트 상태 점검판이 맨 위 · 탭 제목은 페�
   const board = page.locator('section[aria-labelledby="status-title"]');
   await expect(board).toContainText("사이트 상태");
   await expect(board).toContainText(/최근 환율|상태를 받지 못했습니다/);
-  await expect(page.getByRole("navigation").getByRole("link", { name: "작업실" }).first()).toBeVisible();
+  await openMenuIfCollapsed(page); // 휴대폰은 메뉴 버튼을 먼저 펼침 (작업 0168)
+  await expect(page.getByRole("banner").getByRole("navigation").getByRole("link", { name: "작업실" })).toBeVisible();
 });
 
 // 여행 품목 영역(국제항공료 · 해외단체여행비 · 3D 비행기)은 /prices 에서 /flights 로 옮김 (작업 0164 · 사용자 결정 2026-11-15)
 test("메뉴 '여행 타이밍' → /flights · 여행 품목 영역은 /flights 에만 있음 (작업 0164)", async ({ page }) => {
   await page.goto("/");
+  await openMenuIfCollapsed(page); // 휴대폰은 메뉴 버튼을 먼저 펼침 (작업 0168)
   await page.getByRole("banner").getByRole("navigation").getByRole("link", { name: "여행 타이밍", exact: true }).click();
   await expect(page).toHaveURL(/\/flights\/?$/);
   await expect(page.locator("#travel-index-title")).toBeVisible();
   await page.goto("/prices");
   await expect(page.locator("#travel-index-title")).toHaveCount(0);
-  await expect(page.locator('a[href="/flights"]').first()).toBeVisible(); // /prices 에 /flights 로 가는 링크 한 줄
+  // /prices 본문에 /flights 로 가는 링크 한 줄 — 메뉴(머리글) 안의 링크는 휴대폰에서 접혀 있으므로 머리글 밖에서 찾음
+  await expect(page.locator('a[href="/flights"]:not(header *)').first()).toBeVisible();
 });
