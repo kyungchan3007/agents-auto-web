@@ -54,7 +54,7 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear }: P
         ))}
       </div>
       {more > 0 && (
-        <button type="button" onClick={() => toggle} aria-expanded={open} className="mt-4 text-body text-cheap hover:underline">
+        <button type="button" onClick={toggle} aria-expanded={open} className="mt-4 text-body text-cheap hover:underline">
           {open ? "나라 접기" : `나라 더 보기 (${more}곳) ›`}
         </button>
       )}
