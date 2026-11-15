@@ -25,9 +25,10 @@ export function NavBar({ title, logo, links, action }: { title: string; logo?: R
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
+  // 좌우 여백은 header 에 · 폭은 본문과 같은 max-w-6xl — 본문 컨테이너(main px-4 sm:px-8 → mx-auto max-w-6xl)와 로고 왼쪽 선이 같음 (작업 0170 · Figma 01)
   return (
-    <header data-surface="light" className="sticky top-0 z-50 bg-surface">
-      <nav className="relative mx-auto flex h-14 max-w-5xl items-center justify-between gap-6 px-4 text-fg sm:h-15 sm:px-8">
+    <header data-surface="light" className="sticky top-0 z-50 bg-surface px-4 sm:px-8">
+      <nav className="relative mx-auto flex h-14 max-w-6xl items-center justify-between gap-6 text-fg sm:h-15">
         <a href="/" className="flex shrink-0 items-center gap-2 font-display text-[1.375rem] font-normal tracking-tight text-cheap">
           {logo}
           {title}
@@ -48,7 +49,7 @@ export function NavBar({ title, logo, links, action }: { title: string; logo?: R
         {/* 모바일: 닫혀 있으면 숨김 · 열리면 로고 줄 아래로 펼침 / 데스크톱: 항상 한 줄 */}
         <ul
           id={menuId}
-          className={`${open ? "flex" : "hidden"} absolute inset-x-0 top-full flex-col gap-1 bg-surface px-4 pt-2 pb-5 text-body font-semibold text-fg-2 sm:static sm:flex sm:flex-row sm:items-center sm:gap-6 sm:bg-transparent sm:p-0 sm:text-small`}
+          className={`${open ? "flex" : "hidden"} absolute top-full -right-4 -left-4 flex-col gap-1 bg-surface px-4 pt-2 pb-5 text-body font-semibold text-fg-2 sm:static sm:flex sm:flex-row sm:items-center sm:gap-6 sm:bg-transparent sm:p-0 sm:text-small`}
         >
           {links.map((l) => (
             <li key={l.href}>
