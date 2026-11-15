@@ -5,7 +5,8 @@
 import { REPO_URL } from "@/shared/site";
 import type { SiteStatus } from "@hav/shared/status";
 import type { Fetched } from "../../../shared/api";
-import { headlineOf, lastRunText, timeText } from "../lib/status-text";
+import { runSummary } from "../lib/run-summary";
+import { headlineOf, timeText } from "../lib/status-text";
 import { useStatus } from "../hooks/use-status";
 
 export function StatusBoard({ build, builtAt }: { build: Fetched<SiteStatus>; builtAt: string }) {
@@ -25,7 +26,7 @@ function Body({ s, builtAt }: { s: SiteStatus; builtAt: string }) {
   const failed = h.tone === "bad" || s.lastRun?.status === "error";
   return (
     <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <Card label="오늘 환율 수집" value={lastRunText(s)} tone={failed ? "text-expensive" : "text-fg"} sub={h.tone === "ok" ? undefined : h.text} />
+      <Card label="오늘 환율 수집" value={runSummary(s)} tone={failed ? "text-expensive" : "text-fg"} sub={h.tone === "ok" ? undefined : h.text} />
       <Card label="사이트 빌드" value={timeText(builtAt)} />
       <Card label="자동 검사 (main)" value="GitHub 에서 확인" href={`${REPO_URL}/actions`} />
       <Card label="열린 작업" value="GitHub 에서 확인" href={`${REPO_URL}/issues`} />
