@@ -2,7 +2,6 @@
 // 오늘 환율이 없으면 큰 문장 대신 "오늘 환율을 아직 받지 못했습니다" · 숫자 칸 비움 (숫자를 지어내지 않음) · 판단은 사이트 신호 규칙(최근 90일 백분위)
 import type { FxRate } from "@hav/shared/fx";
 import { DateText } from "@hav/ui/text/date-text";
-import { FreshnessNote } from "@hav/ui/feedback/freshness-note";
 import { Eyebrow, Title } from "@hav/ui/text/heading";
 import { GlobeLazy } from "@hav/ui/three/scene/lazy";
 import { type Destination, NO_RATE_COPY, type SignalRow, cheapestCopy, cheapestDestination } from "../lib/destinations";
@@ -36,7 +35,6 @@ export function TodayBand({ rates, signals, windowDays, problem }: Props) {
               </p>
               <p className="mt-6 text-body text-fg-2">{copy.evidence}</p>
               {source?.source === "frankfurter" && <p className="mt-2 text-small text-fg-2">수출입은행 값을 받지 못해 예비 출처(Frankfurter) 값입니다 · 기준일 <DateText date={source.date} /></p>}
-              {source && <FreshnessNote date={source.date} className="mt-1" />}
             </>
           ) : (
             <>

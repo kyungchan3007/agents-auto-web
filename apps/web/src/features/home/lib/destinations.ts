@@ -78,6 +78,6 @@ export function cheapestCopy(c: NonNullable<ReturnType<typeof cheapestDestinatio
     headline: `이번 주 가장 싸게 갈 수 있는 곳은 ${c.destination.name}입니다`,
     value: wonText(c.rate.baseRate),
     per: `${c.rate.unit}${shortName(currency)}`,
-    evidence: `${where} · 예측이 아닙니다 · 수출입은행 환율을 평일 12시에 받습니다`,
+    evidence: where,
   };
 }
