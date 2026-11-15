@@ -164,3 +164,14 @@ describe("제목 속 숫자 강조 대비", () => {
     expect(contrastRatio("#f7c548", base.light.surface)).toBeLessThan(3);
   });
 });
+
+// 울트라마린 막(사진 위 · /calc) 안의 강조 — 주홍 글자는 읽히지 않아 해 노랑 글자로 (작업 0175 · e2e emphasis.spec.ts 의 직구 기대 근거)
+describe("울트라마린 막 위 강조 글자", () => {
+  it("주홍(#C13A22)은 울트라마린(#2438A8) 위 대비가 3 미만 — 그래서 막 안에서는 비쌈 뜻도 노란 글자", () => {
+    expect(contrastRatio(base.light.expensive, base.light.cheap)).toBeLessThan(3);
+  });
+
+  it("해 노랑 글자는 울트라마린 위에서 4.5 이상", () => {
+    expect(contrastRatio("#f7c548", base.light.cheap)).toBeGreaterThanOrEqual(4.5);
+  });
+});

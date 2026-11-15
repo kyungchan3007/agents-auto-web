@@ -1,5 +1,5 @@
 // 제목 속 숫자 · 금액 강조 — 작업 0175 세 번째 묶음 · 실행은 lead 가 PR 직전에
-// 하늘 종이 위: 글자색 그대로 + 해 노랑(#F7C548) 형광펜 띠 · 비쌈 뜻은 주홍(#C13A22) 글자 · 바다 띠 위는 해 노랑 글자
+// 하늘 종이 위: 글자색 그대로 + 해 노랑(#F7C548) 형광펜 띠 · 비쌈 뜻은 주홍(#C13A22) 글자 · 바다 띠 · 울트라마린 막 위는 해 노랑 글자
 //   표시: data-testid="emph" · data-tone · data-bg — packages/ui text/emph.tsx
 import { type Page, expect, test } from "@playwright/test";
 
@@ -25,19 +25,26 @@ test("여행 물가 — 큰 문장의 퍼센트(63% 같은)에 노란 형광펜 
   expect(s.color).not.toBe(SUN); // 노란 글자는 하늘 종이 위 대비 부족 — 글자색은 그대로
 });
 
-test("직구 — '$180 물건, 세금 없이 받습니다' 의 $180 에 노란 띠 · 세금이 붙으면 금액이 주홍 글자", async ({ page }) => {
+// 직구 맨 위는 사진 위 울트라마린 막(흰 글자) — 어두운 바탕이라 숫자는 노란 띠가 아니라 해 노랑 글자 (작업 0175 · lead 결정)
+//   비쌈 뜻(세금이 붙음)도 같은 노란 글자 — 주홍(#C13A22)은 울트라마린(#2438A8) 위 대비가 3 미만이라 읽히지 않음 (contrast.test.ts)
+test("직구 — 울트라마린 막 위 '$180' 은 해 노랑 글자(띠 아님) · 세금이 붙어도 금액은 노란 글자", async ({ page }) => {
   await page.goto("/calc");
   await fillCalc(page, "180");
   const h1 = page.getByRole("heading", { level: 1 });
   await expect(h1).toContainText("세금 없이 받습니다");
   const first = h1.locator('[data-testid="emph"]').first();
   await expect(first).toHaveText(/180/);
-  expect((await css(first)).image).toContain(SUN);
+  const a = await css(first);
+  expect(a.color).toBe(SUN);
+  expect(a.image).not.toContain("linear-gradient");
   await fillCalc(page, "250", "8");
   await expect(h1).toContainText(/관세 · 부가세 약 [\d,]+원이 붙습니다/);
   const money = h1.locator('[data-testid="emph"]').first();
   await expect(money).toHaveAttribute("data-tone", "expensive");
-  expect((await css(money)).color).toBe(VERMILION);
+  const b = await css(money);
+  expect(b.color).toBe(SUN); // 주홍이 아니라 노란 글자 — 울트라마린 위에서 읽히게
+  expect(b.color).not.toBe(VERMILION);
+  expect(b.image).not.toContain("linear-gradient");
 });
 
 test("홈 여행 타이밍 · /flights — 제목 속 달 숫자(4월 같은)가 강조", async ({ page }) => {
