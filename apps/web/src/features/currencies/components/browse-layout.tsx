@@ -22,9 +22,9 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
   return (
     <>
       <SiteNav page="currencies" />
-      <section data-surface="light" className="bg-surface px-4 pt-10 pb-24 text-fg sm:px-8 sm:pt-16">
+      <section data-surface="light" className="bg-surface px-4 pt-8 pb-24 text-fg sm:px-8 sm:pt-10">
         <div className="mx-auto max-w-page">
-          <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-14">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-10">
             <div data-testid="currency-list" className="min-w-0 lg:sticky lg:top-(--hav-nav-h) lg:self-start">
               <Eyebrow>둘러보기</Eyebrow>
               <div className="mt-4">
