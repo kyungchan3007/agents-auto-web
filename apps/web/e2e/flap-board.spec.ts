@@ -8,6 +8,8 @@ const CELL = "rgb(50, 71, 184)"; // #3247b8 칸
 const SUN = "rgb(247, 197, 72)"; // #F7C548 금액 줄
 const WHITE = "rgb(255, 255, 255)";
 const board = (page: import("@playwright/test").Page) => page.locator('[data-testid="flap-board"]');
+// 처음 한 번 넘어가는 움직임(1~2초)이 끝난 뒤에 읽음 — 움직임 중에는 칸 글자가 중간 글자라 값이 다름
+const settle = (page: import("@playwright/test").Page) => page.waitForTimeout(2600);
 const cs = (loc: import("@playwright/test").Locator, prop: string) => loc.evaluate((el, p) => getComputedStyle(el).getPropertyValue(p), prop);
 
 for (const width of [375, 1440, 1920]) {
@@ -60,6 +62,7 @@ for (const width of [375, 1440, 1920]) {
     test("안내판 안 — 도착지 · 금액 줄 · 아래 판정 한 줄이 보임 (값이 있으면 'ICN → 도시' · '… / 단위' · 없으면 '----')", async ({ page }) => {
       await page.goto("/");
       await page.waitForLoadState("networkidle");
+      await settle(page);
       const label = (await board(page).getAttribute("aria-label")) ?? "";
       const dest = (await board(page).locator('[data-testid="flap-row"]').nth(0).textContent())?.replace(/\s+/g, "") ?? "";
       const money = (await board(page).locator('[data-testid="flap-row"]').nth(1).textContent())?.replace(/\s+/g, "") ?? "";
@@ -166,6 +169,7 @@ test("긴 금액(1,234.56원 같은 긴 글)도 칸이 판을 넘치지 않음 �
   const page = await ctx.newPage();
   await page.goto("/");
   await page.waitForLoadState("networkidle");
+  await settle(page);
   const b = await board(page).boundingBox();
   const rows = board(page).locator('[data-testid="flap-row"]');
   for (let i = 0; i < 2; i++) {
@@ -173,7 +177,7 @@ test("긴 금액(1,234.56원 같은 긴 글)도 칸이 판을 넘치지 않음 �
     expect(r && b && r.x >= b.x - 0.5 && r.x + r.width <= b.x + b.width + 0.5, `줄 ${i}`).toBeTruthy();
   }
   // 한 줄 글자 수(칸 수)는 긴 금액 — "1,234.56원 / 100엔"(15자)이 줄임표 없이 들어갈 만큼 크거나, 넘치면 줄임표로 끝남
-  const money = ((await rows.nth(1).textContent()) ?? "").replace(/\s+/g, "");
-  expect(money.length, "금액 줄 칸 수").toBeGreaterThanOrEqual(10);
+  // 칸 수 = 금액 줄의 칸(flap-cell) 개수 — 글자 수가 아님 (오른쪽 맞춤이라 앞이 빈 칸일 수 있음)
+  expect(await rows.nth(1).locator('[data-testid="flap-cell"]').count(), "금액 줄 칸 수").toBeGreaterThanOrEqual(10);
   await ctx.close();
 });
