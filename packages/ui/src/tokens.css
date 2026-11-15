@@ -67,7 +67,6 @@
 
 /* 3D 전용 고정 색 — 어느 배경 에서도 값이 같음 (R7: 지구 · 비행기는 생김새 그대로 · 새 테마가 바뀌어도 지구 호 · 점 색이 따라 바뀌지 않음) */
 :root {
-  --hav-3d-arc: #4ff0e0;
   --hav-3d-aurora-1: #4ff0e0;
   --hav-3d-aurora-2: #9c8cff;
   --hav-3d-aurora-3: #ff8ad8;

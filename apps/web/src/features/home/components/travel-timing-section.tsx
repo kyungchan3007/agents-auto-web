@@ -118,7 +118,7 @@ export function TravelTimingGraph({ timing }: { timing: TravelTiming }) {
   if (timing.kind !== "ready") return null;
   return (
     <section aria-label="국제항공료 지수 선 그래프" className="bg-surface text-fg">
-      <div className="px-4 pb-16 sm:px-8 sm:pb-24">
+      <div className="px-4 pb-8 sm:px-8 sm:pb-10">
         <div className="mx-auto max-w-page">
           <Graph timing={timing} />
         </div>

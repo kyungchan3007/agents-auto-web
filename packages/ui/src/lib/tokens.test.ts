@@ -27,7 +27,6 @@ function defs(name: string): string[] {
 
 describe("3D 전용 고정 토큰 (R7) — 값이 어디서나 같음", () => {
   const FIXED: Record<string, string> = {
-    "--hav-3d-arc": "#4ff0e0",
     "--hav-3d-aurora-1": "#4ff0e0",
     "--hav-3d-aurora-2": "#9c8cff",
     "--hav-3d-aurora-3": "#ff8ad8",
