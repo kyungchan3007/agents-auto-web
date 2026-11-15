@@ -1,12 +1,12 @@
 // 작업 0177 — 홈 첫 화면 출발 안내판 (실행은 lead 가 PR 직전에 — 빌드한 사이트를 읽음 · 작성만)
-// 표시: data-testid="flap-board"(판 · role=img · aria-label) · "flap-row"(data-tone dest|money) · "flap-cell"(칸 · aria-hidden) · "photo-header"(사진 구간) · "photo-fade-bottom" · #today · 지구 = #today canvas 를 감싼 칸(data-testid="globe" 없으면 canvas)
+// 표시: data-testid="flap-board"(판 · role=img · aria-label) · "flap-row"(data-tone dest|money) · "flap-cell"(칸 · aria-hidden) · "photo-header"(사진 구간) · "photo-fade-bottom" · #today (작업 0177 수정: 3D 지구 없음 · 판은 사진 아래 하늘 종이 위)
 // 값은 날마다 · 자료 유무에 따라 달라서 두 경우(값 있음 · 없음 "----") 모두 맞게 봄
 import { expect, test } from "@playwright/test";
 
-const SEA = "rgb(36, 56, 168)"; // #2438A8 판
-const CELL = "rgb(50, 71, 184)"; // #3247b8 칸
-const SUN = "rgb(247, 197, 72)"; // #F7C548 금액 줄
-const WHITE = "rgb(255, 255, 255)";
+const SEA = "rgb(36, 56, 168)"; // #2438A8 예전 울트라마린 띠(없어야 함)
+const INK = "rgb(22, 36, 110)"; // #16246E 판
+const CELL = "rgb(36, 51, 127)"; // #24337f 칸
+const SUN = "rgb(247, 197, 72)"; // #F7C548 두 줄 글자
 const board = (page: import("@playwright/test").Page) => page.locator('[data-testid="flap-board"]');
 // 처음 한 번 넘어가는 움직임(1~2초)이 끝난 뒤에 읽음 — 움직임 중에는 칸 글자가 중간 글자라 값이 다름
 const settle = (page: import("@playwright/test").Page) => page.waitForTimeout(2600);
@@ -16,17 +16,14 @@ for (const width of [375, 1440, 1920]) {
   test.describe(`${width}px`, () => {
     test.use({ viewport: { width, height: 900 } });
 
-    test("사진 구간 · 안내판 겹침 — 판 위쪽이 사진 안으로 · 아래쪽은 사진 밖 · 가로 넘침 없음", async ({ page }) => {
+    test("사진 구간 · 안내판 — 판은 사진 아래 하늘 종이 위(겹치지 않음) · 가로 넘침 없음", async ({ page }) => {
       await page.goto("/");
       await page.waitForLoadState("networkidle");
       const photo = await page.locator('[data-testid="photo-header"]').first().boundingBox();
       const b = await board(page).boundingBox();
       expect(photo && b, "사진 · 판").toBeTruthy();
       if (!photo || !b) return;
-      const photoBottom = photo.y + photo.height;
-      expect(b.y, "판 위쪽이 사진 안").toBeLessThan(photoBottom - 8);
-      expect(b.y, "판 위쪽이 사진 아래 끝보다 위이지만 사진 맨 위는 아님").toBeGreaterThan(photo.y + photo.height * 0.4);
-      expect(b.y + b.height, "판 아래쪽은 사진 밖").toBeGreaterThan(photoBottom + 8);
+      expect(b.y, "판이 사진 아래").toBeGreaterThanOrEqual(photo.y + photo.height - 1);
       expect(b.x, "판이 화면 안 왼쪽").toBeGreaterThanOrEqual(0);
       expect(b.x + b.width, "판이 화면 안 오른쪽").toBeLessThanOrEqual(width + 0.5);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), "가로 넘침").toBeLessThanOrEqual(0);
@@ -45,9 +42,11 @@ for (const width of [375, 1440, 1920]) {
       expect(await cs(page.locator("#today"), "background-color")).not.toBe(SEA);
     });
 
-    test("판 색 — 판 #2438A8 · 칸 #3247b8 · 도착지 줄 흰 글자 · 금액 줄 햇빛 노랑", async ({ page }) => {
+    test("판 색 — 판 #16246E · 칸 #24337f · 두 줄 모두 햇빛 노랑 · 그림자 · 모서리 10px", async ({ page }) => {
       await page.goto("/");
-      expect(await cs(board(page), "background-color")).toBe(SEA);
+      expect(await cs(board(page), "background-color")).toBe(INK);
+      expect(await cs(board(page), "border-top-left-radius")).toBe("10px");
+      expect(await cs(board(page), "box-shadow")).not.toBe("none");
       const rows = board(page).locator('[data-testid="flap-row"]');
       await expect(rows).toHaveCount(2);
       await expect(rows.nth(0)).toHaveAttribute("data-tone", "dest");
@@ -55,7 +54,7 @@ for (const width of [375, 1440, 1920]) {
       const c0 = rows.nth(0).locator('[data-testid="flap-cell"]').first();
       const c1 = rows.nth(1).locator('[data-testid="flap-cell"]').first();
       expect(await cs(c0, "background-color")).toBe(CELL);
-      expect(await cs(c0, "color")).toBe(WHITE);
+      expect(await cs(c0, "color")).toBe(SUN);
       expect(await cs(c1, "color")).toBe(SUN);
     });
 
@@ -95,32 +94,18 @@ for (const width of [375, 1440, 1920]) {
       }
     });
 
-    test("지구 · 판 자리 — 데스크톱은 판 오른쪽 · 모바일은 판 아래 작게", async ({ page }) => {
+    test("3D 지구 · 울트라마린 띠가 없음 — #today 에 canvas 없음 · 구간 어디에도 예전 울트라마린(#2438A8) 바탕 없음", async ({ page }) => {
       await page.goto("/");
       await page.waitForLoadState("networkidle");
-      const g = await page.locator("#today canvas").first().boundingBox().catch(() => null);
-      if (!g) return; // 3D 가 안 뜨면(렌더 환경) 이 칸만 비어도 글자는 그대로 — 위치 검사는 건너뜀
-      const b = await board(page).boundingBox();
-      if (!b) throw new Error("판 없음");
-      if (width >= 1024) expect(g.x, "지구가 판 오른쪽").toBeGreaterThanOrEqual(b.x + b.width - 8);
-      else {
-        expect(g.y, "지구가 판 아래").toBeGreaterThanOrEqual(b.y + b.height - 8);
-        expect(g.width, "모바일 지구는 작게").toBeLessThanOrEqual(280);
-      }
-      expect(g.x + g.width, "지구가 화면 안").toBeLessThanOrEqual(width + 0.5);
-    });
-
-    test("지구 뒤 파란 원판 · 띠가 없음 — 지구 칸 · 구간 어디에도 울트라마린 바탕 없음 (판 제외)", async ({ page }) => {
-      await page.goto("/");
-      const bgs = await page.locator("#today").evaluate((root, boardSel) => {
+      await expect(page.locator("#today canvas")).toHaveCount(0);
+      const bgs = await page.locator("#today").evaluate((root) => {
         const out: string[] = [];
         for (const el of [root, ...Array.from(root.querySelectorAll("*"))]) {
-          if (el.closest(boardSel)) continue; // 판 안은 울트라마린
           const bg = getComputedStyle(el).backgroundColor;
-          if (bg === "rgb(36, 56, 168)" || bg === "rgb(50, 71, 184)") out.push(`${el.tagName.toLowerCase()} ${bg}`);
+          if (bg === "rgb(36, 56, 168)") out.push(`${el.tagName.toLowerCase()} ${bg}`);
         }
         return out;
-      }, '[data-testid="flap-board"]');
+      });
       expect(bgs).toEqual([]);
     });
   });
