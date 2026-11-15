@@ -1,79 +1,39 @@
 "use client";
 
-// 왼쪽 목록 — 찾기 · 지역 · `+ 통화` (누르면 그 통화 주소로 · 목록과 찾은 글자는 페이지를 옮겨도 그대로: 레이아웃에 있음)
-// 휴대폰은 위에 가로로 넘기는 줄 · ☆ 를 누르면 즐겨찾기 — 맨 위로 · "즐겨찾기" 묶음 (이 브라우저에만 저장 · 작업 0089)
+// 왼쪽 목록 — 시안: "둘러보기" + 통화 줄(코드 · 이름 · 판정 핀) · 줄마다 가는 구분선 · 고른 통화는 흰 카드 (작업 0170)
+// 목록은 레이아웃에 있어 통화를 바꿔도 남음 · 휴대폰은 위에서 옆으로 넘기는 줄 · 검색 · 지역 · 정렬 · 즐겨찾기는 시안에 없어 화면에서 뺌 (계산 lib · 훅은 그대로)
 import { currencyName } from "@hav/shared/currency";
 import { SignalPin } from "@hav/ui/data/signal-pin";
-import { Input } from "@hav/ui/form/field";
 import Link from "next/link";
-import { CurrencyFlag } from "@hav/ui/data/currency-flag";
 import { currencyListLabel } from "../lib/detail-view";
 import type { ListItem } from "../lib/list";
-import { SORTS } from "../lib/sort";
-import { signedPct } from "@hav/shared/format";
 import { useCurrencyList } from "../hooks/use-currency-list";
-import { FilterChip } from "@hav/ui/form/filter-chip";
 
 export type { ListItem };
 
 export function CurrencyList({ items }: { items: ListItem[] }) {
-  const { current, query, setQuery, picked, setRegion, favs, toggleFav, sort, setSort, hasChange, chips, shown } = useCurrencyList(items);
+  const { current, shown } = useCurrencyList(items);
 
   return (
     <nav aria-label="통화 목록" className="min-w-0">
-      <Input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="통화 · 나라 찾기" aria-label="통화 찾기" className="h-11 text-sm" />
-      {/* 지역 · 정렬 단추는 줄을 넘겨 다 보이게 — 옆으로 넘기게 두니 320px 에서 "오세아니아" 가 잘렸음 (작업 0111) */}
-      <div className="mt-3 flex flex-wrap gap-1.5 text-xs" role="group" aria-label="지역">
-        {chips.map((r) => (
-          <FilterChip key={r.id} active={picked === r.id} onClick={() => setRegion(r.id)}>
-            {r.label}
-          </FilterChip>
-        ))}
-      </div>
-      {hasChange && (
-        <div className="mt-2 flex flex-wrap gap-1.5 text-xs" role="group" aria-label="정렬">
-          {SORTS.map((s) => (
-            <FilterChip key={s.id} variant="outline" active={sort === s.id} onClick={() => setSort(s.id)}>
-              {s.label}
-            </FilterChip>
-          ))}
-        </div>
-      )}
-      {/* 휴대폰은 위에서 옆으로 넘기는 줄 · 넓은 화면은 세로 목록 (작업 0170: 테두리 카드를 걷고 고른 통화만 흰 바탕) */}
-      <ul className="mt-3 flex gap-2 overflow-x-auto pb-2 lg:max-h-[calc(100svh-14rem)] lg:flex-col lg:gap-1 lg:overflow-x-visible lg:overflow-y-auto">
+      <ul className="flex gap-2 overflow-x-auto pb-2 lg:max-h-[calc(100svh-12rem)] lg:flex-col lg:gap-0 lg:overflow-x-visible lg:overflow-y-auto lg:pb-0">
         {shown.map((i) => {
           const on = i.currency === current;
-          const fav = favs.includes(i.currency);
           return (
-            <li key={i.currency} className="flex shrink-0 items-stretch gap-1">
+            <li key={i.currency} className="shrink-0 lg:border-b lg:border-fg">
               <Link
                 href={`/currencies/${i.currency}`}
                 aria-current={on ? "page" : undefined}
+                aria-label={`${currencyName(i.currency)} ${i.currency}`}
                 scroll={false}
-                className={`flex min-w-0 flex-1 items-center gap-2 rounded-field px-3 py-2.5 text-sm transition-colors ${on ? "bg-foam text-fg" : "text-fg-2 hover:bg-surface-2 hover:text-fg"}`}
+                className={`flex items-center justify-between gap-4 rounded-field px-3 py-3 transition-colors lg:px-3 ${on ? "bg-card" : "hover:bg-surface-2"}`}
               >
-                <CurrencyFlag currency={i.currency} className="h-3.5 w-5" />
-                <span className="shrink-0 font-semibold text-fg">{i.currency}</span>
-                <span className="min-w-0 truncate text-xs">{currencyListLabel(i.currency, i.unit ?? 1)}</span>
-                <span className="ml-auto flex shrink-0 items-baseline gap-2 pl-3 text-xs whitespace-nowrap">
-                  {sort !== "region" && i.change != null && (
-                    <span className={`font-semibold ${Math.abs(i.change) < 0.05 ? "text-fg" : i.change < 0 ? "text-cheap" : "text-expensive"}`} title="지난 1개월 변화 (원화 기준)">
-                      {signedPct(i.change)}
-                    </span>
-                  )}
-                  {i.signal && <SignalPin signal={i.signal} />}
+                <span className="min-w-0">
+                  <span className={`block text-body font-semibold ${on ? "text-fg" : "text-cheap"}`}>{i.currency}</span>
+                  <span className="block truncate text-small text-fg-2">{currencyListLabel(i.currency, i.unit ?? 1)}</span>
                 </span>
+                {i.signal && <SignalPin signal={i.signal} percentile={i.percentile ?? null} />}
               </Link>
-              <button
-                type="button"
-                onClick={() => toggleFav(i.currency)}
-                aria-pressed={fav}
-                aria-label={`${currencyName(i.currency)} 즐겨찾기${fav ? " 빼기" : ""}`}
-                title={fav ? "즐겨찾기 빼기" : "즐겨찾기 — 목록 맨 위로"}
-                className={`grid w-9 shrink-0 place-items-center rounded-field text-base transition-colors ${fav ? "text-accent" : "text-fg-2/60 hover:text-fg"}`}
-              >
-                <span aria-hidden>{fav ? "★" : "☆"}</span>
-              </button>
             </li>
           );
         })}
