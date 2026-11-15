@@ -9,8 +9,9 @@ import { type DailyResult, dailyFx } from "./features/fx/collect/daily";
 import { fxRoutes } from "./features/fx/routes";
 import { d1RateStore, hasOfficialRates, hasRates } from "./features/fx/store";
 import { collectCustomsRates, collectEcos, collectKosis } from "./features/indicators/collect";
+import { ECOS_PUBLISH_DAY, KOSIS_PUBLISH_DAY, monthlyDue } from "./features/indicators/due";
 import { indicatorRoutes } from "./features/indicators/routes";
-import { d1IndicatorStore } from "./features/indicators/store";
+import { d1IndicatorStore, recentPoints } from "./features/indicators/store";
 import { collectPriceLevels } from "./features/prices/collect";
 import { priceRoutes } from "./features/prices/routes";
 import { d1PriceStore } from "./features/prices/store";
@@ -98,5 +99,18 @@ export default {
       .then(() => collectCustomsRates(d1IndicatorStore(env.DB), { key: env.KCS_KEY, today: kstDate() }))
       .then((r) => logEvent(r.status === "error" ? "warn" : "info", "kcs_scheduled", { cron: controller.cron, status: r.status, rows: r.rows, message: r.message }))
       .catch((e) => logError("kcs_scheduled_failed", e, { cron: controller.cron }));
+    // 월간 지표(KOSIS · ECOS) — 비었거나 발표된 달보다 오래됐으면 평일 첫 회차에서 채움 · 매달 1일 회차만 쓰면 키를 넣은 직후부터 다음 달 1일까지 비어 있었음 (작업 0171)
+    //   자료마다 최신 1행만 읽고(D1 읽기 하루 1행) · 서로 · 환율 · 과세환율과 따로 (읽기 · 수집이 던져도 나머지는 그대로)
+    const fillMonthly = (name: string, series: string, publishDay: number, collect: () => Promise<{ status: string; rows: number; message: string | null }>) =>
+      Promise.resolve()
+        .then(async () => {
+          const [latest] = await recentPoints(env.DB, series, 1);
+          if (!monthlyDue(latest?.period ?? null, kstDate(), publishDay)) return;
+          const r = await collect();
+          logEvent(r.status === "error" ? "warn" : "info", `${name}_backfill`, { cron: controller.cron, latest: latest?.period ?? null, status: r.status, rows: r.rows, message: r.message });
+        })
+        .catch((e) => logError(`${name}_backfill_failed`, e, { cron: controller.cron }));
+    await fillMonthly("kosis", "kosis-cpi:air-fare", KOSIS_PUBLISH_DAY, () => collectKosis(d1IndicatorStore(env.DB), { key: env.KOSIS_KEY }));
+    await fillMonthly("ecos", "ecos-import-price:krw", ECOS_PUBLISH_DAY, () => collectEcos(d1IndicatorStore(env.DB), { key: env.ECOS_KEY }));
   },
 } satisfies ExportedHandler<Env>;
