@@ -119,16 +119,18 @@
 @theme {
   /* 글꼴 변수는 layout.tsx 의 next/font 가 단다 (빌드 때 받아 자체 호스팅 · 런타임 외부 요청 없음) — 뒤쪽은 변수가 없을 때 대체 */
   --font-sans: var(--font-ibm-plex-sans-kr), "IBM Plex Sans KR", -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-  --font-display: var(--font-gasoek-one), "Gasoek One", "IBM Plex Sans KR", -apple-system, system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-display: "Pretendard", "IBM Plex Sans KR", -apple-system, system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   /* 실시간 기록 · 터미널 느낌 — 글꼴 파일을 더 받지 않고 기기 글꼴만 */
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "D2Coding", monospace;
 
   /* 크기 단계 — Figma 텍스트 스타일 (모바일은 clamp 로 줄임 · 홈 모바일 제목 약 48) */
-  --text-poster: clamp(3rem, 9vw, 6rem); /* 포스터 큰 제목 Gasoek One 96/102 */
+  /* 큰 제목 · 큰 숫자 자간 — font-display 를 쓰는 곳은 tracking-display (작업 0176 · 한곳에서) */
+  --tracking-display: -0.03em;
+  --text-poster: clamp(3rem, 9vw, 6rem); /* 포스터 큰 제목 Pretendard 800 96/102 */
   --text-poster--line-height: 1.0625;
-  --text-section: clamp(2rem, 5vw, 3rem); /* 구간 제목 Gasoek One 48/54 */
+  --text-section: clamp(2rem, 5vw, 3rem); /* 구간 제목 Pretendard 800 48/54 */
   --text-section--line-height: 1.125;
-  --text-city: 2.125rem; /* 도시 이름 Gasoek One 34/36 */
+  --text-city: 2.125rem; /* 도시 이름 Pretendard 800 34/36 */
   --text-city--line-height: 1.0588;
   --text-body: 1rem; /* 설명 IBM Plex Sans KR 16/26 */
   --text-body--line-height: 1.625;
@@ -138,7 +140,7 @@
   --text-small--line-height: 1.5385;
 
   /* 예전 이름 — 같은 단계로 이어 붙임 (화면 코드가 text-hero · text-title 을 아직 씀) */
-  --text-page: clamp(2.25rem, 4.5vw, 3.5rem); /* 하위 화면 큰 제목 Gasoek One 56/75 (시안 실측 · 홈 첫 제목만 poster 96) — 작업 0170 */
+  --text-page: clamp(2.25rem, 4.5vw, 3.5rem); /* 하위 화면 큰 제목 Pretendard 800 56/75 (시안 실측 · 홈 첫 제목만 poster 96) — 작업 0170 */
   --text-page--line-height: 1.34;
 
   --text-hero: var(--text-poster);
