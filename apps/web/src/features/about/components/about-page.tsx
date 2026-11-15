@@ -1,13 +1,13 @@
-// 소개 · 판단 기준 (작업 0115 · 이슈 #117) — 규칙 숫자는 원본(API rule · 공용 상수 · rules.ts)에서 읽음
+// 소개 · 판단 기준 (작업 0115 · 이슈 #117) — 작업 0170 Figma 08: 큰 제목 + 기준 카드 6개 (2열 × 3줄) · 규칙 숫자는 원본(API rule · rules.ts)에서 읽어 카드 아래에 따로 적음
 import type { Fetched } from "@/shared/api";
 import { REPO_URL } from "@/shared/site";
 import { SiteNav } from "@/shared/site-nav";
-import { SOURCE_NOTE } from "@hav/shared/currency";
 import type { SignalList } from "@hav/shared/signal";
 import { BAND_EDGE } from "@hav/shared/travel";
-import type { ReactNode } from "react";
-import { PageSection } from "@hav/ui/layout/page-section";
+import { PageFooter } from "@hav/ui/layout/page-footer";
+import { Eyebrow, Title } from "@hav/ui/text/heading";
 import { TextLink } from "@hav/ui/text/text-link";
+import { ABOUT_CARDS } from "../lib/criteria";
 
 const pct = (n: number) => `${Math.round(n * 100)}%`;
 
@@ -19,78 +19,51 @@ export function AboutPage({ signals, duty }: { signals: Fetched<SignalList>; dut
   return (
     <>
       <SiteNav page="about" />
-      <PageSection as="main" width="max-w-3xl" eyebrow="소개" title="Tripfx는 어떤 자료를, 어떤 기준으로 보여 주나요.">
-          <p className="mt-6 text-lead text-fg-2">Tripfx는 여행과 해외 직구를 앞둔 사람이 환율 · 여행지 물가 · 직구 세금을 한곳에서 확인하는 사이트입니다. 로그인 없이 쓸 수 있습니다.</p>
+      <main className="bg-surface px-4 pt-14 pb-20 text-fg sm:px-8 sm:pt-20 sm:pb-28">
+        <div className="mx-auto max-w-6xl">
+          <Eyebrow>소개</Eyebrow>
+          <Title as="h1" size="poster" className="mt-3 text-cheap">
+            어떤 자료를, 어떤 기준으로 보여 주나요
+          </Title>
+          <p className="mt-6 max-w-3xl text-body text-fg-2">tripfx 는 여행과 해외 직구를 앞둔 사람이 환율 · 여행지 물가 · 직구 세금을 한곳에서 확인하는 사이트입니다. 로그인 없이 쓸 수 있습니다.</p>
 
-          <Part title="환율">
-            <p>{SOURCE_NOTE}. 평일 낮에 하루 한 번 받아 저장합니다.</p>
-            <p>주말 · 공휴일처럼 고시가 없는 날의 값은 만들지 않습니다. 화면의 값에는 기준일과 출처를 함께 적습니다.</p>
-          </Part>
+          <ul className="mt-12 grid gap-x-12 gap-y-10 sm:grid-cols-2">
+            {ABOUT_CARDS.map((c) => (
+              <li key={c.id} data-testid="criteria-card" className="border-t-2 border-cheap pt-4">
+                <h2 className="font-display text-city font-normal">{c.title}</h2>
+                <p className="mt-3 text-body text-fg-2">{c.body}</p>
+              </li>
+            ))}
+          </ul>
 
-          <Part title="싼 편 · 비싼 편 신호">
-            {rule ? (
-              <>
-                <p>최근 {rule.windowDays}일 중 오늘 환율보다 낮았던 날의 비율로 정합니다. {pct(rule.cheapAt)} 이하면 싼 편, {pct(rule.expensiveAt)} 이상이면 비싼 편, 그 사이는 보통입니다.</p>
-                <p>그 기간 평일의 {pct(rule.minCoverage)}보다 기록이 적으면 신호를 내지 않습니다.</p>
-              </>
-            ) : (
-              <p>규칙 값을 받지 못했습니다 ({signals.ok ? "" : signals.reason})</p>
-            )}
-            <p>지난 값 안에서의 위치일 뿐입니다. 앞으로를 예측하지 않으며 투자 · 금융 조언이 아닙니다.</p>
-          </Part>
-
-          <Part title="여행 물가">
-            <p>세계은행의 가계 소비 구매력 평가(PPP)를 시장 환율로 나눈 값을 쓰고, 한국과 같은 연도끼리 비교합니다.</p>
-            <p>한국 대비 {BAND_EDGE.cheap} 미만이면 싼 편, {BAND_EDGE.pricey} 초과면 비싼 편, 그 사이는 비슷으로 묶습니다.</p>
-            <p>나라 전체 평균이라 도시 · 품목 · 숙소에 따라 체감은 다릅니다. 세계은행 안내대로 정밀한 순위를 매기지 않습니다.</p>
-          </Part>
-
-          <Part title="직구 계산">
-            <p>면세 한도는 미국발 목록통관 물품 {duty.usList}달러, 그 밖은 {duty.other}달러로 계산합니다.</p>
-            <p>
-              근거:{" "}
-              <TextLink href={duty.source.url}>
-                {duty.source.name}
-              </TextLink>{" "}
-              (<time dateTime={duty.source.checked}>{duty.source.checked}</time> 확인)
-            </p>
-            <p>결과는 예상 금액입니다. 실제 세액은 관세청 과세환율과 품목 분류로 정해집니다. 입력한 값은 브라우저 안에서만 계산하고 어디에도 보내지 않습니다.</p>
-          </Part>
-
-          <Part title="방문 통계">
-            <p>어느 페이지를 얼마나 보는지와 어디서 넘어왔는지를 Cloudflare Web Analytics로 집계합니다. 로그인이 없고, 직구 계산기 · 여행 예산에 넣은 값은 보내지 않습니다.</p>
-            <p>
-              AI 봇과 AI 서비스 유입은 이름 · 페이지별 횟수만 집계해{" "}
-              <TextLink href="/geo">GEO 측정</TextLink> 페이지에 공개합니다. IP 주소는 저장하지 않습니다.</p>
-          </Part>
-
-          <Part title="누가 만드나요">
-            <p>
-              개발자는 기획 · 설계 · 정책을 간단히 정하고, 코드의 역할 분담까지만 확인합니다. 코드 작성부터 테스트 · 머지까지는 AI 코딩 에이전트가 맡습니다. 에이전트의 개발 생산성과 효과, GEO(AI 검색 노출)를 확인하기 위한 프로젝트이며, 과정은{" "}
-              <TextLink href="/log">
-                작업실
-              </TextLink>
-              에 공개합니다. 코드와 작업 기록은{" "}
-              <TextLink href={REPO_URL}>
-                GitHub 저장소
-              </TextLink>
-              에 있고, 잘못된 내용은{" "}
-              <TextLink href={`${REPO_URL}/issues`}>
-                이슈
-              </TextLink>
-              로 알려 주세요.
-            </p>
-          </Part>
-      </PageSection>
+          {/* 기준 숫자의 원본 — 카드의 글과 어긋나지 않게 빌드 때 받은 규칙 값 · 공용 상수를 그대로 적음 */}
+          <section aria-labelledby="source-title" className="mt-16 border-t-2 border-line pt-6">
+            <h2 id="source-title" className="text-lg font-semibold">
+              기준 숫자의 원본
+            </h2>
+            <ul className="mt-4 space-y-2 text-small text-fg-2">
+              {rule ? (
+                <li>
+                  신호: 최근 {rule.windowDays}일 중 오늘 값보다 낮았던 날의 비율 · {pct(rule.cheapAt)} 이하 쌈 · {pct(rule.expensiveAt)} 이상 비쌈 · 그 기간 평일의 {pct(rule.minCoverage)}보다 기록이 적으면 신호를 내지 않음
+                </li>
+              ) : (
+                <li>신호 규칙 값을 받지 못했습니다 ({signals.ok ? "" : signals.reason})</li>
+              )}
+              <li>여행 물가: 한국 대비 {BAND_EDGE.cheap} 미만 싼 곳 · {BAND_EDGE.pricey} 초과 비싼 곳 · 그 사이는 비슷한 곳 (한국과 같은 연도끼리 비교)</li>
+              <li>
+                직구: 면세 한도 미국발 목록통관 {duty.usList}달러 · 그 밖 {duty.other}달러 · 근거 <TextLink href={duty.source.url}>{duty.source.name}</TextLink> (<time dateTime={duty.source.checked}>{duty.source.checked}</time> 확인) · 결과는 예상 금액이며 실제 세액은 통관 때 정해집니다
+              </li>
+              <li>
+                방문 통계: AI 봇과 AI 서비스 유입은 이름 · 페이지별 횟수만 집계해 <TextLink href="/geo">GEO 측정</TextLink> 페이지에 공개합니다
+              </li>
+              <li>
+                만드는 과정은 <TextLink href="/log">작업실</TextLink>에 공개 · 코드와 작업 기록은 <TextLink href={REPO_URL}>GitHub 저장소</TextLink>에 있고, 잘못된 내용은 <TextLink href={`${REPO_URL}/issues`}>이슈</TextLink>로 알려 주세요
+              </li>
+            </ul>
+          </section>
+        </div>
+      </main>
+      <PageFooter width="max-w-6xl">모든 숫자의 출처는 각 화면 아래에 적습니다</PageFooter>
     </>
-  );
-}
-
-function Part({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="mt-12 border-t border-line pt-8">
-      <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
-      <div className="mt-4 space-y-3 text-base leading-relaxed text-fg-2">{children}</div>
-    </section>
   );
 }
