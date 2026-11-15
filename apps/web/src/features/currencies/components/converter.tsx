@@ -1,6 +1,6 @@
 "use client";
 
-// 실제로 바꿀 때 — 시안(작업 0170 · Figma 02): 흰 카드 · Gasoek 제목 · 외화 입력칸 "=" 노란 원화 결과칸 · 빠른 금액 칩 · 한 줄 안내
+// 실제로 바꿀 때 — 시안(작업 0170 · Figma 02): 흰 카드 · 제목 · 외화 입력칸 "=" 노란 원화 결과칸 · 빠른 금액 칩 · 한 줄 안내
 //   입력은 이 화면 상태에만 (보내지 않음 · 저장하지 않음) · 기준일 · 출처를 같이 (FX-01) · 송금 환율이 있으면 그 값도 · 없으면 그 값은 숨김
 import { SectionTitle } from "@hav/ui/text/heading";
 import { SOURCE_NAME } from "@hav/shared/currency";

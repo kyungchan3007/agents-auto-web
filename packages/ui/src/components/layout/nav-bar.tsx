@@ -1,6 +1,6 @@
 "use client";
 
-// 따라오는 상단 메뉴 — 하늘 종이 바탕 위 로고(Gasoek One · 울트라마린) + 메뉴 (작업 0168 · R4)
+// 따라오는 상단 메뉴 — 하늘 종이 바탕 위 로고(Pretendard 800 · 울트라마린) + 메뉴 (작업 0168 · R4)
 // 데스크톱(sm 이상): 메뉴를 한 줄로 바로 보임 · 모바일: 로고 + 메뉴 버튼 → 누르면 메뉴가 아래로 펼쳐짐 (키보드 · 화면 읽기 프로그램으로 열고 닫음: button · aria-expanded · aria-controls · Esc)
 // 높이는 한 줄 기준이고 펼친 메뉴는 아래로 얹혀 높이를 바꾸지 않음 — 고정 높이를 쓰는 곳은 tokens.css 의 --hav-nav-h 를 봄
 import { type ReactNode, useEffect, useId, useRef, useState } from "react";
@@ -30,7 +30,7 @@ export function NavBar({ title, logo, links, action }: { title: string; logo?: R
   return (
     <header data-surface="light" className="sticky top-0 z-50 bg-surface px-4 sm:px-8">
       <nav className="relative mx-auto flex h-14 max-w-page items-center justify-between gap-6 text-fg sm:h-18 sm:justify-start sm:gap-14">
-        <a href="/" className="flex shrink-0 items-center gap-2 font-display text-[1.375rem] font-normal tracking-tight text-cheap sm:text-[1.75rem]">
+        <a href="/" className="flex shrink-0 items-center gap-2 font-display text-[1.375rem] font-extrabold tracking-display text-cheap sm:text-[1.75rem]">
           {logo}
           {title}
         </a>

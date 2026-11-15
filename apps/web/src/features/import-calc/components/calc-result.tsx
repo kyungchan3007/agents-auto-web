@@ -17,7 +17,7 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
         <Stamp>면세 한도 안 (${r.limitUsd})</Stamp>
       )}
       {r?.ok && r.over && <p className="text-[1.125rem] font-semibold text-sun">면세 한도 ${r.limitUsd} 넘음 · 세금 붙음</p>}
-      <p className={`font-display text-[clamp(2.25rem,6vw,3.5rem)] leading-tight font-normal tracking-tight text-sun tabular-nums ${r?.ok ? "mt-6" : ""}`}>
+      <p className={`font-display text-[clamp(2.25rem,6vw,3.5rem)] leading-tight font-extrabold tracking-display text-sun tabular-nums ${r?.ok ? "mt-6" : ""}`}>
         {r?.ok ? `${numberText(r.priceKrw)}원` : "—원"}
       </p>
       {!r && <p className="mt-4 text-small">물건 값을 넣으면 면세 한도 안인지 바로 보여 드립니다</p>}

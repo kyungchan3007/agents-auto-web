@@ -31,7 +31,7 @@ export function TodayBand({ rates, signals, windowDays, problem }: Props) {
               <Title id="today-title" className="mt-3 text-fg">
                 <EmphText text={copy.headline} bg="sea" />
               </Title>
-              <p className="mt-6 font-display text-poster font-normal tracking-tight tabular-nums text-figure">
+              <p className="mt-6 font-display text-poster font-extrabold tracking-display tabular-nums text-figure">
                 {copy.value} / {copy.per}
               </p>
               <p className="mt-6 text-body text-fg-2">{copy.evidence}</p>
