@@ -28,6 +28,8 @@
 - docs/design.md
 
 ## 계획 밖 변경 이유
+- packages/ui/src/hooks/use-flap-once.ts — 처음 한 번만 넘어가는 움직임을 부품에서 떼어 낸 훅 (부품과 같은 범위)
+- packages/ui/src/three/objects/globe.tsx · packages/ui/src/three/scene/lazy.tsx · packages/ui/src/three/lib/geo.ts · packages/ui/src/three/lib/geo.test.ts · packages/ui/src/three/lib/three-tokens.test.ts · apps/web/public/textures/earth-2048.jpg — 14:47 추가 요청 "지구 지워 필요없어 · 안 쓰는 코드 남기지 않음" 에 따라 홈에서만 쓰던 3D 지구 부품 · 지도 좌표 함수 · 지구 텍스처(348KB) · 관련 테스트를 지움 (비행기 three 코드 · 의존성은 그대로)
 
 ## 위험
 - 사진 · 안내판 겹침이 화면 폭마다 깨질 수 있음 → 375 · 1440 · 1920 e2e 와 배포 화면 확인
@@ -39,3 +41,4 @@
 - 화면: lead 가 배포 주소를 375 · 1440 · 1920 으로 확인 (PR 에는 미리보기 주소만)
 
 ## 계획과 달라진 점
+- 14:47 사용자 결정(A안)으로 '사진에 걸치기'를 취소: 판은 사진 아래 하늘 종이 위에 놓인 짙은 남색 물건(#16246E · 칸 #24337f · 두 줄 노랑 · 그림자 · 모서리 10px) · 홈 3D 지구 제거 · Quick 으로 진행(builder 단독 · 새 e2e 없음)
