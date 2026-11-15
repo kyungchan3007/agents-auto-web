@@ -30,9 +30,9 @@ export const STORY_STEPS: readonly StoryStep[] = [
     title: "구현 · 운영",
     bullets: [
       { text: "에이전트 팀이 계획 · 구현 · 테스트 · 검색 노출 측정으로 역할을 나눕니다.", source: ".agents/orchestration/team.md" },
-      { text: "작업 135개 모두 요청 원문을 그대로 보관합니다.", source: ".agents/specs/" },
+      { text: "모든 작업의 요청 원문을 그대로 보관합니다.", source: ".agents/specs/" },
       { text: "완료의 기준은 자동 검사 통과이고, 머지는 사람이 합니다.", source: ".agents/checks.sh" },
-      { text: "작업마다 허점 183개를 기록하고, 반복된 허점은 테스트로 막았습니다.", source: ".agents/specs/" },
+      { text: "작업마다 허점을 기록하고, 반복된 허점은 테스트로 막습니다.", source: ".agents/specs/" },
     ],
   },
   {
@@ -40,7 +40,7 @@ export const STORY_STEPS: readonly StoryStep[] = [
     title: "사고 대응",
     bullets: [
       { text: "2026년 10월 29일 데이터베이스 하루 읽기 한도 500만 줄을 넘었습니다.", source: "작업 0077" },
-      { text: "원인은 기본 키 순서였고, (통화, 날짜) 색인으로 한 통화 1년 조회를 245줄로 줄였습니다.", source: "#78" },
+      { text: "원인은 기본 키 순서였고, (통화, 날짜) 색인으로 한 통화 1년 조회를 약 245줄로 줄였습니다.", source: "#78" },
       { text: "응답 캐시를 더해 같은 날 같은 응답은 한 줄만 읽습니다.", source: "#85" },
       { text: "수출입은행 연결 오류로 영업일 4일 동안 예비 값만 저장됐습니다.", source: "#128" },
       { text: "예비 값을 '오늘 값 있음'으로 봐 재시도를 건너뛴 탓이라, '공식 값이 있는가'로 판단합니다.", source: "#125" },
@@ -51,7 +51,7 @@ export const STORY_STEPS: readonly StoryStep[] = [
     title: "결과 측정",
     bullets: [
       { text: "질문 24개를 직접 검색해 노출 · 인용을 기록합니다.", source: "docs/geo-measurement.md" },
-      { text: "6회 측정 모두 노출 0 · 인용 0입니다.", source: "apps/api/data/geo-answers" },
+      { text: "측정한 회차 모두 노출 0 · 인용 0입니다.", source: "apps/api/data/geo-answers" },
       { text: "구글 검색 노출 3회 · 클릭 0회였습니다.", source: "#157" },
       { text: "사이트맵 29개 주소는 모두 정상인데 구글은 '가져올 수 없음'으로 표시합니다.", source: "#157" },
     ],
