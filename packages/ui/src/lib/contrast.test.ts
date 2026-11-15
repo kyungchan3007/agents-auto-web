@@ -1,9 +1,6 @@
-// 작업 0168 — 새 테마 "하늘 종이 · 바다 띠 · 밤 포스터" 대비 (테스트 먼저 · 구현 전에는 FAIL 이 정상)
-// 바뀐 점: 새 값을 검사하고, 밤 포스터(@media (prefers-color-scheme: dark))를 따로 잼
-//   - tokens.css 에서 밤 포스터 @media 블록을 먼저 떼어 낸 뒤 readSurfaces 로 기본 값을 읽음 (블록 안의 [data-surface="light"] 가 기본 값을 덮어쓰지 않게)
-//     → builder 는 contrast.ts 를 안 고쳐도 됨 · 고쳐도 되지만 이 테스트의 helper(밤 블록 떼기)는 이 파일에 있음
-//   - 밤 포스터 블록은 `@media (prefers-color-scheme: dark) { [data-surface="light"] { --hav-…: #hex; … } }` 모양 (light 바탕을 짙은 울트라마린으로 · dark/elevated 는 필요하면 같은 블록에서 한 단계 밝게/짙게)
-//
+// 작업 0168 · 0173 — 새 테마 "하늘 종이 · 바다 띠" 대비 — 밝은 화면 하나 (어두운 화면 모드 "밤 포스터" 는 없앰 · 작업 0173)
+// 사용자 "피그마 시안대로 하나만 있으면 돼 두개 다 필요 없어" → tokens.css 에 @media (prefers-color-scheme: dark) 블록이 없고, 읽은 값이 곧 화면의 값
+//   (예전에는 밤 블록을 떼어 내고 읽었음 — 이제 떼어 낼 블록이 없어야 하므로 tokens.css 전체를 그대로 읽음 · 블록이 남아 있으면 light 값이 덮여 아래 검사가 실패)
 // 토큰 이름은 그대로 · 값만 새 테마 (sdd.md 1) — 정해진 값(R1 · R2)은 고정, 나머지 보조 값은 대비로만 판정
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
@@ -11,21 +8,7 @@ import { contrastRatio, luminance, readSurfaces } from "./contrast";
 
 const CSS = readFileSync(new URL("../tokens.css", import.meta.url), "utf8");
 
-/** `@media (prefers-color-scheme: dark) { … }` 블록 안쪽 글 (중괄호 짝 맞춰 읽음) · 없으면 "" */
-function nightBlock(css: string): { inner: string; rest: string } {
-  const m = /@media\s*\(\s*prefers-color-scheme:\s*dark\s*\)\s*\{/.exec(css);
-  if (!m) return { inner: "", rest: css };
-  let depth = 1;
-  let i = m.index + m[0].length;
-  for (; i < css.length && depth > 0; i++) depth += css[i] === "{" ? 1 : css[i] === "}" ? -1 : 0;
-  return { inner: css.slice(m.index + m[0].length, i - 1), rest: css.slice(0, m.index) + css.slice(i) };
-}
-
-const { inner: NIGHT_CSS, rest: BASE_CSS } = nightBlock(CSS);
-const base = readSurfaces(BASE_CSS);
-const nightOverrides = readSurfaces(NIGHT_CSS);
-/** 밤 포스터일 때 각 배경의 값 = 기본 값 위에 밤 블록 값을 덮은 것 */
-const night: Record<string, Record<string, string>> = Object.fromEntries(Object.entries(base).map(([k, v]) => [k, { ...v, ...(nightOverrides[k] ?? {}) }]));
+const base = readSurfaces(CSS);
 
 const lc = (v: string) => v.toLowerCase();
 function hue(hex: string): number {
@@ -50,7 +33,7 @@ describe("contrastRatio", () => {
 });
 
 describe("tokens.css — 세 배경 (하늘 종이 light · 바다 띠 dark · elevated)", () => {
-  it("밤 포스터 블록을 뗀 기본 값에 dark · elevated · light 세 배경이 모두 있다", () => {
+  it("dark · elevated · light 세 배경이 모두 있다", () => {
     expect(Object.keys(base).sort()).toEqual(["dark", "elevated", "light"]);
   });
 
@@ -111,65 +94,35 @@ describe("판정 핀 글자 대비 (흰 글 on 쌈 · 비쌈 바탕 · 남색 �
   });
 });
 
-describe("밤 포스터 — @media (prefers-color-scheme: dark)", () => {
-  it("밤 블록이 있고 light 바탕을 덮어씀", () => {
-    expect(NIGHT_CSS.length).toBeGreaterThan(0);
-    expect(Object.keys(nightOverrides)).toContain("light");
+describe("밝은 화면 하나 — 어두운 화면 모드(밤 포스터) 없음 (작업 0173)", () => {
+  it("tokens.css 에 prefers-color-scheme 이 없음 — 기기 설정과 상관없이 같은 값", () => {
+    expect(CSS).not.toMatch(/prefers-color-scheme/);
   });
 
-  it("바탕은 짙은 울트라마린(#121C5C 근처) — 파랑 계열 · 매우 어두움 · 글자는 종이색", () => {
-    const v = night.light;
-    expect(luminance(v.surface)).toBeLessThanOrEqual(0.03);
-    expect(hue(v.surface)).toBeGreaterThanOrEqual(215);
-    expect(hue(v.surface)).toBeLessThanOrEqual(250);
-    expect(luminance(v.fg)).toBeGreaterThanOrEqual(0.8);
-    expect(lc(v.surface)).not.toBe(lc(base.light.surface));
+  it("light(하늘 종이) 값이 짙은 바탕으로 덮이지 않음 — 바탕은 밝고 글자는 짙음", () => {
+    expect(luminance(base.light.surface)).toBeGreaterThanOrEqual(0.8);
+    expect(luminance(base.light.fg)).toBeLessThanOrEqual(0.05);
   });
 
-  it("바다 띠(dark)는 밤에도 밤 바탕과 구분됨 (명암 대비 1.2 이상 — 한 단계 밝거나 짙게)", () => {
-    expect(contrastRatio(night.dark.surface, night.light.surface)).toBeGreaterThanOrEqual(1.2);
-  });
-
-  for (const name of ["light", "dark", "elevated"]) {
-    for (const bg of ["surface", "surface-2"]) {
-      for (const fg of BODY) {
-        it(`밤 ${name}: ${fg} on ${bg} ≥ 4.5`, () => {
-          expect(contrastRatio(night[name][fg], night[name][bg])).toBeGreaterThanOrEqual(4.5);
-        });
-      }
-    }
-    it(`밤 ${name}: on-accent on accent ≥ 4.5`, () => {
-      expect(contrastRatio(night[name]["on-accent"], night[name].accent)).toBeGreaterThanOrEqual(4.5);
-    });
-  }
-
-  it("밤에도 판정 색은 파랑(쌈) · 빨강 계열(비쌈)", () => {
-    for (const [name, v] of Object.entries(night)) {
-      expect(hue(v.cheap), `밤 ${name} cheap`).toBeGreaterThanOrEqual(190);
-      expect(hue(v.cheap), `밤 ${name} cheap`).toBeLessThanOrEqual(250);
-      const e = hue(v.expensive);
-      expect(e <= 30 || e >= 345, `밤 ${name} expensive 각도 ${e}`).toBe(true);
-    }
+  it("바다 띠(dark)는 시안대로 울트라마린 그대로 — 어두운 구간은 남김", () => {
+    expect(lc(base.dark.surface)).toBe("#2438a8");
   });
 });
 
-// 큰 숫자 전용 색 --hav-figure (text-figure · 작업 0169) — 하늘 종이 위 울트라마린 · 바다 띠 · 칸 위 해 노랑 · 밤 포스터 해 노랑
-// 큰 숫자(Gasoek One · 26px 이상)라 큰 글자 기준 3 이상 (builder 계산은 본문 4.5 도 넘음: 종이 8.49 · 띠 5.91 · 밤 9.68)
+// 큰 숫자 전용 색 --hav-figure (text-figure · 작업 0169) — 하늘 종이 위 울트라마린 · 바다 띠 · 칸 위 해 노랑
+// 큰 숫자(Gasoek One · 26px 이상)라 큰 글자 기준 3 이상 (builder 계산은 본문 4.5 도 넘음: 종이 8.49 · 띠 5.91)
 describe("큰 숫자 색 --hav-figure", () => {
-  it("값 — 하늘 종이 #2438A8 · 바다 띠 · elevated #F7C548 · 밤 포스터 light 도 #F7C548", () => {
+  it("값 — 하늘 종이 #2438A8 · 바다 띠 · elevated #F7C548", () => {
     expect(lc(base.light.figure)).toBe("#2438a8");
     expect(lc(base.dark.figure)).toBe("#f7c548");
     expect(lc(base.elevated.figure)).toBe("#f7c548");
-    expect(lc(night.light.figure)).toBe("#f7c548");
   });
 
-  for (const [mode, surfaces] of [["", base], ["밤 ", night]] as const) {
-    for (const [name, v] of Object.entries(surfaces)) {
-      for (const bg of ["surface", "surface-2"]) {
-        it(`${mode}${name}: figure on ${bg} ≥ 3 (큰 글자)`, () => {
-          expect(contrastRatio(v.figure, v[bg])).toBeGreaterThanOrEqual(3);
-        });
-      }
+  for (const [name, v] of Object.entries(base)) {
+    for (const bg of ["surface", "surface-2"]) {
+      it(`${name}: figure on ${bg} ≥ 3 (큰 글자)`, () => {
+        expect(contrastRatio(v.figure, v[bg])).toBeGreaterThanOrEqual(3);
+      });
     }
   }
 });
