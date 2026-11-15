@@ -42,7 +42,7 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
       <Eyebrow>
         {currencyListName(code)} · {code}
       </Eyebrow>
-      <h1 className="mt-4 font-display text-[clamp(3.25rem,9vw,6.5rem)] leading-[1.05] font-normal tracking-tight text-figure tabular-nums">
+      <h1 className="mt-4 font-display text-[clamp(3.25rem,9vw,6.5rem)] leading-[1.05] font-extrabold tracking-display text-figure tabular-nums">
         {/* 제목만 읽어도 어떤 통화인지 (작업 0114) — 화면에는 바로 위 줄에 통화명이 있음 */}
         <span className="sr-only">{name}({code}) 환율 </span>
         {t.value}
