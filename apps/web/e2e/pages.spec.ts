@@ -35,6 +35,39 @@ test.describe("통화 /currencies/USD (SR-CUR-01)", () => {
     await expect(tid(page, "currency-detail")).toContainText(/쌈|보통|비쌈|신호/);
   });
 
+  test("그래프 최고 · 최저 금액 — 카드와 같은 값 · 기간을 바꾸면 그 기간 값 · 라벨이 그래프 안 (작업 0175)", async ({ page }) => {
+    await page.goto("/currencies/USD");
+    const detail = tid(page, "currency-detail");
+    const group = page.getByRole("group", { name: "기간" });
+    const num = (t: string | null) => Number((t ?? "").replace(/[^\d.]/g, ""));
+    await group.getByRole("button", { name: "1년" }).click();
+    const maxLabel = detail.locator('[data-testid="extreme-max"]');
+    const minLabel = detail.locator('[data-testid="extreme-min"]');
+    await expect(maxLabel).toHaveText(/^최고 [\d,]+(\.\d+)?원$/);
+    await expect(minLabel).toHaveText(/^최저 [\d,]+(\.\d+)?원$/);
+    const [max1y, min1y] = [num(await maxLabel.textContent()), num(await minLabel.textContent())];
+    // 위 '1년 최저 · 최고' 카드와 같은 값 (카드는 정수 표기일 수 있어 0.6 이하 차이 허용)
+    const card = async (label: string) => num((await detail.getByText(label, { exact: true }).locator("xpath=..").textContent())?.replace(label, "") ?? "");
+    expect(Math.abs(max1y - (await card("1년 최고")))).toBeLessThanOrEqual(0.6);
+    expect(Math.abs(min1y - (await card("1년 최저")))).toBeLessThanOrEqual(0.6);
+    // 1개월로 바꾸면 그 기간의 최고 · 최저 (1년 범위 안 · 같거나 좁아짐)
+    await group.getByRole("button", { name: "1개월" }).click();
+    await expect(page.getByRole("img", { name: /^1개월 흐름 — / })).toBeVisible();
+    const [max1m, min1m] = [num(await maxLabel.textContent()), num(await minLabel.textContent())];
+    expect(max1m).toBeLessThanOrEqual(max1y + 0.01);
+    expect(min1m).toBeGreaterThanOrEqual(min1y - 0.01);
+    expect(max1m).toBeGreaterThanOrEqual(min1m);
+    // 라벨이 그래프(svg)를 벗어나 잘리지 않음 · 두 라벨이 서로 안 겹침 (휴대폰 포함)
+    const svg = await detail.getByRole("img", { name: /흐름 — / }).boundingBox();
+    const [a, b] = [await maxLabel.boundingBox(), await minLabel.boundingBox()];
+    if (!svg || !a || !b) throw new Error("그래프 · 라벨이 없음");
+    for (const [name, box] of [["최고", a], ["최저", b]] as const) {
+      expect(box.x, `${name} 왼쪽`).toBeGreaterThanOrEqual(svg.x - 1);
+      expect(box.x + box.width, `${name} 오른쪽`).toBeLessThanOrEqual(svg.x + svg.width + 1);
+    }
+    expect(a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height, "두 라벨이 겹침").toBe(false);
+  });
+
   test("배치 — 넓은 화면은 목록이 상세 왼쪽 · 휴대폰은 목록이 위 · 상세가 아래", async ({ page }) => {
     await page.goto("/currencies/USD");
     const list = await box(tid(page, "currency-list"));
