@@ -18,16 +18,24 @@ const font = (weight: "Bold" | "Medium") => {
   return readFile(join(dir, `Pretendard-${weight}.otf`));
 };
 
+// 배경 사진 — plane-sunset 을 1200×630 으로 잘라 미리 만든 JPEG (apps/web/scripts/make-photos.mjs) · next/og 는 WebP 를 못 그려서 JPEG (작업 0175)
+const photo = () => readFile(join(process.cwd(), "src/app/_assets/plane-sunset-og.jpg")).then((b) => `data:image/jpeg;base64,${b.toString("base64")}`);
+
 export default async function Image() {
-  const [bold, medium] = await Promise.all([font("Bold"), font("Medium")]);
+  const [bold, medium, bg] = await Promise.all([font("Bold"), font("Medium"), photo()]);
   return new ImageResponse(
-    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 96px", background: "#EAF4F2", color: "#16246E", fontFamily: "Pretendard" }}>
-      <div style={{ fontSize: 34, fontWeight: 500, color: "#4A5A8C" }}>Tripfx · 환율 · 여행 물가 · 직구 계산</div>
-      <div style={{ marginTop: 28, fontSize: 84, fontWeight: 700, lineHeight: 1.15, display: "flex", flexDirection: "column" }}>
-        <span>오늘, 그 통화는</span>
-        <span style={{ color: "#2438A8" }}>싼 편일까?</span>
+    <div style={{ width: "100%", height: "100%", display: "flex", position: "relative", fontFamily: "Pretendard", color: "#16246E", background: "#EAF4F2" }}>
+      <img src={bg} alt="" width={1200} height={630} style={{ position: "absolute", top: 0, left: 0, width: 1200, height: 630, objectFit: "cover" }} />
+      {/* 글자 자리를 하늘 종이색으로 덮어 읽히게 (왼쪽 → 오른쪽) */}
+      <div style={{ position: "absolute", top: 0, left: 0, width: 1200, height: 630, display: "flex", backgroundImage: "linear-gradient(90deg, rgba(234,244,242,0.96) 0%, rgba(234,244,242,0.88) 45%, rgba(234,244,242,0) 85%)" }} />
+      <div style={{ position: "relative", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 96px", width: 1200, height: 630 }}>
+        <div style={{ fontSize: 34, fontWeight: 500, color: "#4A5A8C" }}>Tripfx · 환율 · 여행 물가 · 직구 계산</div>
+        <div style={{ marginTop: 28, fontSize: 84, fontWeight: 700, lineHeight: 1.15, display: "flex", flexDirection: "column" }}>
+          <span>오늘, 그 통화는</span>
+          <span style={{ color: "#2438A8" }}>싼 편일까?</span>
+        </div>
+        <div style={{ marginTop: 36, fontSize: 32, fontWeight: 500, color: "#4A5A8C" }}>매일 받은 환율이 최근 흐름 중 어디쯤인지 · 예측 아님</div>
       </div>
-      <div style={{ marginTop: 36, fontSize: 32, fontWeight: 500, color: "#4A5A8C" }}>매일 받은 환율이 최근 흐름 중 어디쯤인지 · 예측 아님</div>
     </div>,
     {
       ...size,
