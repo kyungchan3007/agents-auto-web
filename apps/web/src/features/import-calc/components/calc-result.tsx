@@ -17,7 +17,7 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
         <div className="min-w-0">
           <p className="text-sm text-fg-2">원화로</p>
           <p className="mt-1 font-display text-[clamp(2rem,6vw,3.25rem)] leading-tight font-normal tracking-tighter tabular-nums">
-            {r?.ok ? <span className="text-accent">{numberText(r.priceKrw)}</span> : <span className="text-fg-2">—</span>}
+            {r?.ok ? <span className="text-figure">{numberText(r.priceKrw)}</span> : <span className="text-fg-2">—</span>}
             <span className="ml-1.5 text-title">원</span>
           </p>
         </div>
