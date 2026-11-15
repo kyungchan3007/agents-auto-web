@@ -79,6 +79,4 @@ test("메뉴 '여행 타이밍' → /flights · 여행 품목 영역은 /flights
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible(); // 큰 문장(작업 0170: 지수가 없으면 "준비 중")
   await page.goto("/prices");
   await expect(page.locator('[data-testid="travel-graph"]')).toHaveCount(0);
-  // /prices 본문에 /flights 로 가는 링크 한 줄 — 메뉴(머리글) 안의 링크는 휴대폰에서 접혀 있으므로 머리글 밖에서 찾음
-  await expect(page.locator('a[href="/flights"]:not(header *)').first()).toBeVisible();
 });

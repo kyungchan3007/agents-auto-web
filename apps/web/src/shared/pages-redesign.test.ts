@@ -87,10 +87,9 @@ describe("여행 물가 /prices (P3 · SR-PRC-01)", () => {
     expect(T.prices).toMatch(/\bSignalPin\b/);
   });
 
-  it("표시 · /flights 로 가는 링크 한 줄 유지", () => {
+  it("e2e 가 찾는 표시 (시안 04 에 없는 /flights 링크 한 줄은 요구하지 않음 — 작업 0170 시안 맞춤)", () => {
     expect(T.prices).toMatch(/data-testid="price-bands"/);
     expect(T.prices).toMatch(/data-testid="budget"/);
-    expect(T.prices).toMatch(/href="\/flights"/);
   });
 });
 
