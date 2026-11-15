@@ -6,11 +6,11 @@ import { STORY_STEPS, sourceLinks } from "../lib/story";
 
 export function StorySection() {
   return (
-    <section data-testid="site-story" aria-labelledby="story-title" className="mt-12">
-      <h2 id="story-title" className="font-display text-city font-normal tracking-tight">
+    <section data-testid="site-story" aria-labelledby="story-title" className="mt-6">
+      <h2 id="story-title" className="font-display text-[1.625rem] leading-tight font-normal text-cheap">
         이 사이트를 어떻게 만들었나
       </h2>
-      <ol className="mt-8 space-y-10">
+      <ol className="mt-4 space-y-6">
         {STORY_STEPS.map((step, i) => (
           <li key={step.id} data-testid="story-step">
             <div aria-hidden className="h-0.5 bg-cheap" />
