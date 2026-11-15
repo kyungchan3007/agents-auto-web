@@ -57,3 +57,16 @@ export const STORY_STEPS: readonly StoryStep[] = [
     ],
   },
 ];
+
+/**
+ * 화면에 보여 줄 근거 링크 — PR 번호(#78)는 그 PR 로, 작업 번호(작업 0077)는 그 번호로 시작하는 PR 검색으로 (GitHub)
+ * 파일 · 문서 경로는 처음 보는 사람에게 내부 용어라 화면에서 뺌 (데이터의 source 값은 그대로)
+ */
+export function sourceLinks(source: string, repoUrl: string): { label: string; href: string }[] {
+  const out: { label: string; href: string }[] = [];
+  for (const m of source.matchAll(/#(\d+)|작업 (\d{3,4})/g)) {
+    if (m[1]) out.push({ label: `#${m[1]}`, href: `${repoUrl}/pull/${m[1]}` });
+    else out.push({ label: `작업 ${m[2]}`, href: `${repoUrl}/pulls?q=${encodeURIComponent(`is:pr "작업 ${m[2]}"`)}` });
+  }
+  return out;
+}
