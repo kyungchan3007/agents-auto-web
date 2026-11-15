@@ -3,7 +3,7 @@ import { currencyName, rateText } from "@hav/shared/currency";
 import type { FxRate } from "@hav/shared/fx";
 import type { Signal } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES, relativeText } from "@hav/shared/travel";
-import { SIGNAL_TEXT, signalLabel } from "@hav/ui/data/signal-badge";
+import { SIGNAL_TEXT, signalLabel } from "@hav/ui/data/signal-pin";
 import type { Place } from "@hav/ui/three/lib/geo";
 import Link from "next/link";
 import { CurrencyFlag } from "@hav/ui/data/currency-flag";

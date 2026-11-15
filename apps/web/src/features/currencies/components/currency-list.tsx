@@ -3,7 +3,7 @@
 // 왼쪽 목록 — 찾기 · 지역 · `+ 통화` (누르면 그 통화 주소로 · 목록과 찾은 글자는 페이지를 옮겨도 그대로: 레이아웃에 있음)
 // 휴대폰은 위에 가로로 넘기는 줄 · ☆ 를 누르면 즐겨찾기 — 맨 위로 · "즐겨찾기" 묶음 (이 브라우저에만 저장 · 작업 0089)
 import { currencyName } from "@hav/shared/currency";
-import { SIGNAL_TEXT, signalLabel } from "@hav/ui/data/signal-badge";
+import { SIGNAL_TEXT, signalLabel } from "@hav/ui/data/signal-pin";
 import { Input } from "@hav/ui/form/field";
 import Link from "next/link";
 import { CurrencyFlag } from "@hav/ui/data/currency-flag";

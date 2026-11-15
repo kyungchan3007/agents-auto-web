@@ -2,10 +2,7 @@
 
 // 가운데 패널 장면 ①~③ — 고정 패널(스크롤로 장면 바뀜) · 움직임 줄이기면 차례로 쌓음
 import { AnimatePresence, motion } from "motion/react";
-import type { Mood } from "@hav/ui/three/characters/worker-cat";
-import { WorkerCatLazy } from "@hav/ui/three/scene/lazy";
 import { LivePanel, type Mode } from "./live-panel";
-import { MOOD_TEXT } from "../lib/mood";
 import type { Activity } from "../hooks/use-activity";
 import { usePinnedScene } from "../hooks/use-pinned-scene";
 import { Title } from "@hav/ui/text/heading";
@@ -25,20 +22,9 @@ function Caption({ i, blocked }: { i: number; blocked: number }) {
   );
 }
 
-export type Props = { activity: Activity; names: Record<string, string>; blocked: number; mood: Mood };
+export type Props = { activity: Activity; names: Record<string, string>; blocked: number };
 
-/** 🐱 패널에 걸터앉은 작업 고양이 — 넓은 화면은 패널 오른쪽 옆 · 휴대폰은 패널 오른쪽 위 모서리 */
-function Buddy({ mood }: { mood: Mood }) {
-  return (
-    <WorkerCatLazy
-      mood={mood}
-      label={MOOD_TEXT[mood]}
-      className="pointer-events-none absolute -top-24 -right-2 z-10 size-28 sm:-top-32 sm:size-36 xl:top-auto xl:-right-56 xl:bottom-0 xl:size-56"
-    />
-  );
-}
-
-export function PinnedScenes({ activity, names, blocked, mood }: Props) {
+export function PinnedScenes({ activity, names, blocked }: Props) {
   const { ref, scale, opacity, scene } = usePinnedScene();
 
   // 장면 셋을 넘기는 스크롤 길이 — 휴대폰은 짧게 (330vh 면 같은 패널을 두 화면 넘게 밀어야 했음 · 작업 0111)
@@ -53,9 +39,7 @@ export function PinnedScenes({ activity, names, blocked, mood }: Props) {
             </motion.div>
           </AnimatePresence>
         </div>
-        {/* 고양이가 앉을 자리만큼 위를 비움 — 넓은 화면(xl)은 패널 옆이라 필요 없음 · 전엔 1,100px 안팎에서 설명 글을 가렸음 (작업 0062) */}
-        <motion.div style={{ scale, opacity }} className="relative mx-auto mt-12 w-full max-w-3xl sm:mt-20 xl:mt-0">
-          <Buddy mood={mood} />
+        <motion.div style={{ scale, opacity }} className="relative mx-auto mt-4 w-full max-w-3xl">
           <LivePanel activity={activity} names={names} mode={SCENES[scene].mode} />
         </motion.div>
         <SceneDots scene={scene} />
@@ -74,14 +58,13 @@ function SceneDots({ scene }: { scene: number }) {
   );
 }
 
-export function StackedScenes({ activity, names, blocked, mood }: Props) {
+export function StackedScenes({ activity, names, blocked }: Props) {
   return (
     <div data-surface="dark" className="space-y-24 bg-surface px-4 py-24 text-fg sm:px-8">
       {SCENES.map((s, i) => (
         <div key={s.mode} className="mx-auto max-w-3xl space-y-8">
           <Caption i={i} blocked={blocked} />
-          <div className={`relative ${i === 0 ? "mt-12 sm:mt-20 xl:mt-0" : ""}`}>
-            {i === 0 && <Buddy mood={mood} />}
+          <div className="relative">
             <LivePanel activity={activity} names={names} mode={s.mode} />
           </div>
         </div>

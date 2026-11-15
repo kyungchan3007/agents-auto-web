@@ -2,7 +2,7 @@
 import { currencyName, percentileText, rateText } from "@hav/shared/currency";
 import { Card } from "@hav/ui/layout/card";
 import { Section } from "@hav/ui/layout/section";
-import { SignalBadge } from "@hav/ui/data/signal-badge";
+import { SignalPin } from "@hav/ui/data/signal-pin";
 import { Tabs } from "@hav/ui/form/tabs";
 import Link from "next/link";
 import { CurrencyFlag as Flag } from "@hav/ui/data/currency-flag";
@@ -45,7 +45,7 @@ export function CurrenciesSection({ view }: { view: HomeView }) {
                         <span className="ml-1 text-base font-medium text-fg-2">{t.unit}</span>
                       </p>
                       <div className="mt-4 flex flex-wrap items-center gap-2">
-                        {s?.signal && <SignalBadge signal={s.signal} />}
+                        {s?.signal && <SignalPin signal={s.signal} />}
                         <span className="text-xs text-fg-2">{percentileText(s?.signal ?? null, s?.percentile ?? null, windowDays)}</span>
                       </div>
                       {m && (

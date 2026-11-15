@@ -5,7 +5,7 @@ import type { FxHistory, FxRate } from "@hav/shared/fx";
 import type { CurrencySignal } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES, countriesOf } from "@hav/shared/travel";
 import { LinkRow } from "@hav/ui/text/link-row";
-import { SignalBadge } from "@hav/ui/data/signal-badge";
+import { SignalPin } from "@hav/ui/data/signal-pin";
 import { CurrencyFlag } from "@hav/ui/data/currency-flag";
 import { DateText } from "@hav/ui/text/date-text";
 import { FreshnessNote } from "@hav/ui/feedback/freshness-note";
@@ -45,14 +45,14 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
         </span>
       </p>
       <FreshnessNote date={rate.date} className="mt-1" />
-      <h1 className="mt-3 text-[clamp(2.5rem,7vw,4.5rem)] leading-none font-bold tracking-tighter">
+      <h1 className="mt-3 font-display text-[clamp(2.5rem,7vw,4.5rem)] leading-none font-normal tracking-tighter tabular-nums">
         {/* 제목만 읽어도 어떤 통화인지 (작업 0114) — 화면에는 바로 위 줄에 통화명이 있음 */}
         <span className="sr-only">{name}({code}) 환율 </span>
-        <span className="text-aurora">{t.value}</span>
-        <span className="ml-2 text-title font-semibold text-fg">{t.unit}</span>
+        <span className="text-accent">{t.value}</span>
+        <span className="ml-2 text-title text-fg">{t.unit}</span>
       </h1>
       <div className="mt-5 flex flex-wrap items-center gap-3">
-        {s?.signal && <SignalBadge signal={s.signal} />}
+        {s?.signal && <SignalPin signal={s.signal} />}
         <span className="text-sm text-fg-2">
           {s ? percentileText(s.signal, s.percentile, s.rule.windowDays) : `신호를 받지 못했습니다 (${signal.ok ? "" : signal.reason})`} · 예측 아님
         </span>

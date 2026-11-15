@@ -1,5 +1,4 @@
 // 오늘 발견된 버그 · 보안 — 찾아서 고쳐 머지한 것만 셈 (작업 0122)
-import { CountUp } from "@hav/ui/motion/count-up";
 import type { todayPatchCounts } from "@hav/shared/tasks";
 import { Title } from "@hav/ui/text/heading";
 
@@ -23,8 +22,8 @@ export function TodayPatches({ counts }: { counts: ReturnType<typeof todayPatchC
 function Stat({ value, label }: { value: number; label: string }) {
   return (
     <div>
-      <p className="text-hero font-bold tracking-tighter">
-        <CountUp text={String(value)} className="text-aurora" />
+      <p className="font-display text-hero font-normal tracking-tighter tabular-nums">
+        <span className="text-accent">{value}</span>
       </p>
       <p className="mt-2 text-lead text-fg-2">{label}</p>
     </div>
