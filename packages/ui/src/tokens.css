@@ -96,6 +96,10 @@
   --hav-foam: #ffffff;
   /* 비쌈 도형 색 — 글자가 아닌 그래프 점 · 선 · 눈금 (글자는 --hav-expensive) */
   --hav-expensive-shape: #d9452b;
+  /* 바닥 띠 — 시안의 밝은 바다 청록 #17A398 바탕 · 글자는 짙은 남색 #0E1648 (대비 5.48 — #16246E 는 4.45 · 흰 글은 3.12 라 4.5 미달) · 어느 배경(밤 포스터 포함)에서도 같음 (작업 0170) */
+  --hav-band: #17a398;
+  --hav-on-band: #0e1648;
+
   /* 판정 핀 — 핀이 자기 바탕 · 글 색을 가져 어느 배경(하늘 종이 · 바다 띠 · 밤 포스터) 위에서도 같음 (흰 글 대비: 쌈 9.5 · 비쌈 5.4) */
   --hav-pin-cheap: #2438a8;
   --hav-pin-expensive: #c13a22;
@@ -121,6 +125,8 @@
   --color-sun: var(--hav-sun);
   --color-line: var(--hav-line);
   --color-foam: var(--hav-foam);
+  --color-band: var(--hav-band);
+  --color-on-band: var(--hav-on-band);
   --color-pin-cheap: var(--hav-pin-cheap);
   --color-pin-expensive: var(--hav-pin-expensive);
   --color-pin-ink: var(--hav-pin-ink);

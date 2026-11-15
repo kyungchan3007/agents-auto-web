@@ -1,9 +1,9 @@
 // 작은 제목 · 큰 제목 — 페이지 머리에 반복되는 글자 모양 (작업 0168 새 테마)
-//   큰 제목은 Gasoek One (포스터 글자 · 굵기 하나라 font-normal — 굵게 만들면 글꼴이 번져 보임) · 작은 제목은 바다 청록(accent) · 15px 보통 굵기 (Figma 라벨 · 작업 0170)
+//   큰 제목은 Gasoek One (포스터 글자 · 굵기 하나라 font-normal — 굵게 만들면 글꼴이 번져 보임) · 작은 제목은 바다 청록(accent) · 16px 보통 굵기 (Figma 라벨 · 작업 0170)
 import type { HTMLAttributes, ReactNode } from "react";
 
 export function Eyebrow({ className = "", children }: { className?: string; children: ReactNode }) {
-  return <p className={`text-[0.9375rem] font-normal text-accent ${className}`}>{children}</p>;
+  return <p className={`text-base font-normal text-accent ${className}`}>{children}</p>;
 }
 
 type TitleProps = HTMLAttributes<HTMLHeadingElement> & { as?: "h1" | "h2" | "h3" | "p"; size?: "section" | "poster" };
