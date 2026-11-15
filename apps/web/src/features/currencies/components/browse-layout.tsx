@@ -14,8 +14,9 @@ import { PageFooter } from "@hav/ui/layout/page-footer";
 export function BrowseLayout({ latest, signals, changes, children }: { latest: Fetched<FxLatest>; signals: Fetched<SignalList>; changes: Fetched<FxChanges>; children: ReactNode }) {
   const tones = Object.fromEntries((signals.ok ? signals.data.signals : []).map((s) => [s.currency, s.signal]));
   // 지난 1개월 변화 — 못 받으면 정렬 단추 · 숫자를 뺌 (작업 0099)
+  const percentile = Object.fromEntries((signals.ok ? signals.data.signals : []).map((s) => [s.currency, s.percentile]));
   const pct = Object.fromEntries((changes.ok ? changes.data.changes : []).map((c) => [c.currency, c.pct]));
-  const items = (latest.ok ? latest.data.rates : []).map((r) => ({ currency: r.currency, signal: tones[r.currency] ?? null, change: pct[r.currency] ?? null, unit: r.unit }));
+  const items = (latest.ok ? latest.data.rates : []).map((r) => ({ currency: r.currency, signal: tones[r.currency] ?? null, change: pct[r.currency] ?? null, percentile: percentile[r.currency] ?? null, unit: r.unit }));
   const windowDays = signals.ok ? signals.data.rule.windowDays : 90;
 
   return (
@@ -25,7 +26,7 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
         <div className="mx-auto max-w-6xl">
           <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-14">
             <div data-testid="currency-list" className="min-w-0 lg:sticky lg:top-(--hav-nav-h) lg:self-start">
-              <Eyebrow>둘러보기 · {items.length}개</Eyebrow>
+              <Eyebrow>둘러보기</Eyebrow>
               <div className="mt-4">
                 <CurrencyList items={items} />
               </div>
