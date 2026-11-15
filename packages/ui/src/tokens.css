@@ -10,6 +10,7 @@
  *
  * 대비는 contrast.test.ts 가 이 파일을 직접 읽어 검사한다 (본문 4.5) — 값을 바꾸면 게이트가 다시 잰다
  * 큰 숫자 색(--hav-figure → text-figure): 하늘 종이 위 울트라마린 · 바다 띠 · 칸 위 해 노랑 · 밤 포스터 해 노랑 (accent 는 작은 제목 · 링크 그대로 · text-number 는 크기 단계 이름이라 색 이름은 figure)
+ * 카드 바탕(--hav-card → bg-card): 하늘 종이 위 흰 카드 · 밤 포스터 · 바다 띠 위에서는 그 바탕보다 한 단계 밝은 칸 (흰 글자 · 남색 글자 모두 읽히게 · 작업 0170 시안 대조)
  * 판정 색: 쌈 = 울트라마린 · 비쌈 = 주홍 둘뿐 (한국 관례 파랑 · 빨강) · 해 노랑(accent 의 바다 띠 값)은 "가장 좋은 때" 강조에만
  * 비쌈 주홍: Figma 의 #D9452B 는 하늘 종이 위 글자 3.87 · 흰 글 핀 4.34 로 본문 기준 4.5 미달 → 글자 · 판정 핀은 진한 #C13A22 (흰 글 5.39), 그래프 점 · 선 같은 도형은 --hav-expensive-shape (#D9452B · 도형 대비 3 이상)
  */
@@ -19,6 +20,7 @@
 [data-surface="light"] {
   --hav-surface: #eaf4f2;
   --hav-surface-2: #e2efec;
+  --hav-card: #ffffff;
   --hav-fg: #16246e;
   --hav-fg-2: #4a5a8c;
   --hav-accent: #0a6b63;
@@ -34,6 +36,7 @@
 [data-surface="dark"] {
   --hav-surface: #2438a8;
   --hav-surface-2: #1b2c86;
+  --hav-card: #1b2c86;
   --hav-fg: #f4f9f8;
   --hav-fg-2: #c6d4f5;
   --hav-accent: #f7c548;
@@ -49,6 +52,7 @@
 [data-surface="elevated"] {
   --hav-surface: #1b2c86;
   --hav-surface-2: #142070;
+  --hav-card: #142070;
   --hav-fg: #f4f9f8;
   --hav-fg-2: #c6d4f5;
   --hav-accent: #f7c548;
@@ -65,6 +69,7 @@
   [data-surface="light"] {
     --hav-surface: #121c5c;
     --hav-surface-2: #1b2a7a;
+    --hav-card: #1b2a7a;
     --hav-fg: #eaf4f2;
     --hav-fg-2: #b4c6ee;
     --hav-accent: #5fd9cc;
@@ -103,6 +108,7 @@
 @theme inline {
   --color-surface: var(--hav-surface);
   --color-surface-2: var(--hav-surface-2);
+  --color-card: var(--hav-card);
   --color-fg: var(--hav-fg);
   --color-fg-2: var(--hav-fg-2);
   --color-accent: var(--hav-accent);
