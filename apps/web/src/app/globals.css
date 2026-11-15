@@ -1,13 +1,13 @@
 @import "tailwindcss";
-@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 @import "@hav/ui/tokens.css";
 
 /* 디자인 시스템 컴포넌트의 클래스도 Tailwind 가 찾게 */
 @source "../../../../packages/ui/src";
 
+/* 바탕은 토큰 (하늘 종이 · 어두운 화면 설정이면 밤 포스터) — 밝고 어두운 두 화면을 브라우저에 알림 */
 html {
-  background: #000;
-  color-scheme: dark;
+  background: var(--hav-surface);
+  color-scheme: light dark;
 }
 
 body {

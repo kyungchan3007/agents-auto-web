@@ -1,56 +1,98 @@
 /*
- * 디자인 토큰 — 원본은 이 파일 하나 (docs/design.md 결정을 값으로)
- * 섹션마다 data-surface="dark | elevated | light" 로 배경을 고르면 글자 · 포인트 · 신호 색이 함께 바뀐다
- * 대비는 contrast.test.ts 가 이 파일을 직접 읽어 검사한다 — 값을 바꾸면 게이트가 다시 잰다
+ * 디자인 토큰 — 원본은 이 파일 하나 (docs/design.md 결정을 값으로) · 작업 0168 새 테마 "하늘 종이 · 바다 띠 · 밤 포스터" (빈티지 항공 포스터)
+ * 영역마다 data-surface 속성으로 바탕을 고르면 글자 · 포인트 · 판정 색이 함께 바뀐다 — 화면 코드는 bg-surface · text-fg · text-cheap 같은 이름만 씀
+ * 이름은 예전 그대로이고 뜻이 어긋나는 것만 아래 표에 적음 (이름까지 새로 바꾸면 모든 화면 코드를 고쳐야 해서 값만 교체)
+ *
+ *   data-surface 값   새 테마에서의 뜻                                    쓰는 곳
+ *   light             하늘 종이 (페이지 기본 바탕 · 밤에는 밤 포스터)       모든 페이지 바탕 · 메뉴
+ *   dark              바다 띠 (울트라마린)                                 3D 지구 자리 · 큰 숫자 띠
+ *   elevated          바다 띠 안의 칸 (한 단계 짙은 울트라마린)             바다 띠 안의 칸
+ *
+ * 대비는 contrast.test.ts 가 이 파일을 직접 읽어 검사한다 (본문 4.5) — 값을 바꾸면 게이트가 다시 잰다
+ * 판정 색: 쌈 = 울트라마린 · 비쌈 = 주홍 둘뿐 (한국 관례 파랑 · 빨강) · 해 노랑(accent 의 바다 띠 값)은 "가장 좋은 때" 강조에만
+ * 비쌈 주홍: Figma 의 #D9452B 는 하늘 종이 위 글자 3.87 · 흰 글 핀 4.34 로 본문 기준 4.5 미달 → 글자 · 판정 핀은 진한 #C13A22 (흰 글 5.39), 그래프 점 · 선 같은 도형은 --hav-expensive-shape (#D9452B · 도형 대비 3 이상)
  */
 
+/* 하늘 종이 — 페이지 기본 바탕 */
 :root,
-[data-surface="dark"] {
-  --hav-surface: #000000;
-  --hav-surface-2: #1d1d1f;
-  --hav-fg: #f5f5f7;
-  --hav-fg-2: #86868b;
-  --hav-accent: #4ff0e0;
-  --hav-on-accent: #000000;
-  --hav-aurora-1: #4ff0e0;
-  --hav-aurora-2: #9c8cff;
-  --hav-aurora-3: #ff8ad8;
-  --hav-cheap: #4c9bff;
-  --hav-normal: #c7c7cc;
-  --hav-expensive: #ff5a5f;
-  --hav-line: #424245;
-}
-
-[data-surface="elevated"] {
-  --hav-surface: #1d1d1f;
-  --hav-surface-2: #2c2c2e;
-  --hav-fg: #f5f5f7;
-  --hav-fg-2: #a1a1a6;
-  --hav-accent: #4ff0e0;
-  --hav-on-accent: #000000;
-  --hav-aurora-1: #4ff0e0;
-  --hav-aurora-2: #9c8cff;
-  --hav-aurora-3: #ff8ad8;
-  --hav-cheap: #4c9bff;
-  --hav-normal: #c7c7cc;
-  --hav-expensive: #ff5a5f;
-  --hav-line: #48484a;
-}
-
 [data-surface="light"] {
-  --hav-surface: #f5f5f7;
-  --hav-surface-2: #ffffff;
-  --hav-fg: #1d1d1f;
-  --hav-fg-2: #6e6e73;
-  --hav-accent: #08756b;
+  --hav-surface: #eaf4f2;
+  --hav-surface-2: #e2efec;
+  --hav-fg: #16246e;
+  --hav-fg-2: #4a5a8c;
+  --hav-accent: #0a6b63;
   --hav-on-accent: #ffffff;
-  --hav-aurora-1: #08756b;
-  --hav-aurora-2: #6d58e0;
-  --hav-aurora-3: #b8327f;
-  --hav-cheap: #1f63d6;
-  --hav-normal: #6e6e73;
-  --hav-expensive: #d7263d;
-  --hav-line: #d2d2d7;
+  --hav-cheap: #2438a8;
+  --hav-normal: #4a5a8c;
+  --hav-expensive: #c13a22;
+  --hav-line: #b9cdd6;
+}
+
+/* 바다 띠 — 울트라마린 바탕 · 글자는 종이색 · 해 노랑 포인트 */
+[data-surface="dark"] {
+  --hav-surface: #2438a8;
+  --hav-surface-2: #1b2c86;
+  --hav-fg: #f4f9f8;
+  --hav-fg-2: #c6d4f5;
+  --hav-accent: #f7c548;
+  --hav-on-accent: #16246e;
+  --hav-cheap: #9dc0ff;
+  --hav-normal: #d3def7;
+  --hav-expensive: #ff9c86;
+  --hav-line: #5568c4;
+}
+
+/* 바다 띠 안의 칸 — 바다 띠보다 한 단계 짙음 */
+[data-surface="elevated"] {
+  --hav-surface: #1b2c86;
+  --hav-surface-2: #142070;
+  --hav-fg: #f4f9f8;
+  --hav-fg-2: #c6d4f5;
+  --hav-accent: #f7c548;
+  --hav-on-accent: #16246e;
+  --hav-cheap: #9dc0ff;
+  --hav-normal: #d3def7;
+  --hav-expensive: #ff9c86;
+  --hav-line: #4558b4;
+}
+
+/* 밤 포스터 — 어두운 화면 설정이면 하늘 종이 자리가 짙은 울트라마린 바탕 · 종이색 글자 (바다 띠 · 칸은 그대로라 밤 바탕과 구분됨) */
+@media (prefers-color-scheme: dark) {
+  [data-surface="light"] {
+    --hav-surface: #121c5c;
+    --hav-surface-2: #1b2a7a;
+    --hav-fg: #eaf4f2;
+    --hav-fg-2: #b4c6ee;
+    --hav-accent: #5fd9cc;
+    --hav-on-accent: #0e1648;
+    --hav-cheap: #9dc0ff;
+    --hav-normal: #c2cfef;
+    --hav-expensive: #ff9c86;
+    --hav-line: #34479a;
+  }
+}
+
+/* 3D 전용 고정 색 — 어느 배경 · 밤 포스터에서도 값이 같음 (R7: 지구 · 비행기는 생김새 그대로 · 새 테마가 바뀌어도 지구 호 · 점 색이 따라 바뀌지 않음) */
+:root {
+  --hav-3d-arc: #4ff0e0;
+  --hav-3d-aurora-1: #4ff0e0;
+  --hav-3d-aurora-2: #9c8cff;
+  --hav-3d-aurora-3: #ff8ad8;
+  --hav-3d-cheap: #4c9bff;
+  --hav-3d-normal: #c7c7cc;
+  --hav-3d-expensive: #ff5a5f;
+
+  /* 흰 거품 — 띠 위 글자 · 표 바탕 · 판정 핀(보통) 바탕 */
+  --hav-foam: #ffffff;
+  /* 비쌈 도형 색 — 글자가 아닌 그래프 점 · 선 · 눈금 (글자는 --hav-expensive) */
+  --hav-expensive-shape: #d9452b;
+  /* 판정 핀 — 핀이 자기 바탕 · 글 색을 가져 어느 배경(하늘 종이 · 바다 띠 · 밤 포스터) 위에서도 같음 (흰 글 대비: 쌈 9.5 · 비쌈 5.4) */
+  --hav-pin-cheap: #2438a8;
+  --hav-pin-expensive: #c13a22;
+  --hav-pin-ink: #16246e;
+  --hav-pin-line: #4a5a8c;
+  /* 해 노랑 도형 — 하늘 종이 위에서는 글자로 쓰지 않음 (대비 부족) · 가장 싼 달 점 · 도장 바탕 */
+  --hav-sun: #f7c548;
 }
 
 @theme inline {
@@ -60,74 +102,64 @@
   --color-fg-2: var(--hav-fg-2);
   --color-accent: var(--hav-accent);
   --color-on-accent: var(--hav-on-accent);
-  --color-aurora-1: var(--hav-aurora-1);
-  --color-aurora-2: var(--hav-aurora-2);
-  --color-aurora-3: var(--hav-aurora-3);
   --color-cheap: var(--hav-cheap);
   --color-normal: var(--hav-normal);
   --color-expensive: var(--hav-expensive);
+  --color-expensive-shape: var(--hav-expensive-shape);
+  --color-sun: var(--hav-sun);
   --color-line: var(--hav-line);
+  --color-foam: var(--hav-foam);
+  --color-pin-cheap: var(--hav-pin-cheap);
+  --color-pin-expensive: var(--hav-pin-expensive);
+  --color-pin-ink: var(--hav-pin-ink);
+  --color-pin-line: var(--hav-pin-line);
 }
 
 @theme {
-  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  /* 글꼴 변수는 layout.tsx 의 next/font 가 단다 (빌드 때 받아 자체 호스팅 · 런타임 외부 요청 없음) — 뒤쪽은 변수가 없을 때 대체 */
+  --font-sans: var(--font-ibm-plex-sans-kr), "IBM Plex Sans KR", -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-display: var(--font-gasoek-one), "Gasoek One", "IBM Plex Sans KR", -apple-system, system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   /* 실시간 기록 · 터미널 느낌 — 글꼴 파일을 더 받지 않고 기기 글꼴만 */
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "D2Coding", monospace;
 
-  /* 참고 페이지 실측: 큰 제목 40~48px · 소제목 21px (docs/design.md) */
-  --text-hero: clamp(3rem, 9vw, 7.5rem);
-  --text-hero--line-height: 1.02;
-  --text-title: clamp(2.25rem, 5vw, 3rem);
-  --text-title--line-height: 1.1;
+  /* 크기 단계 — Figma 텍스트 스타일 (모바일은 clamp 로 줄임 · 홈 모바일 제목 약 48) */
+  --text-poster: clamp(3rem, 9vw, 6rem); /* 포스터 큰 제목 Gasoek One 96/102 */
+  --text-poster--line-height: 1.0625;
+  --text-section: clamp(2rem, 5vw, 3rem); /* 구간 제목 Gasoek One 48/54 */
+  --text-section--line-height: 1.125;
+  --text-city: 2.125rem; /* 도시 이름 Gasoek One 34/36 */
+  --text-city--line-height: 1.0588;
+  --text-body: 1rem; /* 설명 IBM Plex Sans KR 16/26 */
+  --text-body--line-height: 1.625;
+  --text-number: 1.625rem; /* 강조 숫자 SemiBold 26/32 */
+  --text-number--line-height: 1.2308;
+  --text-small: 0.8125rem; /* 작은 글 13/20 */
+  --text-small--line-height: 1.5385;
+
+  /* 예전 이름 — 같은 단계로 이어 붙임 (화면 코드가 text-hero · text-title 을 아직 씀) */
+  --text-hero: var(--text-poster);
+  --text-hero--line-height: 1.0625;
+  --text-title: var(--text-section);
+  --text-title--line-height: 1.125;
   --text-eyebrow: 1.3125rem;
   --text-eyebrow--line-height: 1.2;
   --text-lead: 1.3125rem;
   --text-lead--line-height: 1.5;
 
-  --radius-card: 1.75rem;
-  --radius-field: 0.875rem; /* 입력 칸 · 고르는 줄 — 카드만큼 둥글면 곡선 테두리가 흐려 보였음 (작업 0067) */
-  --radius-pill: 980px;
+  --radius-card: 0.5rem;
+  --radius-field: 0.5rem; /* 입력 칸 · 고르는 줄 */
+  --radius-pill: 999px; /* 판정 핀 (둥근 알약) */
 
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* 오로라 그라데이션 — 큰 숫자 · 큰 제목에만 (작은 글자에 쓰지 않음) */
-@utility text-aurora {
-  background-image: linear-gradient(90deg, var(--hav-aurora-1), var(--hav-aurora-2), var(--hav-aurora-3));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* 떠오름 (Reveal) — CSS 만 · 처음 그릴 때 바로 보이기 시작 (작업 0060) */
-@keyframes hav-rise {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-}
-.hav-reveal {
-  animation: hav-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-@supports (animation-timeline: view()) {
-  .hav-reveal {
-    animation-timeline: view();
-    animation-range: entry 0% entry 35%;
-  }
-}
-
-/* 고정 상단 메뉴의 실제 높이 — nav-bar.tsx 와 같은 값 (고정 · 앵커 위치가 메뉴에 가려지지 않게 쓰는 곳은 이 변수만 봄 · 작업 0164)
- * 휴대폰: 이름 줄 3rem + 메뉴 줄 2rem = 5rem · 390px 아래(메뉴 7개가 한 줄에 안 들어감)는 메뉴 두 줄 3.5rem 을 더해 6.5rem · sm 이상 한 줄 3.25rem */
+/* 고정 상단 메뉴의 실제 높이 — nav-bar.tsx 와 같은 값 (고정 · 앵커 위치가 메뉴에 가려지지 않게 쓰는 곳은 이 변수만 봄)
+ * 한 줄 기준: 휴대폰은 로고 + 메뉴 버튼 한 줄이고 메뉴는 아래로 펼쳐져 높이를 바꾸지 않음 */
 :root {
-  --hav-nav-h: 5rem;
-}
-@media (max-width: 389.98px) {
-  :root {
-    --hav-nav-h: 6.5rem;
-  }
+  --hav-nav-h: 3.5rem;
 }
 @media (min-width: 40rem) {
   :root {
-    --hav-nav-h: 3.25rem;
+    --hav-nav-h: 3.75rem;
   }
 }
