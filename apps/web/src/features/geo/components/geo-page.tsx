@@ -13,7 +13,7 @@ export function GeoPage({ build }: { build: Fetched<Report> }) {
       <main className="bg-surface px-4 pt-14 pb-10 text-fg sm:px-8 sm:pt-[3.3rem]">
         <div className="mx-auto max-w-page">
           <Eyebrow>GEO 측정</Eyebrow>
-          <Title as="h1" size="page" className="mt-3.5 mb-[22px] max-w-[42rem] text-cheap">
+          <Title as="h1" size="page" className="mt-3.5 mb-[22px] text-cheap">
             AI 검색에서 이 사이트가 어떻게 쓰이는지 잽니다
           </Title>
           <GeoReport build={build} />
