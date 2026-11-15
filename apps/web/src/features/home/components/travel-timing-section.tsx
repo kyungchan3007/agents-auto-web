@@ -3,6 +3,7 @@
 import { PLANE_MODEL_URL } from "@hav/shared/travel";
 import { PlaneRouteLazy } from "@hav/ui/three/scene/lazy";
 import { PhotoHeader } from "@hav/ui/layout/photo-header";
+import { EmphText } from "@hav/ui/text/emph";
 import { Eyebrow, Title } from "@hav/ui/text/heading";
 import { type TravelTiming, travelTimingCopy } from "../lib/travel-timing";
 
@@ -37,7 +38,7 @@ export function TravelTimingSection({ timing }: { timing: TravelTiming }) {
         {timing.kind === "ready" ? (
           <>
             <Title as="h1" size="poster" id="timing-title" className="mt-3 text-cheap">
-              {copy.title}
+              <EmphText text={copy.title ?? ""} />
             </Title>
             <p className="mt-6 max-w-[36em] text-body text-fg-2">{copy.message}</p>
           </>
