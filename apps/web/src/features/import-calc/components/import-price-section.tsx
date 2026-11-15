@@ -12,9 +12,9 @@ const fmt = (n: number) => numberText(n, { maximumFractionDigits: 1 });
 export function ImportPriceSection({ fxRows, price }: { fxRows: FxDay[] | null; price: MonthPoint[] | null }) {
   const v = importPriceView(fxRows, price);
   return (
-    <section className="mt-16" aria-labelledby="import-price-title">
-      <h2 id="import-price-title" className="text-title font-semibold tracking-tight">
-        환율과 수입물가
+    <section data-testid="import-price-section" className="min-w-0" aria-labelledby="import-price-title">
+      <h2 id="import-price-title" className="font-display text-city font-normal tracking-tight">
+        수입물가와 환율
       </h2>
       <p className="mt-2 text-sm text-fg-2">환율이 오르면 수입품 가격도 따라 오르는 경향이 있습니다. 원/달러 월평균과 수입물가지수를 같은 달끼리 겹쳐 놓았습니다.</p>
       <div className="mt-6">
@@ -24,7 +24,7 @@ export function ImportPriceSection({ fxRows, price }: { fxRows: FxDay[] | null; 
           <Chart rows={v.rows} />
         )}
       </div>
-      <p className="mt-4 text-xs text-fg-2">출처: 한국은행 ECOS 에서 제공된 정보 (수입물가지수 · 총지수 · 원화기준 · 2020년 = 100) · 원/달러는 수출입은행 월평균 · 발표가 늦어 최근 달은 비어 있을 수 있습니다</p>
+      <p className="mt-4 text-small text-fg-2">출처: 한국은행 ECOS 에서 제공된 정보 (수입물가지수 · 총지수 · 원화기준 · 2020년 = 100) · 원/달러는 수출입은행 월평균 · 발표가 늦어 최근 달은 비어 있을 수 있습니다</p>
     </section>
   );
 }

@@ -4,18 +4,26 @@
 import { currencyName } from "@hav/shared/currency";
 import type { FxRate } from "@hav/shared/fx";
 import { Input, Select, UnitInput } from "@hav/ui/form/field";
+import { Title } from "@hav/ui/text/heading";
 import type { ReactNode } from "react";
 import { CalcResult } from "./calc-result";
 import { DUTY_FREE_USD, ROUTE_LABEL, RULES_SOURCE, type Route } from "../lib/rules";
 import type { CustomsRate } from "../lib/customs-rate";
+import { calcHeadline } from "../lib/calc-copy";
 import { useCalcForm } from "../hooks/use-calc-form";
 
 export function CalcForm({ rates, customs }: { rates: FxRate[]; customs: Record<string, CustomsRate> }) {
   const { codes, input, result, rate, source, set, err } = useCalcForm(rates, customs);
 
+  // 큰 문장 — 입력으로 결과를 한 문장으로 ("세금 없이 받습니다" / "관세 · 부가세 약 ○원이 붙습니다") · 작업 0170
+  const tone = !result || !result.ok ? "text-fg-2" : result.over ? "text-expensive" : "text-cheap";
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-12">
-      <form className="grid content-start gap-5" onSubmit={(e) => e.preventDefault()} aria-label="직구 계산 입력">
+    <>
+      <Title as="h1" className={`mt-3 ${tone}`}>
+        {calcHeadline(result, input)}
+      </Title>
+      <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-14">
+      <form data-testid="calc-input" className="grid content-start gap-5" onSubmit={(e) => e.preventDefault()} aria-label="직구 계산 입력">
         <Field label="통화" htmlFor="currency">
           <Select id="currency" value={input.currency} onChange={set("currency")}>
             {codes.map((c) => (
@@ -49,7 +57,8 @@ export function CalcForm({ rates, customs }: { rates: FxRate[]; customs: Record<
       </form>
 
       <CalcResult result={result} rate={rate} source={source} dutyRate={input.dutyRate} />
-    </div>
+      </div>
+    </>
   );
 }
 

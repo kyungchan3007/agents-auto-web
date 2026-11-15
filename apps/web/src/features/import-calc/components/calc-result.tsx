@@ -12,7 +12,7 @@ const usd = (n: number) => numberText(n, { maximumFractionDigits: 2 });
 
 export function CalcResult({ result: r, rate, source, dutyRate }: { result: Result | null; rate: FxRate | undefined; source?: RateSource; dutyRate: string }) {
   return (
-    <div className="border-t-2 border-cheap pt-6 sm:pt-8" aria-live="polite">
+    <div data-testid="calc-result" className="border-t-2 border-cheap pt-6 sm:pt-8" aria-live="polite">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="text-sm text-fg-2">원화로</p>
@@ -41,7 +41,7 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
             )}
           </p>
           {r.tax && (
-            <dl className="mt-6 grid gap-2 border-t border-line pt-5 text-sm">
+            <dl className="mt-6 grid gap-2 pt-1 text-sm">
               <Row k="과세 가격 (물건 값 + 국제 배송비)" v={r.tax.taxableKrw} />
               <Row k={`관세 (${dutyRate || "?"}%)`} v={r.tax.duty} />
               <Row k="부가세 10% ((과세 가격 + 관세) × 10%)" v={r.tax.vat} />
@@ -52,7 +52,7 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
         </>
       )}
 
-      <ul className="mt-8 space-y-1 border-t border-line pt-5 text-xs text-fg-2">
+      <ul className="mt-8 space-y-1 text-small text-fg-2">
         <li>
           예상 금액입니다. 실제 세액은 관세청 과세환율 · 품목 분류로 정해집니다 · 개별소비세 등 다른 세금 · 같은 날 여러 건 합산은 빼고 계산
         </li>
