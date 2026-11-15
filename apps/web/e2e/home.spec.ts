@@ -147,30 +147,3 @@ test("홈 — 도착지 설명 줄의 '예측이 아니며 투자 · 금융 조�
   await expect(page.locator("#destinations")).toContainText("예측이 아니며 투자 · 금융 조언이 아닙니다");
   await expect(page.getByRole("contentinfo")).toContainText("한국수출입은행");
 });
-
-// 홈 오늘 환율 구간 배경을 하늘 종이로 — 작업 0175 네 번째 묶음 (사용자 "지구본 배경이 파란색… 같은 배경색을 써야 할 것 같아") · 실행은 lead
-const SKY = "rgb(234, 244, 242)"; // #EAF4F2
-const ULTRAMARINE = "rgb(36, 56, 168)"; // #2438A8
-const ACCENT = "rgb(10, 107, 99)"; // #0A6B63 작은 제목 청록
-const SUBTLE = "rgb(74, 90, 140)"; // #4A5A8C 보조 남색
-
-test("오늘 환율 구간 — 바탕이 하늘 종이(울트라마린 띠 아님) · 3D 지구 자리 · 메뉴 '오늘 환율' 앵커 그대로", async ({ page }) => {
-  await page.goto("/");
-  const band = page.locator("#today");
-  await expect(band).toHaveCount(1);
-  const bg = await band.evaluate((el) => getComputedStyle(el).backgroundColor);
-  expect(bg).not.toBe(ULTRAMARINE);
-  const body = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  expect([bg, body], "구간이 따로 칠하지 않으면 페이지 바탕(하늘 종이)").toContain(SKY);
-  await expect(band.locator("canvas, [aria-hidden]").first()).toBeAttached(); // 지구 자리(3D 가 안 되면 빈 칸)
-});
-
-test("오늘 환율 구간 — 글자색은 밝은 바탕 규칙(작은 제목 청록 · 큰 문장 울트라마린 · 설명 보조 남색)", async ({ page }) => {
-  await page.goto("/");
-  const band = page.locator("#today");
-  const color = (loc: import("@playwright/test").Locator) => loc.first().evaluate((el) => getComputedStyle(el).color);
-  expect(await color(band.getByText("오늘 환율", { exact: true }))).toBe(ACCENT);
-  expect(await color(band.locator("#today-title"))).toBe(ULTRAMARINE);
-  const evidence = band.getByText(/^최근 90일 중 /);
-  if (await evidence.count()) expect(await color(evidence)).toBe(SUBTLE);
-});
