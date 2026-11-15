@@ -75,20 +75,18 @@ describe("메뉴 바 — 모바일 메뉴 버튼 (aria-expanded)", () => {
   });
 });
 
-describe("글꼴 — next/font 로 Gasoek One · IBM Plex Sans KR (R3)", () => {
+describe("글꼴 — next/font 로 IBM Plex Sans KR (R3 · 작업 0176: 큰 제목은 Pretendard 800 으로 바뀜 — font-pretendard.test.ts)", () => {
   const layout = read(join(WEB_SRC, "app/layout.tsx"));
 
   it("next/font/google 에서 두 글꼴을 불러옴 · 굵기 400 / 400·600 · CSS 변수 옵션", () => {
     expect(layout).toMatch(/from\s*"next\/font\/google"/);
-    expect(layout).toMatch(/\bGasoek_One\b/);
     expect(layout).toMatch(/\bIBM_Plex_Sans_KR\b/);
-    expect(layout).toMatch(/Gasoek_One\(\{[^}]*weight:\s*"400"/);
     expect(layout).toMatch(/IBM_Plex_Sans_KR\(\{[^}]*weight:\s*\[\s*"400"\s*,\s*"600"(\s*,\s*"700")?\s*\]/); // 700 은 작업 0173 글꼴 정리 (font-readability.test.ts 가 검사)
-    expect(layout.match(/variable:\s*"--font-[a-z0-9-]+"/g)?.length).toBeGreaterThanOrEqual(2);
+    expect(layout.match(/variable:\s*"--font-[a-z0-9-]+"/g)?.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("<html> 에 두 변수 클래스 · 기본 배경 light(하늘 종이) · 주소창 색 하늘 종이", () => {
-    expect(layout).toMatch(/<html[\s\S]*?className=\{[\s\S]*?\.variable[\s\S]*?\.variable[\s\S]*?>/);
+  it("<html> 에 글꼴 변수 클래스 · 기본 배경 light(하늘 종이) · 주소창 색 하늘 종이", () => {
+    expect(layout).toMatch(/<html[\s\S]*?className=\{[\s\S]*?\.variable[\s\S]*?>/);
     expect(layout).toMatch(/<html[^>]*data-surface="light"/);
     expect(layout).not.toMatch(/data-surface="dark"/);
     expect(layout.toLowerCase()).toContain("#eaf4f2");
@@ -145,7 +143,7 @@ describe("장식을 걷어 냄 (R9) — 등장 효과 · 오로라 글자 · 그
 describe("문서 — docs/design.md 결정 요약 (R10)", () => {
   const doc = read(join(ROOT, "docs/design.md"));
   it("새 결정(색 · 글꼴 · 3D 유지 · 고양이/동전 제거)이 적혀 있음", () => {
-    expect(doc).toContain("Gasoek One");
+    expect(doc).toContain("Pretendard"); // 큰 제목 · 큰 숫자 (작업 0176 · 예전 Gasoek One 결정은 font-pretendard.test.ts 가 '예전 줄에만' 검사)
     expect(doc).toContain("IBM Plex Sans KR");
     expect(doc.toLowerCase()).toContain("#eaf4f2");
     // 밤 포스터는 작업 0173 에서 없앰 — 문서 결정은 light-only.test.ts 가 검사

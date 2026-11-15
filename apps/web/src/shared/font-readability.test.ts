@@ -49,13 +49,13 @@ describe("font-display(Gasoek One)는 허용 목록 파일에서만 (F1)", () =>
     for (const f of ALLOWED) expect(existsSync(join(ROOT, f)), f).toBe(true);
   });
 
-  it("큰 제목 · 큰 숫자 · 로고는 그대로 Gasoek — heading(Title) · big-number · nav-bar", () => {
-    for (const f of ["components/text/heading.tsx", "components/text/big-number.tsx", "components/layout/nav-bar.tsx"]) expect(read(join(UI_SRC, f)), f).toMatch(/\bfont-display\b/);
+  it("큰 제목 · 큰 숫자는 font-display(작업 0176: Pretendard 800) — heading(Title) · big-number (로고는 글꼴을 따로 고를 수 있어 여기서 안 봄)", () => {
+    for (const f of ["components/text/heading.tsx", "components/text/big-number.tsx"]) expect(read(join(UI_SRC, f)), f).toMatch(/\bfont-display\b/);
   });
 
-  it("글꼴 변수는 그대로 — tokens.css 가 --font-display(Gasoek One) · --font-sans(IBM Plex Sans KR) 를 정의", () => {
+  it("글꼴 변수는 그대로 — tokens.css 가 --font-display(작업 0176: Pretendard) · --font-sans(IBM Plex Sans KR) 를 정의", () => {
     const css = readFileSync(join(UI_SRC, "tokens.css"), "utf8");
-    expect(css).toMatch(/--font-display\s*:[^;]*Gasoek One/);
+    expect(css).toMatch(/--font-display\s*:[^;]*Pretendard/);
     expect(css).toMatch(/--font-sans\s*:[^;]*IBM Plex Sans KR/);
   });
 });
@@ -73,7 +73,7 @@ describe("구간 제목 · 카드 제목 부품 — IBM Plex 굵게 (F2 · F3)",
     expect(s).not.toMatch(/\bfont-display\b/);
   });
 
-  it("Title(맨 위 큰 제목)은 Gasoek 그대로", () => {
+  it("Title(맨 위 큰 제목)은 font-display 유지 (작업 0176: Pretendard 800)", () => {
     expect(slice("Title")).toMatch(/\bfont-display\b/);
   });
 
@@ -121,8 +121,7 @@ describe("구간 · 카드 · 단계 제목 · 역할 이름 · 도시 이름은
 describe("글꼴 불러오기 — IBM Plex Sans KR 700 (F2)", () => {
   const layout = read(join(WEB_SRC, "app/layout.tsx"));
 
-  it("굵기 400 · 600 · 700 을 next/font 로 함께 불러옴 · Gasoek One 은 400 하나 그대로", () => {
+  it("굵기 400 · 600 · 700 을 next/font 로 함께 불러옴 (Gasoek One 은 작업 0176 에서 큰 제목을 떠나 로고에만 · 불러오는지는 font-pretendard.test.ts 가 검사)", () => {
     expect(layout).toMatch(/IBM_Plex_Sans_KR\(\{[^}]*weight:\s*\[\s*"400"\s*,\s*"600"\s*,\s*"700"\s*\]/);
-    expect(layout).toMatch(/Gasoek_One\(\{[^}]*weight:\s*"400"/);
   });
 });

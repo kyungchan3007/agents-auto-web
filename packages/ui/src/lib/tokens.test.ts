@@ -109,8 +109,9 @@ describe("큰 숫자 색 (0169)", () => {
 });
 
 describe("글꼴", () => {
-  it("--font-display 에 Gasoek One · --font-sans 에 IBM Plex Sans KR (Pretendard 가 아님)", () => {
-    expect(defs("--font-display")[0]).toContain("Gasoek One");
+  it("--font-display 는 Pretendard(작업 0176 · 큰 제목 · 큰 숫자 800) · --font-sans 는 IBM Plex Sans KR (본문 — Pretendard 가 아님)", () => {
+    expect(defs("--font-display")[0]).toContain("Pretendard");
+    expect(defs("--font-display")[0]).not.toContain("Gasoek");
     expect(defs("--font-sans")[0]).toContain("IBM Plex Sans KR");
     expect(defs("--font-sans")[0].indexOf("Pretendard")).toBe(-1);
   });
