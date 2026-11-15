@@ -25,6 +25,11 @@ test.describe("통화 /currencies/USD (SR-CUR-01)", () => {
     for (const label of ["1년 최저", "1년 최고", "1년 평균"]) await expect(detail).toContainText(label);
   });
 
+  test("기준일 · 출처 한 줄은 통화 상세에 그대로 (홈에서는 뺌 · 작업 0174)", async ({ page }) => {
+    await page.goto("/currencies/USD");
+    await expect(tid(page, "currency-detail")).toContainText(/\d{4}-\d{2}-\d{2} (한국수출입은행|Frankfurter)/);
+  });
+
   test("판정 핀은 쌈 · 보통 · 비쌈 글자와 함께 (색만으로 전하지 않음)", async ({ page }) => {
     await page.goto("/currencies/USD");
     await expect(tid(page, "currency-detail")).toContainText(/쌈|보통|비쌈|신호/);
