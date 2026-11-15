@@ -66,7 +66,7 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
       </dl>
 
       <div className="mt-8">
-        {history.ok ? <PeriodChart rates={days} unitText={t.unit} lastTone={s?.signal ?? null} /> : <p className="py-6 text-sm text-fg-2">1년 기록을 받지 못했습니다 ({history.reason})</p>}
+        {history.ok ? <PeriodChart rates={days} unit={rate.unit} unitText={t.unit} lastTone={s?.signal ?? null} /> : <p className="py-6 text-sm text-fg-2">1년 기록을 받지 못했습니다 ({history.reason})</p>}
       </div>
 
       <div className="mt-8">
