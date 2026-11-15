@@ -42,9 +42,9 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear }: P
                       <Link href={`/currencies/${r.currency}`} aria-label={`${r.name} 통화 상세`} className="shrink-0">
                         <SignalPin signal={signal} percentile={percentileOf[r.currency] ?? null} />
                       </Link>
-                    ) : r.currency ? (
-                      <span className="shrink-0 text-small text-fg-2">{r.currency in signalOf ? "신호 없음" : "환율 없음"}</span>
-                    ) : null}
+                    ) : (
+                      <span className="shrink-0 text-small text-fg-2">{r.currency && r.currency in signalOf ? "신호 없음" : "환율 없음"}</span>
+                    )}
                   </li>
                 );
               })}
