@@ -2,6 +2,7 @@
 // 환율 기준 · 출처는 "적용 환율" 줄에 · 숫자는 계산 결과만 (받지 못하면 빈 값 · 이유) · 도장은 면세 한도 안일 때만 (넘으면 숫자 아래 줄이 알림)
 import { numberText } from "@hav/shared/format";
 import type { FxRate } from "@hav/shared/fx";
+import { Stamp } from "@hav/ui/data/stamp";
 import { SOURCE_NAME } from "@hav/shared/currency";
 import type { CalcResult as Result } from "../lib/calc";
 import type { RateSource } from "../lib/customs-rate";
@@ -13,9 +14,7 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
   return (
     <div data-testid="calc-result" className="rounded-card bg-pin-cheap px-6 py-6 text-foam" aria-live="polite">
       {r?.ok && !r.over && (
-        <span role="status" className="inline-block -rotate-3 rounded-pill border-2 border-sun px-5 py-2 text-[1.125rem] font-semibold text-sun">
-          면세 한도 안 (${r.limitUsd})
-        </span>
+        <Stamp>면세 한도 안 (${r.limitUsd})</Stamp>
       )}
       {r?.ok && r.over && <p className="text-[1.125rem] font-semibold text-sun">면세 한도 ${r.limitUsd} 넘음 · 세금 붙음</p>}
       <p className={`font-display text-[clamp(2.25rem,6vw,3.5rem)] leading-tight font-normal tracking-tight text-sun tabular-nums ${r?.ok ? "mt-6" : ""}`}>
