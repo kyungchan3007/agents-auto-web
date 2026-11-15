@@ -1,0 +1,162 @@
+// 작업 0177 — 홈 첫 화면 출발 안내판 배치 (소스 검사) (테스트 먼저 · 구현 전에는 FAIL 이 정상)
+// 사용자 "출발 안내판 C안 사진에 걸치기로 가자" — 울트라마린 전체 띠(today-band) 삭제 → 판에만 울트라마린 · 사진에 반쯤 걸침 · 지구는 하늘 종이 위(배경 없이)
+//
+// builder 가 할 것 (prd B1~B9 · sdd)
+//   features/home/components/today-board.tsx — export function TodayBoard({ rates, signals, windowDays, problem }) (today-band.tsx 는 지움)
+//     <section id="today" aria-labelledby="today-title"> (data-surface · bg-surface 없음) 안에: 작은 제목(h2 id="today-title" · BOARD_TITLE) · <FlapBoard rows cols label/> · 판정 한 줄(evidence) · <GlobeLazy …지금과 같은 props/>
+//     자료는 lib/today-board.ts 의 todayBoard({ found: cheapestDestination(…), hasRates, windowDays, problem }) 가 만든 값 그대로 (today-board.test.ts)
+//     사진에 걸치기: 판 묶음에 음수 위 여백(-mt-…) · travel-timing-section 의 PhotoHeader 에 fadeBottom(사진 아래 끝이 하늘 종이로 사라짐 — photo-header.tsx 가 data-testid="photo-fade-bottom" 막을 그림)
+//     지구: 판 오른쪽(lg 이상 두 칸 격자 · 판이 먼저) · 모바일은 판 아래 작게(≤ 280px) · 지구 뒤에 배경 · 띠 · data-surface 없음
+//   features/home/components/home.tsx — TodayBand 대신 TodayBoard
+//   packages/ui three/objects/*.tsx · three/scene/*.tsx — 건드리지 않음 (지구 · 비행기 생김새 그대로)
+import { createHash } from "node:crypto";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { join, resolve } from "node:path";
+import { describe, expect, it } from "vitest";
+
+const WEB_SRC = resolve(__dirname, ".."); // apps/web/src
+const UI_SRC = resolve(WEB_SRC, "../../../packages/ui/src");
+const codeOf = (src: string) => src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+const read = (p: string) => codeOf(readFileSync(p, "utf8"));
+function sources(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((d) => {
+    const p = join(dir, d.name);
+    if (d.isDirectory()) return sources(p);
+    return /\.tsx?$/.test(d.name) && !/\.test\.tsx?$/.test(d.name) ? [p] : [];
+  });
+}
+const HOME_COMPONENTS = sources(join(WEB_SRC, "features/home/components"));
+const board = () => read(join(WEB_SRC, "features/home/components/today-board.tsx"));
+const sectionTag = (s: string) => /<section\b[^>]*id="today"[^>]*>|<section\b[^>]*>(?=[^<]*)/.exec(s.match(/<section\b[^>]*id="today"[^>]*>/)?.[0] ?? "")?.[0] ?? "";
+
+describe("울트라마린 전체 띠 없음 (B1)", () => {
+  it("today-band.tsx 가 없고 홈이 TodayBoard 를 씀 (TodayBand 이름이 홈 코드에 없음)", () => {
+    expect(existsSync(join(WEB_SRC, "features/home/components/today-band.tsx"))).toBe(false);
+    expect(existsSync(join(WEB_SRC, "features/home/components/today-board.tsx"))).toBe(true);
+    const home = read(join(WEB_SRC, "features/home/components/home.tsx"));
+    expect(home).toMatch(/\bTodayBoard\b/);
+    for (const f of HOME_COMPONENTS) expect(read(f), f).not.toMatch(/\bTodayBand\b|today-band/);
+  });
+
+  it("id=\"today\" 가 한 번 · 그 구간에 data-surface · bg-surface · 울트라마린 바탕(bg-cheap · bg-[#2438A8])이 없음", () => {
+    const ui = HOME_COMPONENTS.map(read).join("\n");
+    expect(ui.match(/id="today"/g)?.length).toBe(1);
+    const tag = board().match(/<section\b[^>]*id="today"[^>]*>/)?.[0] ?? "";
+    expect(tag, "id=today 구간").not.toBe("");
+    expect(tag).not.toMatch(/data-surface=/);
+    expect(tag).not.toMatch(/\bbg-(surface|cheap|ink|\[#)/);
+  });
+
+  it("홈 화면 코드에 data-surface=\"dark\" · \"elevated\"(전체 띠)가 없음 — 울트라마린은 판(FlapBoard)에만", () => {
+    for (const f of HOME_COMPONENTS) expect(read(f), f).not.toMatch(/data-surface="(dark|elevated)"/);
+    expect(board()).not.toMatch(/\bbg-cheap\b|\bbg-\[#2438a8\]/i);
+  });
+});
+
+describe("구성 — 작은 제목 · 판 · 판정 한 줄 · 지구 (B3 · B4 · B6 · B7)", () => {
+  it("자료는 todayBoard · cheapestDestination 에서 — 판 부품에 rows · cols · label 을 넘김", () => {
+    const s = board();
+    expect(s).toMatch(/from\s*"@hav\/ui\/data\/flap-board"/);
+    expect(s).toMatch(/\btodayBoard\(/);
+    expect(s).toMatch(/\bcheapestDestination\(/);
+    const tag = /<FlapBoard\b[^>]*>/.exec(s)?.[0] ?? "";
+    expect(tag, "<FlapBoard …>").not.toBe("");
+    expect(tag).toMatch(/\brows=/);
+    expect(tag).toMatch(/\bcols=/);
+    expect(tag).toMatch(/\blabel=/);
+  });
+
+  it("작은 제목(h2 · id=today-title · BOARD_TITLE) · 구간이 그 제목으로 이름 붙음 (aria-labelledby) · 판정 한 줄(evidence)을 그림", () => {
+    const s = board();
+    expect(s).toMatch(/aria-labelledby="today-title"/);
+    expect(s).toMatch(/<h2\b[^>]*id="today-title"|<SectionTitle\b[^>]*id="today-title"|<Eyebrow\b[^>]*id="today-title"/);
+    expect(s).toMatch(/\bBOARD_TITLE\b|\.title\b/);
+    expect(s).toMatch(/\.evidence\b|\bevidence\b/);
+  });
+
+  it("글 · 숫자를 코드에 박지 않음 — 예시 숫자(912 · 833 · 1,234.56) · '예측이 아닙니다' · FreshnessNote 없음", () => {
+    const s = [board(), read(join(WEB_SRC, "features/home/lib/today-board.ts"))].join("\n");
+    expect(s).not.toMatch(/\b912\b|\b833\b|1,234\.56|1,486|1,382/);
+    expect(s).not.toMatch(/예측이 아닙니다|평일 12시|\bFreshnessNote\b/);
+  });
+
+  it("수출입은행 값이 없어 예비 출처(Frankfurter)를 쓸 때의 안내는 지금처럼 남음 (지어내지 않음 · 출처 숨기지 않음)", () => {
+    expect(board()).toMatch(/frankfurter/);
+    expect(board()).toMatch(/예비 출처/);
+  });
+});
+
+describe("사진에 걸치기 (B2)", () => {
+  it("판 묶음에 음수 위 여백(-mt-)이 있음 — 위쪽 절반이 사진 구간으로 올라감", () => {
+    expect(board()).toMatch(/-mt-\d+|-mt-\[[^\]]+\]/);
+  });
+
+  it("PhotoHeader 가 fadeBottom 을 받아 아래 끝에 하늘 종이로 사라지는 막(data-testid=photo-fade-bottom)을 그림 — 기본은 막 없음", () => {
+    const ph = read(join(UI_SRC, "components/layout/photo-header.tsx"));
+    expect(ph).toMatch(/\bfadeBottom\b/);
+    const m = /<[^>]*data-testid="photo-fade-bottom"[^>]*>/.exec(ph)?.[0] ?? "";
+    expect(m, "아래 끝 막").not.toBe("");
+    expect(m).toMatch(/aria-hidden/);
+    expect(m).toMatch(/bottom-0/);
+    expect(m).toMatch(/to-surface|from-transparent|via-surface/); // 하늘 종이색으로 끝남
+    expect(ph).toMatch(/fadeBottom\s*&&|fadeBottom\s*\?/); // 켰을 때만
+  });
+
+  it("홈 맨 위 사진 구간(travel-timing-section)이 fadeBottom 을 켬 · 다른 화면의 PhotoHeader 는 그대로", () => {
+    expect(read(join(WEB_SRC, "features/home/components/travel-timing-section.tsx"))).toMatch(/<PhotoHeader\b[^>]*\bfadeBottom\b/);
+  });
+});
+
+describe("지구 · 비행기 생김새 그대로 · 자리만 옮김 (B8)", () => {
+  // 0177 시작 때(0176 위) 파일의 sha256 — 지구 · 비행기 · 비행기 길 · 장면 코드를 건드리지 않음
+  const HASH: Record<string, string> = {
+    "three/objects/globe.tsx": "324c908f62821b2beade51600082c39602497c4e819d59fc6e1a78cb65c80c29",
+    "three/objects/plane.tsx": "3078d67e7503b99c822ef40b46d9c663938be6529cdcf13719574b7ad464ea8a",
+    "three/objects/plane-route.tsx": "5ba9463304d795d2" , // 앞 16자만 비교 (아래)
+    "three/scene/lazy.tsx": "d3150df7bce08f46",
+    "three/scene/stage.tsx": "1cee7f2529c4a122",
+  };
+  for (const [file, expected] of Object.entries(HASH)) {
+    it(`${file} 가 그대로`, () => {
+      const sha = createHash("sha256").update(readFileSync(join(UI_SRC, file))).digest("hex");
+      expect(sha.startsWith(expected)).toBe(true);
+    });
+  }
+
+  it("지구는 지금과 같은 props(origin · texture · arcs 호 색 = 통화 신호)로 그림", () => {
+    const s = board();
+    const tag = /<GlobeLazy\b[\s\S]*?\/>/.exec(s)?.[0] ?? "";
+    expect(tag, "<GlobeLazy />").not.toBe("");
+    expect(tag).toMatch(/origin=\{SEOUL\}/);
+    expect(tag).toMatch(/texture=\{EARTH_TEXTURE\}/);
+    expect(tag).toMatch(/arcs=\{/);
+    expect(tag).toMatch(/\.signal\b/);
+  });
+
+  it("데스크톱은 판 오른쪽(lg: 두 칸 격자 · 판이 DOM 에서 먼저) · 모바일은 판 아래 작게(size ≤ 280px)", () => {
+    const s = board();
+    expect(s).toMatch(/lg:grid-cols-/);
+    expect(s.indexOf("<FlapBoard")).toBeGreaterThan(-1);
+    expect(s.indexOf("<FlapBoard")).toBeLessThan(s.indexOf("<GlobeLazy"));
+    const cls = /<GlobeLazy\b[\s\S]*?className="([^"]*)"/.exec(s)?.[1] ?? "";
+    const base = /(?:^|\s)size-\[(\d+)px\]/.exec(cls)?.[1];
+    expect(base, "모바일(기본) 지구 크기").toBeDefined();
+    expect(Number(base)).toBeLessThanOrEqual(280);
+  });
+
+  it("지구 뒤에 파란 원판 · 띠 · 배경이 없음 — GlobeLazy 와 그 감싸는 줄에 bg-/data-surface/rounded-full 이 없음", () => {
+    const s = board();
+    const tag = /<GlobeLazy\b[\s\S]*?\/>/.exec(s)?.[0] ?? "";
+    expect(tag).not.toMatch(/\bbg-|data-surface|rounded-full/);
+    const before = s.slice(0, s.indexOf("<GlobeLazy")).split("\n").slice(-2).join("\n");
+    expect(before).not.toMatch(/\bbg-|data-surface/);
+  });
+});
+
+describe("글꼴 · 색 규칙 유지 (B9)", () => {
+  it("밝은 화면만 — prefers-color-scheme · dark: 변형이 판 · 홈 구간에 없음", () => {
+    for (const f of [...HOME_COMPONENTS, join(UI_SRC, "components/data/flap-board.tsx")]) {
+      expect(read(f), f).not.toMatch(/prefers-color-scheme|\bdark:/);
+    }
+  });
+});
