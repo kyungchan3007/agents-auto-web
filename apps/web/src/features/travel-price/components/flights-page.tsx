@@ -24,7 +24,7 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
     <>
       <SiteNav page="flights" />
       <main className="bg-surface px-4 pt-14 pb-20 text-fg sm:px-8 sm:pt-20 sm:pb-28">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-page">
           <Eyebrow>여행 타이밍</Eyebrow>
           <Title as="h1" size="poster" className="mt-3 text-cheap">
             {headline}
@@ -61,7 +61,7 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
           )}
         </div>
       </main>
-      <PageFooter width="max-w-6xl" className="space-y-1">
+      <PageFooter width="max-w-page" className="space-y-1">
         <p>자료: 통계청 KOSIS 소비자물가지수(국제항공료 · 해외단체여행비, 매달 최근 24개월) · 한국수출입은행</p>
         <p>
           {PLANE_CREDIT.text} ·{" "}
