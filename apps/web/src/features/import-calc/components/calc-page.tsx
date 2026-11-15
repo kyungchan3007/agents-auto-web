@@ -34,7 +34,8 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
           </Title>
           <p className="mt-6 max-w-[36em] text-body">물건 값을 넣으면 면세 한도 안인지 바로 알려 드립니다.</p>
         </PhotoHeader>
-        <div className="mx-auto max-w-page px-4 pt-6 pb-10 sm:px-8">
+        <div className="px-4 pt-6 pb-10 sm:px-8">
+        <div className="mx-auto max-w-page">
           {hasRates ? (
             <CalcForm form={form} />
           ) : (
@@ -44,6 +45,7 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
             <CustomsSection points={trend} bank={latest.ok ? latest.data.rates.find((r) => r.currency === "USD") : undefined} />
             <ImportPriceSection fxRows={usdDays} price={importPrice} />
           </div>
+        </div>
         </div>
       </main>
       <PageFooter width="max-w-page">자료: 관세청 과세환율 · 한국은행 ECOS 수입물가지수 · 한국수출입은행 · 면세 한도 관세법 기준</PageFooter>
