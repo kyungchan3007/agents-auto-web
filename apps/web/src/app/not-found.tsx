@@ -11,7 +11,7 @@ export default function NotFound() {
   return (
     <>
       <SiteNav page="home" />
-      <main data-surface="dark" className="bg-surface px-4 py-32 text-fg sm:px-8">
+      <main className="bg-surface px-4 py-32 text-fg sm:px-8">
         <div className="mx-auto max-w-5xl">
           <Eyebrow>404</Eyebrow>
           <Title as="h1" className="mt-3">
