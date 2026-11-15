@@ -50,11 +50,9 @@ describe("/flights — 새 페이지", () => {
     expect(page).toMatch(/description:/);
   });
 
-  it("여행 품목 영역(TravelIndexSection)을 /flights 쪽에서 씀 · SiteNav page=\"flights\"", () => {
-    const files = [...tsx("app/flights"), ...tsx("features/travel-price/components")].filter((f) => !f.endsWith("travel-index-section.tsx") && !f.endsWith("price-page.tsx"));
-    const text = files.map(read).join("\n");
-    expect(text).toMatch(/TravelIndexSection/);
-    expect(text).toMatch(/page="flights"/);
+  it("/flights 쪽 화면이 SiteNav page=\"flights\" 를 씀 (여행 품목 영역 구성은 0170 의 pages-redesign.test.ts 가 검사)", () => {
+    const files = [...tsx("app/flights"), ...tsx("features/travel-price/components")].filter((f) => !f.endsWith("price-page.tsx"));
+    expect(files.map(read).join("\n")).toMatch(/page="flights"/);
   });
 });
 
