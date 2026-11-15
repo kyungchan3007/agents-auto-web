@@ -131,3 +131,19 @@ test("글꼴 — 구간 제목(도착지별 환전 타이밍) · 도시 이름�
     expect(Number(s.weight)).toBeGreaterThanOrEqual(700);
   }
 });
+
+// 홈 바다 띠 문구 정리 — 작업 0174: "예측이 아닙니다 · 평일 12시" · "주말에는 고시가 없어 …" 줄이 없음 (실행은 lead)
+test("오늘 환율 띠 — '예측이 아닙니다' · '평일 12시' · 주말 고시 줄이 없고 판정 한 줄은 있음 (작업 0174)", async ({ page }) => {
+  await page.goto("/");
+  const band = page.locator("#today");
+  await expect(band).not.toContainText("예측이 아닙니다");
+  await expect(band).not.toContainText("평일 12시");
+  await expect(band).not.toContainText(/주말에는 고시가 없어|값 반영이 늦어지고|낮 12시경 나옵니다/);
+  if (await band.getByText(/이번 주 가장 싸게 갈 수 있는 곳은/).count()) await expect(band).toContainText(/최근 90일 중 /);
+});
+
+test("홈 — 도착지 설명 줄의 '예측이 아니며 투자 · 금융 조언이 아닙니다' · 바닥 띠의 출처는 남음 (작업 0174)", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("#destinations")).toContainText("예측이 아니며 투자 · 금융 조언이 아닙니다");
+  await expect(page.getByRole("contentinfo")).toContainText("한국수출입은행");
+});
