@@ -23,12 +23,9 @@ export const metadata: Metadata = {
   verification: { google: "R0iWKilXNc-qRD85sm-ZvPjOdQOBP_GYUn-0hBPZAsY", other: { "msvalidate.01": "80D88D51D528F03400697BF62BD604BF" } },
 };
 
-// 휴대폰 주소창 색 — 사이트 바탕과 같게: 밝은 화면은 하늘 종이 · 어두운 화면 설정이면 밤 포스터(짙은 울트라마린)
+// 휴대폰 주소창 색 — 사이트 바탕(하늘 종이) 한 값 · 밝은 화면 하나만 (작업 0173)
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#EAF4F2" },
-    { media: "(prefers-color-scheme: dark)", color: "#121C5C" },
-  ],
+  themeColor: "#EAF4F2",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

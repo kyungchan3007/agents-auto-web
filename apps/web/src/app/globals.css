@@ -4,10 +4,10 @@
 /* 디자인 시스템 컴포넌트의 클래스도 Tailwind 가 찾게 */
 @source "../../../../packages/ui/src";
 
-/* 바탕은 토큰 (하늘 종이 · 어두운 화면 설정이면 밤 포스터) — 밝고 어두운 두 화면을 브라우저에 알림 */
+/* 바탕은 토큰 (하늘 종이 하나) */
 html {
   background: var(--hav-surface);
-  color-scheme: light dark;
+  color-scheme: light; /* 밝은 화면 하나만 — 기기가 어두운 화면 설정이어도 기본 컨트롤 · 스크롤바까지 밝게 (작업 0173) */
 }
 
 body {
