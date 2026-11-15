@@ -35,6 +35,11 @@
 - docs/design.md
 
 ## 계획 밖 변경 이유
+- packages/ui/src/components/data/signal-pin.tsx · year-chart.tsx: props 를 더함(`text` · `average` · `lastTone` — 없으면 예전 모양이라 0168/0169 호출은 그대로) — 작년 대비 핀 글 · 통화 그래프 평균 점선 · 오늘 점 판정 색 (파일 계획의 packages/ui/src/components/** 안)
+- apps/web/src/features/log/hooks/use-pinned-scene.ts 삭제 · scenes.tsx 의 PinnedScenes 삭제: 스크롤로 장면이 바뀌는 고정 패널과 바다 띠를 걷고 쌓은 장면만 (Figma 06 에 없음 · P10)
+- features/travel-price/components/travel-index-section.tsx 삭제: /flights 가 새 그래프 · 카드로 바뀌어 안 쓰게 됨
+- 작업실 상태판의 "자동 검사 (main)" · "열린 작업" 칸은 API 가 주지 않는 값이라 GitHub 로 연결만 하고 숫자를 만들지 않음 (값을 받으려면 상태 API 에 항목을 더하는 별도 작업 필요)
+- 팀 책상의 "지금: …"은 역할별 현재 작업을 주는 자료가 없어 넣지 않음 (team.test.ts 의 "지금:" 상수 금지와 같은 뜻)
 
 ## 위험
 - 화면이 많아 e2e · 반응형 테스트 문구가 여럿 바뀜 → test 가 함께 맞춤.
