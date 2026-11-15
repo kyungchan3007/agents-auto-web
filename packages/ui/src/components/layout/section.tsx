@@ -5,7 +5,7 @@ export type Surface = "dark" | "elevated" | "light";
 
 /** 이야기 섹션 — 작은 소제목 → 큰 제목 → 회색 본문 (참고 페이지 패턴) */
 export function Section({
-  surface = "dark",
+  surface = "light",
   eyebrow,
   title,
   children,
