@@ -9,6 +9,13 @@
 - 크기(--text-section · --text-city 등) · 색 · 배치는 그대로. 굵기만 700(작은 칸은 600).
 - IBM Plex Sans KR 700 굵기를 next/font 로 함께 불러온다 (지금 400 · 600 → 400 · 600 · 700). `layout.tsx` 는 보호 파일이 아님.
 
+### 밝은 화면 하나만 (추가 요청)
+- `packages/ui/src/tokens.css` 의 `@media (prefers-color-scheme: dark)` 블록 삭제 · `:root { color-scheme: light }`
+- 3D(비행기 몸체 색 · 배경판 등)가 `data-surface` 로 밝은 · 어두운 바탕을 고르는 분기는 시안의 어두운 띠 위에서 쓰는 경우만 남기고, 기기 다크 모드에 반응하는 부분은 지움
+- `layout.tsx` 의 `viewport.themeColor` 를 하늘 종이 하나로 (media 배열 제거)
+- 0168 의 밤 포스터 대비 · 토큰 테스트는 삭제 · 밝은 화면 고정 검사로 바꿈 (test)
+- 커밋 순서: (글꼴 단계들) → 테스트 먼저(밝은 화면 고정) → 토큰 · layout → 3D 분기 → 문서
+
 ## 대안
 - 화면마다 클래스를 바꾸기: 빠르지만 다음 화면에서 다시 섞임 → 공통 부품으로.
 - Gasoek One 을 더 가는 글꼴로 바꾸기: 사용자가 고른 안(A)이 아님.
