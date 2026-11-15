@@ -1,5 +1,6 @@
 // 수입물가 영역 — 원/달러 월평균과 한국은행 수입물가지수(원화기준 · 2020=100)를 한 차트에 (작업 0165)
 //   두 값의 단위가 달라 "처음 같은 달 = 100" 으로 맞춰 겹쳐 그림 · 숫자는 아래 표로도 (색 · 그림만으로 전하지 않음) · 자료가 없으면 "준비 중"
+import { SectionTitle } from "@hav/ui/text/heading";
 import { type FxDay, type MonthPoint, importPriceView } from "../lib/import-price";
 
 const W = 600;
@@ -10,9 +11,9 @@ export function ImportPriceSection({ fxRows, price }: { fxRows: FxDay[] | null; 
   const v = importPriceView(fxRows, price);
   return (
     <section data-testid="import-price-section" className="min-w-0 rounded-card bg-card px-6 py-6" aria-labelledby="import-price-title">
-      <h2 id="import-price-title" className="font-display text-[1.625rem] leading-tight font-normal text-cheap">
+      <SectionTitle id="import-price-title" className="text-[1.625rem] leading-tight text-cheap">
         수입물가와 환율
-      </h2>
+      </SectionTitle>
       <p className="mt-2 text-body text-fg-2">환율이 오르면 수입물가도 따라 오릅니다 (한국은행)</p>
       {v.kind === "preparing" ? <p className="mt-2 text-body text-fg-2">준비 중 — 수입물가지수를 아직 받지 못했습니다</p> : <Chart rows={v.rows} />}
     </section>
