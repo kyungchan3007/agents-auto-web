@@ -27,7 +27,7 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
       <main className="bg-surface px-4 pt-14 pb-20 text-fg sm:px-8 sm:pt-20 sm:pb-28">
         <div className="mx-auto max-w-page">
           <Eyebrow>여행 물가</Eyebrow>
-          <Title as="h1" size="poster" className="mt-3 text-cheap">
+          <Title as="h1" size="page" className="mt-3 text-cheap">
             {headline ? headline.title : "여행 물가 자료를 받지 못했습니다"}
           </Title>
           <p className="mt-6 max-w-3xl text-body text-fg-2">

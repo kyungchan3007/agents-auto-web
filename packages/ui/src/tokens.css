@@ -155,6 +155,9 @@
   --text-small--line-height: 1.5385;
 
   /* 예전 이름 — 같은 단계로 이어 붙임 (화면 코드가 text-hero · text-title 을 아직 씀) */
+  --text-page: clamp(2.25rem, 4.5vw, 3.5rem); /* 하위 화면 큰 제목 Gasoek One 56/75 (시안 실측 · 홈 첫 제목만 poster 96) — 작업 0170 */
+  --text-page--line-height: 1.34;
+
   --text-hero: var(--text-poster);
   --text-hero--line-height: 1.0625;
   --text-title: var(--text-section);

@@ -24,7 +24,7 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
             <CalcForm rates={latest.data.rates} customs={customs} />
           ) : (
             <>
-              <Title as="h1" className="mt-3 text-fg-2">
+              <Title as="h1" size="page" className="mt-3 text-fg-2">
                 환율을 받지 못했습니다
               </Title>
               <div className="mt-10">

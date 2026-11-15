@@ -26,7 +26,7 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
       <main className="bg-surface px-4 pt-14 pb-20 text-fg sm:px-8 sm:pt-20 sm:pb-28">
         <div className="mx-auto max-w-page">
           <Eyebrow>여행 타이밍</Eyebrow>
-          <Title as="h1" size="poster" className="mt-3 text-cheap">
+          <Title as="h1" size="page" className="mt-3 text-cheap">
             {headline}
           </Title>
           {ready ? (

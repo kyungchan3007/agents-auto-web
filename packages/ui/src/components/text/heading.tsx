@@ -6,11 +6,11 @@ export function Eyebrow({ className = "", children }: { className?: string; chil
   return <p className={`text-base font-normal text-accent ${className}`}>{children}</p>;
 }
 
-type TitleProps = HTMLAttributes<HTMLHeadingElement> & { as?: "h1" | "h2" | "h3" | "p"; size?: "section" | "poster" };
+type TitleProps = HTMLAttributes<HTMLHeadingElement> & { as?: "h1" | "h2" | "h3" | "p"; size?: "section" | "poster" | "page" };
 
-/** size: section(구간 제목 48) · poster(포스터 큰 제목 96 · 모바일 약 48) */
+/** size: section(구간 제목 48) · poster(홈 첫 제목 96 · 모바일 약 48) · page(하위 화면 큰 제목 56 · 줄 간격 75) */
 export function Title({ as: Tag = "h2", size = "section", className = "", ...rest }: TitleProps) {
-  return <Tag className={`font-display font-normal tracking-tight ${size === "poster" ? "text-poster" : "text-title"} ${className}`} {...rest} />;
+  return <Tag className={`font-display font-normal tracking-tight ${size === "poster" ? "text-poster" : size === "page" ? "text-page" : "text-title"} ${className}`} {...rest} />;
 }
 
 /** 페이지 안 작은 구역 제목 */
