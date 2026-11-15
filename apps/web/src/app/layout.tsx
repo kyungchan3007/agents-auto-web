@@ -8,7 +8,7 @@ import "./globals.css";
 // 글꼴 — 큰 제목 · 큰 숫자 Gasoek One · 본문 IBM Plex Sans KR (400 · 600) · 빌드 때 받아 자체 호스팅 (런타임 외부 요청 없음 · next.config 변경 없음 · 작업 0168)
 //   CSS 변수는 tokens.css 의 --font-display · --font-sans 가 읽음 · 한글 조각은 글자가 쓰일 때만 받음 (unicode-range)
 const display = Gasoek_One({ weight: "400", subsets: ["latin"], variable: "--font-gasoek-one", display: "swap" });
-const sans = IBM_Plex_Sans_KR({ weight: ["400", "600"], subsets: ["latin"], variable: "--font-ibm-plex-sans-kr", display: "swap" });
+const sans = IBM_Plex_Sans_KR({ weight: ["400", "600", "700"], subsets: ["latin"], variable: "--font-ibm-plex-sans-kr", display: "swap" });
 
 // 공유 미리보기 — 이미지는 app/opengraph-image.tsx · 페이지마다 제목 · 설명은 각 page 의 metadata (작업 0076)
 export const metadata: Metadata = {
