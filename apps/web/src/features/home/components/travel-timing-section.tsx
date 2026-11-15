@@ -33,7 +33,9 @@ export function TravelTimingSection({ timing }: { timing: TravelTiming }) {
   const copy = travelTimingCopy(timing);
   return (
     <section aria-labelledby="timing-title" className="bg-surface text-fg">
-      <PhotoHeader name="window-fjord" alt="비행기 창밖으로 보이는 피오르" veil="light" priority>
+      <PhotoHeader name="window-fjord" alt="비행기 창밖으로 보이는 피오르" veil="light" priority fadeBottom>
+        {/* 아래 여백 — 오늘 환율 안내판의 위쪽 절반이 이 사진 구간으로 올라와 걸침 (작업 0177) */}
+        <div className="pb-16 sm:pb-24">
         <Eyebrow>여행 타이밍</Eyebrow>
         {timing.kind === "ready" ? (
           <>
@@ -47,14 +49,8 @@ export function TravelTimingSection({ timing }: { timing: TravelTiming }) {
             {copy.message}
           </Title>
         )}
-      </PhotoHeader>
-      {timing.kind === "ready" && (
-        <div className="px-4 pb-16 sm:px-8 sm:pb-24">
-          <div className="mx-auto max-w-page">
-            <Graph timing={timing} />
-          </div>
         </div>
-      )}
+      </PhotoHeader>
     </section>
   );
 }
@@ -117,5 +113,19 @@ function PointLabel({ x, y, text, className, below = false }: { x: number; y: nu
     >
       {text}
     </span>
+  );
+}
+
+/** 안내판 아래 선 그래프 + 3D 비행기 — 지수가 없으면 아무것도 그리지 않음 (작업 0177: 안내판이 사진에 걸치도록 그래프를 사진 구간에서 떼어 냄) */
+export function TravelTimingGraph({ timing }: { timing: TravelTiming }) {
+  if (timing.kind !== "ready") return null;
+  return (
+    <section aria-label="국제항공료 지수 선 그래프" className="bg-surface text-fg">
+      <div className="px-4 pb-16 sm:px-8 sm:pb-24">
+        <div className="mx-auto max-w-page">
+          <Graph timing={timing} />
+        </div>
+      </div>
+    </section>
   );
 }
