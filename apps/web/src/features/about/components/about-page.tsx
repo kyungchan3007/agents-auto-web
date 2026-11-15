@@ -22,7 +22,7 @@ export function AboutPage({ signals, duty }: { signals: Fetched<SignalList>; dut
       <main className="bg-surface px-4 pt-14 pb-20 text-fg sm:px-8 sm:pt-20 sm:pb-28">
         <div className="mx-auto max-w-page">
           <Eyebrow>소개</Eyebrow>
-          <Title as="h1" size="poster" className="mt-3 text-cheap">
+          <Title as="h1" size="page" className="mt-3 text-cheap">
             어떤 자료를, 어떤 기준으로 보여 주나요
           </Title>
           <p className="mt-6 max-w-3xl text-body text-fg-2">tripfx 는 여행과 해외 직구를 앞둔 사람이 환율 · 여행지 물가 · 직구 세금을 한곳에서 확인하는 사이트입니다. 로그인 없이 쓸 수 있습니다.</p>

@@ -14,7 +14,7 @@ export default function NotFound() {
       <main className="bg-surface px-4 py-32 text-fg sm:px-8">
         <div className="mx-auto max-w-page">
           <Eyebrow>404</Eyebrow>
-          <Title as="h1" className="mt-3">
+          <Title as="h1" size="page" className="mt-3">
             찾는 페이지가
             <br />
             없습니다.

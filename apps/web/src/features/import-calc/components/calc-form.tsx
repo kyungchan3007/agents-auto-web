@@ -19,7 +19,7 @@ export function CalcForm({ rates, customs }: { rates: FxRate[]; customs: Record<
   const tone = !result || !result.ok ? "text-fg-2" : result.over ? "text-expensive" : "text-cheap";
   return (
     <>
-      <Title as="h1" className={`mt-3 ${tone}`}>
+      <Title as="h1" size="page" className={`mt-3 ${tone}`}>
         {calcHeadline(result, input)}
       </Title>
       <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-14">
