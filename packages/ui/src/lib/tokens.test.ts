@@ -1,7 +1,7 @@
 // 작업 0168 — tokens.css 의 나머지 약속: 3D 전용 고정 토큰 · 크기 단계 · 글꼴 · 흰 거품 · 걷어 낸 장식 (테스트 먼저 · 구현 전에는 FAIL 이 정상)
 //
 // builder 가 정할 이름 (이 테스트가 읽음) — packages/ui/src/tokens.css
-//   3D 전용 (어느 배경 · 밤 포스터에서도 값이 같음 · R7 "지구 · 비행기 생김새 그대로"):
+//   3D 전용 (어느 배경에서도 값이 같음 · R7 "지구 · 비행기 생김새 그대로"):
 //     --hav-3d-arc: #4ff0e0 · --hav-3d-aurora-1: #4ff0e0 · --hav-3d-aurora-2: #9c8cff · --hav-3d-aurora-3: #ff8ad8
 //     --hav-3d-cheap: #4c9bff · --hav-3d-normal: #c7c7cc · --hav-3d-expensive: #ff5a5f   // 지구 점(toneColor)이 읽던 지금 값 (stage.tsx toneColor 가 읽음) — sdd 에는 arc · aurora 만 있고 이것은 R7 을 지키려고 test 가 더한 이름
 //   흰 거품: --hav-foam: #ffffff (+ @theme inline 의 --color-foam)
@@ -89,6 +89,16 @@ describe("크기 단계 — Figma 텍스트 스타일 그대로", () => {
     expect(min).toBeLessThanOrEqual(56);
     expect(max).toBe(96);
     expect(defs("--text-poster")[0]).toMatch(/^clamp\(/);
+  });
+});
+
+describe("밝은 화면 하나 (작업 0173)", () => {
+  it("어두운 화면 설정에 반응하는 블록이 없음 (@media prefers-color-scheme)", () => {
+    expect(CSS).not.toMatch(/prefers-color-scheme/);
+  });
+
+  it(":root 가 color-scheme: light 를 알림 (브라우저 기본 컨트롤 · 스크롤바도 밝게)", () => {
+    expect(CSS).toMatch(/:root[^{]*\{[^}]*color-scheme\s*:\s*light\s*;/);
   });
 });
 

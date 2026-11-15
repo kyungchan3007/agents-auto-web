@@ -139,11 +139,11 @@ describe("장식을 걷어 냄 (R9) — 등장 효과 · 오로라 글자 · 그
 
 describe("문서 — docs/design.md 결정 요약 (R10)", () => {
   const doc = read(join(ROOT, "docs/design.md"));
-  it("새 결정(색 · 글꼴 · 밤 포스터 · 3D 유지 · 고양이/동전 제거)이 적혀 있음", () => {
+  it("새 결정(색 · 글꼴 · 3D 유지 · 고양이/동전 제거)이 적혀 있음", () => {
     expect(doc).toContain("Gasoek One");
     expect(doc).toContain("IBM Plex Sans KR");
     expect(doc.toLowerCase()).toContain("#eaf4f2");
-    expect(doc).toContain("밤 포스터");
+    // 밤 포스터는 작업 0173 에서 없앰 — 문서 결정은 light-only.test.ts 가 검사
     expect(doc).toMatch(/고양이/);
     expect(doc).toMatch(/바뀐 결정/);
   });
