@@ -48,6 +48,11 @@
 - apps/web/e2e-responsive/**
 
 ## 계획 밖 변경 이유
+- packages/shared/src/domain/travel.ts: `monthlyAverages` · `MonthPoint` · `PLANE_MODEL_URL` · `PLANE_CREDIT` 를 여기로 — 홈과 /flights 가 같은 계산 · 출처를 쓰는데 기능 폴더끼리 직접 가져올 수 없어서 (파일 계획의 packages/shared/src/domain/** 안) · travel-price/lib/travel-index.ts · plane-model.ts 는 같은 이름으로 다시 내보냄
+- packages/ui/src/three/objects/plane.tsx: 모델 복제 · 크기 · 몸체 색 곱하기를 `usePlaneObject` 로 꺼내고 `usePlaneTheme` · `RoomLight` 를 내보냄 — 경로 비행기(plane-route.tsx)가 같은 모델 · 재질 · 조명을 쓰게 (생김새 · 값은 그대로)
+- packages/ui/src/tokens.css · components/text/big-number.tsx (lead 추가 요청 · 큰 숫자 색): 큰 숫자 전용 토큰 `--hav-figure`(→ `text-figure`) — 하늘 종이 위 울트라마린 #2438A8(8.49) · 바다 띠 · 칸 · 밤 포스터 위 해 노랑 #F7C548(5.91 · 7.44 · 9.68) · 이름은 `text-number` 가 이미 크기 단계라 `figure` 로 · 큰 숫자를 쓰던 currency-detail · calc-result · today-patches 도 같은 토큰으로
+- apps/web/src/features/log/hooks/use-log-view.ts: 0168 에서 쓰지 않게 된 import 한 줄 (lint 경고)
+- 지운 파일: features/home/components/{hero-section · trips-section · trip-scenes · trip-card · calc-section · year-section · currencies-section}.tsx · hooks/use-active-step.ts · lib/{home-data · change}.ts — 새 홈이 안 쓰는 옛 구간 · 함수 (이 둘의 테스트 home-data.test.ts · change.test.ts 는 test 가 정리)
 
 ## 위험
 - 지금 운영에는 국제항공료 지수가 없다 (0171 이 머지되면 평일 12:00 부터 채움) → 맨 위가 "아직 받지 못했습니다" 상태로 먼저 보인다. 자료가 있을 때 모양은 fixture 로 테스트하고, 로컬 확인 때는 지수가 있는 가짜 API 응답으로 캡처한다.
