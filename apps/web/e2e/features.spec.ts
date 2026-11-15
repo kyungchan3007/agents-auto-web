@@ -65,7 +65,7 @@ test("작업실 — 사이트 상태 점검판이 맨 위 · 탭 제목은 페�
   await expect(page).toHaveTitle("작업실 · Tripfx");
   const board = page.locator('section[aria-labelledby="status-title"]');
   await expect(board).toContainText("사이트 상태");
-  await expect(board).toContainText(/최근 환율|상태를 받지 못했습니다/);
+  await expect(board).toContainText(/오늘 환율 수집|상태를 받지 못했습니다/); // 새 상태판(작업 0170): 칸 이름 "오늘 환율 수집" · 못 받으면 이유
   await openMenuIfCollapsed(page); // 휴대폰은 메뉴 버튼을 먼저 펼침 (작업 0168)
   await expect(page.getByRole("banner").getByRole("navigation").getByRole("link", { name: "작업실" })).toBeVisible();
 });
