@@ -1,10 +1,10 @@
-name: sync-tasks
+name: "기록 · 이슈 · PR 목록 동기화"
 # 이슈 · 머지된 PR 목록을 D1(github_items) 에 저장 → 만드는 중 페이지의 지난 작업 · 작업 이름
 # GitHub 은 이 작업의 자동 토큰(GITHUB_TOKEN · 끝나면 사라짐)으로 읽음 · D1 쓰기는 배포용 CLOUDFLARE_API_TOKEN
 # 제목은 남이 쓴 글일 수 있는 데이터 — 셸에 끼워 넣지 않고 파일로만 넘기고, 변환기가 주인 이슈 · 머지된 PR 만 골라 이스케이프
 on:
   workflow_run:
-    workflows: [deploy-api] # 머지 → 배포(마이그레이션) 가 끝난 뒤
+    workflows: ["배포 · API 배포 (검사 통과 뒤)"] # 머지 → 배포(마이그레이션) 가 끝난 뒤
     types: [completed]
   issues:
     types: [opened, edited, reopened, closed]

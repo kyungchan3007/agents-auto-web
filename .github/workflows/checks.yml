@@ -1,4 +1,4 @@
-name: checks
+name: "검사 · 자동 검사 (PR · main)"
 on:
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
