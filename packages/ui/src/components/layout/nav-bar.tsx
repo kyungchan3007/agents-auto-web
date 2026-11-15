@@ -29,7 +29,7 @@ export function NavBar({ title, logo, links, action }: { title: string; logo?: R
   // 좌우 여백은 header 에 · 폭은 본문과 같은 max-w-6xl — 본문 컨테이너(main px-4 sm:px-8 → mx-auto max-w-6xl)와 로고 왼쪽 선이 같음 (작업 0170 · Figma 01)
   return (
     <header data-surface="light" className="sticky top-0 z-50 bg-surface px-4 sm:px-8">
-      <nav className="relative mx-auto flex h-14 max-w-6xl items-center justify-between gap-6 text-fg sm:h-15 sm:justify-start sm:gap-10">
+      <nav className="relative mx-auto flex h-14 max-w-6xl items-center justify-between gap-6 text-fg sm:h-18 sm:justify-start sm:gap-10">
         <a href="/" className="flex shrink-0 items-center gap-2 font-display text-[1.375rem] font-normal tracking-tight text-cheap">
           {logo}
           {title}
