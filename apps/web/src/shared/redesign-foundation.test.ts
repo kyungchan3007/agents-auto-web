@@ -101,6 +101,10 @@ describe("글꼴 — next/font 로 Gasoek One · IBM Plex Sans KR (R3)", () => {
     expect(big).toContain("font-display");
     expect(big).toContain("tabular-nums");
   });
+
+  it("큰 숫자 색은 전용 토큰(text-figure) — 하늘 종이 위 울트라마린 · 띠 위 해 노랑 (작업 0169)", () => {
+    expect(read(join(UI_SRC, "components/text/big-number.tsx"))).toContain("text-figure");
+  });
 });
 
 describe("고양이 · 동전을 화면에서 뺌 (R8)", () => {
