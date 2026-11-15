@@ -23,7 +23,7 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
   return (
     <>
       <SiteNav page="flights" />
-      <main className="bg-surface px-4 pt-14 pb-20 text-fg sm:px-8 sm:pt-20 sm:pb-28">
+      <main className="bg-surface px-4 pt-8 pb-10 text-fg sm:px-8 sm:pt-10">
         <div className="mx-auto max-w-page">
           <Eyebrow>여행 타이밍</Eyebrow>
           <Title as="h1" size="page" className="mt-3 text-cheap">
@@ -31,21 +31,21 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
           </Title>
           {ready ? (
             <>
-              <p className="mt-6 max-w-3xl text-body text-fg-2">통계청 소비자물가 중 국제항공료 · 해외단체여행비 지수(2020 = 100). 작년 같은 달과 비교하고, 원/달러 환율 월평균과 나란히 봅니다. 선마다 자기 범위로 높이를 맞춘 모양 비교이며 지수는 실제 요금이 아닙니다.</p>
-              <div className="mt-10">
+              <p className="mt-6 max-w-3xl text-body text-fg-2">통계청 소비자물가 중 국제항공료 · 해외단체여행비 지수(2020 = 100). 작년 같은 달과 비교하고, 원/달러 환율 월평균과 나란히 봅니다.</p>
+              <div className="mt-6">
                 <FlightsGraph air={air} tour={tour} fx={fxMonthly} />
               </div>
               {(cards.length > 0 || cheaps) && (
-                <div data-testid="yoy-cards" className="mt-12 grid gap-8 sm:grid-cols-3">
+                <div data-testid="yoy-cards" className="mt-6 grid gap-4 sm:grid-cols-3">
                   {cards.map((c) => (
-                    <div key={c.label} className="border-t-2 border-line pt-3">
+                    <div key={c.label} className="rounded-card bg-card px-5 py-4">
                       <p className="text-small text-fg-2">{c.label}</p>
                       <p className="mt-1 font-display text-city font-normal text-figure tabular-nums">{c.value}</p>
                       <div className="mt-2">{c.signal ? <SignalPin signal={c.signal} text={c.pinText} /> : <span className="text-small text-fg-2">{c.pinText}</span>}</div>
                     </div>
                   ))}
                   {cheaps && (
-                    <div className="border-t-2 border-line pt-3">
+                    <div className="rounded-card bg-card px-5 py-4">
                       <p className="text-small text-fg-2">{cheaps.label}</p>
                       <p className="mt-1 font-display text-city font-normal text-figure tabular-nums">{cheaps.value}</p>
                       <div className="mt-2">
