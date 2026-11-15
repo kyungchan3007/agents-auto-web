@@ -19,7 +19,7 @@
 //   export type CheapestCopy = { headline: string; value: string; per: string; evidence: string }
 //   cheapestCopy(c: NonNullable<ReturnType<typeof cheapestDestination>>, windowDays: number): CheapestCopy
 //     headline `이번 주 가장 싸게 갈 수 있는 곳은 ${도시}입니다` · value = rateText 와 같은 "912원" · per = `${unit}${짧은 통화 이름}` → "100엔" · "1달러"
-//     evidence `최근 ${windowDays}일 중 ${Math.round((1 - percentile) * 100)}%의 날보다 낮습니다 · 예측이 아닙니다 · 수출입은행 환율을 평일 12시에 받습니다` (백분위 0 이면 "최근 N일 중 가장 낮습니다 · …")
+//     evidence `최근 ${windowDays}일 중 ${Math.round((1 - percentile) * 100)}%의 날보다 낮습니다` 한 줄뿐 (백분위 0 이면 "최근 N일 중 가장 낮습니다") — 작업 0174: "· 예측이 아닙니다 · 수출입은행 환율을 평일 12시에 받습니다" 는 홈에서 뺌 (예측 아님 안내는 도착지 설명 줄 · 통화 화면에, 출처는 홈 바닥 띠에 있음)
 //   export const NO_RATE_COPY = "오늘 환율을 아직 받지 못했습니다"
 import { describe, expect, it } from "vitest";
 import { NO_RATE_COPY, cheapestCopy, cheapestDestination, destinationRows } from "./destinations";
@@ -113,14 +113,14 @@ describe("destinationRows", () => {
 });
 
 describe("cheapestCopy — 이번 주 가장 싸게 갈 수 있는 곳", () => {
-  it("도쿄 · 912원 / 100엔 · 근거 한 줄 (최근 90일 · 예측 아님)", () => {
+  it("도쿄 · 912원 / 100엔 · 근거는 판정 한 줄만 (최근 90일)", () => {
     const c = cheapestDestination(SIGNALS, RATES, DEST);
     if (!c) throw new Error("도쿄가 나와야 함");
     expect(cheapestCopy(c, 90)).toEqual({
       headline: "이번 주 가장 싸게 갈 수 있는 곳은 도쿄입니다",
       value: "912원",
       per: "100엔",
-      evidence: "최근 90일 중 88%의 날보다 낮습니다 · 예측이 아닙니다 · 수출입은행 환율을 평일 12시에 받습니다",
+      evidence: "최근 90일 중 88%의 날보다 낮습니다",
     });
   });
 
@@ -130,7 +130,17 @@ describe("cheapestCopy — 이번 주 가장 싸게 갈 수 있는 곳", () => {
     const copy = cheapestCopy(c, 90);
     expect(copy.per).toBe("1달러");
     expect(copy.value).toBe("1,383원");
-    expect(copy.evidence).toBe("최근 90일 중 가장 낮습니다 · 예측이 아닙니다 · 수출입은행 환율을 평일 12시에 받습니다");
+    expect(copy.evidence).toBe("최근 90일 중 가장 낮습니다");
+  });
+
+  it("근거 줄에 '예측이 아닙니다' · '평일 12시' 가 없음 (작업 0174) — 판정 한 줄('최근 90일 중 …')만", () => {
+    for (const p of [0, 0.12, 0.5, 0.9]) {
+      const c = cheapestDestination([sig("JPY", "cheap", p)], RATES, DEST);
+      if (!c) throw new Error("도쿄가 나와야 함");
+      const e = cheapestCopy(c, 90).evidence;
+      expect(e, String(p)).toMatch(/^최근 90일 중 /);
+      expect(e, String(p)).not.toMatch(/예측|평일 12시|수출입은행|·/);
+    }
   });
 
   it("오늘 환율이 없을 때 문구", () => {
