@@ -17,6 +17,15 @@ body {
   overflow-wrap: anywhere;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* 내용이 짧아도 바닥 띠는 화면 맨 아래 — 본문(main)이 남는 높이를 채움 (작업 0170 · 시안) */
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+  flex-direction: column;
+}
+
+body > main {
+  flex: 1 0 auto;
 }
 
 @media (prefers-reduced-motion: reduce) {
