@@ -57,18 +57,15 @@ test("홈 여행 타이밍 · /flights — 제목 속 달 숫자(4월 같은)가
   }
 });
 
-// 홈 오늘 환율 구간은 하늘 종이 위(작업 0175 네 번째 묶음 · 울트라마린 바다 띠 배경을 없앰) — 밝은 바탕 규칙: 숫자는 글자색 그대로 + 노란 형광펜 띠
-test("홈 오늘 환율 — 큰 숫자 · 문장 속 숫자는 노란 형광펜 띠(밝은 바탕 규칙) · 글자는 울트라마린", async ({ page }) => {
+test("홈 바다 띠 — 문장 속 숫자는 해 노랑 글자(띠 위 · 형광펜 아님)", async ({ page }) => {
   await page.goto("/");
   const emph = page.locator("#today").locator('[data-testid="emph"]');
   const n = await emph.count();
-  if (n === 0) test.skip(true, "환율을 받지 못해 큰 숫자가 없음");
   for (let i = 0; i < n; i++) {
-    await expect(emph.nth(i)).toHaveAttribute("data-bg", "light");
+    await expect(emph.nth(i)).toHaveAttribute("data-bg", "sea");
     const s = await css(emph.nth(i));
-    expect(s.image).toContain("linear-gradient");
-    expect(s.image).toContain(SUN);
-    expect(s.color).not.toBe(SUN); // 노란 글자 아님 — 하늘 종이 위 대비
+    expect(s.color).toBe(SUN);
+    expect(s.image).not.toContain("linear-gradient");
   }
 });
 
