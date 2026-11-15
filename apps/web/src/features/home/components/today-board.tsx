@@ -19,14 +19,14 @@ export function TodayBoard({ rates, signals, windowDays, problem }: Props) {
   const board = todayBoard({ found, hasRates: rates.length > 0, windowDays, problem });
   const source = found ? rates.find((r) => r.currency === found.rate.currency) : undefined;
   return (
-    <section id="today" aria-labelledby="today-title" className="relative px-4 pb-14 text-fg sm:px-8 sm:pb-20">
+    <section id="today" aria-labelledby="today-title" className="relative px-4 pt-6 pb-10 text-fg sm:px-8 sm:pt-8 sm:pb-12">
       <div className="mx-auto grid max-w-page items-start gap-8 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-12">
-        <div className="-mt-24 min-w-0 sm:-mt-32">
+        <div className="min-w-0">
           <h2 id="today-title" className="text-base font-semibold text-accent">
             {board.title}
           </h2>
           <FlapBoard rows={board.rows} cols={BOARD_COLS} label={board.label} className="mt-3" />
-          <p className="mt-5 text-body text-fg-2">{board.evidence}</p>
+          <p className="mt-5 text-body text-accent">{board.evidence}</p>
           {source?.source === "frankfurter" && (
             <p className="mt-2 text-small text-fg-2">
               수출입은행 값을 받지 못해 예비 출처(Frankfurter) 값입니다 · 기준일 <DateText date={source.date} />

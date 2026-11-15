@@ -86,9 +86,9 @@ describe("구성 — 작은 제목 · 판 · 판정 한 줄 · 지구 (B3 · B4 
   });
 });
 
-describe("사진에 걸치기 (B2)", () => {
-  it("판 묶음에 음수 위 여백(-mt-)이 있음 — 위쪽 절반이 사진 구간으로 올라감", () => {
-    expect(board()).toMatch(/-mt-\d+|-mt-\[[^\]]+\]/);
+describe("사진 아래 하늘 종이 위에 놓음 (B2 · 작업 0177 수정: 걸치기 취소)", () => {
+  it("판 묶음에 음수 위 여백(-mt-)이 없음 — 사진에 겹치지 않고 사진 아래 하늘 종이 위", () => {
+    expect(board()).not.toMatch(/-mt-\d+|-mt-\[[^\]]+\]/);
   });
 
   it("PhotoHeader 가 fadeBottom 을 받아 아래 끝에 하늘 종이로 사라지는 막(data-testid=photo-fade-bottom)을 그림 — 기본은 막 없음", () => {
