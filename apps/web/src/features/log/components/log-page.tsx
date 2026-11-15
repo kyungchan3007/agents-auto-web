@@ -1,4 +1,4 @@
-// 작업실 페이지 (예전 이름 "만드는 중" · 작업 0105) — 시안(작업 0170 · Figma 06): 라벨 → 큰 제목 2줄 → 상태판 카드 4 → 팀 책상 카드 4 → 작업 흐름 칩 → 실시간 기록 카드 → 바닥 띠
+// 작업실 페이지 (예전 이름 "만드는 중" · 작업 0105) — 시안(작업 0170 · Figma 06): 라벨 → 큰 제목 2줄 → 이 사이트를 어떻게 만들었나(작업 0172) → 상태판 카드 4 → 팀 책상 카드 4 → 작업 흐름 칩 → 실시간 기록 카드 → 바닥 띠
 // 시안에 없는 구간(스크롤 장면 · 작업 책상 · 오늘 패치 수 · 패치 내역)은 화면에서 뺌
 import type { Fetched } from "@/shared/api";
 import { SiteNav } from "@/shared/site-nav";
@@ -8,6 +8,7 @@ import { PageFooter } from "@hav/ui/layout/page-footer";
 import { Eyebrow, Title } from "@hav/ui/text/heading";
 import { RecordCard } from "./record-card";
 import { StatusBoard } from "./status-board";
+import { StorySection } from "./story-section";
 import { TeamDesks } from "./team-desks";
 import { WorkFlow } from "./work-flow";
 
@@ -26,6 +27,7 @@ export function LogPage({ tasks, status, builtAt }: { tasks: Fetched<TasksSummar
               이 사이트를 만듭니다
             </span>
           </Title>
+          <StorySection />
           <StatusBoard build={status} builtAt={builtAt} />
           <TeamDesks />
           <WorkFlow />
