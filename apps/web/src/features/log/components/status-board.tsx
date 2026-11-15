@@ -28,7 +28,7 @@ function Body({ s, builtAt }: { s: SiteStatus; builtAt: string }) {
     <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <Card label="오늘 환율 수집" value={runSummary(s)} tone={failed ? "text-expensive" : "text-fg"} sub={h.tone === "ok" ? undefined : h.text} />
       <Card label="사이트 빌드" value={timeText(builtAt)} />
-      <Card label="자동 검사 (main)" value="GitHub 에서 확인" href={`${REPO_URL}/actions`} />
+      <Card label="자동 검사 (main)" value="GitHub 에서 확인" href={`${REPO_URL}/actions/workflows/checks.yml?query=branch%3Amain`} />
       <Card label="열린 작업" value="GitHub 에서 확인" href={`${REPO_URL}/issues`} />
     </dl>
   );
