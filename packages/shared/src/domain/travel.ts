@@ -92,3 +92,35 @@ export function travelBands(levels: PriceLevels): { bands: { id: Band; label: st
 
 /** 통화 → 그 통화를 쓰는 여행지 나라들 (통화 상세에서 물가 링크) */
 export const countriesOf = (currency: string) => Object.entries(TRAVEL_COUNTRIES).filter(([, c]) => c.currency === currency).map(([code]) => code);
+
+/** 월 단위 지표 한 점 — period 는 YYYY-MM (통계청 국제항공료 지수 등) */
+export type MonthPoint = { period: string; value: number };
+
+const monthIndex = (period: string) => Number(period.slice(0, 4)) * 12 + Number(period.slice(5, 7)) - 1;
+
+/**
+ * 가장 최근 달부터 36개월(최근 달 포함)만 보고 달(1~12)마다 평균 · n 은 쓴 값의 수 · 값이 없는 달은 키가 없음
+ * 홈(여행 타이밍)과 /flights 가 같은 계산을 쓰도록 여기 한 곳에 둠 — 기능 폴더끼리 직접 가져오지 못함 (작업 0164 · 0169)
+ */
+export function monthlyAverages(points: MonthPoint[]): Record<number, { avg: number; n: number }> {
+  if (points.length === 0) return {};
+  const last = Math.max(...points.map((p) => monthIndex(p.period)));
+  const sums: Record<number, { sum: number; n: number }> = {};
+  for (const p of points) {
+    if (monthIndex(p.period) <= last - 36) continue;
+    const m = Number(p.period.slice(5, 7));
+    const s = (sums[m] ??= { sum: 0, n: 0 });
+    s.sum += p.value;
+    s.n += 1;
+  }
+  return Object.fromEntries(Object.entries(sums).map(([m, s]) => [Number(m), { avg: s.sum / s.n, n: s.n }]));
+}
+
+/** 3D 비행기 모델 파일 주소 · 출처 표시 — CC-BY 4.0 은 출처 표시가 조건 (작업 0164 · 홈과 /flights 가 함께 씀 · 파일은 apps/web/public/models/plane.glb 236,520 바이트) */
+export const PLANE_MODEL_URL = "/models/plane.glb";
+
+export const PLANE_CREDIT = {
+  text: "3D 비행기: Airplane · Poly by Google (CC-BY 4.0)",
+  sourceUrl: "https://poly.pizza/m/8ciDd9k8wha",
+  licenseUrl: "https://creativecommons.org/licenses/by/4.0/",
+} as const;
