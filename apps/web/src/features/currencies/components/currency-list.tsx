@@ -3,10 +3,11 @@
 // 왼쪽 목록 — 찾기 · 지역 · `+ 통화` (누르면 그 통화 주소로 · 목록과 찾은 글자는 페이지를 옮겨도 그대로: 레이아웃에 있음)
 // 휴대폰은 위에 가로로 넘기는 줄 · ☆ 를 누르면 즐겨찾기 — 맨 위로 · "즐겨찾기" 묶음 (이 브라우저에만 저장 · 작업 0089)
 import { currencyName } from "@hav/shared/currency";
-import { SIGNAL_TEXT, signalLabel } from "@hav/ui/data/signal-pin";
+import { SignalPin } from "@hav/ui/data/signal-pin";
 import { Input } from "@hav/ui/form/field";
 import Link from "next/link";
 import { CurrencyFlag } from "@hav/ui/data/currency-flag";
+import { currencyListLabel } from "../lib/detail-view";
 import type { ListItem } from "../lib/list";
 import { SORTS } from "../lib/sort";
 import { signedPct } from "@hav/shared/format";
@@ -38,8 +39,8 @@ export function CurrencyList({ items }: { items: ListItem[] }) {
           ))}
         </div>
       )}
-      {/* 스크롤 영역 안쪽 여백 — 칸 테두리가 영역 끝에 붙어 잘려 보였음 (작업 0067) · 휴대폰은 오른쪽 끝을 흐리게 = 옆으로 넘길 수 있음 (작업 0111) */}
-      <ul className="mt-3 flex gap-2 overflow-x-auto p-0.5 pb-2 [mask-image:linear-gradient(to_right,black_85%,transparent)] lg:[mask-image:none] lg:max-h-[calc(100svh-14rem)] lg:flex-col lg:overflow-x-visible lg:overflow-y-auto">
+      {/* 휴대폰은 위에서 옆으로 넘기는 줄 · 넓은 화면은 세로 목록 (작업 0170: 테두리 카드를 걷고 고른 통화만 흰 바탕) */}
+      <ul className="mt-3 flex gap-2 overflow-x-auto pb-2 lg:max-h-[calc(100svh-14rem)] lg:flex-col lg:gap-1 lg:overflow-x-visible lg:overflow-y-auto">
         {shown.map((i) => {
           const on = i.currency === current;
           const fav = favs.includes(i.currency);
@@ -49,21 +50,18 @@ export function CurrencyList({ items }: { items: ListItem[] }) {
                 href={`/currencies/${i.currency}`}
                 aria-current={on ? "page" : undefined}
                 scroll={false}
-                className={`flex min-w-0 flex-1 items-center gap-2 rounded-field border px-3 py-2.5 text-sm transition-colors ${on ? "border-accent bg-surface-2 text-fg" : "border-line text-fg-2 hover:border-fg-2 hover:text-fg"}`}
+                className={`flex min-w-0 flex-1 items-center gap-2 rounded-field px-3 py-2.5 text-sm transition-colors ${on ? "bg-foam text-fg" : "text-fg-2 hover:bg-surface-2 hover:text-fg"}`}
               >
-                <span aria-hidden className="text-accent">
-                  +
-                </span>
                 <CurrencyFlag currency={i.currency} className="h-3.5 w-5" />
-                <span className="min-w-0 truncate font-semibold">{currencyName(i.currency)}</span>
-                <span className="shrink-0 text-xs">{i.currency}</span>
+                <span className="shrink-0 font-semibold text-fg">{i.currency}</span>
+                <span className="min-w-0 truncate text-xs">{currencyListLabel(i.currency, i.unit ?? 1)}</span>
                 <span className="ml-auto flex shrink-0 items-baseline gap-2 pl-3 text-xs whitespace-nowrap">
                   {sort !== "region" && i.change != null && (
                     <span className={`font-semibold ${Math.abs(i.change) < 0.05 ? "text-fg" : i.change < 0 ? "text-cheap" : "text-expensive"}`} title="지난 1개월 변화 (원화 기준)">
                       {signedPct(i.change)}
                     </span>
                   )}
-                  {i.signal && <span className={`font-semibold ${SIGNAL_TEXT[i.signal]}`}>{signalLabel(i.signal)}</span>}
+                  {i.signal && <SignalPin signal={i.signal} />}
                 </span>
               </Link>
               <button
