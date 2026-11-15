@@ -4,15 +4,18 @@
 //   빌드 때 받은 1년치를 화면에서 자르기만 함 (다시 받지 않음) · 6개월 칩 · 변화율 글 · 설명은 시안에 없어 화면에서 뺌
 import { YearChart } from "@hav/ui/data/year-chart";
 import { PERIODS } from "../lib/periods";
-import { yearStats } from "../lib/detail-view";
+import { extremeDays, extremeLabelText, yearStats } from "../lib/detail-view";
 import { usePeriodChart } from "../hooks/use-period-chart";
 
-export function PeriodChart({ rates, unitText, lastTone }: { rates: { date: string; baseRate: number }[]; unitText: string; lastTone?: "cheap" | "normal" | "expensive" | null }) {
+export function PeriodChart({ rates, unit = 1, unitText, lastTone }: { rates: { date: string; baseRate: number }[]; unit?: number; unitText: string; lastTone?: "cheap" | "normal" | "expensive" | null }) {
   const { id, setId, period, shown } = usePeriodChart(rates);
   const avg = yearStats(shown);
+  // 고른 기간(shown)의 최고 · 최저 — 위 카드(yearStats)와 같은 값 (작업 0175)
+  const ex = extremeDays(shown);
+  const extremeText = ex ? { max: extremeLabelText("max", { baseRate: ex.max.baseRate, unit }), min: extremeLabelText("min", { baseRate: ex.min.baseRate, unit }) } : undefined;
   return (
     <div>
-      <YearChart compact rates={shown} unitText={unitText} title={`${period.label} 흐름`} average={avg?.avg} lastTone={lastTone} />
+      <YearChart compact rates={shown} unitText={unitText} title={`${period.label} 흐름`} average={avg?.avg} lastTone={lastTone} extremeText={extremeText} />
       <div className="mt-2 flex gap-2" role="group" aria-label="기간">
         {PERIODS.filter((p) => p.id !== "6m").map((p) => (
           <button
