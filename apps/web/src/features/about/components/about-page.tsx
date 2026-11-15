@@ -3,6 +3,7 @@ import type { Fetched } from "@/shared/api";
 import { SiteNav } from "@/shared/site-nav";
 import type { SignalList } from "@hav/shared/signal";
 import { PageFooter } from "@hav/ui/layout/page-footer";
+import { PhotoHeader } from "@hav/ui/layout/photo-header";
 import { Eyebrow, SectionTitle, Title } from "@hav/ui/text/heading";
 import { ABOUT_CARDS } from "../lib/criteria";
 
@@ -14,14 +15,15 @@ export function AboutPage(_props: { signals: Fetched<SignalList>; duty: DutyRule
   return (
     <>
       <SiteNav page="about" />
-      <main className="bg-surface px-4 pt-8 pb-10 text-fg sm:px-8 sm:pt-10">
-        <div className="mx-auto max-w-page">
+      <main className="bg-surface text-fg">
+        <PhotoHeader name="plane-sunset" alt="노을 속을 나는 비행기" veil="light" priority position="70% center">
           <Eyebrow>소개</Eyebrow>
           <Title as="h1" size="page" aria-label="어떤 자료를, 어떤 기준으로 보여 주나요" className="mt-6 text-cheap">
             <span aria-hidden className="block">어떤 자료를,</span> <span aria-hidden className="block">어떤 기준으로 보여 주나요</span>
           </Title>
-
-          <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+        </PhotoHeader>
+        <div className="mx-auto max-w-page px-4 pt-6 pb-10 sm:px-8">
+          <ul className="grid gap-4 sm:grid-cols-2">
             {ABOUT_CARDS.map((c) => (
               <li key={c.id} data-testid="criteria-card" className="rounded-card bg-card px-5 py-5">
                 <SectionTitle className="text-[1.375rem] leading-tight text-cheap">{c.title}</SectionTitle>

@@ -2,27 +2,18 @@
 
 // 직구 계산기 화면 — 입력은 이 화면 상태에만 (보내지 않음 · 저장하지 않음 IMP-01) · 결과 옆에 환율 기준일 · 출처 (IMP-02) · "예상" 안내 (IMP-04)
 import { currencyName } from "@hav/shared/currency";
-import type { FxRate } from "@hav/shared/fx";
 import { Input, Select, UnitInput } from "@hav/ui/form/field";
-import { Title } from "@hav/ui/text/heading";
 import type { ReactNode } from "react";
 import { CalcResult } from "./calc-result";
 import { DUTY_FREE_USD, ROUTE_LABEL, type Route } from "../lib/rules";
-import type { CustomsRate } from "../lib/customs-rate";
-import { calcHeadline } from "../lib/calc-copy";
-import { useCalcForm } from "../hooks/use-calc-form";
+import type { useCalcForm } from "../hooks/use-calc-form";
 
-export function CalcForm({ rates, customs }: { rates: FxRate[]; customs: Record<string, CustomsRate> }) {
-  const { codes, input, result, rate, source, set, err } = useCalcForm(rates, customs);
-
-  // 큰 문장 — 입력으로 결과를 한 문장으로 ("세금 없이 받습니다" / "관세 · 부가세 약 ○원이 붙습니다") · 작업 0170
-  const tone = !result || !result.ok ? "text-fg-2" : result.over ? "text-expensive" : "text-cheap";
+// 입력 상태는 위(calc-page)에서 한 번 만들어 내려받음 — 맨 위 큰 문장(사진 위)이 같은 입력으로 바뀌어야 해서 (작업 0175)
+export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
+  const { codes, input, result, rate, source, set, err } = form;
   return (
     <>
-      <Title as="h1" size="page" className={`mt-6 ${tone}`}>
-        {calcHeadline(result, input)}
-      </Title>
-      <div className="mt-6 grid items-start gap-4 lg:grid-cols-2">
+      <div className="grid items-start gap-4 lg:grid-cols-2">
       <form data-testid="calc-input" className="grid content-start gap-4 rounded-card bg-card px-6 py-6" onSubmit={(e) => e.preventDefault()} aria-label="직구 계산 입력">
         <Field label="통화" htmlFor="currency">
           <Select id="currency" value={input.currency} onChange={set("currency")}>

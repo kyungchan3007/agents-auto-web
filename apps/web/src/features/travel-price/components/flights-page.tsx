@@ -4,6 +4,7 @@ import { SiteNav } from "@/shared/site-nav";
 import { PLANE_CREDIT } from "@hav/shared/travel";
 import { SignalPin } from "@hav/ui/data/signal-pin";
 import { PageFooter } from "@hav/ui/layout/page-footer";
+import { PhotoHeader } from "@hav/ui/layout/photo-header";
 import { Eyebrow, Title } from "@hav/ui/text/heading";
 import { cheapMonth, type IndexPoint } from "../lib/travel-index";
 import { cheapMonthsCard, flightsHeadline, yoyCard } from "../lib/flights-copy";
@@ -23,16 +24,22 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
   return (
     <>
       <SiteNav page="flights" />
-      <main className="bg-surface px-4 pt-8 pb-10 text-fg sm:px-8 sm:pt-10">
-        <div className="mx-auto max-w-page">
+      <main className="bg-surface text-fg">
+        <PhotoHeader name="window-sunrise" alt="비행기 창밖으로 보이는 해돋이" veil="light" priority>
           <Eyebrow>여행 타이밍</Eyebrow>
           <Title as="h1" size="page" className="mt-3 text-cheap">
             {headline}
           </Title>
           {ready ? (
+            <p className="mt-6 max-w-[36em] text-body text-fg-2">통계청 소비자물가 중 국제항공료 · 해외단체여행비 지수(2020 = 100). 작년 같은 달과 비교하고, 원/달러 환율 월평균과 나란히 봅니다.</p>
+          ) : (
+            <p className="mt-6 max-w-[36em] text-body text-fg-2">준비 중 — 통계청 국제항공료 지수를 아직 받지 못했습니다. 받으면 이 자리 아래에 선 그래프 · 3D 비행기 · 작년 대비가 표시됩니다 (월 자료는 발표가 늦어 최근 몇 달을 매달 다시 받아 덮어씁니다).</p>
+          )}
+        </PhotoHeader>
+        <div className="mx-auto max-w-page px-4 pt-6 pb-10 sm:px-8">
+          {ready && (
             <>
-              <p className="mt-6 max-w-3xl text-body text-fg-2">통계청 소비자물가 중 국제항공료 · 해외단체여행비 지수(2020 = 100). 작년 같은 달과 비교하고, 원/달러 환율 월평균과 나란히 봅니다.</p>
-              <div className="mt-6">
+              <div>
                 <FlightsGraph air={air} tour={tour} fx={fxMonthly} />
               </div>
               {(cards.length > 0 || cheaps) && (
@@ -56,8 +63,6 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
                 </div>
               )}
             </>
-          ) : (
-            <p className="mt-6 max-w-3xl text-body text-fg-2">준비 중 — 통계청 국제항공료 지수를 아직 받지 못했습니다. 받으면 이 자리에 선 그래프 · 3D 비행기 · 작년 대비가 표시됩니다 (월 자료는 발표가 늦어 최근 몇 달을 매달 다시 받아 덮어씁니다).</p>
           )}
         </div>
       </main>
