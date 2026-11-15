@@ -2,6 +2,7 @@
 // 지수가 없으면 큰 제목 대신 "아직 받지 못했습니다" · 그래프 · 비행기 없음 (숫자 · 달을 지어내지 않음)
 import { PLANE_MODEL_URL } from "@hav/shared/travel";
 import { PlaneRouteLazy } from "@hav/ui/three/scene/lazy";
+import { PhotoHeader } from "@hav/ui/layout/photo-header";
 import { Eyebrow, Title } from "@hav/ui/text/heading";
 import { type TravelTiming, travelTimingCopy } from "../lib/travel-timing";
 
@@ -30,23 +31,27 @@ function linePath(pts: { month: number; x: number; y: number }[]): string {
 export function TravelTimingSection({ timing }: { timing: TravelTiming }) {
   const copy = travelTimingCopy(timing);
   return (
-    <section aria-labelledby="timing-title" className="bg-surface px-4 pt-14 pb-16 text-fg sm:px-8 sm:pt-20 sm:pb-24">
-      <div className="mx-auto max-w-page">
+    <section aria-labelledby="timing-title" className="bg-surface text-fg">
+      <PhotoHeader name="window-fjord" alt="비행기 창밖으로 보이는 피오르" veil="light" priority>
         <Eyebrow>여행 타이밍</Eyebrow>
         {timing.kind === "ready" ? (
           <>
             <Title as="h1" size="poster" id="timing-title" className="mt-3 text-cheap">
               {copy.title}
             </Title>
-            <p className="mt-6 max-w-3xl text-body text-fg-2">{copy.message}</p>
-            <Graph timing={timing} />
+            <p className="mt-6 max-w-[36em] text-body text-fg-2">{copy.message}</p>
           </>
         ) : (
           <Title as="h1" id="timing-title" className="mt-3 text-fg-2">
             {copy.message}
           </Title>
         )}
-      </div>
+      </PhotoHeader>
+      {timing.kind === "ready" && (
+        <div className="mx-auto max-w-page px-4 pb-16 sm:px-8 sm:pb-24">
+          <Graph timing={timing} />
+        </div>
+      )}
     </section>
   );
 }

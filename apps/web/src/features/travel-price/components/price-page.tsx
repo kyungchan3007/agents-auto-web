@@ -6,6 +6,7 @@ import type { PriceLevels } from "@hav/shared/prices";
 import type { SignalList } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES, travelBands } from "@hav/shared/travel";
 import { PageFooter } from "@hav/ui/layout/page-footer";
+import { PhotoHeader } from "@hav/ui/layout/photo-header";
 import { Eyebrow, Title } from "@hav/ui/text/heading";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
 import { pricesHeadline } from "../lib/prices-copy";
@@ -23,15 +24,16 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
   return (
     <>
       <SiteNav page="prices" />
-      <main className="bg-surface px-4 pt-8 pb-10 text-fg sm:px-8 sm:pt-10">
-        <div className="mx-auto max-w-page">
+      <main className="bg-surface text-fg">
+        <PhotoHeader name="swiss-traveler" alt="스위스 풍경을 바라보는 여행자" veil="light" priority>
           <Eyebrow>여행 물가</Eyebrow>
           <Title as="h1" size="page" className="mt-3 text-cheap">
             {headline ? headline.title : "여행 물가 자료를 받지 못했습니다"}
           </Title>
-          <p className="mt-6 text-body text-fg-2">세계은행 나라별 물가 수준(한국 = 100)과 오늘 그 나라 통화 신호를 함께 봅니다.</p>
-
-          <div className="mt-10">
+          <p className="mt-6 max-w-[36em] text-body text-fg-2">세계은행 나라별 물가 수준(한국 = 100)과 오늘 그 나라 통화 신호를 함께 봅니다.</p>
+        </PhotoHeader>
+        <div className="mx-auto max-w-page px-4 pt-6 pb-10 sm:px-8">
+          <div>
             {data && data.bands.length > 0 ? (
               <PriceBands bands={data.bands} signalOf={signalOf} percentileOf={percentileOf} latestYear={data.years[0]} />
             ) : (
