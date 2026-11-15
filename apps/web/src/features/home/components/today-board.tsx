@@ -20,7 +20,7 @@ export function TodayBoard({ rates, signals, windowDays, problem }: Props) {
   const source = found ? rates.find((r) => r.currency === found.rate.currency) : undefined;
   return (
     <section id="today" aria-labelledby="today-title" className="relative px-4 pb-14 text-fg sm:px-8 sm:pb-20">
-      <div className="mx-auto grid max-w-page items-center gap-8 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-12">
+      <div className="mx-auto grid max-w-page items-start gap-8 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-12">
         <div className="-mt-24 min-w-0 sm:-mt-32">
           <h2 id="today-title" className="text-base font-semibold text-accent">
             {board.title}
