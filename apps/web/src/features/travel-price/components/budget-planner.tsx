@@ -14,8 +14,8 @@ export function BudgetPlanner({ rows, latestOf }: { rows: TravelRow[]; latestOf:
   const { sorted, country, setCountry, daily, setDaily, days, setDays, row, d, n, latest, budget: b } = useBudgetPlanner(rows, latestOf);
 
   return (
-    <section id="budget" aria-labelledby="budget-title" className="scroll-mt-(--hav-nav-h) rounded-card bg-surface-2 p-5 sm:p-8">
-      <SubTitle id="budget-title">여행 예산 계산</SubTitle>
+    <section id="budget" data-testid="budget" aria-labelledby="budget-title" className="scroll-mt-(--hav-nav-h) border-t-2 border-line pt-6">
+      <SubTitle id="budget-title">여행 하루 예산</SubTitle>
       <p className="mt-1 text-sm text-fg-2">한국에서의 하루 지출을 기준으로 그 나라의 예상 비용을 계산합니다.</p>
       <form className="mt-5 grid gap-3 sm:grid-cols-[1.2fr_1fr_0.6fr]" onSubmit={(e) => e.preventDefault()}>
         <FieldLabel label="나라">
@@ -47,8 +47,8 @@ export function BudgetPlanner({ rows, latestOf }: { rows: TravelRow[]; latestOf:
                 {row.name} 물가는 한국보다 <span className="font-semibold text-fg">{relativeText(row.relative)}</span> ({row.year}년)
               </p>
               <dl className="mt-3 grid gap-3 sm:grid-cols-2">
-                <StatTile label="하루" value={<>약 {wonText(b.dailyWon)}</>} sub={b.dailyLocal != null && row.currency && <span className="text-sm">≈ {localText(b.dailyLocal, row.currency)}</span>} className="bg-surface p-5" valueClassName="text-2xl tracking-tight" />
-                <StatTile label={<>{n}일 전체</>} value={<>약 {wonText(b.totalWon)}</>} sub={b.totalLocal != null && row.currency && <span className="text-sm">≈ {localText(b.totalLocal, row.currency)}</span>} className="bg-surface p-5" valueClassName="text-2xl tracking-tight" />
+                <StatTile label="하루" value={<>약 {wonText(b.dailyWon)}</>} sub={b.dailyLocal != null && row.currency && <span className="text-sm">≈ {localText(b.dailyLocal, row.currency)}</span>} className="border-t-2 border-line pt-3" valueClassName="text-number tracking-tight" />
+                <StatTile label={<>{n}일 전체</>} value={<>약 {wonText(b.totalWon)}</>} sub={b.totalLocal != null && row.currency && <span className="text-sm">≈ {localText(b.totalLocal, row.currency)}</span>} className="border-t-2 border-line pt-3" valueClassName="text-number tracking-tight" />
               </dl>
               <p className="mt-3 text-xs leading-relaxed text-fg-2">
                 {row.currency && latest
