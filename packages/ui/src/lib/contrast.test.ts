@@ -139,3 +139,28 @@ describe("사진 막 위 글자 대비", () => {
     expect(contrastRatio("#ffffff", base.light.cheap)).toBeGreaterThanOrEqual(4.5);
   });
 });
+
+// 제목 속 숫자 강조 (작업 0175 세 번째 묶음 · N4) — 하늘 종이 위 해 노랑 형광펜 띠 위 글자 · 주홍 글자 · 바다 띠 위 해 노랑 글자
+describe("제목 속 숫자 강조 대비", () => {
+  it("해 노랑 토큰 --hav-sun 은 #F7C548", () => {
+    expect(CSS).toMatch(/--hav-sun\s*:\s*#f7c548/i);
+  });
+
+  it("형광펜 띠(#F7C548) 위에서도 큰 제목 색(cheap · fg)이 본문 기준 4.5 이상 — 띠가 글자를 못 읽게 만들지 않음", () => {
+    for (const fg of ["cheap", "fg"]) expect(contrastRatio(base.light[fg], "#f7c548"), fg).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it("주홍 글자(expensive)가 하늘 종이 위에서 4.5 이상 (비쌈 뜻 숫자)", () => {
+    expect(contrastRatio(base.light.expensive, base.light.surface)).toBeGreaterThanOrEqual(4.5);
+    expect(lc(base.light.expensive)).toBe("#c13a22");
+  });
+
+  it("바다 띠 위 해 노랑 글자(figure)가 울트라마린 위에서 4.5 이상", () => {
+    expect(lc(base.dark.figure)).toBe("#f7c548");
+    expect(contrastRatio(base.dark.figure, base.dark.surface)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it("하늘 종이 위 노란 글자는 대비가 모자라 쓰지 않음을 숫자로 — #F7C548 on 하늘 종이 < 3", () => {
+    expect(contrastRatio("#f7c548", base.light.surface)).toBeLessThan(3);
+  });
+});
