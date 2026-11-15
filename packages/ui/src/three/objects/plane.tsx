@@ -15,7 +15,7 @@ import { Stage } from "../scene/stage";
 export type PlaneProps = { url: string; className?: string; label?: string };
 
 /** 사이트의 테마 감지 방식 그대로 — 가장 가까운 [data-surface] 가 light 면 밝은 화면 · 바뀌면 다시 읽음 */
-function usePlaneTheme(): PlaneTheme {
+export function usePlaneTheme(): PlaneTheme {
   const dom = useThree((s) => s.gl.domElement);
   const invalidate = useThree((s) => s.invalidate);
   const [theme, setTheme] = useState<PlaneTheme>("dark");
@@ -35,7 +35,7 @@ function usePlaneTheme(): PlaneTheme {
 }
 
 /** 장면 환경 조명 — RoomEnvironment 를 한 번 굽고 내려갈 때 지움 */
-function RoomLight() {
+export function RoomLight() {
   const gl = useThree((s) => s.gl);
   const scene = useThree((s) => s.scene);
   useEffect(() => {
@@ -93,9 +93,9 @@ function Backdrop({ theme }: { theme: PlaneTheme }) {
   );
 }
 
-function Model({ url, animate, theme }: { url: string; animate: boolean; theme: PlaneTheme }) {
+/** 모델 복제 · 크기 · 가운데 맞추기 · 테마별 몸체 색 곱하기 — 비행기를 쓰는 장면들이 같은 모델 · 재질을 씀 (작업 0169: 경로 비행기가 재사용) */
+export function usePlaneObject(url: string, theme: PlaneTheme, targetSize?: number) {
   const { scene: model } = useGLTF(url);
-  const plane = useRef<Group>(null);
   // 복제본을 써서 같은 파일을 여러 곳에서 써도 서로 영향 없게 (재질도 복제) · 크기 · 가운데는 한 번만 계산
   const { object, fit, materials } = useMemo(() => {
     const object = model.clone(true);
@@ -108,8 +108,8 @@ function Model({ url, animate, theme }: { url: string; animate: boolean; theme: 
       if (m.color) materials.push({ m, base: m.color.clone() });
     });
     const box = new Box3().setFromObject(object);
-    return { object, fit: fitModel({ min: box.min.toArray() as [number, number, number], max: box.max.toArray() as [number, number, number] }), materials };
-  }, [model]);
+    return { object, fit: fitModel({ min: box.min.toArray() as [number, number, number], max: box.max.toArray() as [number, number, number] }, targetSize), materials };
+  }, [model, targetSize]);
 
   // 밝은 화면이면 몸체 색에 옅은 회청색을 곱함 (원래 색은 보관해 두고 테마가 바뀌면 다시 계산)
   const invalidate = useThree((s) => s.invalidate);
@@ -118,6 +118,13 @@ function Model({ url, animate, theme }: { url: string; animate: boolean; theme: 
     for (const { m, base } of materials) m.color?.copy(base).multiply(new Color(r, g, b));
     invalidate();
   }, [theme, materials, invalidate]);
+
+  return { object, fit };
+}
+
+function Model({ url, animate, theme }: { url: string; animate: boolean; theme: PlaneTheme }) {
+  const plane = useRef<Group>(null);
+  const { object, fit } = usePlaneObject(url, theme);
 
   useFrame(({ clock }) => {
     const p = plane.current;
