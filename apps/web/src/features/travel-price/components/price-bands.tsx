@@ -5,7 +5,7 @@ import { currencyName } from "@hav/shared/currency";
 import type { Signal } from "@hav/shared/signal";
 import { type Band, relativeText } from "@hav/shared/travel";
 import { Flag } from "@hav/ui/data/flag";
-import { SIGNAL_TEXT, signalLabel } from "@hav/ui/data/signal-badge";
+import { SIGNAL_TEXT, signalLabel } from "@hav/ui/data/signal-pin";
 import Link from "next/link";
 import type { PriceBand } from "../lib/bands";
 import { usePriceBands } from "../hooks/use-price-bands";
