@@ -109,3 +109,25 @@ test("도착지 줄 — 휴대폰은 눈금이 안 보이고 핀이 오른쪽 ·
   if (!city || !pin) throw new Error("도시 · 핀이 없음");
   expect(pin.x, "핀은 도시보다 오른쪽").toBeGreaterThan(city.x + 40);
 });
+
+// 글꼴 — 작업 0173: Gasoek One 은 맨 위 큰 제목 · 큰 숫자 · 로고에만 · 구간 제목 · 도시 이름은 IBM Plex Sans KR 굵게(700) · 실행은 lead
+//   next/font 가 글꼴 이름을 "__IBM_Plex_Sans_KR_해시" · "__Gasoek_One_해시" 로 바꾸므로 이름 일부로 비교
+const FONT = /Gasoek/i;
+const PLEX = /IBM_Plex_Sans_KR|IBM Plex Sans KR/i;
+const style = (loc: import("@playwright/test").Locator) => loc.first().evaluate((el) => ({ family: getComputedStyle(el).fontFamily, weight: getComputedStyle(el).fontWeight }));
+
+test("글꼴 — 맨 위 큰 제목 · 로고는 Gasoek One", async ({ page }) => {
+  await page.goto("/");
+  expect((await style(page.getByRole("heading", { level: 1 }))).family).toMatch(FONT);
+  expect((await style(page.getByRole("banner").getByRole("link", { name: /tripfx/i }))).family).toMatch(FONT);
+});
+
+test("글꼴 — 구간 제목(도착지별 환전 타이밍) · 도시 이름은 IBM Plex Sans KR 700", async ({ page }) => {
+  await page.goto("/");
+  for (const loc of [page.locator("#destinations").getByRole("heading", { name: "도착지별 환전 타이밍" }), page.locator('[data-testid="dest-city"]')]) {
+    const s = await style(loc);
+    expect(s.family).toMatch(PLEX);
+    expect(s.family).not.toMatch(FONT);
+    expect(Number(s.weight)).toBeGreaterThanOrEqual(700);
+  }
+});
