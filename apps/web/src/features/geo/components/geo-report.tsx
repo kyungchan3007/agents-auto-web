@@ -15,19 +15,19 @@ export function GeoReport({ build }: { build: Fetched<Report> }) {
     <>
       <dl data-testid="geo-cards" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {geoCards(r).map((c) => (
-          <div key={c.label} className="rounded-card bg-foam px-[18px] py-4">
+          <div key={c.label} className="rounded-card bg-foam px-[18px] py-[18px]">
             <dt className="text-small text-fg-2">{c.label}</dt>
             <dd className="mt-2 font-display text-[1.75rem] leading-[1.15] font-normal tracking-tight text-figure tabular-nums">{c.value}</dd>
-            {c.note && <dd className="mt-1 text-small text-fg-2">{c.note}</dd>}
+            {c.note && <dd className="mt-[5px] text-small text-fg-2">{c.note}</dd>}
           </div>
         ))}
       </dl>
 
-      <section data-testid="geo-reading" aria-labelledby="geo-reading-title" className="mt-4 rounded-card bg-foam px-6 py-5">
+      <section data-testid="geo-reading" aria-labelledby="geo-reading-title" className="mt-6 rounded-card bg-foam px-6 pt-[22px] pb-[25px]">
         <h2 id="geo-reading-title" className="text-lg font-semibold">
           이 수치를 읽는 법
         </h2>
-        <ul className="mt-2 space-y-0.5 text-body text-fg-2">
+        <ul className="mt-1 text-body text-fg-2">
           {geoReading(r).map((line) => (
             <li key={line}>• {line}</li>
           ))}
