@@ -1,6 +1,7 @@
 // 홈 "이번 주 가장 싸게 갈 수 있는 곳" · 도착지별 환전 타이밍 줄 — 순수 함수 (작업 0169)
-// 판정 · 눈금은 사이트 신호 규칙 그대로 (docs/domain/signal.md SIG-01~05) — 최근 90일 백분위 · 핀 글은 "쌈 · 보통 · 비쌈" 글자만 (퍼센트로 판정하지 않음) · 없는 숫자는 지어내지 않음
+// 판정 · 눈금은 사이트 신호 규칙 그대로 (docs/domain/signal.md SIG-01~05) — 최근 90일 백분위 · 핀 글은 근거 숫자 + 판정 ("하위 12% · 쌈" · 작업 0170) · 없는 숫자는 지어내지 않음
 import { currencyName } from "@hav/shared/currency";
+import { pinBasis } from "@hav/ui/data/signal-pin";
 
 export type Signal = "cheap" | "normal" | "expensive";
 export type Destination = { id: string; name: string; currency?: string; country?: string };
@@ -37,7 +38,10 @@ export type DestinationRowData = {
   rateText: string | null;
   signal: Signal | null;
   position: number | null;
-  pct: null;
+  /** 90일 백분위(0~1) — position 과 같은 값 · 핀 글의 근거 숫자 (없으면 null) */
+  percentile: number | null;
+  /** 핀 글 "하위 12% · 쌈" · 신호가 없으면 null */
+  pinText: string | null;
   note: string | null;
   href: string | null;
 };
@@ -56,7 +60,8 @@ export function destinationRows(signals: SignalRow[], rates: RateRow[], destinat
       rateText: rate ? wonText(rate.baseRate) : null,
       signal: hasSignal ? (s?.signal ?? null) : null,
       position: hasSignal ? (s?.percentile ?? null) : null,
-      pct: null,
+      percentile: hasSignal ? (s?.percentile ?? null) : null,
+      pinText: hasSignal && s?.signal ? pinBasis(s.signal, s.percentile) : null,
       note: hasSignal ? null : "신호 없음",
       href: currency ? `/currencies/${currency}` : null,
     };
