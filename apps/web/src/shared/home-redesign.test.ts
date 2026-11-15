@@ -47,9 +47,9 @@ describe("홈 자료 — app/page.tsx", () => {
 });
 
 describe("홈 구성 — 순서 · 구간", () => {
-  it("오늘 환율 바다 띠: id=\"today\" 가 한 번 · 같은 요소가 data-surface=\"dark\"(울트라마린 띠)", () => {
+  it("오늘 환율 구간: id=\"today\" 가 한 번 (작업 0177: 울트라마린 전체 띠는 없어지고 출발 안내판으로 — home-flap-board.test.ts 가 검사)", () => {
     expect(HOME_UI.match(/id="today"/g)?.length).toBe(1);
-    expect(HOME_UI).toMatch(/<(section|div)\b[^>]*(id="today"[^>]*data-surface="dark"|data-surface="dark"[^>]*id="today")/);
+    expect(HOME_UI).not.toMatch(/<(section|div)\b[^>]*(id="today"[^>]*data-surface="dark"|data-surface="dark"[^>]*id="today")/);
   });
 
   it("도착지별 환전 타이밍 구간: id=\"destinations\" · 제목", () => {
@@ -62,12 +62,13 @@ describe("홈 구성 — 순서 · 구간", () => {
     expect(HOME_UI).toMatch(/data-testid="travel-graph"/);
     expect(HOME_UI).toMatch(/data-testid="plane-route"/);
     expect(HOME_UI).toMatch(/\bGlobeLazy\b/);
+    expect(HOME_UI).toMatch(/\bFlapBoard\b/); // 작업 0177 출발 안내판
     expect(HOME_UI).toMatch(/\bPlaneRouteLazy\b/);
     expect(HOME_UI).toMatch(/\bDestinationRow\b/);
   });
 
   it("계산은 lib 의 순수 함수로 — travelTiming · travelTimingCopy · cheapestDestination · cheapestCopy · destinationRows", () => {
-    for (const fn of ["travelTiming", "travelTimingCopy", "cheapestDestination", "cheapestCopy", "destinationRows"]) expect(HOME_UI, fn).toMatch(new RegExp(`\\b${fn}\\b`));
+    for (const fn of ["travelTiming", "travelTimingCopy", "cheapestDestination", "cheapestCopy", "destinationRows"]) expect(HOME_ALL, fn).toMatch(new RegExp(`\\b${fn}\\b`));
   });
 
   it("도착지 줄 전체가 통화 상세 링크 (/currencies/{통화})", () => {
@@ -84,7 +85,7 @@ describe("도착지 줄 핀 근거 숫자 (작업 0170 추가 요청)", () => {
 
 describe("자료가 없을 때 문구 (H1 · H8) — 숫자를 지어내지 않음", () => {
   it("오늘 환율이 없을 때 · 신호가 없을 때 문구가 코드에 있음 (lib 의 NO_RATE_COPY · '신호 없음')", () => {
-    expect(HOME_UI).toMatch(/NO_RATE_COPY|오늘 환율을 아직 받지 못했습니다/);
+    expect(HOME_ALL).toMatch(/NO_RATE_COPY|오늘 환율을 아직 받지 못했습니다/);
     expect(HOME_ALL).toContain("신호 없음");
     expect(HOME_ALL).toContain("국제항공료 지수를 아직 받지 못했습니다");
   });

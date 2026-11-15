@@ -34,7 +34,7 @@ const ALLOWED = [
   "packages/ui/src/components/text/heading.tsx",
   "packages/ui/src/components/text/big-number.tsx",
   "packages/ui/src/components/layout/nav-bar.tsx",
-  "apps/web/src/features/home/components/today-band.tsx",
+  "packages/ui/src/components/data/flap-board.tsx", // 작업 0177 출발 안내판 칸 글자 (옛 today-band 자리)
   "apps/web/src/features/currencies/components/currency-detail.tsx",
   "apps/web/src/features/import-calc/components/calc-result.tsx",
 ];
