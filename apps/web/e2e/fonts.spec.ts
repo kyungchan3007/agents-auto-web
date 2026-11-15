@@ -11,6 +11,7 @@ for (const width of [375, 1440]) {
     for (const path of PAGES) {
       test(`${path} — 가로로 넘치지 않음 · 큰 제목은 Pretendard 800 · 자간 -0.03em`, async ({ page }) => {
         await page.goto(path);
+        await page.waitForLoadState("networkidle"); // 기존 반응형 · 기능 e2e 와 같게 — 하이드레이션 · 글꼴 교체가 끝난 뒤 잼
         await page.evaluate(() => document.fonts.ready);
         expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), "가로 넘침").toBeLessThanOrEqual(0);
         const h1 = await page.getByRole("heading", { level: 1 }).first().evaluate((el) => {
