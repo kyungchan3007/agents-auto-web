@@ -20,10 +20,12 @@ for (const path of ["/", "/currencies/USD", "/flights", "/prices", "/calc", "/lo
   });
 }
 
-test("홈 — 다크 모드에서도 오늘 환율 바다 띠는 시안대로 울트라마린", async ({ page }) => {
+test("홈 — 다크 모드에서도 오늘 환율 구간은 하늘 종이 위(전체 띠 없음) · 울트라마린은 안내판에만 (작업 0177)", async ({ page }) => {
   await page.goto("/");
   const band = await page.locator("#today").evaluate((el) => getComputedStyle(el).backgroundColor);
-  expect(band).toBe(SEA);
+  expect(band).not.toBe(SEA);
+  const board = await page.locator('[data-testid="flap-board"]').evaluate((el) => getComputedStyle(el).backgroundColor);
+  expect(board).toBe(SEA);
 });
 
 test("주소창 색(theme-color) — 하늘 종이 하나 (다크 모드에서도 같은 값)", async ({ page }) => {

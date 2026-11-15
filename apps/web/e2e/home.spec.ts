@@ -32,8 +32,8 @@ test("여행 타이밍 — 지수가 없으면 '아직 받지 못했습니다' �
 test("오늘 환율 띠 — 이번 주 가장 싼 곳 문장 또는 '오늘 환율을 아직 받지 못했습니다' · 숫자를 지어내지 않음", async ({ page }) => {
   await page.goto("/");
   const band = page.locator("#today");
-  await expect(band).toContainText("오늘 환율");
-  await expect(band).toContainText(/이번 주 가장 싸게 갈 수 있는 곳은 .+입니다|오늘 환율을 아직 받지 못했습니다/);
+  await expect(band).toContainText("이번 주 가장 싸게 갈 수 있는 곳"); // 작업 0177: 안내판 위 작은 제목
+  await expect(page.locator('[data-testid="flap-board"]')).toHaveAttribute("aria-label", /이번 주 가장 싸게 갈 수 있는 곳은 .+입니다|오늘 환율을 아직 받지 못했습니다|판단할 신호가 아직 없습니다/);
 });
 
 test("도착지별 환전 타이밍 — 네 도시 줄이 통화 상세로 연결", async ({ page }) => {

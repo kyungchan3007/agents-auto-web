@@ -57,16 +57,9 @@ test("홈 여행 타이밍 · /flights — 제목 속 달 숫자(4월 같은)가
   }
 });
 
-test("홈 바다 띠 — 문장 속 숫자는 해 노랑 글자(띠 위 · 형광펜 아님)", async ({ page }) => {
+test("홈 오늘 환율 구간 — 울트라마린 띠가 없어져 숫자 강조 부품(바다 띠용 노란 글자)이 없음 (작업 0177)", async ({ page }) => {
   await page.goto("/");
-  const emph = page.locator("#today").locator('[data-testid="emph"]');
-  const n = await emph.count();
-  for (let i = 0; i < n; i++) {
-    await expect(emph.nth(i)).toHaveAttribute("data-bg", "sea");
-    const s = await css(emph.nth(i));
-    expect(s.color).toBe(SUN);
-    expect(s.image).not.toContain("linear-gradient");
-  }
+  await expect(page.locator("#today").locator('[data-testid="emph"][data-bg="sea"]')).toHaveCount(0);
 });
 
 test("작업실 · 통화 · GEO 같은 화면의 큰 제목은 숫자가 없으면 강조 부품이 없음 (없는 숫자를 칠하지 않음)", async ({ page }) => {
