@@ -4,7 +4,7 @@ import { Title } from "@hav/ui/text/heading";
 
 export function TodayPatches({ counts }: { counts: ReturnType<typeof todayPatchCounts> }) {
   return (
-    <section data-surface="elevated" aria-labelledby="today-patch-title" className="bg-surface px-4 py-24 text-fg sm:px-8 sm:py-32">
+    <section aria-labelledby="today-patch-title" className="bg-surface px-4 py-16 text-fg sm:px-8 sm:py-24">
       <div className="mx-auto max-w-5xl">
         <Title id="today-patch-title">
           오늘 발견된 버그와 보안.

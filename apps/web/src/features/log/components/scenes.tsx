@@ -1,10 +1,8 @@
 "use client";
 
-// 가운데 패널 장면 ①~③ — 고정 패널(스크롤로 장면 바뀜) · 움직임 줄이기면 차례로 쌓음
-import { AnimatePresence, motion } from "motion/react";
+// 실시간 기록 장면 ①~③ — 차례로 쌓음 (작업 0170: 스크롤로 장면이 바뀌는 고정 패널과 바다 띠를 걷어 냄)
 import { LivePanel, type Mode } from "./live-panel";
 import type { Activity } from "../hooks/use-activity";
-import { usePinnedScene } from "../hooks/use-pinned-scene";
 import { Title } from "@hav/ui/text/heading";
 
 const SCENES: { mode: Mode; title: string; body: (blocked: number) => string }[] = [
@@ -15,52 +13,18 @@ const SCENES: { mode: Mode; title: string; body: (blocked: number) => string }[]
 
 function Caption({ i, blocked }: { i: number; blocked: number }) {
   return (
-    <div className="text-center">
+    <div>
       <Title as="p">{SCENES[i].title}</Title>
-      <p className="mx-auto mt-3 max-w-xl text-base text-fg-2 sm:text-lead">{SCENES[i].body(blocked)}</p>
+      <p className="mt-3 max-w-xl text-base text-fg-2 sm:text-lead">{SCENES[i].body(blocked)}</p>
     </div>
   );
 }
 
 export type Props = { activity: Activity; names: Record<string, string>; blocked: number };
 
-export function PinnedScenes({ activity, names, blocked }: Props) {
-  const { ref, scale, opacity, scene } = usePinnedScene();
-
-  // 장면 셋을 넘기는 스크롤 길이 — 휴대폰은 짧게 (330vh 면 같은 패널을 두 화면 넘게 밀어야 했음 · 작업 0111)
-  return (
-    <div ref={ref} data-surface="dark" className="relative h-[230vh] bg-surface text-fg sm:h-[330vh]">
-      <div className="sticky top-(--hav-nav-h) flex h-[calc(100svh-var(--hav-nav-h))] flex-col justify-center gap-8 px-4 sm:px-8">
-        <div className="relative mx-auto h-36 w-full max-w-3xl sm:h-32">
-          {/* initial={false}: 첫 장면은 숨겼다 보여 주지 않음 (JS 전에도 보임 · LCP) */}
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div key={scene} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.4 }}>
-              <Caption i={scene} blocked={blocked} />
-            </motion.div>
-          </AnimatePresence>
-        </div>
-        <motion.div style={{ scale, opacity }} className="relative mx-auto mt-4 w-full max-w-3xl">
-          <LivePanel activity={activity} names={names} mode={SCENES[scene].mode} />
-        </motion.div>
-        <SceneDots scene={scene} />
-      </div>
-    </div>
-  );
-}
-
-function SceneDots({ scene }: { scene: number }) {
-  return (
-    <div className="flex justify-center gap-2" aria-hidden>
-      {SCENES.map((s, i) => (
-        <span key={s.mode} className={`h-1.5 rounded-full transition-all duration-500 ${i === scene ? "w-6 bg-accent" : "w-1.5 bg-line"}`} />
-      ))}
-    </div>
-  );
-}
-
 export function StackedScenes({ activity, names, blocked }: Props) {
   return (
-    <div data-surface="dark" className="space-y-24 bg-surface px-4 py-24 text-fg sm:px-8">
+    <div className="space-y-20 bg-surface px-4 py-16 text-fg sm:px-8">
       {SCENES.map((s, i) => (
         <div key={s.mode} className="mx-auto max-w-3xl space-y-8">
           <Caption i={i} blocked={blocked} />
