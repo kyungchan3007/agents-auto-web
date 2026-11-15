@@ -7,7 +7,8 @@ import { openMenuIfCollapsed } from "./helpers";
 test("홈 구간 순서 — 여행 타이밍 → 오늘 환율(바다 띠) → 도착지별 환전 타이밍", async ({ page }) => {
   await page.goto("/");
   const y = async (loc: ReturnType<typeof page.locator>) => (await loc.boundingBox())?.y ?? Number.NaN;
-  const timing = await y(page.getByText("여행 타이밍", { exact: true }).first());
+  // 메뉴의 "여행 타이밍" 링크는 휴대폰에서 접혀 있어 위치가 없음 — 머리글 밖(본문)의 라벨을 찾음
+  const timing = await y(page.locator('*:text-is("여행 타이밍"):not(header *)').first());
   const today = await y(page.locator("#today"));
   const dest = await y(page.locator("#destinations"));
   expect(timing, "여행 타이밍").toBeLessThan(today);
