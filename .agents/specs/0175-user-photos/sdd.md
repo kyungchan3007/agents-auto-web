@@ -9,6 +9,11 @@
 - **OG**: `apps/web/src/app/opengraph-image.tsx` 가 plane-sunset 을 1200×630 으로 잘라 배경으로 쓰고 지금의 글자 · 로고를 위에 (ImageResponse 안에서 이미지 읽기 — 빌드 때 파일 읽기).
 - **대비**: 막 위 큰 제목 · 설명의 대비를 contrast 검사로 (밝은 막의 가장 진한 부분 · 울트라마린 막 기준).
 
+### 통화 그래프 최고 · 최저 (추가 요청)
+- 그래프 부품(packages/ui 의 year-chart 또는 통화 period-chart)에 최고 · 최저 점과 라벨을 더함 — 값은 카드와 같은 계산 함수(currencies/lib 의 yearStats 계열)를 기간별로 씀
+- 라벨 위치 계산(겹치면 위아래로 비킴 · 화면 안으로)은 순수 함수로 (테스트 대상)
+- 커밋 순서: 사진 작업 커밋과 섞지 않고 따로 (테스트 → 그래프 → 문서)
+
 ## 대안
 - next/image: 정적 내보내기(unoptimized)라 크기 변환을 안 해 줌 → 미리 만든 폭별 파일 + srcset.
 - 사진을 CSS background-image 로: alt 를 못 달고 우선순위 지정이 어려움 → `<img>`.
@@ -26,6 +31,7 @@
 - apps/web/src/features/travel-price/**
 - apps/web/src/features/import-calc/**
 - apps/web/src/features/about/**
+- apps/web/src/features/currencies/**
 - apps/web/src/shared/**
 - apps/web/e2e/**
 - docs/design.md
