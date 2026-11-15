@@ -126,3 +126,16 @@ describe("큰 숫자 색 --hav-figure", () => {
     }
   }
 });
+
+// 사진 막 위 글자 (작업 0175 · P6) — 막이 가장 진한 쪽(글자가 놓이는 쪽)의 바탕색 기준: 밝은 막 = 하늘 종이(surface) · 울트라마린 막 = 울트라마린(cheap) 위 흰 글자
+//   사진 자체의 색은 알 수 없어 막이 가려 주는 곳(글자 자리)을 막 색으로 보고 판정 — photos.test.ts 가 막이 그 색을 쓰는지 검사
+describe("사진 막 위 글자 대비", () => {
+  it("밝은 막 — 큰 제목(cheap · fg) · 설명(fg-2)이 하늘 종이 위에서 본문 기준 4.5 이상", () => {
+    for (const fg of ["cheap", "fg", "fg-2"]) expect(contrastRatio(base.light[fg], base.light.surface), fg).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it("울트라마린 막(/calc) — 흰 글자가 울트라마린(#2438A8) 위에서 4.5 이상 (큰 제목 3 · 설명 4.5)", () => {
+    expect(lc(base.light.cheap)).toBe("#2438a8");
+    expect(contrastRatio("#ffffff", base.light.cheap)).toBeGreaterThanOrEqual(4.5);
+  });
+});

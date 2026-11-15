@@ -130,8 +130,13 @@ describe("장식을 걷어 냄 (R9) — 등장 효과 · 오로라 글자 · 그
   });
 
   it("공통 컴포넌트(packages/ui/src/components)에 그림자(shadow) · 그라데이션이 없음", () => {
+    // 사진 머리 부품(photo-header.tsx)의 막은 글자를 읽히게 하는 기능이라 그라데이션을 허용 (작업 0175) · 그림자는 여기서도 안 됨
     const bad = sources(join(UI_SRC, "components"))
-      .filter((f) => /\bshadow(-[\w\[\]\/.-]+)?\b|bg-gradient|linear-gradient|\bfrom-[\w/.-]+\s+to-|\bvia-[\w/.-]+/.test(codeOf(read(f))))
+      .filter((f) => {
+        const code = codeOf(read(f));
+        const gradient = !f.endsWith("photo-header.tsx") && /bg-gradient|linear-gradient|\bfrom-[\w/.-]+\s+to-|\bvia-[\w/.-]+/.test(code);
+        return gradient || /\bshadow(-[\w\[\]\/.-]+)?\b/.test(code);
+      })
       .map((f) => f.replace(ROOT + "/", ""));
     expect(bad).toEqual([]);
   });
