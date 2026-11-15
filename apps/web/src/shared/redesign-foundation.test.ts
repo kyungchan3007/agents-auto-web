@@ -83,7 +83,7 @@ describe("글꼴 — next/font 로 Gasoek One · IBM Plex Sans KR (R3)", () => {
     expect(layout).toMatch(/\bGasoek_One\b/);
     expect(layout).toMatch(/\bIBM_Plex_Sans_KR\b/);
     expect(layout).toMatch(/Gasoek_One\(\{[^}]*weight:\s*"400"/);
-    expect(layout).toMatch(/IBM_Plex_Sans_KR\(\{[^}]*weight:\s*\[\s*"400"\s*,\s*"600"\s*\]/);
+    expect(layout).toMatch(/IBM_Plex_Sans_KR\(\{[^}]*weight:\s*\[\s*"400"\s*,\s*"600"(\s*,\s*"700")?\s*\]/); // 700 은 작업 0173 글꼴 정리 (font-readability.test.ts 가 검사)
     expect(layout.match(/variable:\s*"--font-[a-z0-9-]+"/g)?.length).toBeGreaterThanOrEqual(2);
   });
 
