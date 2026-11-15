@@ -35,6 +35,7 @@ const CLASS: Record<Signal, string> = {
 /** 신호별 글자 색 (핀이 아닌 글 속 숫자 · 표시용) */
 export const SIGNAL_TEXT: Record<Signal, string> = { cheap: "text-cheap", normal: "text-normal", expensive: "text-expensive" };
 
-export function SignalPin({ signal, pct, className = "" }: { signal: Signal; pct?: number | null; className?: string }) {
-  return <span className={`inline-flex items-center rounded-pill px-3 py-1 text-small font-semibold whitespace-nowrap tabular-nums ${CLASS[signal]} ${className}`}>{pinLabel(signal, pct)}</span>;
+/** text: 핀 글을 직접 정할 때 (예 "작년보다 +6.1%") — 없으면 "쌈 · 보통 · 비쌈" 글자 (작업 0170 · props 추가만) */
+export function SignalPin({ signal, pct, text, className = "" }: { signal: Signal; pct?: number | null; text?: string; className?: string }) {
+  return <span className={`inline-flex items-center rounded-pill px-3 py-1 text-small font-semibold whitespace-nowrap tabular-nums ${CLASS[signal]} ${className}`}>{text ?? pinLabel(signal, pct)}</span>;
 }
