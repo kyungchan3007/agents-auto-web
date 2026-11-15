@@ -1,30 +1,26 @@
 "use client";
 
-// 🐱 자리 옮기기 장면 — 책상 N개가 한 줄로 · 캐릭터가 지금 자리 앞으로 걸어감 (자리가 바뀌면 걷는 동작)
+// 자리 옮기기 장면 — 책상 N개가 한 줄로 · 지금 자리 위에 표식(떠 있는 다이아몬드)이 미끄러져 옮겨 감 (작업 0168: 고양이를 빼고 코드 도형 표식으로)
 // 무슨 단계인지 · 이름은 쓰는 쪽이 정함 (디자인 시스템은 자리 번호만 받음)
 import { RoundedBox } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Color, type Group, type PerspectiveCamera } from "three";
 import { Stage, tokenColor } from "../scene/stage";
-import { CatFigure, type Mood } from "../characters/cat-figure";
 
 export type StationsProps = {
   count: number;
-  /** 캐릭터가 갈 자리 (0부터) */
+  /** 표식이 갈 자리 (0부터) */
   active: number;
   /** 앞에서부터 끝난 자리 수 */
   done: number;
-  /** 자리에 도착해서의 표정 (걷는 동안은 walking) */
-  mood: Mood;
   className?: string;
   label?: string;
 };
 
 // 한 자리 너비 — 카메라가 화면 비율에 맞춰 물러나서, 자리 N개가 늘 화면 너비를 N등분 (아래 HTML 이름 칸과 줄이 맞음)
 const GAP = 2;
-const FOV = 24; // 좁은 화각 = 원근 왜곡이 적음 (캐릭터가 책상보다 앞에 있어도 크기 · 위치가 덜 틀어짐)
-const WALK_Z = 0.5; // 캐릭터는 책상 앞
+const FOV = 24; // 좁은 화각 = 원근 왜곡이 적음
 const SPEED = 1.6; // 초당 거리
 const xOf = (i: number, n: number) => (i - (n - 1) / 2) * GAP;
 
@@ -34,7 +30,7 @@ function Desk({ x, state }: { x: number; state: "done" | "active" | "wait" }) {
       top: new Color(tokenColor("--hav-surface-2", "#1d1d1f")).multiplyScalar(1.9),
       leg: new Color(tokenColor("--hav-line", "#424245")),
       screen: new Color(
-        state === "active" ? tokenColor("--hav-accent", "#4ff0e0") : state === "done" ? tokenColor("--hav-aurora-2", "#9c8cff") : tokenColor("--hav-line", "#424245"),
+        state === "active" ? tokenColor("--hav-accent", "#4ff0e0") : state === "done" ? tokenColor("--hav-3d-aurora-2", "#9c8cff") : tokenColor("--hav-line", "#424245"),
       ),
     }),
     [state],
@@ -77,23 +73,24 @@ function Desk({ x, state }: { x: number; state: "done" | "active" | "wait" }) {
   );
 }
 
-function Walker({ target, mood, animate }: { target: number; mood: Mood; animate: boolean }) {
+/** 지금 자리 위 표식 — 자리가 바뀌면 옆으로 미끄러짐 (움직임 줄이기면 바로 그 자리) · 천천히 위아래 */
+function Marker({ target, animate }: { target: number; animate: boolean }) {
   const g = useRef<Group>(null);
-  const [walking, setWalking] = useState(false);
-  useFrame((_, dt) => {
-    const w = g.current;
-    if (!w) return;
-    const d = target - w.position.x;
-    // 움직임 줄이기면 바로 그 자리 (걷지 않음)
-    const step = animate ? Math.sign(d) * Math.min(Math.abs(d), SPEED * Math.min(dt, 0.05)) : d;
-    w.position.x += step;
-    const moving = Math.abs(target - w.position.x) > 0.01;
-    w.rotation.y = moving ? Math.sign(d) * 1.35 : w.rotation.y * 0.9; // 걸을 땐 옆모습 (네 발로) · 도착하면 앞을 봄
-    if (moving !== walking) setWalking(moving);
+  const color = useMemo(() => new Color(tokenColor("--hav-sun", "#f7c548")), []);
+  useFrame(({ clock }, dt) => {
+    const m = g.current;
+    if (!m) return;
+    const d = target - m.position.x;
+    m.position.x += animate ? Math.sign(d) * Math.min(Math.abs(d), SPEED * Math.min(dt, 0.05)) : d;
+    m.position.y = 1.55 + (animate ? Math.sin(clock.elapsedTime * 2) * 0.06 : 0);
+    m.rotation.y = animate ? clock.elapsedTime * 1.2 : 0;
   });
   return (
-    <group ref={g} position={[target, -0.1, WALK_Z]} scale={0.55}>
-      <CatFigure mood={walking ? "walking" : mood} gear="suit" animate={animate} />
+    <group ref={g} position={[target, 1.55, 0]}>
+      <mesh scale={[0.5, 0.7, 0.5]}>
+        <octahedronGeometry args={[0.35, 0]} />
+        <meshStandardMaterial color={color} roughness={0.35} metalness={0.1} />
+      </mesh>
     </group>
   );
 }
@@ -116,20 +113,18 @@ function FitCamera({ dist }: { dist: number }) {
   return null;
 }
 
-function Scene({ count, active, done, mood, animate }: Omit<StationsProps, "className" | "label"> & { animate: boolean }) {
+function Scene({ count, active, done, animate }: Omit<StationsProps, "className" | "label"> & { animate: boolean }) {
   const dist = useFitDistance(count);
-  // 캐릭터는 책상보다 카메라에 가까워서, 화면에서 책상과 같은 자리에 보이게 x 를 줄임
-  const near = (dist - WALK_Z) / dist;
   return (
     <>
       <FitCamera dist={dist} />
       <ambientLight intensity={0.8} />
       <directionalLight position={[2, 4, 5]} intensity={1.4} />
-      <pointLight position={[-3, 2, 2]} intensity={5} color={tokenColor("--hav-aurora-3", "#ff8ad8")} />
+      <pointLight position={[-3, 2, 2]} intensity={5} color={tokenColor("--hav-3d-aurora-3", "#ff8ad8")} />
       {Array.from({ length: count }, (_, i) => (
         <Desk key={i} x={xOf(i, count)} state={i < done ? "done" : i === active ? "active" : "wait"} />
       ))}
-      <Walker target={xOf(Math.max(0, Math.min(active, count - 1)), count) * near} mood={mood} animate={animate} />
+      <Marker target={xOf(Math.max(0, Math.min(active, count - 1)), count)} animate={animate} />
     </>
   );
 }

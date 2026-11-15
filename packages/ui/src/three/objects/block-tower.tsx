@@ -24,7 +24,7 @@ function aurora(t: number, stops: Color[]): Color {
 function Tower({ count, marks, animate }: { count: number; marks: boolean[]; animate: boolean }) {
   const { spots, height } = useMemo(() => towerLayout(count), [count]);
   const colors = useMemo(() => {
-    const stops = [tokenColor("--hav-aurora-1", "#4ff0e0"), tokenColor("--hav-aurora-2", "#9c8cff"), tokenColor("--hav-aurora-3", "#ff8ad8")].map((c) => new Color(c));
+    const stops = [tokenColor("--hav-3d-aurora-1", "#4ff0e0"), tokenColor("--hav-3d-aurora-2", "#9c8cff"), tokenColor("--hav-3d-aurora-3", "#ff8ad8")].map((c) => new Color(c));
     const red = new Color(tokenColor("--hav-expensive", "#ff5a5f"));
     // 아래쪽은 어둡게 눌러 최신 쪽이 더 빛나 보이게 · 빨간 블록은 높이와 상관없이 선명하게
     return spots.map((s, i) => (marks[i] ? red.clone() : aurora(s.t, stops).multiplyScalar(0.45 + 0.55 * s.t)));
@@ -88,7 +88,7 @@ export default function BlockTower({ count, marks = NONE, className = "", label 
         <>
           <ambientLight intensity={0.8} />
           <directionalLight position={[3, 5, 4]} intensity={1.8} />
-          <pointLight position={[-3, 1, 2]} intensity={5} color={tokenColor("--hav-aurora-3", "#ff8ad8")} />
+          <pointLight position={[-3, 1, 2]} intensity={5} color={tokenColor("--hav-3d-aurora-3", "#ff8ad8")} />
           <group rotation={[0.12, 0, 0]}>
             <Tower count={count} marks={marks} animate={animate} />
           </group>
