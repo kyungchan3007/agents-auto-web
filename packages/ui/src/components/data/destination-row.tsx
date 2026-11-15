@@ -1,4 +1,4 @@
-// 도착지 줄 — 위 2px 울트라마린 선 · 도시(Gasoek One 34) · 통화(작은 글) · 오늘 환율(강조 숫자 · 오른쪽 정렬) · 쌈~비쌈 눈금(가운데 세로 눈금 = 1년 평균) 위 판정 핀 (작업 0168 · Figma)
+// 도착지 줄 — 위 2px 울트라마린 선 · 도시(Gasoek One 34) · 통화(작은 글) · 오늘 환율(강조 숫자 · 오른쪽 정렬) · 쌈~비쌈 눈금(가운데 세로 눈금 = 최근 90일 중간) 위 판정 핀 (작업 0168 · Figma)
 // 표 대신 큰 글자 · 눈금 · 핀 — 모바일은 도시 · 통화와 핀만 · 값이 없으면 지어내지 않고 비움
 import type { ReactNode } from "react";
 import { type Signal, SignalPin } from "./signal-pin";
@@ -47,7 +47,7 @@ export function DestinationRow({ city, currency, rate, signal, pct, position = n
           </div>
           <div className="flex justify-between text-small text-fg-2">
             <span>쌈</span>
-            <span>1년 평균</span>
+            <span>중간</span>
             <span>비쌈</span>
           </div>
         </div>
