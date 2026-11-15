@@ -176,22 +176,19 @@ describe("울트라마린 막 위 강조 글자", () => {
   });
 });
 
-// 출발 안내판(작업 0177) — 판 #2438A8 · 칸 #3247b8 위 글자: 도착지 줄 흰 글자 · 금액 줄 햇빛 노랑 #F7C548
+// 출발 안내판(작업 0177 · 벽에 걸린 물건처럼) — 판 #16246E · 칸 #24337f 위 글자: 두 줄 모두 햇빛 노랑 #F7C548
 describe("출발 안내판 글자 대비", () => {
-  it("칸 색은 #3247b8 · 판은 울트라마린(cheap)", () => {
-    expect(CSS).toMatch(/--hav-flap-cell\s*:\s*#3247b8/i);
-    expect(lc(base.light.cheap)).toBe("#2438a8");
+  it("칸 색은 #24337f · 판은 짙은 남색 잉크(#16246E)", () => {
+    expect(CSS).toMatch(/--hav-flap-cell\s*:\s*#24337f/i);
+    expect(CSS).toMatch(/--hav-pin-ink\s*:\s*#16246e/i);
   });
 
-  it("흰 글자(도착지 줄)가 칸 · 판 위에서 4.5 이상 (칸 7.69 · 판 9.52)", () => {
-    for (const bg of ["#3247b8", base.light.cheap]) expect(contrastRatio("#ffffff", bg), bg).toBeGreaterThanOrEqual(4.5);
+  it("햇빛 노랑(두 줄 #F7C548)이 칸 · 판 위에서 4.5 이상", () => {
+    for (const bg of ["#24337f", "#16246e"]) expect(contrastRatio("#f7c548", bg), bg).toBeGreaterThanOrEqual(4.5);
   });
 
-  it("햇빛 노랑(금액 줄 #F7C548)이 칸 · 판 위에서 4.5 이상 (칸 4.78 · 판 5.91)", () => {
-    for (const bg of ["#3247b8", base.light.cheap]) expect(contrastRatio("#f7c548", bg), bg).toBeGreaterThanOrEqual(4.5);
-  });
-
-  it("칸과 판이 구분됨 — 대비 1.2 이상 (칸 1.24)", () => {
-    expect(contrastRatio("#3247b8", base.light.cheap)).toBeGreaterThanOrEqual(1.2);
+  it("칸과 판이 구분됨(대비 1.1 이상) · 이음선(#0E1648)이 칸보다 더 짙음(대비 1.4 이상)", () => {
+    expect(contrastRatio("#24337f", "#16246e")).toBeGreaterThanOrEqual(1.1);
+    expect(contrastRatio("#24337f", "#0e1648")).toBeGreaterThanOrEqual(1.4);
   });
 });

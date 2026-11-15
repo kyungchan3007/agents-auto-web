@@ -60,9 +60,10 @@ describe("움직임 — 처음 한 번 · 움직임 줄이기면 바로 최종 �
 });
 
 describe("모양 — 판 · 칸 · 이음선 · 글자 색 (B3)", () => {
-  it("판은 울트라마린(bg-cheap) · 칸은 bg-flap-cell · 고정폭 칸(글자 하나 = 같은 폭 · 가운데 맞춤) · 줄이 줄바꿈하지 않음", () => {
+  it("판은 짙은 남색 잉크(bg-pin-ink · 작업 0177 A안 물건처럼) · 칸은 bg-flap-cell · 고정폭 칸(글자 하나 = 같은 폭 · 가운데 맞춤) · 줄이 줄바꿈하지 않음", () => {
     const s = src();
-    expect(tag(s, "flap-board")).toMatch(/bg-cheap/);
+    expect(tag(s, "flap-board")).toMatch(/bg-pin-ink/);
+    expect(tag(s, "flap-board")).toMatch(/rounded-\[10px\]/);
     const cell = tag(s, "flap-cell");
     expect(cell).toMatch(/bg-flap-cell/);
     expect(cell).toMatch(/\bw-\[[^\]]+\]|\bw-\d+|\bsize-\[[^\]]+\]|\bsize-\d+/); // 폭 고정
@@ -70,16 +71,18 @@ describe("모양 — 판 · 칸 · 이음선 · 글자 색 (B3)", () => {
     expect(tag(s, "flap-row")).not.toMatch(/flex-wrap/);
   });
 
-  it("칸 가운데 이음선 — 가로선(top-1/2 · 한 줄 굵기) · 판 색", () => {
+  it("칸 가운데 이음선 — 가로선(top-1/2 · 한 줄 굵기) · 판보다 더 짙은 색(bg-on-band)", () => {
     const seam = tag(src(), "flap-seam");
     expect(seam).toMatch(/top-1\/2/);
     expect(seam).toMatch(/\bh-px\b|\bh-0\.5\b|\bh-\[1px\]|\bh-\[2px\]/);
+    expect(seam).toMatch(/bg-on-band/);
   });
 
-  it("도착지 줄은 흰 글자 · 금액 줄은 햇빛 노랑(text-sun) — tone 에 따라", () => {
+  it("두 줄 모두 햇빛 노랑(text-sun) — 도착지 줄도 노랑 (작업 0177 수정)", () => {
     const s = src();
-    expect(s).toMatch(/dest[\s\S]{0,80}text-(foam|white)|text-(foam|white)[\s\S]{0,80}dest/);
+    expect(s).toMatch(/dest[\s\S]{0,80}text-sun|text-sun[\s\S]{0,80}dest/);
     expect(s).toMatch(/money[\s\S]{0,80}text-sun|text-sun[\s\S]{0,80}money/);
+    expect(s).not.toMatch(/text-(foam|white)/);
   });
 
   it("글꼴 — 칸 글자는 큰 제목 글꼴(font-display · Pretendard 800) · 숫자는 같은 폭(tabular-nums)", () => {
@@ -89,16 +92,16 @@ describe("모양 — 판 · 칸 · 이음선 · 글자 색 (B3)", () => {
     expect(s).toMatch(/\btabular-nums\b/);
   });
 
-  it("판에만 울트라마린 — 그림자 · 그라데이션 없음 (장식 없음)", () => {
+  it("벽에 걸린 물건처럼 — 부드러운 그림자 한 가지(0 10px 24px) · 그라데이션 없음", () => {
     const s = src();
-    expect(s).not.toMatch(/\bshadow(-[\w\[\]\/.-]+)?\b/);
+    expect(tag(s, "flap-board")).toMatch(/shadow-\[0_10px_24px_rgba\(22,36,110,0\.25\)\]/);
     expect(s).not.toMatch(/gradient/);
   });
 });
 
-describe("토큰 — 칸 색 #3247b8", () => {
-  it("--hav-flap-cell: #3247b8 · @theme 에서 --color-flap-cell 로 연결", () => {
-    expect(tokens()).toMatch(/--hav-flap-cell\s*:\s*#3247b8/i);
+describe("토큰 — 칸 색 #24337f", () => {
+  it("--hav-flap-cell: #24337f · @theme 에서 --color-flap-cell 로 연결", () => {
+    expect(tokens()).toMatch(/--hav-flap-cell\s*:\s*#24337f/i);
     expect(tokens()).toMatch(/--color-flap-cell\s*:\s*var\(--hav-flap-cell\)/);
   });
 });
