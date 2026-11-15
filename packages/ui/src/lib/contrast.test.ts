@@ -175,3 +175,17 @@ describe("울트라마린 막 위 강조 글자", () => {
     expect(contrastRatio("#f7c548", base.light.cheap)).toBeGreaterThanOrEqual(4.5);
   });
 });
+
+// 홈 오늘 환율 구간 — 하늘 종이 위 글자 (작업 0175 네 번째 묶음 · G2): 작은 제목 청록(accent) · 큰 문장 · 큰 숫자 울트라마린(cheap · figure) · 설명 보조 남색(fg-2)
+describe("홈 오늘 환율 구간(하늘 종이) 글자 대비", () => {
+  it("청록 · 울트라마린 · 큰 숫자 색 · 보조 남색이 하늘 종이 위에서 본문 기준 4.5 이상", () => {
+    for (const fg of ["accent", "cheap", "figure", "fg-2"]) expect(contrastRatio(base.light[fg], base.light.surface), fg).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it("값 — 큰 숫자 · 큰 문장은 울트라마린(#2438A8) · 작은 제목은 청록 계열", () => {
+    expect(lc(base.light.cheap)).toBe("#2438a8");
+    expect(lc(base.light.figure)).toBe("#2438a8");
+    expect(hue(base.light.accent)).toBeGreaterThanOrEqual(160);
+    expect(hue(base.light.accent)).toBeLessThanOrEqual(190);
+  });
+});

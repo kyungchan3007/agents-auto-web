@@ -6,7 +6,7 @@
 //   packages/ui/src/components/text/emph.tsx: Emph({ children, bg?: "light" | "sea", tone?: "neutral" | "expensive" }) · EmphText({ text, bg?, tone? }) — text 를 splitNumbers 로 나눠 숫자 조각만 Emph 로 · tone 을 안 주면 numberTone(text)
 //     Emph: data-testid="emph" · data-tone · data-bg · light+neutral = 해 노랑 형광펜 띠(--hav-sun · 아래 40~50% — 그라데이션 transparent 50~60% 에서 시작) · expensive = text-expensive(주홍) · sea = 해 노랑 글자(text-figure 또는 text-sun)
 //     이 부품만 그라데이션 허용(0168 "장식 그라데이션 없음" 검사에서 photo-header 와 함께 제외)
-//   화면: 아래 다섯 곳의 문장을 <EmphText text={…}> 로 그림 (Title 안에 span · 색 클래스를 직접 쓰지 않음) — 홈 바다 띠만 bg="sea"
+//   화면: 아래 다섯 곳의 문장을 <EmphText text={…}> 로 그림 (Title 안에 span · 색 클래스를 직접 쓰지 않음) — 홈 오늘 환율 구간도 하늘 종이 위라 bg="sea" 는 쓰지 않음(작업 0175 네 번째 묶음 · 바다 띠 배경 삭제)
 import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -57,7 +57,7 @@ describe("화면 적용 — 큰 문장이 공통 부품을 씀 (화면마다 따
     ["apps/web/src/features/import-calc/components/calc-page.tsx", "직구 큰 문장", /calcHeadline/, "light"],
     ["apps/web/src/features/home/components/travel-timing-section.tsx", "홈 여행 타이밍", /copy\.title/, "light"],
     ["apps/web/src/features/travel-price/components/flights-page.tsx", "여행 타이밍(/flights) 큰 문장", /headline/, "light"],
-    ["apps/web/src/features/home/components/today-band.tsx", "홈 바다 띠 문장", /copy\.headline/, "sea"],
+    ["apps/web/src/features/home/components/today-band.tsx", "홈 오늘 환율 문장 (작업 0175: 하늘 종이 위 — 바다 띠가 아니라 형광펜 띠)", /copy\.headline/, "light"],
   ];
 
   for (const [file, label, data, bg] of SCREENS) {
