@@ -57,7 +57,7 @@ describe("화면 적용 — 큰 문장이 공통 부품을 씀 (화면마다 따
     ["apps/web/src/features/import-calc/components/calc-page.tsx", "직구 큰 문장", /calcHeadline/, "light"],
     ["apps/web/src/features/home/components/travel-timing-section.tsx", "홈 여행 타이밍", /copy\.title/, "light"],
     ["apps/web/src/features/travel-price/components/flights-page.tsx", "여행 타이밍(/flights) 큰 문장", /headline/, "light"],
-    ["apps/web/src/features/home/components/today-band.tsx", "홈 바다 띠 문장", /copy\.headline/, "sea"],
+    // 홈 오늘 환율 구간은 작업 0177 에서 출발 안내판으로 바뀌어 큰 문장이 없음 (바다 띠 · bg="sea" 문장 없어짐)
   ];
 
   for (const [file, label, data, bg] of SCREENS) {
