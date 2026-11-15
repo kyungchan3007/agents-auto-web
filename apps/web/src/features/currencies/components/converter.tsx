@@ -13,9 +13,9 @@ export function Converter({ code, rate }: { code: string; rate: FxRate }) {
   const label = (s: Side) => (s === "won" ? "원" : code);
 
   return (
-    <section aria-labelledby="converter-title" className="rounded-card bg-surface-2 p-5 sm:p-6">
-      <h2 id="converter-title" className="text-sm font-semibold text-fg">
-        환율 계산기 <span className="font-normal text-fg-2">· 어느 칸에 써도 됩니다</span>
+    <section aria-labelledby="converter-title" className="border-t-2 border-line pt-5">
+      <h2 id="converter-title" className="text-lg font-semibold text-fg">
+        실제로 바꿀 때 <span className="text-small font-normal text-fg-2">· 어느 칸에 써도 됩니다</span>
       </h2>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         {(["foreign", "won"] as const).map((s) => (
@@ -31,7 +31,7 @@ export function Converter({ code, rate }: { code: string; rate: FxRate }) {
               key={`${s}${p}`}
               type="button"
               onClick={() => pick(s, p)}
-              className={`rounded-full border px-3 py-1 text-xs transition-colors ${side === s && amount === p ? "border-accent text-accent" : "border-line text-fg-2 hover:text-fg"}`}
+              className={`rounded-pill px-3 py-1 text-small transition-colors ${side === s && amount === p ? "bg-foam font-semibold text-fg" : "bg-surface-2 text-fg-2 hover:text-fg"}`}
             >
               {amountText(p, s, rate)} {label(s)}
             </button>

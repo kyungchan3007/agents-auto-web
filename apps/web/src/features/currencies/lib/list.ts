@@ -4,7 +4,7 @@ import type { Signal } from "@hav/shared/signal";
 import { favoritesFirst } from "./favorites";
 import { type SortId, sortByChange } from "./sort";
 
-export type ListItem = { currency: string; signal: Signal | null; change: number | null };
+export type ListItem = { currency: string; signal: Signal | null; change: number | null; /** 고시 단위 (엔 100 · 목록 이름 옆) — 환율을 못 받았으면 없음 */ unit?: number };
 export type RegionFilter = Region | "all" | "fav";
 
 export function regionChips(items: ListItem[], favCount: number): { id: RegionFilter; label: string }[] {

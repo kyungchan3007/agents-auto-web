@@ -15,7 +15,7 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
   const tones = Object.fromEntries((signals.ok ? signals.data.signals : []).map((s) => [s.currency, s.signal]));
   // 지난 1개월 변화 — 못 받으면 정렬 단추 · 숫자를 뺌 (작업 0099)
   const pct = Object.fromEntries((changes.ok ? changes.data.changes : []).map((c) => [c.currency, c.pct]));
-  const items = (latest.ok ? latest.data.rates : []).map((r) => ({ currency: r.currency, signal: tones[r.currency] ?? null, change: pct[r.currency] ?? null }));
+  const items = (latest.ok ? latest.data.rates : []).map((r) => ({ currency: r.currency, signal: tones[r.currency] ?? null, change: pct[r.currency] ?? null, unit: r.unit }));
   const windowDays = signals.ok ? signals.data.rule.windowDays : 90;
 
   return (
@@ -23,13 +23,17 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
       <SiteNav page="currencies" />
       <section data-surface="light" className="bg-surface px-4 pt-10 pb-24 text-fg sm:px-8 sm:pt-16">
         <div className="mx-auto max-w-6xl">
-          <Eyebrow>통화 둘러보기 · {items.length}개</Eyebrow>
-          <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-12">
-            <div className="min-w-0 lg:sticky lg:top-(--hav-nav-h) lg:self-start">
-              <CurrencyList items={items} />
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-14">
+            <div data-testid="currency-list" className="min-w-0 lg:sticky lg:top-(--hav-nav-h) lg:self-start">
+              <Eyebrow>둘러보기 · {items.length}개</Eyebrow>
+              <div className="mt-4">
+                <CurrencyList items={items} />
+              </div>
             </div>
             {/* 본문 표시 — 코드 순서는 목록 먼저 그대로 (바꾸면 키보드 이동 순서가 화면과 어긋남 · 작업 0114) */}
-            <main className="min-w-0">{children}</main>
+            <main data-testid="currency-detail" className="min-w-0">
+              {children}
+            </main>
           </div>
         </div>
       </section>
