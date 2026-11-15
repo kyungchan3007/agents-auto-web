@@ -1,7 +1,7 @@
 "use client";
 
 // 실시간 기록 — 울트라마린 카드 하나 · 노란 제목 · 흰 글 세 줄 (작업 0170 · Figma 06) — 머지된 PR 의 실제 기록만 · 받지 못하면 이유
-// 빌드 때 받은 것을 먼저 · 브라우저가 한 번 더 (use-tasks) · 카드는 어느 배경(밤 포스터 포함)에서도 같은 울트라마린 · 흰 글 (--hav-pin-cheap)
+// 빌드 때 받은 것을 먼저 · 브라우저가 한 번 더 (use-tasks) · 카드는 어느 배경에서도 같은 울트라마린 · 흰 글 (--hav-pin-cheap)
 import type { TasksSummary } from "@hav/shared/tasks";
 import type { Fetched } from "../../../shared/api";
 import { recordLine } from "../lib/record";
