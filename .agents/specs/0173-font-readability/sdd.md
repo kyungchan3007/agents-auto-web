@@ -34,6 +34,7 @@
 - docs/design.md
 
 ## 계획 밖 변경 이유
+- apps/web/src/features/geo/components/geo-report.tsx (geo 담당 파일): GEO 카드 수치의 글꼴 클래스 한 줄만 font-display → IBM Plex 굵게 — lead 결정(카드 안 숫자는 IBM Plex 굵게)을 공통으로 맞추려고. 다른 geo 파일은 건드리지 않음.
 
 ## 위험
 - 0168 테스트(heading · big-number font-display 소스 검사)가 막을 수 있음 → test 가 먼저 새 규칙으로 고침.
@@ -44,3 +45,5 @@
 - 화면: 로컬 빌드 전 · 후 캡처(홈 · 통화 · 여행 물가 · 직구 · 작업실)를 PR 에
 
 ## 계획과 달라진 점
+- 허용 목록에 없는 중간 크기 숫자(여행 타이밍 카드 값 · GEO 카드 수치 · 단계 번호)는 IBM Plex 굵게 (lead 결정 — 사용자가 든 '큰 숫자' 예시는 노란 큰 숫자 · 통화 큰 환율 · 직구 결과 금액, 목적은 가독성)
+- 밝은 화면 하나만 요청을 같은 PR 에 단계별 커밋으로 (같은 tokens.css · layout.tsx 를 고쳐 따로 나누면 충돌)
