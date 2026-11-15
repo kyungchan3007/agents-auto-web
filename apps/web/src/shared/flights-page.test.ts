@@ -6,7 +6,7 @@
 //   shared/site-nav.tsx: Page 타입에 "flights" · 메뉴에 { href: "/flights", label: "여행 타이밍", current: page === "flights" } 추가 → 메뉴 7개
 //   app/flights/page.tsx 새로 만듦: metadata 제목에 "여행 타이밍" · alternates.canonical "/flights" · 여행 품목 영역(TravelIndexSection)을 씀 · SiteNav page="flights"
 //     (app/flights/ 안이나 features/travel-price/components/ 의 새 화면 컴포넌트 어디에 두든 됨 — 둘을 합쳐서 검사)
-//   /prices (app/prices/page.tsx · price-page.tsx): TravelIndexSection · 여행 품목 API(kosis-cpi) 호출을 뺌 · /flights 로 가는 링크 한 줄(href="/flights")
+//   /prices (app/prices/page.tsx · price-page.tsx): TravelIndexSection · 여행 품목 API(kosis-cpi) 호출을 뺌 (시안 04 에 없는 "/flights 로 가는 링크 한 줄"은 요구하지 않음 — 있어도 되고 없어도 됨 · 작업 0170 시안 맞춤)
 //   geo 소유 파일(packages/shared/src/domain/geo-visit.ts 방문 집계 경로 목록)에 /flights 추가는 geo 가 함 — 여기서 검사하지 않음
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -64,10 +64,6 @@ describe("/prices — 여행 품목 영역을 뺌", () => {
     expect(text).not.toMatch(/TravelIndexSection/);
     expect(text).not.toMatch(/kosis-cpi/);
     expect(text).not.toMatch(/fxMonthlyAverage/);
-  });
-
-  it("/flights 로 가는 링크 한 줄은 있음", () => {
-    expect(prices()).toMatch(/href="\/flights"/);
   });
 
   it("그 밖의 /prices 내용(예산 · 가격대)은 그대로", () => {

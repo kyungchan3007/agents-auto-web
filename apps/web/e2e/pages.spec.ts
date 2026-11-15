@@ -66,14 +66,13 @@ test.describe("여행 타이밍 /flights (SR-TRV-01)", () => {
 });
 
 test.describe("여행 물가 /prices (SR-PRC-01)", () => {
-  test("큰 문장 · 물가 구간 · 하루 예산 · /flights 링크", async ({ page }) => {
+  test("큰 문장 · 물가 구간 · 하루 예산", async ({ page }) => {
     await page.goto("/prices");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     const bands = tid(page, "price-bands");
     await expect(bands).toBeVisible();
     for (const label of ["한국보다 싼 곳", "비슷한 곳", "한국보다 비싼 곳"]) await expect(bands).toContainText(label);
     await expect(tid(page, "budget")).toContainText("여행 하루 예산");
-    await expect(page.locator('a[href="/flights"]:not(header *)').first()).toBeVisible();
   });
 });
 
