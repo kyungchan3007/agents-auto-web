@@ -34,8 +34,6 @@ export function TravelTimingSection({ timing }: { timing: TravelTiming }) {
   return (
     <section aria-labelledby="timing-title" className="bg-surface text-fg">
       <PhotoHeader name="window-fjord" alt="비행기 창밖으로 보이는 피오르" veil="light" priority fadeBottom>
-        {/* 아래 여백 — 오늘 환율 안내판의 위쪽 절반이 이 사진 구간으로 올라와 걸침 (작업 0177) */}
-        <div className="pb-16 sm:pb-24">
         <Eyebrow>여행 타이밍</Eyebrow>
         {timing.kind === "ready" ? (
           <>
@@ -49,7 +47,6 @@ export function TravelTimingSection({ timing }: { timing: TravelTiming }) {
             {copy.message}
           </Title>
         )}
-        </div>
       </PhotoHeader>
     </section>
   );
