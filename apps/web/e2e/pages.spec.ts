@@ -131,6 +131,15 @@ test.describe("작업실 /log (SR-LOG-01)", () => {
     for (const step of ["요청 원문 보관", "계획", "테스트 먼저", "구현", "자동 검사 통과", "사람 머지"]) await expect(flow).toContainText(step);
   });
 
+  test("맨 위 요약 구간 — 이 사이트를 어떻게 만들었나 · 다섯 단계 (작업 0172) · 상태판보다 위", async ({ page }) => {
+    await page.goto("/log");
+    const story = tid(page, "site-story");
+    await expect(story).toContainText("이 사이트를 어떻게 만들었나");
+    await expect(tid(page, "story-step")).toHaveCount(5);
+    for (const title of ["문제 정의", "외부 공공 API 연결", "구현 · 운영", "사고 대응", "결과 측정"]) await expect(story).toContainText(title);
+    expect((await box(story)).y).toBeLessThan((await box(tid(page, "status-board"))).y);
+  });
+
   test("위에서 아래 순서 — 상태판 → 팀 책상 → 작업 흐름", async ({ page }) => {
     await page.goto("/log");
     const [board, desks, flow] = [await box(tid(page, "status-board")), await box(tid(page, "team-desks")), await box(tid(page, "work-flow"))];
