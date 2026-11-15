@@ -62,3 +62,50 @@ test("바닥 띠 — 비행기 모델 출처(CC-BY 4.0)와 자료 출처", async
   await expect(footer).toContainText("한국수출입은행");
   await expect(footer.locator('a[href^="https://poly.pizza/"]')).toHaveCount(1);
 });
+
+// 도착지 줄 — 작업 0170 추가 요청 (사용자 "시안이랑 다르다"): 데스크톱은 한 줄 세 칸 · 줄 높이 시안(90)의 절반쯤 아니라 시안 그대로 · 모바일은 눈금 없이 핀 오른쪽
+//   builder 가 다는 표시: data-testid="dest-row" · "dest-city" · "dest-rate" · "dest-scale" · "dest-pin" · "dest-mobile-meta" (packages/ui destination-row.test.ts 머리 주석)
+test("도착지 줄 — 넓은 화면은 한 줄 세 칸(도시 · 환율 · 눈금)이 같은 줄 높이 안 · 줄 높이는 시안 정도", async ({ page }) => {
+  test.skip(test.info().project.name === "휴대폰", "넓은 화면 전용");
+  await page.goto("/");
+  const rows = page.locator('[data-testid="dest-row"]');
+  await expect(rows).toHaveCount(4);
+  for (let i = 0; i < 4; i++) {
+    const row = rows.nth(i);
+    const [r, city, rate, scale] = await Promise.all(["", "dest-city", "dest-rate", "dest-scale"].map(async (id) => (id ? row.locator(`[data-testid="${id}"]`) : row).boundingBox()));
+    if (!r || !city || !rate || !scale) throw new Error(`${i + 1}번째 줄에 칸이 없음`);
+    expect(r.height, `${i + 1}번째 줄 높이`).toBeLessThanOrEqual(130); // 시안 90 + 눈금 아래 작은 끝 라벨 · 여백
+    for (const [name, b] of [["도시", city], ["환율", rate], ["눈금", scale]] as const) {
+      expect(b.y, `${i + 1}번째 ${name} 위`).toBeGreaterThanOrEqual(r.y - 1);
+      expect(b.y + b.height, `${i + 1}번째 ${name} 아래`).toBeLessThanOrEqual(r.y + r.height + 1);
+    }
+    // 가로 순서: 도시 → 환율 → 눈금 (한 줄)
+    expect(city.x).toBeLessThan(rate.x);
+    expect(rate.x).toBeLessThan(scale.x);
+    // 세로로 쌓이지 않음 — 세 칸의 가운데 높이 차이가 줄 높이 안
+    const mid = (b: { y: number; height: number }) => b.y + b.height / 2;
+    expect(Math.abs(mid(city) - mid(scale)), `${i + 1}번째 도시 · 눈금 높이`).toBeLessThanOrEqual(r.height / 2);
+  }
+});
+
+test("도착지 줄 — 판정 핀에 근거 숫자(하위 · 상위 N%) 또는 글자만", async ({ page }) => {
+  await page.goto("/");
+  const pins = page.locator('[data-testid="dest-pin"]');
+  const n = await pins.count();
+  expect(n).toBeGreaterThan(0);
+  for (let i = 0; i < n; i++) {
+    const text = (await pins.nth(i).textContent())?.trim() ?? "";
+    expect(text, `${i + 1}번째 핀`).toMatch(/^((하위|상위) \d+% · )?(쌈|보통|비쌈)$/);
+  }
+});
+
+test("도착지 줄 — 휴대폰은 눈금이 안 보이고 핀이 오른쪽 · 왼쪽에 '통화 · 환율'", async ({ page }) => {
+  test.skip(test.info().project.name !== "휴대폰", "휴대폰 전용");
+  await page.goto("/");
+  const row = page.locator('[data-testid="dest-row"]').first();
+  await expect(row.locator('[data-testid="dest-scale"]')).toBeHidden();
+  await expect(row.locator('[data-testid="dest-mobile-meta"]')).toBeVisible();
+  const [city, pin] = await Promise.all([row.locator('[data-testid="dest-city"]').boundingBox(), row.locator('[data-testid="dest-pin"]:visible').first().boundingBox()]);
+  if (!city || !pin) throw new Error("도시 · 핀이 없음");
+  expect(pin.x, "핀은 도시보다 오른쪽").toBeGreaterThan(city.x + 40);
+});
