@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Eyebrow, Title } from "../text/heading";
 import type { Surface } from "./section";
 
-export function PageSection({ as: Tag = "section", surface = "dark", width, eyebrow, title, children }: { as?: "main" | "section"; surface?: Surface; width: string; eyebrow: ReactNode; title: ReactNode; children?: ReactNode }) {
+export function PageSection({ as: Tag = "section", surface = "light", width, eyebrow, title, children }: { as?: "main" | "section"; surface?: Surface; width: string; eyebrow: ReactNode; title: ReactNode; children?: ReactNode }) {
   return (
     <Tag data-surface={surface} className="bg-surface px-4 pt-14 pb-24 text-fg sm:px-8 sm:pt-20">
       <div className={`mx-auto ${width}`}>

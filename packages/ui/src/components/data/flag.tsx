@@ -4,6 +4,6 @@ import * as Flags from "country-flag-icons/react/3x2";
 
 export function Flag({ country, label, className = "h-4 w-6" }: { country: string | null; label: string; className?: string }) {
   const Svg = country ? (Flags as Record<string, (p: { title?: string; className?: string }) => React.ReactElement>)[country] : undefined;
-  if (!Svg) return <span className={`inline-block rounded-sm bg-surface-2 ring-1 ring-line ${className}`} aria-hidden />;
-  return <Svg title={label} className={`inline-block rounded-sm ring-1 ring-line ${className}`} />;
+  if (!Svg) return <span className={`inline-block rounded-sm bg-surface-2 ${className}`} aria-hidden />;
+  return <Svg title={label} className={`inline-block rounded-sm ${className}`} />;
 }
