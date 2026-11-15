@@ -3,7 +3,7 @@
 // builder 가 할 것 (prd H1~H10 · sdd)
 //   app/page.tsx — api.indicator("kosis-cpi:air-fare", 60) 를 받음 · 새 홈이 안 쓰는 priceLevels · 1년 USD 기록 · changes 는 받지 않음 (빌드 때 D1 읽기도 줄어듦)
 //   features/home/lib/travel-timing.ts(travelTiming · travelTimingCopy) · destinations.ts(cheapestDestination · destinationRows · cheapestCopy · NO_RATE_COPY) — 각 *.test.ts 머리 주석
-//   features/home/components/** 위 → 아래: 여행 타이밍(선 그래프 + 비행기) → 오늘 환율 바다 띠(id="today" · data-surface="dark" · 3D 지구 + 이번 주 가장 싼 곳) → 도착지별 환전 타이밍(도착지 줄 4개 · 줄 전체가 /currencies/{통화} 링크) → 바닥 띠(자료 출처 · 비행기 모델 출처)
+//   features/home/components/** 위 → 아래: 여행 타이밍(선 그래프 + 비행기) → 오늘 환율 구간(id="today" · 작업 0175: 하늘 종이 — 예전 data-surface="dark" 바다 띠 · 3D 지구 + 이번 주 가장 싼 곳) → 도착지별 환전 타이밍(도착지 줄 4개 · 줄 전체가 /currencies/{통화} 링크) → 바닥 띠(자료 출처 · 비행기 모델 출처)
 //   e2e 가 찾는 표시: data-testid="travel-graph"(선 그래프) · data-testid="plane-route"(비행기 자리) — 지수가 없으면 둘 다 그리지 않음 · id="today" · id="destinations"(도착지별 환전 타이밍)
 //   쓰지 않는 기존 장면(hero-section · trips-section · trip-scenes · calc-section · year-section · currencies-section 중)은 지움 — 이 파일의 "죽은 코드" 검사
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -47,9 +47,9 @@ describe("홈 자료 — app/page.tsx", () => {
 });
 
 describe("홈 구성 — 순서 · 구간", () => {
-  it("오늘 환율 바다 띠: id=\"today\" 가 한 번 · 같은 요소가 data-surface=\"dark\"(울트라마린 띠)", () => {
+  it("오늘 환율 구간: id=\"today\" 가 한 번 · 하늘 종이 바탕(울트라마린 바다 띠 아님 — 작업 0175 네 번째 묶음 · home-today-light.test.ts 가 자세히)", () => {
     expect(HOME_UI.match(/id="today"/g)?.length).toBe(1);
-    expect(HOME_UI).toMatch(/<(section|div)\b[^>]*(id="today"[^>]*data-surface="dark"|data-surface="dark"[^>]*id="today")/);
+    expect(HOME_UI).not.toMatch(/<(section|div)\b[^>]*(id="today"[^>]*data-surface="dark"|data-surface="dark"[^>]*id="today")/);
   });
 
   it("도착지별 환전 타이밍 구간: id=\"destinations\" · 제목", () => {
