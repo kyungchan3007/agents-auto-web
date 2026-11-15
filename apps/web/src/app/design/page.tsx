@@ -2,52 +2,78 @@ import { BigNumber } from "@hav/ui/text/big-number";
 import { Button } from "@hav/ui/form/button";
 import { Card } from "@hav/ui/layout/card";
 import { NavBar } from "@hav/ui/layout/nav-bar";
+import { PageFooter } from "@hav/ui/layout/page-footer";
 import { Section } from "@hav/ui/layout/section";
-import { SignalBadge } from "@hav/ui/data/signal-badge";
+import { DestinationRow, scalePosition } from "@hav/ui/data/destination-row";
+import { SignalPin } from "@hav/ui/data/signal-pin";
+import { Stamp } from "@hav/ui/data/stamp";
+import { StatTile } from "@hav/ui/data/stat-tile";
+import { EmptyState } from "@hav/ui/feedback/empty-state";
 import { Tabs } from "@hav/ui/form/tabs";
 import { Tooltip } from "@hav/ui/feedback/tooltip";
 import type { Metadata } from "next";
-import { Characters } from "./characters";
 
 // 개발용 확인 페이지 — 검색에 내보내지 않음 (작업 0076)
 export const metadata: Metadata = { title: "디자인 시스템 · Tripfx", robots: { index: false, follow: false } };
 
-// 디자인 시스템 확인용 — 숫자는 모두 예시 (실제 데이터 아님)
+// 디자인 시스템 확인용 — 숫자는 모두 예시 (실제 데이터 아님) · 새 테마 "하늘 종이 · 바다 띠 · 밤 포스터"의 공통 컴포넌트 (작업 0168)
 export default function DesignPage() {
   return (
     <>
       <NavBar
-        title="Tripfx"
+        title="tripfx"
         links={[
           { href: "#numbers", label: "큰 숫자" },
-          { href: "#cards", label: "카드" },
+          { href: "#pins", label: "판정 핀" },
+          { href: "#rows", label: "도착지 줄" },
+          { href: "#stamp", label: "도장" },
           { href: "#tabs", label: "탭" },
-          { href: "#light", label: "밝은 섹션" },
-          { href: "#characters", label: "캐릭터" },
         ]}
-        action={<Button>바로 계산</Button>}
       />
 
-      <Section id="numbers" eyebrow="디자인 시스템" title="오늘, 달러는 싼 편입니다.">
+      {/* 바다 띠 — 울트라마린 바탕 · 큰 숫자는 해 노랑 */}
+      <Section id="numbers" surface="dark" eyebrow="디자인 시스템" title="오늘, 달러는 싼 편입니다.">
         <BigNumber label="예시 · 미국 달러" value="1,312" unit="원" />
-        <div className="mt-8 flex flex-wrap gap-3">
-          <SignalBadge signal="cheap" />
-          <SignalBadge signal="normal" />
-          <SignalBadge signal="expensive" />
+      </Section>
+
+      <Section id="pins" eyebrow="판정 핀" title={<>글자가 늘 같이<br />있습니다.</>}>
+        <div className="flex flex-wrap gap-3">
+          <SignalPin signal="cheap" pct={-4.1} />
+          <SignalPin signal="normal" pct={0.4} />
+          <SignalPin signal="expensive" pct={2.3} />
+          <SignalPin signal="cheap" />
+        </div>
+        <dl className="mt-10 grid gap-6 sm:grid-cols-3">
+          <StatTile label="예시 · 오늘" value="1,312원" sub="최근 90일 중 낮은 편" />
+          <StatTile label="예시 · 가장 쌀 때" value="1,284원" />
+          <StatTile label="예시 · 가장 비쌀 때" value="1,401원" />
+        </dl>
+      </Section>
+
+      <Section id="rows" eyebrow="도착지 줄" title="도시 하나, 줄 하나.">
+        <div className="max-w-3xl">
+          <DestinationRow city="도쿄" currency="엔 100" rate="912원" signal="cheap" pct={-4.1} position={scalePosition(912, 880, 990)} />
+          <DestinationRow city="뉴욕" currency="달러 1" rate="1,312원" signal="normal" pct={0.4} position={scalePosition(1312, 1250, 1380)} />
+          <DestinationRow city="파리" currency="유로 1" rate="1,540원" signal="expensive" pct={2.3} position={scalePosition(1540, 1480, 1560)} />
+          <DestinationRow city="방콕" currency="바트 1" signal={null} />
         </div>
       </Section>
 
-      <Section id="cards" surface="elevated" eyebrow="요약 카드" title={<>숫자는 크게,<br />설명은 짧게.</>}>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Card icon="💵" title="달러">
-            <SignalBadge signal="cheap" />
+      <Section id="stamp" eyebrow="도장 · 카드 · 비어 있음" title="좋은 판정에만 노랑.">
+        <Stamp>면세 한도 안</Stamp>
+        <div className="mt-10 grid gap-8 sm:grid-cols-3">
+          <Card title="달러">
+            <SignalPin signal="cheap" />
           </Card>
-          <Card icon="💴" title="엔">
-            <SignalBadge signal="normal" />
+          <Card title="엔">
+            <SignalPin signal="normal" />
           </Card>
-          <Card icon="💶" title="유로">
-            <SignalBadge signal="expensive" />
+          <Card title="유로">
+            <SignalPin signal="expensive" />
           </Card>
+        </div>
+        <div className="mt-10 max-w-xl">
+          <EmptyState title="준비 중">자료를 아직 받지 못했습니다. 숫자를 만들어 보여 주지 않습니다.</EmptyState>
         </div>
       </Section>
 
@@ -68,18 +94,7 @@ export default function DesignPage() {
         </div>
       </Section>
 
-      <Section id="light" surface="light" eyebrow="밝은 섹션" title={<span className="text-aurora">밝은 배경에서도 읽히게.</span>}>
-        <p>밝은 섹션은 2~3곳에만. 포인트 · 신호 색은 대비 4.5 이상인 진한 값으로 바뀝니다.</p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <SignalBadge signal="cheap" />
-          <SignalBadge signal="normal" />
-          <SignalBadge signal="expensive" />
-          <Button>바로 계산</Button>
-        </div>
-      </Section>
-      <Section id="characters" eyebrow="3D 캐릭터" title="고양이 두 마리.">
-        <Characters />
-      </Section>
+      <PageFooter>자료: 예시 화면입니다 · 숫자는 모두 가짜 값 (실제 데이터 아님)</PageFooter>
     </>
   );
 }

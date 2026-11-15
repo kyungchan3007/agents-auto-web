@@ -1,4 +1,4 @@
-// 공유 미리보기 이미지 — 빌드 때 한 번 그림 (정적) · 한글은 Pretendard 파일로 (기본 글꼴엔 한글이 없음)
+// 공유 미리보기 이미지 — 빌드 때 한 번 그림 (정적) · 한글은 Pretendard 파일로 (기본 글꼴엔 한글이 없음 · 이미지 그리기는 CSS 변수를 못 읽어 새 테마 색을 값으로 적음: 하늘 종이 #EAF4F2 · 글자 #16246E · 보조 #4A5A8C · 울트라마린 #2438A8 · 작업 0168)
 // 숫자는 넣지 않음 — 이미지는 캐시돼 오래 남아서 그날 환율이 틀린 값으로 보일 수 있음 (FX-02 · 지어내지 않음)
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
@@ -21,13 +21,13 @@ const font = (weight: "Bold" | "Medium") => {
 export default async function Image() {
   const [bold, medium] = await Promise.all([font("Bold"), font("Medium")]);
   return new ImageResponse(
-    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 96px", background: "#000", color: "#f5f5f7", fontFamily: "Pretendard" }}>
-      <div style={{ fontSize: 34, fontWeight: 500, color: "#a1a1a6" }}>Tripfx · 환율 · 여행 물가 · 직구 계산</div>
+    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 96px", background: "#EAF4F2", color: "#16246E", fontFamily: "Pretendard" }}>
+      <div style={{ fontSize: 34, fontWeight: 500, color: "#4A5A8C" }}>Tripfx · 환율 · 여행 물가 · 직구 계산</div>
       <div style={{ marginTop: 28, fontSize: 84, fontWeight: 700, lineHeight: 1.15, display: "flex", flexDirection: "column" }}>
         <span>오늘, 그 통화는</span>
-        <span style={{ backgroundImage: "linear-gradient(90deg, #4ff0e0, #9c8cff, #ff8ad8)", backgroundClip: "text", color: "transparent" }}>싼 편일까?</span>
+        <span style={{ color: "#2438A8" }}>싼 편일까?</span>
       </div>
-      <div style={{ marginTop: 36, fontSize: 32, fontWeight: 500, color: "#a1a1a6" }}>매일 받은 환율이 최근 흐름 중 어디쯤인지 · 예측 아님</div>
+      <div style={{ marginTop: 36, fontSize: 32, fontWeight: 500, color: "#4A5A8C" }}>매일 받은 환율이 최근 흐름 중 어디쯤인지 · 예측 아님</div>
     </div>,
     {
       ...size,
