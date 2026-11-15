@@ -13,6 +13,11 @@ export function Title({ as: Tag = "h2", size = "section", className = "", ...res
   return <Tag className={`font-display font-normal tracking-tight ${size === "poster" ? "text-poster" : size === "page" ? "max-w-[42rem] text-page" : "text-title"} ${className}`} {...rest} />;
 }
 
+/** 구간 제목 · 카드 제목 · 단계 제목 · 역할 이름 — IBM Plex 굵게 700 (작업 0173 · 포스터 글씨 Gasoek 는 맨 위 큰 제목 · 큰 숫자 · 로고에만) · 크기 · 색은 부르는 쪽이 className 으로 */
+export function SectionTitle({ as: Tag = "h2", className = "", ...rest }: HTMLAttributes<HTMLHeadingElement> & { as?: "h2" | "h3" | "p" }) {
+  return <Tag className={`font-sans font-bold tracking-tight ${className}`} {...rest} />;
+}
+
 /** 페이지 안 작은 구역 제목 */
 export function SubTitle({ className = "", ...rest }: HTMLAttributes<HTMLHeadingElement>) {
   return <h2 className={`text-lg font-semibold tracking-tight ${className}`} {...rest} />;
