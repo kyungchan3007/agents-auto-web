@@ -1,16 +1,13 @@
-// 작업 흐름 — 요청 원문 보관 → 계획 → 테스트 먼저 → 구현 → 자동 검사 통과 → PR · 사람 머지 (작업 0170 · Figma 06) · 완료 기준은 자동 검사 통과
+// 작업 흐름 — 시안: 흰 카드 안 남색 테두리 칩 + 화살표 · "자동 검사 통과"만 노랑 (작업 0170 · Figma 06) · 완료의 기준은 자동 검사 통과
 import { WORK_FLOW } from "../lib/team";
 
 export function WorkFlow() {
   return (
-    <section aria-labelledby="flow-title" className="mt-16">
-      <h2 id="flow-title" className="font-display text-city font-normal tracking-tight">
-        작업 흐름
-      </h2>
-      <ol data-testid="work-flow" className="mt-6 flex flex-wrap items-center gap-x-2 gap-y-3 text-small font-semibold text-fg">
+    <section aria-label="작업 흐름" className="mt-6 rounded-card bg-card px-5 py-4">
+      <ol data-testid="work-flow" className="flex flex-wrap items-center gap-x-3 gap-y-3 text-small text-fg">
         {WORK_FLOW.map((step, i) => (
-          <li key={step} className="flex items-center gap-2">
-            <span className="rounded-pill bg-foam px-3 py-1">{step}</span>
+          <li key={step} className="flex items-center gap-3">
+            <span className={`rounded-pill border-2 px-4 py-1.5 ${step === "자동 검사 통과" ? "border-sun bg-sun font-semibold text-pin-ink" : "border-cheap"}`}>{step}</span>
             {i < WORK_FLOW.length - 1 && (
               <span aria-hidden className="text-fg-2">
                 →
@@ -19,7 +16,6 @@ export function WorkFlow() {
           </li>
         ))}
       </ol>
-      <p className="mt-3 text-small text-fg-2">완료의 기준은 자동 검사 통과입니다 · 머지는 사람이 합니다</p>
     </section>
   );
 }

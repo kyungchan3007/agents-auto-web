@@ -6,9 +6,7 @@ import { lazyNear } from "../../components/motion/lazy-near";
 import type { GlobeProps } from "../objects/globe";
 import type { PlaneProps } from "../objects/plane";
 import type { PlaneRouteProps } from "../objects/plane-route";
-import type { StationsProps } from "../objects/stations";
 
 export const GlobeLazy = lazyNear<GlobeProps>(() => import("../objects/globe"));
-export const StationsLazy = lazyNear<StationsProps>(() => import("../objects/stations"));
 export const PlaneLazy = lazyNear<PlaneProps>(() => import("../objects/plane"));
 export const PlaneRouteLazy = lazyNear<PlaneRouteProps>(() => import("../objects/plane-route"));
