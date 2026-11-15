@@ -8,11 +8,12 @@
 //   cheapestDestination(signals: SignalRow[], rates: RateRow[], destinations: Destination[]): { destination: Destination; rate: RateRow; percentile: number } | null
 //     - 신호 · 백분위 · 환율이 모두 있는 도착지 중 백분위가 가장 낮은 곳 · 같으면 destinations 순서가 앞선 곳 · 없으면 null
 //   destinationRows(signals, rates, destinations): DestinationRowData[]   // destinations 와 같은 순서 · 개수
-//     DestinationRowData = { id; city: string; currencyLabel: string; rateText: string | null; signal: Signal | null; position: number | null; pct: null; note: string | null; href: string | null }
+//     DestinationRowData = { id; city: string; currencyLabel: string; rateText: string | null; signal: Signal | null; position: number | null; percentile: number | null; pinText: string | null; note: string | null; href: string | null }
 //       city = name · currencyLabel = 통화 짧은 이름(currencyName 에서 끝의 "화" 뗌: 엔화 → 엔) + (환율이 있고 unit > 1 이면 " " + unit) → "엔 100" · "바트" · "유로" · "달러" · 환율이 없으면 이름만(단위를 지어내지 않음)
 //       rateText = baseRate 가 100 이상이면 반올림 정수(쉼표) · 100 미만이면 소수 첫째 자리 + "원" → "912원" · "39.8원" · "1,486원" · 환율이 없으면 null
 //       signal = 신호 · position = percentile (0 쌈 ~ 1 비쌈 · 눈금 위치) · 신호나 백분위가 없으면 둘 다 null
-//       pct = null (퍼센트로 판정하지 않음 — 핀 글은 "쌈 · 보통 · 비쌈" 글자만)
+//       percentile = position 과 같은 값(90일 백분위 0~1) · 없으면 null — 핀 글의 근거 숫자 (작업 0170 추가 요청: 핀에 "하위 12% · 쌈" 처럼 근거 숫자를 보임 · 옛 pct 필드는 없어짐)
+//       pinText = signal 이 있으면 pinBasis(signal, percentile) (@hav/ui/data/signal-pin · "하위 12% · 쌈" · "상위 10% · 비쌈" · 규칙은 signal-pin.test.ts) · 신호가 없으면 null
 //       note = 신호가 없으면 "신호 없음" · 있으면 null
 //       href = 통화가 있으면 `/currencies/${currency}` (줄 전체 링크) · 없으면 null
 //   export type CheapestCopy = { headline: string; value: string; per: string; evidence: string }
@@ -76,22 +77,28 @@ describe("destinationRows", () => {
   it("destinations 와 같은 순서 · 도시 · 통화 · 환율 · 신호 · 눈금 위치 · 링크", () => {
     const rows = destinationRows(SIGNALS, RATES, DEST);
     expect(rows.map((r) => r.id)).toEqual(["tokyo", "bangkok", "paris", "newyork"]);
-    expect(rows[0]).toEqual({ id: "tokyo", city: "도쿄", currencyLabel: "엔 100", rateText: "912원", signal: "cheap", position: 0.12, pct: null, note: null, href: "/currencies/JPY" });
+    expect(rows[0]).toEqual({ id: "tokyo", city: "도쿄", currencyLabel: "엔 100", rateText: "912원", signal: "cheap", position: 0.12, percentile: 0.12, pinText: "하위 12% · 쌈", note: null, href: "/currencies/JPY" });
     expect(rows.map((r) => r.currencyLabel)).toEqual(["엔 100", "바트", "유로", "달러"]);
     expect(rows.map((r) => r.rateText)).toEqual(["912원", "39.8원", "1,486원", "1,383원"]);
     expect(rows.map((r) => r.signal)).toEqual(["cheap", "cheap", "normal", "expensive"]);
     expect(rows.map((r) => r.href)).toEqual(["/currencies/JPY", "/currencies/THB", "/currencies/EUR", "/currencies/USD"]);
   });
 
-  it("눈금 위치 = 90일 백분위 그대로 (0 쌈 ~ 1 비쌈) · 퍼센트는 판정에 쓰지 않음(pct null)", () => {
+  it("눈금 위치 = 90일 백분위 그대로 (0 쌈 ~ 1 비쌈) · 백분위도 같은 값으로 따로 (핀 글의 근거 숫자)", () => {
     const rows = destinationRows(SIGNALS, RATES, DEST);
     expect(rows.map((r) => r.position)).toEqual([0.12, 0.25, 0.5, 0.9]);
-    for (const r of rows) expect(r.pct).toBeNull();
+    expect(rows.map((r) => r.percentile)).toEqual([0.12, 0.25, 0.5, 0.9]);
+  });
+
+  it("핀 글에 근거 숫자 — 하위 12% · 쌈 / 하위 25% · 쌈 / 하위 50% · 보통 / 상위 10% · 비쌈 (옛 pct 필드는 없음)", () => {
+    const rows = destinationRows(SIGNALS, RATES, DEST);
+    expect(rows.map((r) => r.pinText)).toEqual(["하위 12% · 쌈", "하위 25% · 쌈", "하위 50% · 보통", "상위 10% · 비쌈"]);
+    for (const r of rows) expect(r).not.toHaveProperty("pct");
   });
 
   it("신호가 없으면 핀 · 눈금 대신 '신호 없음' (SIG-03)", () => {
     const rows = destinationRows([sig("JPY", null, null), ...SIGNALS.slice(1)], RATES, DEST);
-    expect(rows[0]).toMatchObject({ signal: null, position: null, note: "신호 없음", rateText: "912원" });
+    expect(rows[0]).toMatchObject({ signal: null, position: null, percentile: null, pinText: null, note: "신호 없음", rateText: "912원" });
     expect(rows[1].note).toBeNull();
   });
 
@@ -101,7 +108,7 @@ describe("destinationRows", () => {
   });
 
   it("통화가 없는 도착지는 링크 없음", () => {
-    expect(destinationRows([], [], [{ id: "x", name: "어딘가" }])[0]).toMatchObject({ href: null, rateText: null, signal: null, note: "신호 없음" });
+    expect(destinationRows([], [], [{ id: "x", name: "어딘가" }])[0]).toMatchObject({ href: null, rateText: null, signal: null, pinText: null, note: "신호 없음" });
   });
 });
 

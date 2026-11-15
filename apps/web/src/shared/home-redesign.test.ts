@@ -75,6 +75,13 @@ describe("홈 구성 — 순서 · 구간", () => {
   });
 });
 
+describe("도착지 줄 핀 근거 숫자 (작업 0170 추가 요청)", () => {
+  it("DestinationRow 에 percentile 로 넘김 (옛 pct 가 아님) — 핀에 '하위 12% · 쌈' 같은 근거 숫자가 나옴", () => {
+    expect(HOME_UI).toMatch(/percentile=\{[^}]*\.percentile/);
+    expect(HOME_UI).not.toMatch(/\bpct=/);
+  });
+});
+
 describe("자료가 없을 때 문구 (H1 · H8) — 숫자를 지어내지 않음", () => {
   it("오늘 환율이 없을 때 · 신호가 없을 때 문구가 코드에 있음 (lib 의 NO_RATE_COPY · '신호 없음')", () => {
     expect(HOME_UI).toMatch(/NO_RATE_COPY|오늘 환율을 아직 받지 못했습니다/);
