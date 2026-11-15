@@ -13,7 +13,7 @@ const KIND: Record<PatchKind, { label: string; tone: string }> = {
 export function PatchLog({ tasks }: { tasks: Fetched<TasksSummary> }) {
   const patches = tasks.ok ? patchesOf(tasks.data.done) : [];
   return (
-    <section data-surface="dark" aria-labelledby="patch-title" className="bg-surface px-4 pt-4 text-fg sm:px-8">
+    <section aria-labelledby="patch-title" className="bg-surface px-4 pb-12 text-fg sm:px-8">
       <Panel id="patch-title" label="패치 내역">
         <p className="mt-2 text-sm text-fg-2">매일 보안 취약점을 점검합니다. 고칠 것이 없는 날은 기록이 남지 않습니다.</p>
         {!tasks.ok ? (
@@ -21,7 +21,7 @@ export function PatchLog({ tasks }: { tasks: Fetched<TasksSummary> }) {
         ) : patches.length === 0 ? (
           <p className="mt-4 text-sm text-fg-2">아직 패치한 것이 없습니다.</p>
         ) : (
-          <ul className="mt-4 divide-y divide-line text-sm">
+          <ul className="mt-4 text-sm">
             {patches.slice(0, SHOWN).map((p) => (
               <li key={p.number} className="flex items-baseline gap-3 py-2.5">
                 <span className={`shrink-0 text-xs font-semibold ${KIND[p.kind].tone}`}>{KIND[p.kind].label}</span>
