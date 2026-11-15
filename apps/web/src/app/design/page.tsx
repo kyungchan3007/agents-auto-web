@@ -6,6 +6,7 @@ import { PageFooter } from "@hav/ui/layout/page-footer";
 import { Section } from "@hav/ui/layout/section";
 import { DestinationRow } from "@hav/ui/data/destination-row";
 import { SignalPin } from "@hav/ui/data/signal-pin";
+import { FlapBoard } from "@hav/ui/data/flap-board";
 import { Stamp } from "@hav/ui/data/stamp";
 import { StatTile } from "@hav/ui/data/stat-tile";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
@@ -57,6 +58,17 @@ export default function DesignPage() {
           <DestinationRow city="파리" currency="유로 1" rate="1,540원" signal="expensive" percentile={0.9} position={0.9} />
           <DestinationRow city="방콕" currency="바트 1" signal={null} />
         </div>
+      </Section>
+
+      <Section id="flap-board" eyebrow="출발 안내판" title="판에만 울트라마린.">
+        <FlapBoard
+          rows={[
+            { text: "ICN → 도쿄", tone: "dest" },
+            { text: "912원 / 100엔", tone: "money" },
+          ]}
+          cols={12}
+          label="예시 — 인천에서 도쿄, 100엔에 912원"
+        />
       </Section>
 
       <Section id="stamp" eyebrow="도장 · 카드 · 비어 있음" title="좋은 판정에만 노랑.">
