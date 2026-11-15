@@ -2,6 +2,7 @@
 
 // 여행 예산 계산 — 나라 · 한국에서 하루 쓰는 돈 · 일수 → 같은 생활이면 그 나라에서 하루 · 전체 (원 · 현지 통화) (작업 0088)
 //   입력은 이 화면 상태에만 (보내지 않음) · 물가 기준 연도 · 환율 기준일을 같이 (TRV-01 · TRV-03)
+import { SectionTitle } from "@hav/ui/text/heading";
 import { currencyName } from "@hav/shared/currency";
 import { type TravelRow, relativeText } from "@hav/shared/travel";
 import { FieldLabel, Input, Select } from "@hav/ui/form/field";
@@ -13,9 +14,9 @@ export function BudgetPlanner({ rows, latestOf }: { rows: TravelRow[]; latestOf:
 
   return (
     <section id="budget" data-testid="budget" aria-labelledby="budget-title" className="scroll-mt-(--hav-nav-h) rounded-card bg-card px-6 py-6">
-      <h2 id="budget-title" className="font-display text-[1.625rem] leading-tight font-normal text-cheap">
+      <SectionTitle id="budget-title" className="text-[1.625rem] leading-tight text-cheap">
         여행 하루 예산
-      </h2>
+      </SectionTitle>
       <form className="mt-4 grid gap-4 sm:grid-cols-3" onSubmit={(e) => e.preventDefault()}>
         <FieldLabel label="나라">
           <Select value={country} onChange={(e) => setCountry(e.target.value)}>

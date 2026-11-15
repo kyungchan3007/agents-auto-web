@@ -1,7 +1,7 @@
 // 3 도착지별 환전 타이밍 — 도착지 줄(0168) 네 줄 · 줄 전체가 그 통화 상세로 (작업 0169)
 // 눈금 · 판정은 사이트 신호 규칙 그대로 (최근 90일 안의 위치 · SIG-01~05) · 핀 글은 "쌈 · 보통 · 비쌈" 글자만 · 신호가 없으면 "신호 없음"
 import { DestinationRow } from "@hav/ui/data/destination-row";
-import { Title } from "@hav/ui/text/heading";
+import { SectionTitle } from "@hav/ui/text/heading";
 import Link from "next/link";
 import type { DestinationRowData } from "../lib/destinations";
 
@@ -9,7 +9,7 @@ export function DestinationsSection({ rows, windowDays }: { rows: DestinationRow
   return (
     <section id="destinations" aria-labelledby="destinations-title" className="bg-surface px-4 pt-12 pb-16 text-fg sm:px-8 sm:pt-14 sm:pb-20">
       <div className="mx-auto max-w-page">
-        <Title id="destinations-title">도착지별 환전 타이밍</Title>
+        <SectionTitle id="destinations-title" className="text-title">도착지별 환전 타이밍</SectionTitle>
         <p className="mt-3 max-w-3xl text-small text-fg-2">
           가운데 선이 최근 {windowDays}일 중간입니다. 왼쪽일수록 지금 환전이 유리합니다. 예측이 아니며 투자 · 금융 조언이 아닙니다.
         </p>

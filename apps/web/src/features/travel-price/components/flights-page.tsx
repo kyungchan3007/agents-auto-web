@@ -40,14 +40,14 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
                   {cards.map((c) => (
                     <div key={c.label} className="rounded-card bg-card px-5 py-4">
                       <p className="text-small text-fg-2">{c.label}</p>
-                      <p className="mt-1 font-display text-city font-normal text-figure tabular-nums">{c.value}</p>
+                      <p className="mt-1 text-city font-bold text-figure tabular-nums">{c.value}</p>
                       <div className="mt-2">{c.signal ? <SignalPin signal={c.signal} text={c.pinText} /> : <span className="text-small text-fg-2">{c.pinText}</span>}</div>
                     </div>
                   ))}
                   {cheaps && (
                     <div className="rounded-card bg-card px-5 py-4">
                       <p className="text-small text-fg-2">{cheaps.label}</p>
-                      <p className="mt-1 font-display text-city font-normal text-figure tabular-nums">{cheaps.value}</p>
+                      <p className="mt-1 text-city font-bold text-figure tabular-nums">{cheaps.value}</p>
                       <div className="mt-2">
                         <SignalPin signal="normal" text={cheaps.note} />
                       </div>

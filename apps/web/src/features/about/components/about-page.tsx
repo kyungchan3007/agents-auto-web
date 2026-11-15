@@ -3,7 +3,7 @@ import type { Fetched } from "@/shared/api";
 import { SiteNav } from "@/shared/site-nav";
 import type { SignalList } from "@hav/shared/signal";
 import { PageFooter } from "@hav/ui/layout/page-footer";
-import { Eyebrow, Title } from "@hav/ui/text/heading";
+import { Eyebrow, SectionTitle, Title } from "@hav/ui/text/heading";
 import { ABOUT_CARDS } from "../lib/criteria";
 
 /** 직구 판단 기준 — 기능 폴더끼리 직접 가져오지 않게 라우트에서 받음 */
@@ -24,7 +24,7 @@ export function AboutPage(_props: { signals: Fetched<SignalList>; duty: DutyRule
           <ul className="mt-6 grid gap-4 sm:grid-cols-2">
             {ABOUT_CARDS.map((c) => (
               <li key={c.id} data-testid="criteria-card" className="rounded-card bg-card px-5 py-5">
-                <h2 className="font-display text-[1.375rem] leading-tight font-normal text-cheap">{c.title}</h2>
+                <SectionTitle className="text-[1.375rem] leading-tight text-cheap">{c.title}</SectionTitle>
                 <p className="mt-3 text-body text-fg-2">{c.body}</p>
               </li>
             ))}

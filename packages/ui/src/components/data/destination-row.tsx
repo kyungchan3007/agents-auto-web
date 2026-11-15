@@ -30,7 +30,7 @@ export function DestinationRow({ city, currency, rate, signal, percentile, posit
       {/* ① 도시 · 통화 — 모바일은 여기에 "통화 · 환율"과 오른쪽 핀이 같이 */}
       <div className="flex items-center gap-4 sm:min-w-0 sm:flex-1">
         <div className="min-w-0 flex-1">
-          <p data-testid="dest-city" className="font-display text-city font-normal text-fg">
+          <p data-testid="dest-city" className="text-city font-bold text-fg">
             {city}
           </p>
           {currency && <p className="mt-0.5 hidden text-small text-fg-2 sm:block">{currency}</p>}

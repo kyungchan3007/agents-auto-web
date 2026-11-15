@@ -17,7 +17,7 @@ export function GeoReport({ build }: { build: Fetched<Report> }) {
         {geoCards(r).map((c) => (
           <div key={c.label} className="rounded-card bg-foam px-[18px] py-[18px]">
             <dt className="text-small text-fg-2">{c.label}</dt>
-            <dd className="mt-2 font-display text-[1.75rem] leading-[1.15] font-normal tracking-tight text-figure tabular-nums">{c.value}</dd>
+            <dd className="mt-2 text-[1.75rem] leading-[1.15] font-bold tracking-tight text-figure tabular-nums">{c.value}</dd>
             {c.note && <dd className="mt-[5px] text-small text-fg-2">{c.note}</dd>}
           </div>
         ))}

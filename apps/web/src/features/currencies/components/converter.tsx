@@ -2,6 +2,7 @@
 
 // 실제로 바꿀 때 — 시안(작업 0170 · Figma 02): 흰 카드 · Gasoek 제목 · 외화 입력칸 "=" 노란 원화 결과칸 · 빠른 금액 칩 · 한 줄 안내
 //   입력은 이 화면 상태에만 (보내지 않음 · 저장하지 않음) · 기준일 · 출처를 같이 (FX-01) · 송금 환율이 있으면 그 값도 · 없으면 그 값은 숨김
+import { SectionTitle } from "@hav/ui/text/heading";
 import { SOURCE_NAME } from "@hav/shared/currency";
 import type { FxRate } from "@hav/shared/fx";
 import { UnitInput } from "@hav/ui/form/field";
@@ -13,9 +14,9 @@ export function Converter({ code, rate }: { code: string; rate: FxRate }) {
   const foreign = side === "foreign";
   return (
     <section data-testid="converter" aria-labelledby="converter-title" className="rounded-card bg-card p-6 sm:p-8">
-      <h2 id="converter-title" className="font-display text-city font-normal text-cheap">
+      <SectionTitle id="converter-title" className="text-city text-cheap">
         실제로 바꿀 때
-      </h2>
+      </SectionTitle>
       <div className="mt-5 grid items-center gap-3 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
         <label className="block">
           <span className="sr-only">{code} 금액</span>

@@ -2,6 +2,7 @@
 
 // 물가 구간 3칸 — 시안(작업 0170 · Figma 04): 흰 카드 3개(싼 곳 울트라마린 테두리 · 비슷한 곳 테두리 없음 · 비싼 곳 주홍 테두리) · 칸마다 나라 2곳 · 나라 이름 + "물가 48 (한국 100)" · 판정 핀은 같은 줄 오른쪽
 // 나머지 나라는 "나라 더 보기" 로 펼침 · 핀은 사이트 신호 규칙(최근 90일 백분위) · 신호 · 환율이 없으면 글자 ("신호 없음" · "환율 없음") — 지역 칩 · 막대 · 국기는 시안에 없어 뺌
+import { SectionTitle } from "@hav/ui/text/heading";
 import type { Signal } from "@hav/shared/signal";
 import type { Band } from "@hav/shared/travel";
 import { SignalPin } from "@hav/ui/data/signal-pin";
@@ -24,9 +25,9 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear }: P
       <div className="grid items-start gap-4 lg:grid-cols-3">
         {bands.map((b) => (
           <section key={b.id} aria-labelledby={`band-${b.id}`} className={`min-w-0 rounded-card bg-card px-6 py-5 ${BAND_CARD[b.id]}`}>
-            <h2 id={`band-${b.id}`} className={`font-display text-[1.625rem] leading-tight font-normal ${BAND_TEXT[b.id]}`}>
+            <SectionTitle id={`band-${b.id}`} className={`text-[1.625rem] leading-tight ${BAND_TEXT[b.id]}`}>
               {BAND_TITLE[b.id]}
-            </h2>
+            </SectionTitle>
             <ul className="mt-3 space-y-3">
               {(open ? b.rows : b.rows.slice(0, FOLDED)).map((r) => {
                 const signal = r.currency ? signalOf[r.currency] : null;
