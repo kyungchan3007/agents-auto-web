@@ -8,6 +8,7 @@ import type { FxLatest } from "@hav/shared/fx";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
 import { PageFooter } from "@hav/ui/layout/page-footer";
 import { PhotoHeader } from "@hav/ui/layout/photo-header";
+import { EmphText } from "@hav/ui/text/emph";
 import { Eyebrow, Title } from "@hav/ui/text/heading";
 import { calcHeadline } from "../lib/calc-copy";
 import { useCalcForm } from "../hooks/use-calc-form";
@@ -21,16 +22,15 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
   const hasRates = latest.ok && latest.data.rates.length > 0;
   // 입력 상태는 여기서 한 번 — 사진 위 큰 문장 · 아래 입력 · 결과가 같이 씀 (작업 0175)
   const form = useCalcForm(latest.ok ? latest.data.rates : [], customs);
-  // 큰 문장 — 입력으로 결과를 한 문장으로 ("세금 없이 받습니다" / "관세 · 부가세 약 ○원이 붙습니다") · 작업 0170
-  const tone = !hasRates || !form.result || !form.result.ok ? "text-foam" : form.result.over ? "text-sun" : "text-foam";
+  // 큰 문장 — 입력으로 결과를 한 문장으로 ("세금 없이 받습니다" / "관세 · 부가세 약 ○원이 붙습니다") · 숫자 강조는 EmphText (울트라마린 막 안에서는 해 노랑 글자)
   return (
     <>
       <SiteNav page="calc" />
       <main className="bg-surface text-fg">
         <PhotoHeader name="plane-below" alt="올려다본 하늘 위의 비행기" veil="ultramarine" priority position="center 40%">
           <Eyebrow className="text-sun">직구 계산</Eyebrow>
-          <Title as="h1" size="page" className={`mt-3 ${tone}`}>
-            {hasRates ? calcHeadline(form.result, form.input) : "환율을 받지 못했습니다"}
+          <Title as="h1" size="page" className="mt-3 text-foam">
+            <EmphText text={hasRates ? calcHeadline(form.result, form.input) : "환율을 받지 못했습니다"} />
           </Title>
           <p className="mt-6 max-w-[36em] text-body">물건 값을 넣으면 면세 한도 안인지 바로 알려 드립니다.</p>
         </PhotoHeader>

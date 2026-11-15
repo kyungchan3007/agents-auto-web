@@ -5,6 +5,7 @@ import { PLANE_CREDIT } from "@hav/shared/travel";
 import { SignalPin } from "@hav/ui/data/signal-pin";
 import { PageFooter } from "@hav/ui/layout/page-footer";
 import { PhotoHeader } from "@hav/ui/layout/photo-header";
+import { EmphText } from "@hav/ui/text/emph";
 import { Eyebrow, Title } from "@hav/ui/text/heading";
 import { cheapMonth, type IndexPoint } from "../lib/travel-index";
 import { cheapMonthsCard, flightsHeadline, yoyCard } from "../lib/flights-copy";
@@ -28,7 +29,7 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
         <PhotoHeader name="window-sunrise" alt="비행기 창밖으로 보이는 해돋이" veil="light" priority>
           <Eyebrow>여행 타이밍</Eyebrow>
           <Title as="h1" size="page" className="mt-3 text-cheap">
-            {headline}
+            <EmphText text={headline} />
           </Title>
           {ready ? (
             <p className="mt-6 max-w-[36em] text-body text-fg-2">통계청 소비자물가 중 국제항공료 · 해외단체여행비 지수(2020 = 100). 작년 같은 달과 비교하고, 원/달러 환율 월평균과 나란히 봅니다.</p>
