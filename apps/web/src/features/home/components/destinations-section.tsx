@@ -7,11 +7,11 @@ import type { DestinationRowData } from "../lib/destinations";
 
 export function DestinationsSection({ rows, windowDays }: { rows: DestinationRowData[]; windowDays: number }) {
   return (
-    <section id="destinations" aria-labelledby="destinations-title" className="bg-surface px-4 pt-14 pb-20 text-fg sm:px-8 sm:pt-20 sm:pb-28">
+    <section id="destinations" aria-labelledby="destinations-title" className="bg-surface px-4 pt-12 pb-16 text-fg sm:px-8 sm:pt-14 sm:pb-20">
       <div className="mx-auto max-w-page">
         <Title id="destinations-title">도착지별 환전 타이밍</Title>
-        <p className="mt-4 max-w-3xl text-small text-fg-2">
-          눈금은 최근 {windowDays}일 안의 위치이고 핀 글은 그 순위입니다(하위 12% = 90일 중 낮은 쪽에서 12% 안). 왼쪽일수록 그 기간 중 낮아 지금 환전이 유리하고, 가운데 선은 중간입니다. 앞으로를 예측하지 않으며 투자 · 금융 조언이 아닙니다.
+        <p className="mt-3 max-w-3xl text-small text-fg-2">
+          가운데 선이 최근 {windowDays}일 중간입니다. 왼쪽일수록 지금 환전이 유리합니다. 예측이 아니며 투자 · 금융 조언이 아닙니다.
         </p>
         <div className="mt-8 border-b-2 border-line">
           {rows.map((row) => {

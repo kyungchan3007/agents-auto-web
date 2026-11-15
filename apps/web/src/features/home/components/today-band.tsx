@@ -1,7 +1,6 @@
 // 2 오늘 환율 — 울트라마린 바다 띠 · 왼쪽 3D 지구(지금 디자인 그대로) · 오른쪽 "이번 주 가장 싸게 갈 수 있는 곳" 문장 · 노란 큰 숫자 (작업 0169)
 // 오늘 환율이 없으면 큰 문장 대신 "오늘 환율을 아직 받지 못했습니다" · 숫자 칸 비움 (숫자를 지어내지 않음) · 판단은 사이트 신호 규칙(최근 90일 백분위)
 import type { FxRate } from "@hav/shared/fx";
-import { SOURCE_NAME } from "@hav/shared/currency";
 import { DateText } from "@hav/ui/text/date-text";
 import { FreshnessNote } from "@hav/ui/feedback/freshness-note";
 import { Eyebrow, Title } from "@hav/ui/text/heading";
@@ -33,16 +32,10 @@ export function TodayBand({ rates, signals, windowDays, problem }: Props) {
                 {copy.headline}
               </Title>
               <p className="mt-6 font-display text-poster font-normal tracking-tight tabular-nums text-figure">
-                {copy.value}
-                <span className="ml-3 text-city text-fg"> / {copy.per}</span>
+                {copy.value} / {copy.per}
               </p>
               <p className="mt-6 text-body text-fg-2">{copy.evidence}</p>
-              {source && (
-                <p className="mt-2 text-small text-fg-2">
-                  기준일 <DateText date={source.date} /> · {SOURCE_NAME[source.source]}
-                  {source.source === "frankfurter" ? " — 수출입은행 값을 받지 못해 예비 출처 값입니다" : ""}
-                </p>
-              )}
+              {source?.source === "frankfurter" && <p className="mt-2 text-small text-fg-2">수출입은행 값을 받지 못해 예비 출처(Frankfurter) 값입니다 · 기준일 <DateText date={source.date} /></p>}
               {source && <FreshnessNote date={source.date} className="mt-1" />}
             </>
           ) : (
