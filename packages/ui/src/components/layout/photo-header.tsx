@@ -12,6 +12,8 @@ type Props = {
   priority?: boolean;
   /** 사진 가운데 위치 — 초안: 직구 "center 40%" · 소개 "70% center" */
   position?: string;
+  /** 사진 아래 끝을 하늘 종이색으로 부드럽게 사라지게 — 아래 구간이 사진에 걸쳐 올라올 때 (작업 0177 · 홈) */
+  fadeBottom?: boolean;
   children: ReactNode;
 };
 
@@ -22,7 +24,7 @@ const VEIL = {
 } as const;
 const TEXT = { light: "", ultramarine: "text-foam" } as const;
 
-export function PhotoHeader({ name, alt, veil, priority = false, position = "center", children }: Props) {
+export function PhotoHeader({ name, alt, veil, priority = false, position = "center", fadeBottom = false, children }: Props) {
   return (
     <section data-testid="photo-header" data-veil={veil} className={`group/photo relative isolate flex min-h-[22rem] items-end overflow-hidden bg-surface sm:min-h-[26rem] ${TEXT[veil]}`}>
       <img
@@ -40,6 +42,7 @@ export function PhotoHeader({ name, alt, veil, priority = false, position = "cen
         style={{ objectPosition: position }}
       />
       <div aria-hidden className={`absolute inset-0 -z-10 ${VEIL[veil]}`} />
+      {fadeBottom && <div data-testid="photo-fade-bottom" aria-hidden className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-b from-transparent to-surface sm:h-32" />}
       <div className="w-full px-4 py-10 sm:px-8 sm:py-14">
         <div className="mx-auto max-w-page">{children}</div>
       </div>
