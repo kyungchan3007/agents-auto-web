@@ -5,19 +5,18 @@
 import { currencyName } from "@hav/shared/currency";
 import { type TravelRow, relativeText } from "@hav/shared/travel";
 import { FieldLabel, Input, Select } from "@hav/ui/form/field";
-import { SubTitle } from "@hav/ui/text/heading";
 import { localText, wonText } from "../lib/budget";
 import { type Latest, useBudgetPlanner } from "../hooks/use-budget-planner";
-import { StatTile } from "@hav/ui/data/stat-tile";
 
 export function BudgetPlanner({ rows, latestOf }: { rows: TravelRow[]; latestOf: Record<string, Latest> }) {
   const { sorted, country, setCountry, daily, setDaily, days, setDays, row, d, n, latest, budget: b } = useBudgetPlanner(rows, latestOf);
 
   return (
-    <section id="budget" data-testid="budget" aria-labelledby="budget-title" className="scroll-mt-(--hav-nav-h) border-t-2 border-line pt-6">
-      <SubTitle id="budget-title">여행 하루 예산</SubTitle>
-      <p className="mt-1 text-sm text-fg-2">한국에서의 하루 지출을 기준으로 그 나라의 예상 비용을 계산합니다.</p>
-      <form className="mt-5 grid gap-3 sm:grid-cols-[1.2fr_1fr_0.6fr]" onSubmit={(e) => e.preventDefault()}>
+    <section id="budget" data-testid="budget" aria-labelledby="budget-title" className="scroll-mt-(--hav-nav-h) rounded-card bg-card px-6 py-6">
+      <h2 id="budget-title" className="font-display text-[1.625rem] leading-tight font-normal text-cheap">
+        여행 하루 예산
+      </h2>
+      <form className="mt-4 grid gap-4 sm:grid-cols-3" onSubmit={(e) => e.preventDefault()}>
         <FieldLabel label="나라">
           <Select value={country} onChange={(e) => setCountry(e.target.value)}>
             {sorted.map((r) => (
@@ -35,28 +34,21 @@ export function BudgetPlanner({ rows, latestOf }: { rows: TravelRow[]; latestOf:
         </FieldLabel>
       </form>
 
-      <div className="mt-6" aria-live="polite">
+      <div className="mt-4" aria-live="polite">
         {!row ? null : d == null ? (
-          <p className="text-sm text-expensive">하루 예산은 1원 이상의 정수로 넣어 주세요.</p>
+          <p className="text-small text-expensive">하루 예산은 1원 이상의 정수로 넣어 주세요.</p>
         ) : n == null ? (
-          <p className="text-sm text-expensive">일수는 1 ~ 90일로 넣어 주세요.</p>
+          <p className="text-small text-expensive">일수는 1 ~ 90일로 넣어 주세요.</p>
         ) : (
           b && (
             <>
-              <p className="text-sm text-fg-2">
-                {row.name} 물가는 한국보다 <span className="font-semibold text-fg">{relativeText(row.relative)}</span> ({row.year}년)
+              <p className="rounded-card bg-sun px-5 py-4 text-[1.375rem] font-semibold text-pin-ink sm:text-[1.625rem]">
+                하루 약 {wonText(b.dailyWon)} · {n}일 약 {wonText(b.totalWon)}
               </p>
-              <dl className="mt-3 grid gap-3 sm:grid-cols-2">
-                <StatTile label="하루" value={<>약 {wonText(b.dailyWon)}</>} sub={b.dailyLocal != null && row.currency && <span className="text-sm">≈ {localText(b.dailyLocal, row.currency)}</span>} className="border-t-2 border-line pt-3" valueClassName="text-number tracking-tight" />
-                <StatTile label={<>{n}일 전체</>} value={<>약 {wonText(b.totalWon)}</>} sub={b.totalLocal != null && row.currency && <span className="text-sm">≈ {localText(b.totalLocal, row.currency)}</span>} className="border-t-2 border-line pt-3" valueClassName="text-number tracking-tight" />
-              </dl>
-              <p className="mt-3 text-xs leading-relaxed text-fg-2">
-                {row.currency && latest
-                  ? `${currencyName(row.currency)} 환산은 ${latest.date} 매매기준율 · `
-                  : row.currency
-                    ? `${currencyName(row.currency)} 오늘 환율을 받지 못해 원으로만 보여 줍니다 · `
-                    : ""}
-                나라 전체 가계 소비 평균(세계은행)이라 숙소 · 항공 · 도시에 따라 크게 다릅니다. 예상치입니다.
+              <p className="mt-3 text-small text-fg-2">
+                {row.name} 물가는 한국보다 {relativeText(row.relative)} ({row.year}년)
+                {b.dailyLocal != null && row.currency && latest ? ` · 하루 ≈ ${localText(b.dailyLocal, row.currency)} (${latest.date} 매매기준율)` : ""}
+                {row.currency && !latest ? ` · ${currencyName(row.currency)} 오늘 환율을 받지 못해 원으로만 보여 줍니다` : ""}
               </p>
             </>
           )

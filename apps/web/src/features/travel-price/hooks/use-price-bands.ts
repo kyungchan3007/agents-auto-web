@@ -1,11 +1,9 @@
 "use client";
 
-// 묶음별 나라 목록 상태 — 고른 지역 (계산은 bands.ts)
-import type { Region } from "@hav/shared/currency";
+// 물가 구간 "나라 더 보기" 펼침 상태 (작업 0170)
 import { useState } from "react";
-import { type PriceBand, bandsView } from "../lib/bands";
 
-export function usePriceBands(bands: PriceBand[]) {
-  const [region, setRegion] = useState<Region | "all">("all");
-  return { region, setRegion, ...bandsView(bands, region) };
+export function usePriceBands() {
+  const [open, setOpen] = useState(false);
+  return { open, toggle: () => setOpen((v) => !v) };
 }
