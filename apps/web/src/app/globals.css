@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "@hav/ui/tokens.css";
+/* 큰 제목 · 큰 숫자 글꼴 Pretendard 800 — 자체 호스팅 조각 (unicode-range · 작업 0176) */
+@import "./pretendard.css";
 
 /* 디자인 시스템 컴포넌트의 클래스도 Tailwind 가 찾게 */
 @source "../../../../packages/ui/src";
