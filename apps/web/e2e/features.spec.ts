@@ -76,9 +76,9 @@ test("메뉴 '여행 타이밍' → /flights · 여행 품목 영역은 /flights
   await openMenuIfCollapsed(page); // 휴대폰은 메뉴 버튼을 먼저 펼침 (작업 0168)
   await page.getByRole("banner").getByRole("navigation").getByRole("link", { name: "여행 타이밍", exact: true }).click();
   await expect(page).toHaveURL(/\/flights\/?$/);
-  await expect(page.locator("#travel-index-title")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible(); // 큰 문장(작업 0170: 지수가 없으면 "준비 중")
   await page.goto("/prices");
-  await expect(page.locator("#travel-index-title")).toHaveCount(0);
+  await expect(page.locator('[data-testid="travel-graph"]')).toHaveCount(0);
   // /prices 본문에 /flights 로 가는 링크 한 줄 — 메뉴(머리글) 안의 링크는 휴대폰에서 접혀 있으므로 머리글 밖에서 찾음
   await expect(page.locator('a[href="/flights"]:not(header *)').first()).toBeVisible();
 });
