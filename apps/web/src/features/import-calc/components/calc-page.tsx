@@ -17,7 +17,7 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
   return (
     <>
       <SiteNav page="calc" />
-      <main className="bg-surface px-4 pt-14 pb-20 text-fg sm:px-8 sm:pt-20 sm:pb-28">
+      <main className="bg-surface px-4 pt-8 pb-10 text-fg sm:px-8 sm:pt-10">
         <div className="mx-auto max-w-page">
           <Eyebrow>직구 계산</Eyebrow>
           {hasRates ? (
@@ -27,12 +27,12 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
               <Title as="h1" size="page" className="mt-3 text-fg-2">
                 환율을 받지 못했습니다
               </Title>
-              <div className="mt-10">
+              <div className="mt-6">
                 <EmptyState>환율을 받지 못해 계산할 수 없습니다 ({latest.ok ? "통화 없음" : latest.reason})</EmptyState>
               </div>
             </>
           )}
-          <div className="mt-20 grid gap-16 lg:grid-cols-2 lg:gap-14">
+          <div className="mt-6 grid items-start gap-4 lg:grid-cols-2">
             <CustomsSection points={trend} bank={latest.ok ? latest.data.rates.find((r) => r.currency === "USD") : undefined} />
             <ImportPriceSection fxRows={usdDays} price={importPrice} />
           </div>
