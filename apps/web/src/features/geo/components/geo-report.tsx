@@ -1,30 +1,50 @@
 "use client";
 
-// GEO 수치 칸 — 지난 30일 AI 봇 · 일반 검색 엔진 · AI 서비스 유입
-import { numberText } from "@hav/shared/format";
+// GEO 수치 — 맨 위 측정 수치 카드 4개 · 읽는 법 (작업 0170 · Figma 07) 아래에 자세한 기록 (AI 답변 인용 · 구글 검색 · AI 봇 · AI 서비스 유입)
 import { DataTable } from "@hav/ui/data/data-table";
 import { DateText } from "@hav/ui/text/date-text";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
 import { SubTitle } from "@hav/ui/text/heading";
-import { StatTile } from "@hav/ui/data/stat-tile";
 import type { GeoReport as Report } from "@hav/shared/geo";
 import type { ReactNode } from "react";
 import type { Fetched } from "../../../shared/api";
-import { KIND_TEXT, answerHistory, answerLines, geoView } from "../lib/geo-view";
+import { KIND_TEXT, answerHistory, answerLines, geoCards, geoReading, geoView } from "../lib/geo-view";
 import { useGeoReport } from "../hooks/use-geo-report";
 
 export function GeoReport({ build }: { build: Fetched<Report> }) {
   const report = useGeoReport(build);
   if (!report.ok) return <EmptyState>측정 자료를 받지 못했습니다 ({report.reason})</EmptyState>;
   const r = report.data;
-  const { ai, engines, aiHits, engineHits, referralHits } = geoView(r);
+  const { ai, engines } = geoView(r);
   const search = r.search;
   const answers = answerLines(r);
   const history = answerHistory(r);
+  const cards = geoCards(r);
   return (
     <>
-      <section>
-        <SubTitle>AI 답변 인용</SubTitle>
+      <dl data-testid="geo-cards" className="grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+        {cards.map((c) => (
+          <div key={c.label} className="border-t-2 border-line pt-3">
+            <dt className="text-small text-fg-2">{c.label}</dt>
+            <dd className="mt-2 font-display text-city font-normal tracking-tight tabular-nums text-figure">{c.value}</dd>
+            {c.note && <dd className="mt-2 text-small text-fg-2">{c.note}</dd>}
+          </div>
+        ))}
+      </dl>
+
+      <section data-testid="geo-reading" aria-labelledby="geo-reading-title" className="mt-12 max-w-3xl">
+        <h2 id="geo-reading-title" className="font-display text-city font-normal tracking-tight">
+          이 수치를 읽는 법
+        </h2>
+        <ul className="mt-4 list-disc space-y-2 pl-5 text-body text-fg-2">
+          {geoReading(r).map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mt-16 border-t-2 border-line pt-8">
+        <SubTitle>AI 답변 인용 기록</SubTitle>
         <p className="mt-3 text-sm text-fg-2">정해 둔 질문 24개를 Claude 웹 검색으로 직접 묻고, 검색 결과와 답의 출처에 이 사이트가 나왔는지 기록합니다.</p>
         <div className="mt-3">
           <DataTable
@@ -57,13 +77,8 @@ export function GeoReport({ build }: { build: Fetched<Report> }) {
           <p className="mt-3 text-sm text-fg-2">아직 가져온 자료가 없습니다.</p>
         ) : (
           <>
-            <dl className="mt-3 grid gap-3 sm:grid-cols-3">
-              <StatTile label="검색 노출" value={`${numberText(search.impressions)}회`} valueClassName="text-2xl tracking-tight" />
-              <StatTile label="클릭" value={`${numberText(search.clicks)}회`} valueClassName="text-2xl tracking-tight" />
-              <StatTile label="평균 순위" value={search.position == null ? "자료 없음" : `${search.position}위`} valueClassName="text-2xl tracking-tight" />
-            </dl>
             <p className="mt-3 text-xs text-fg-2">
-              {search.firstDay && search.lastDay ? `${search.firstDay} ~ ${search.lastDay} · ` : "기록 없음 · "}Google Search Console 기준 · 구글 검색 전체 수치이며 AI 답변만 구분한 값이 아닙니다 · 며칠 늦게 반영됩니다
+              평균 순위 {search.position == null ? "자료 없음" : `${search.position}위`} · {search.firstDay && search.lastDay ? `${search.firstDay} ~ ${search.lastDay} · ` : "기록 없음 · "}Google Search Console 기준 · 구글 검색 전체 수치이며 AI 답변만 구분한 값이 아닙니다 · 며칠 늦게 반영됩니다
             </p>
             <Block title="상위 검색어" empty={search.queries.length === 0}>
               <DataTable head={["검색어", "노출", "클릭", "순위"]} rows={search.queries.map((q) => [q.key, q.impressions, q.clicks, q.position])} />
@@ -76,11 +91,6 @@ export function GeoReport({ build }: { build: Fetched<Report> }) {
       </section>
 
       <SubTitle className="mt-12">AI 봇 · AI 서비스</SubTitle>
-      <dl className="mt-3 grid gap-3 sm:grid-cols-3">
-        <StatTile label="AI 봇 방문" value={`${numberText(aiHits)}회`} sub="학습 · 검색 색인 · 사용자 요청" valueClassName="text-2xl tracking-tight" />
-        <StatTile label="일반 검색 엔진 방문" value={`${numberText(engineHits)}회`} sub="Googlebot · bingbot" valueClassName="text-2xl tracking-tight" />
-        <StatTile label="AI 서비스에서 유입" value={`${numberText(referralHits)}회`} sub="ChatGPT · Claude 등에서 넘어온 방문" valueClassName="text-2xl tracking-tight" />
-      </dl>
       <p className="mt-3 text-xs text-fg-2">
         지난 30일 ({r.since}부터) ·{" "}
         {r.firstDay ? (
