@@ -4,7 +4,7 @@ import { Card } from "@hav/ui/layout/card";
 import { NavBar } from "@hav/ui/layout/nav-bar";
 import { PageFooter } from "@hav/ui/layout/page-footer";
 import { Section } from "@hav/ui/layout/section";
-import { DestinationRow, scalePosition } from "@hav/ui/data/destination-row";
+import { DestinationRow } from "@hav/ui/data/destination-row";
 import { SignalPin } from "@hav/ui/data/signal-pin";
 import { Stamp } from "@hav/ui/data/stamp";
 import { StatTile } from "@hav/ui/data/stat-tile";
@@ -52,9 +52,9 @@ export default function DesignPage() {
 
       <Section id="rows" eyebrow="도착지 줄" title="도시 하나, 줄 하나.">
         <div className="max-w-3xl">
-          <DestinationRow city="도쿄" currency="엔 100" rate="912원" signal="cheap" pct={-4.1} position={scalePosition(912, 880, 990)} />
-          <DestinationRow city="뉴욕" currency="달러 1" rate="1,312원" signal="normal" pct={0.4} position={scalePosition(1312, 1250, 1380)} />
-          <DestinationRow city="파리" currency="유로 1" rate="1,540원" signal="expensive" pct={2.3} position={scalePosition(1540, 1480, 1560)} />
+          <DestinationRow city="도쿄" currency="엔 100" rate="912원" signal="cheap" percentile={0.12} position={0.12} />
+          <DestinationRow city="뉴욕" currency="달러 1" rate="1,312원" signal="normal" percentile={0.5} position={0.5} />
+          <DestinationRow city="파리" currency="유로 1" rate="1,540원" signal="expensive" percentile={0.9} position={0.9} />
           <DestinationRow city="방콕" currency="바트 1" signal={null} />
         </div>
       </Section>

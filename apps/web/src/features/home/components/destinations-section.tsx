@@ -11,9 +11,9 @@ export function DestinationsSection({ rows, windowDays }: { rows: DestinationRow
       <div className="mx-auto max-w-6xl">
         <Title id="destinations-title">도착지별 환전 타이밍</Title>
         <p className="mt-4 max-w-3xl text-small text-fg-2">
-          눈금은 최근 {windowDays}일 안의 위치입니다. 왼쪽일수록 그 기간 중 낮아 지금 환전이 유리하고, 가운데 선은 중간입니다. 앞으로를 예측하지 않으며 투자 · 금융 조언이 아닙니다.
+          눈금은 최근 {windowDays}일 안의 위치이고 핀 글은 그 순위입니다(하위 12% = 90일 중 낮은 쪽에서 12% 안). 왼쪽일수록 그 기간 중 낮아 지금 환전이 유리하고, 가운데 선은 중간입니다. 앞으로를 예측하지 않으며 투자 · 금융 조언이 아닙니다.
         </p>
-        <div className="mt-10 border-b-2 border-line">
+        <div className="mt-8 border-b-2 border-line">
           {rows.map((row) => {
             const body = (
               <DestinationRow
@@ -21,13 +21,12 @@ export function DestinationsSection({ rows, windowDays }: { rows: DestinationRow
                 currency={
                   <>
                     {row.currencyLabel}
-                    {row.rateText && <span className="sm:hidden"> · {row.rateText}</span>}
                     {row.note && <span> · {row.note}</span>}
                   </>
                 }
                 rate={row.rateText}
                 signal={row.signal}
-                pct={row.pct}
+                percentile={row.percentile}
                 position={row.position}
               />
             );
