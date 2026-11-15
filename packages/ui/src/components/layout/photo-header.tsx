@@ -24,7 +24,7 @@ const TEXT = { light: "", ultramarine: "text-foam" } as const;
 
 export function PhotoHeader({ name, alt, veil, priority = false, position = "center", children }: Props) {
   return (
-    <section data-testid="photo-header" data-veil={veil} className={`relative isolate flex min-h-[22rem] items-end overflow-hidden bg-surface sm:min-h-[26rem] ${TEXT[veil]}`}>
+    <section data-testid="photo-header" data-veil={veil} className={`group/photo relative isolate flex min-h-[22rem] items-end overflow-hidden bg-surface sm:min-h-[26rem] ${TEXT[veil]}`}>
       <img
         data-testid="photo-header-img"
         src={photoSrc(name, 1024)}
