@@ -1,28 +1,32 @@
-// 홈 — 빌드 때 받은 데이터로 그림 · docs/design.md "홈 화면 흐름" 순서대로
-//   1 첫 화면(지구본) → 2 여행지 고르기 → 3 통화 전체 → 4 1년 흐름 → 5 직구 계산기 입구
-//   6 만드는 중 입구는 뺌 (2026-10-29 사용자: "이건 없어도 돼 버려" · 작업 0079) — 꼬리말 링크로 /log
+// 홈 — 빌드 때 받은 데이터로 그림 (작업 0169 · Figma 01) · 위 → 아래: 여행 타이밍 → 오늘 환율(바다 띠) → 도착지별 환전 타이밍 → 바닥 띠
+//   지수 · 환율 · 신호가 없으면 각 구간이 "아직 받지 못했습니다" 로 바뀜 (숫자를 지어내지 않음)
+import type { Fetched } from "@/shared/api";
 import { SiteNav } from "@/shared/site-nav";
-import { CalcSection } from "./calc-section";
-import { CurrenciesSection } from "./currencies-section";
-import { HeroSection } from "./hero-section";
-import { type HomeData, homeView } from "../lib/home-data";
+import type { FxLatest } from "@hav/shared/fx";
+import type { IndicatorSeries } from "@hav/shared/indicators";
+import type { SignalList } from "@hav/shared/signal";
+import { DestinationsSection } from "./destinations-section";
 import { HomeFooter } from "./home-footer";
-import { TripsSection } from "./trips-section";
-import { YearSection } from "./year-section";
+import { TodayBand } from "./today-band";
+import { TravelTimingSection } from "./travel-timing-section";
+import { type Destination, destinationRows } from "../lib/destinations";
+import { DESTINATIONS } from "../lib/places";
+import { travelTiming } from "../lib/travel-timing";
 
-export type { HomeData };
+export type HomeData = { latest: Fetched<FxLatest>; signals: Fetched<SignalList>; airFare: Fetched<IndicatorSeries> };
 
-export function Home(data: HomeData) {
-  const view = homeView(data);
+export function Home({ latest, signals, airFare }: HomeData) {
+  const rates = latest.ok ? latest.data.rates : [];
+  const signalRows = signals.ok ? signals.data.signals : [];
+  const windowDays = signals.ok ? signals.data.rule.windowDays : 90;
+  const timing = travelTiming(airFare.ok ? airFare.data.points : null);
   return (
     <>
       <SiteNav page="home" />
-      <HeroSection view={view} />
-      <TripsSection stops={view.stops} />
-      <CurrenciesSection view={view} />
-      <YearSection view={view} />
-      <CalcSection />
-      <HomeFooter windowDays={view.windowDays} />
+      <TravelTimingSection timing={timing} />
+      <TodayBand rates={rates} signals={signalRows} windowDays={windowDays} problem={!latest.ok ? latest.reason : null} />
+      <DestinationsSection rows={destinationRows(signalRows, rates, DESTINATIONS as Destination[])} windowDays={windowDays} />
+      <HomeFooter />
     </>
   );
 }
