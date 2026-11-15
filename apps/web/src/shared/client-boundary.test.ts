@@ -48,7 +48,7 @@ function valueImports(src: string): { names: string[]; spec: string }[] {
   return out;
 }
 
-/** 컴포넌트 이름 모양 — 대문자로 시작하고 소문자가 섞임 (GlobeLazy · Converter) · default 는 컴포넌트로 봄 */
+/** 컴포넌트 이름 모양 — 대문자로 시작하고 소문자가 섞임 (PlaneRouteLazy · Converter) · default 는 컴포넌트로 봄 */
 const looksLikeComponent = (n: string) => n === "default" || /^[A-Z](?=.*[a-z])[A-Za-z0-9]*$/.test(n);
 
 describe("서버 파일은 'use client' 파일에서 컴포넌트만 가져온다 (작업 0092)", () => {
@@ -75,7 +75,7 @@ describe("검사 도구 자체", () => {
     ]);
   });
   it("컴포넌트 이름 모양", () => {
-    expect(looksLikeComponent("GlobeLazy")).toBe(true);
+    expect(looksLikeComponent("PlaneRouteLazy")).toBe(true);
     expect(looksLikeComponent("REPO_URL")).toBe(false);
     expect(looksLikeComponent("outageActive")).toBe(false);
   });

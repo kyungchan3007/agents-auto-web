@@ -7,7 +7,7 @@ import type { DestinationRowData } from "../lib/destinations";
 
 export function DestinationsSection({ rows, windowDays }: { rows: DestinationRowData[]; windowDays: number }) {
   return (
-    <section id="destinations" aria-labelledby="destinations-title" className="bg-surface px-4 pt-12 pb-16 text-fg sm:px-8 sm:pt-14 sm:pb-20">
+    <section id="destinations" aria-labelledby="destinations-title" className="bg-surface px-4 pt-6 pb-16 text-fg sm:px-8 sm:pt-8 sm:pb-20">
       <div className="mx-auto max-w-page">
         <SectionTitle id="destinations-title" className="text-title">도착지별 환전 타이밍</SectionTitle>
         <p className="mt-3 max-w-3xl text-small text-fg-2">

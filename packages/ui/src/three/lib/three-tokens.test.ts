@@ -15,15 +15,9 @@ const THREE = fileURLToPath(new URL("..", import.meta.url)); // packages/ui/src/
 const read = (p: string) => readFileSync(join(THREE, p), "utf8");
 const SITE_THEME = /--hav-(accent|aurora-\d|cheap|normal|expensive|surface|surface-2|fg|fg-2|line|on-accent)\b/;
 
-describe("3D 지구 · 비행기는 3D 전용 토큰만 읽음", () => {
-  it("globe.tsx: 지구 호 색을 --hav-3d-arc 에서 읽고 --hav-accent 는 읽지 않음", () => {
-    const src = read("objects/globe.tsx");
-    expect(src).toMatch(/tokenColor\(\s*"--hav-3d-arc"\s*,\s*"#4ff0e0"\s*\)/i);
-    expect(src).not.toMatch(/--hav-accent/);
-  });
-
-  it("globe.tsx · plane.tsx · stage.tsx 는 사이트 테마 색 토큰을 읽지 않음 (--hav-3d-* 만)", () => {
-    for (const f of ["objects/globe.tsx", "objects/plane.tsx", "scene/stage.tsx"]) {
+describe("3D 비행기 · 장면은 3D 전용 토큰만 읽음 (작업 0177 수정: 지구는 없앰)", () => {
+  it("plane.tsx · stage.tsx 는 사이트 테마 색 토큰을 읽지 않음 (--hav-3d-* 만)", () => {
+    for (const f of ["objects/plane.tsx", "scene/stage.tsx"]) {
       const src = read(f);
       // 설명 글(주석)은 빼고 코드만 봄
       const code = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
@@ -36,8 +30,7 @@ describe("3D 지구 · 비행기는 3D 전용 토큰만 읽음", () => {
     for (const t of ["--hav-3d-cheap", "--hav-3d-normal", "--hav-3d-expensive"]) expect(src, t).toContain(t);
   });
 
-  it("지금 값이 fallback 으로 그대로 — 호 #4ff0e0 · 쌈 #4c9bff · 보통 #c7c7cc · 비쌈 #ff5a5f", () => {
-    expect(read("objects/globe.tsx")).toContain("#4ff0e0");
+  it("지금 값이 fallback 으로 그대로 — 쌈 #4c9bff · 보통 #c7c7cc · 비쌈 #ff5a5f", () => {
     const stage = read("scene/stage.tsx").toLowerCase();
     for (const c of ["#4c9bff", "#c7c7cc", "#ff5a5f"]) expect(stage, c).toContain(c);
   });

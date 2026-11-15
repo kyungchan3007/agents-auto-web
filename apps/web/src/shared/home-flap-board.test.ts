@@ -107,13 +107,11 @@ describe("사진 아래 하늘 종이 위에 놓음 (B2 · 작업 0177 수정: �
   });
 });
 
-describe("지구 · 비행기 생김새 그대로 · 자리만 옮김 (B8)", () => {
-  // 0177 시작 때(0176 위) 파일의 sha256 — 지구 · 비행기 · 비행기 길 · 장면 코드를 건드리지 않음
+describe("3D 지구 제거 · 비행기는 그대로 (작업 0177 수정)", () => {
+  // 비행기 · 비행기 길 · 장면 코드는 그대로 — /flights 와 홈 그래프가 씀 (지구만 지움)
   const HASH: Record<string, string> = {
-    "three/objects/globe.tsx": "324c908f62821b2beade51600082c39602497c4e819d59fc6e1a78cb65c80c29",
     "three/objects/plane.tsx": "3078d67e7503b99c822ef40b46d9c663938be6529cdcf13719574b7ad464ea8a",
-    "three/objects/plane-route.tsx": "5ba9463304d795d2" , // 앞 16자만 비교 (아래)
-    "three/scene/lazy.tsx": "d3150df7bce08f46",
+    "three/objects/plane-route.tsx": "5ba9463304d795d2", // 앞 16자만 비교
     "three/scene/stage.tsx": "1cee7f2529c4a122",
   };
   for (const [file, expected] of Object.entries(HASH)) {
@@ -123,33 +121,21 @@ describe("지구 · 비행기 생김새 그대로 · 자리만 옮김 (B8)", () 
     });
   }
 
-  it("지구는 지금과 같은 props(origin · texture · arcs 호 색 = 통화 신호)로 그림", () => {
-    const s = board();
-    const tag = /<GlobeLazy\b[\s\S]*?\/>/.exec(s)?.[0] ?? "";
-    expect(tag, "<GlobeLazy />").not.toBe("");
-    expect(tag).toMatch(/origin=\{SEOUL\}/);
-    expect(tag).toMatch(/texture=\{EARTH_TEXTURE\}/);
-    expect(tag).toMatch(/arcs=\{/);
-    expect(tag).toMatch(/\.signal\b/);
+  it("홈에 3D 지구 · 둘레 원 · 지구 그림 파일이 없음 — GlobeLazy · SEOUL · EARTH_TEXTURE 를 쓰지 않음", () => {
+    for (const f of HOME_COMPONENTS) expect(read(f), f).not.toMatch(/\bGlobeLazy\b|\bSEOUL\b|EARTH_TEXTURE|rounded-full/);
+    expect(read(join(WEB_SRC, "features/home/lib/places.ts"))).not.toMatch(/SEOUL|EARTH_TEXTURE|earth-2048/);
   });
 
-  it("데스크톱은 판 오른쪽(lg: 두 칸 격자 · 판이 DOM 에서 먼저) · 모바일은 판 아래 작게(size ≤ 280px)", () => {
-    const s = board();
-    expect(s).toMatch(/lg:grid-cols-/);
-    expect(s.indexOf("<FlapBoard")).toBeGreaterThan(-1);
-    expect(s.indexOf("<FlapBoard")).toBeLessThan(s.indexOf("<GlobeLazy"));
-    const cls = /<GlobeLazy\b[\s\S]*?className="([^"]*)"/.exec(s)?.[1] ?? "";
-    const base = /(?:^|\s)size-\[(\d+)px\]/.exec(cls)?.[1];
-    expect(base, "모바일(기본) 지구 크기").toBeDefined();
-    expect(Number(base)).toBeLessThanOrEqual(280);
+  it("쓰지 않는 지구 부품 · 계산 · 그림 파일을 남기지 않음 (globe.tsx · lib/geo.ts · textures/earth-2048.jpg · lazy 의 GlobeLazy)", () => {
+    expect(existsSync(join(UI_SRC, "three/objects/globe.tsx"))).toBe(false);
+    expect(existsSync(join(UI_SRC, "three/lib/geo.ts"))).toBe(false);
+    expect(existsSync(join(WEB_SRC, "../public/textures/earth-2048.jpg"))).toBe(false);
+    expect(read(join(UI_SRC, "three/scene/lazy.tsx"))).not.toMatch(/Globe/);
   });
 
-  it("지구 뒤에 파란 원판 · 띠 · 배경이 없음 — GlobeLazy 와 그 감싸는 줄에 bg-/data-surface/rounded-full 이 없음", () => {
-    const s = board();
-    const tag = /<GlobeLazy\b[\s\S]*?\/>/.exec(s)?.[0] ?? "";
-    expect(tag).not.toMatch(/\bbg-|data-surface|rounded-full/);
-    const before = s.slice(0, s.indexOf("<GlobeLazy")).split("\n").slice(-2).join("\n");
-    expect(before).not.toMatch(/\bbg-|data-surface/);
+  it("안내판은 하늘 종이 위 한 칸 — 두 칸 격자(lg:grid-cols-) · 지구 자리 없이 왼쪽 정렬", () => {
+    expect(board()).not.toMatch(/lg:grid-cols-/);
+    expect(board()).toMatch(/<FlapBoard\b/);
   });
 });
 

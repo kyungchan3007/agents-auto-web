@@ -57,11 +57,11 @@ describe("홈 구성 — 순서 · 구간", () => {
     expect(HOME_UI).toContain("도착지별 환전 타이밍");
   });
 
-  it("여행 타이밍 라벨 · 선 그래프 · 비행기 자리 표시(data-testid) · 지구 · 비행기 · 도착지 줄 컴포넌트를 씀", () => {
+  it("여행 타이밍 라벨 · 선 그래프 · 비행기 자리 표시(data-testid) · 안내판 · 비행기 · 도착지 줄 컴포넌트를 씀 (지구는 없앰)", () => {
     expect(HOME_UI).toContain("여행 타이밍");
     expect(HOME_UI).toMatch(/data-testid="travel-graph"/);
     expect(HOME_UI).toMatch(/data-testid="plane-route"/);
-    expect(HOME_UI).toMatch(/\bGlobeLazy\b/);
+    expect(HOME_UI).not.toMatch(/\bGlobeLazy\b/); // 작업 0177 수정: 3D 지구를 없앰
     expect(HOME_UI).toMatch(/\bFlapBoard\b/); // 작업 0177 출발 안내판
     expect(HOME_UI).toMatch(/\bPlaneRouteLazy\b/);
     expect(HOME_UI).toMatch(/\bDestinationRow\b/);
