@@ -1,14 +1,12 @@
 // 5 직구 계산기 입구 — 밝은 섹션
-import { Reveal } from "@hav/ui/motion/reveal";
 import Link from "next/link";
-import { MoneyCatLazy } from "@hav/ui/three/scene/lazy";
 import { Eyebrow, Title } from "@hav/ui/text/heading";
 
 export function CalcSection() {
   return (
     <section id="calc" data-surface="light" className="bg-surface px-4 py-24 text-fg sm:px-8 sm:py-32">
-      <div className="mx-auto grid max-w-5xl items-center gap-8 md:grid-cols-[1.2fr_1fr]">
-        <Reveal>
+      <div className="mx-auto max-w-5xl">
+        <div className="max-w-2xl">
           <Eyebrow>직구 계산기</Eyebrow>
           <Title className="mt-3">
             구매 전에,
@@ -19,8 +17,7 @@ export function CalcSection() {
           <Link href="/calc" className="mt-8 inline-flex rounded-pill bg-accent px-5 py-2.5 text-sm font-semibold text-on-accent">
             직구 계산하기
           </Link>
-        </Reveal>
-        <MoneyCatLazy mood="happy" className="h-[260px] w-full sm:h-[320px]" />
+        </div>
       </div>
     </section>
   );

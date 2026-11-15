@@ -2,34 +2,34 @@
 import { SOURCE_NAME } from "@hav/shared/currency";
 import { numberText } from "@hav/shared/format";
 import type { FxRate } from "@hav/shared/fx";
-import { MoneyCatLazy } from "@hav/ui/three/scene/lazy";
+import { Stamp } from "@hav/ui/data/stamp";
 import { DateText } from "@hav/ui/text/date-text";
-import type { CalcResult as Result, catMood } from "../lib/calc";
+import type { CalcResult as Result } from "../lib/calc";
 import type { RateSource } from "../lib/customs-rate";
 import { RULES_SOURCE } from "../lib/rules";
 
-const MOOD_TEXT = { happy: "면세 한도 안이라 만족한 표정의 고양이", worried: "면세 한도에 가까워 걱정하는 고양이", sad: "면세 한도를 넘어 실망한 표정의 고양이", neutral: "금화를 들고 대기하는 고양이" } as const;
 const usd = (n: number) => numberText(n, { maximumFractionDigits: 2 });
 
-export function CalcResult({ result: r, mood, rate, source, dutyRate }: { result: Result | null; mood: ReturnType<typeof catMood>; rate: FxRate | undefined; source?: RateSource; dutyRate: string }) {
+export function CalcResult({ result: r, rate, source, dutyRate }: { result: Result | null; rate: FxRate | undefined; source?: RateSource; dutyRate: string }) {
   return (
-    <div className="rounded-card bg-surface-2 p-6 sm:p-8" aria-live="polite">
+    <div className="border-t-2 border-cheap pt-6 sm:pt-8" aria-live="polite">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="text-sm text-fg-2">원화로</p>
-          <p className="mt-1 text-[clamp(2rem,6vw,3.25rem)] leading-tight font-bold tracking-tighter">
-            {r?.ok ? <span className="text-aurora">{numberText(r.priceKrw)}</span> : <span className="text-fg-2">—</span>}
-            <span className="ml-1.5 text-title font-semibold">원</span>
+          <p className="mt-1 font-display text-[clamp(2rem,6vw,3.25rem)] leading-tight font-normal tracking-tighter tabular-nums">
+            {r?.ok ? <span className="text-accent">{numberText(r.priceKrw)}</span> : <span className="text-fg-2">—</span>}
+            <span className="ml-1.5 text-title">원</span>
           </p>
         </div>
-        <MoneyCatLazy mood={mood} label={MOOD_TEXT[mood]} className="size-28 shrink-0 sm:size-36" />
+        {/* 노란 도장 — 면세 한도 안일 때만 (해 노랑은 좋은 판정에만 · 넘으면 아래 글자가 주홍으로 알림) */}
+        {r?.ok && !r.over && <Stamp className="shrink-0">면세 한도 안</Stamp>}
       </div>
 
       {!r && <p className="mt-6 text-base text-fg-2">물건 값을 넣으면 면세 한도 안인지 바로 보여 드립니다</p>}
       {r && !r.ok && <p className="mt-6 text-base font-semibold text-expensive">{r.reason}</p>}
       {r?.ok && (
         <>
-          <div className="mt-6 h-2.5 overflow-hidden rounded-pill bg-surface" role="img" aria-label={`면세 한도의 ${Math.round(r.ratio * 100)}%`}>
+          <div className="mt-6 h-2.5 overflow-hidden rounded-pill bg-line" role="img" aria-label={`면세 한도의 ${Math.round(r.ratio * 100)}%`}>
             <div className={`h-full rounded-pill ${r.over ? "bg-expensive" : r.ratio >= 0.8 ? "bg-normal" : "bg-cheap"}`} style={{ width: `${Math.min(100, r.ratio * 100)}%` }} />
           </div>
           <p className="mt-3 text-base text-fg">

@@ -10,8 +10,8 @@ import { TodayPatches } from "./today-patches";
 import { useLogView } from "../hooks/use-log-view";
 
 export function LogBody({ buildTasks }: { buildTasks: Fetched<TasksSummary> }) {
-  const { activity, tasks, names, blocked, mood, reduce, patches } = useLogView(buildTasks);
-  const props = { activity, names, blocked, mood };
+  const { activity, tasks, names, blocked, reduce, patches } = useLogView(buildTasks);
+  const props = { activity, names, blocked };
 
   return (
     <>

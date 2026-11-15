@@ -1,6 +1,5 @@
 // 4 1년 흐름
 import { currencyName, rateText } from "@hav/shared/currency";
-import { Reveal } from "@hav/ui/motion/reveal";
 import { Section } from "@hav/ui/layout/section";
 import Link from "next/link";
 import { YearChart } from "@hav/ui/data/year-chart";
@@ -22,7 +21,7 @@ export function YearSection({ view }: { view: HomeView }) {
       }
     >
       {hero && yearRange ? (
-        <Reveal>
+        <div>
           <YearChart rates={year} unitText={rateText(hero).unit} />
           <p className="mt-6 text-sm">
             받은 {yearRange.count}일 중 가장 쌀 때 <span className="font-semibold text-cheap">{rateText({ baseRate: yearRange.min.baseRate, unit: hero.unit }).value}원</span> (
@@ -32,7 +31,7 @@ export function YearSection({ view }: { view: HomeView }) {
           <Link href={`/currencies/${HERO}`} className="mt-6 inline-flex text-sm font-semibold text-accent hover:underline">
             다른 통화 1년 흐름 보기 →
           </Link>
-        </Reveal>
+        </div>
       ) : (
         <EmptyState>{heroHistoryProblem}</EmptyState>
       )}

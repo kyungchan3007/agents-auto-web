@@ -1,9 +1,7 @@
 // 1 첫 화면 — 오늘 달러 환율 · 지구본 · 🌏 호 색 = 그 나라 통화 신호
 import { SOURCE_NAME, headline, percentileText, rateText } from "@hav/shared/currency";
-import { CountUp } from "@hav/ui/motion/count-up";
-import { Reveal } from "@hav/ui/motion/reveal";
 import { Section } from "@hav/ui/layout/section";
-import { SignalBadge } from "@hav/ui/data/signal-badge";
+import { SignalPin } from "@hav/ui/data/signal-pin";
 import { CurrencyFlag as Flag } from "@hav/ui/data/currency-flag";
 import { DateText } from "@hav/ui/text/date-text";
 import { FreshnessNote } from "@hav/ui/feedback/freshness-note";
@@ -19,7 +17,7 @@ export function HeroSection({ view }: { view: HomeView }) {
     <Section id="today">
       <div className="grid items-center gap-6 lg:grid-cols-[1.05fr_1fr]">
       {hero ? (
-        <Reveal>
+        <div>
           {/* 작은 제목은 큰 제목 바로 위에 붙임 — 섹션 위에 두면 지구본 높이만큼 떨어져 보였음 */}
           <Eyebrow className="flex items-center gap-2">
             <Flag currency={HERO} />
@@ -27,15 +25,15 @@ export function HeroSection({ view }: { view: HomeView }) {
           </Eyebrow>
           <FreshnessNote date={hero.date} className="mt-2" />
           <Title as="h1" className="mt-4 text-fg">{headline(HERO, heroSignal?.signal ?? null)}</Title>
-          <p className="mt-6 text-hero font-bold tracking-tighter whitespace-nowrap">
-            <CountUp text={rateText(hero).value} className="text-aurora" />
-            <span className="ml-3 text-title font-semibold text-fg">{rateText(hero).unit}</span>
+          <p className="mt-6 font-display text-hero font-normal tracking-tighter whitespace-nowrap tabular-nums">
+            <span className="text-accent">{rateText(hero).value}</span>
+            <span className="ml-3 text-title text-fg">{rateText(hero).unit}</span>
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            {heroSignal?.signal && <SignalBadge signal={heroSignal.signal} />}
+            {heroSignal?.signal && <SignalPin signal={heroSignal.signal} />}
             <span className="text-sm text-fg-2">{percentileText(heroSignal?.signal ?? null, heroSignal?.percentile ?? null, windowDays)} · 예측 아님</span>
           </div>
-        </Reveal>
+        </div>
       ) : (
         <EmptyState>{problem ?? "달러 환율이 아직 수집되지 않았습니다"}</EmptyState>
       )}

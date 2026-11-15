@@ -19,7 +19,7 @@ export function LivePanel({ activity, names, mode }: { activity: Activity; names
   const shortName = taskName?.split(" — ")[0] ?? null;
 
   return (
-    <div className="overflow-hidden rounded-card bg-surface-2 text-fg shadow-2xl ring-1 ring-line">
+    <div className="overflow-hidden rounded-card bg-surface-2 text-fg">
       {/* 창 머리 */}
       <div className="flex items-center gap-2 border-b border-line px-4 py-3 font-mono text-xs text-fg-2">
         <span className="size-3 rounded-full bg-line" />
@@ -43,7 +43,7 @@ export function LivePanel({ activity, names, mode }: { activity: Activity; names
                 ? "아직 기록이 없습니다"
                 : "불러오는 중…"
               : working
-                ? <>지금, <span className="text-aurora">{shortName ?? (status.task ? `작업 ${status.task}` : "다음 작업")}</span> 작업 중</>
+                ? <>지금, <span className="text-accent">{shortName ?? (status.task ? `작업 ${status.task}` : "다음 작업")}</span> 작업 중</>
                 : <>대기 중 <span className="text-fg-2">· 마지막 작업 {status.ago}</span></>}
         </p>
         {error && <p className="mt-2 text-xs text-fg-2">연결이 끊겼습니다 · 다시 시도하는 중 ({error})</p>}

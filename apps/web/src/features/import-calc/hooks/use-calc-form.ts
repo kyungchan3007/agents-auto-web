@@ -6,7 +6,7 @@ import type { FxRate } from "@hav/shared/fx";
 import { type ChangeEvent, useState } from "react";
 import { useQueryParam } from "@hav/ui/hooks/use-query-param";
 import { kstDate } from "@hav/shared/date";
-import { type CalcInput, type Rate, calc, catMood } from "../lib/calc";
+import { type CalcInput, type Rate, calc } from "../lib/calc";
 import { type CustomsRate, pickRate } from "../lib/customs-rate";
 
 export function useCalcForm(rates: FxRate[], customs: Record<string, CustomsRate> = {}) {
@@ -25,7 +25,6 @@ export function useCalcForm(rates: FxRate[], customs: Record<string, CustomsRate
     codes: groupByRegion(rates).flatMap((g) => g.items.map((r) => r.currency)),
     input,
     result,
-    mood: catMood(result),
     rate: table[input.currency],
     source: picks[input.currency]?.source,
     set: (k: keyof CalcInput) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setInput((i) => ({ ...i, [k]: e.target.value })),

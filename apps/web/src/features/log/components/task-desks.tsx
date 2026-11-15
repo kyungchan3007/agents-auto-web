@@ -1,15 +1,13 @@
 "use client";
 
-// ④ 작업 책상 — 이슈 적기 → 작업하기 → 테스트 → 배포 책상 · 🐱 작업 고양이가 지금 단계 책상으로 걸어감 · 끝난 작업은 선반에
+// ④ 작업 책상 — 이슈 적기 → 작업하기 → 테스트 → 배포 책상 · 노란 표식이 지금 단계 책상으로 옮겨 감 · 끝난 작업은 선반에
 // 단계는 실제 기록으로만 (stage.ts) · 3D 장면은 디자인 시스템(@hav/ui/three/stations)
 import type { TasksSummary } from "@hav/shared/tasks";
 import { Section } from "@hav/ui/layout/section";
 import type { Fetched } from "../../../shared/api";
 import { REPO_URL } from "../../../shared/site";
 import { StationsLazy } from "@hav/ui/three/scene/lazy";
-import { MOOD_TEXT, moodOf } from "../lib/mood";
 import { STAGES, deskLabel, deskProgress, deskState } from "../lib/stage";
-import { liveStatus } from "../lib/status";
 import type { Activity } from "../hooks/use-activity";
 
 const SHELF = 30;
@@ -18,8 +16,6 @@ export function TaskDesks({ activity, tasks }: { activity: Activity; tasks: Fetc
   const done = tasks.ok ? tasks.data.done : [];
   const names = tasks.ok ? tasks.data.names : {};
   const desk = deskState(activity.events, done);
-  const status = liveStatus(activity.events, activity.now);
-  const mood = moodOf(status);
   const { active, doneCount } = deskProgress(desk);
   const name = desk.task ? (names[desk.task]?.split(" — ")[0] ?? null) : null;
 
@@ -37,8 +33,7 @@ export function TaskDesks({ activity, tasks }: { activity: Activity; tasks: Fetc
         count={STAGES.length}
         active={active}
         done={doneCount}
-        mood={mood}
-        label={`${MOOD_TEXT[mood]} · ${desk.finished ? "다음 작업 대기" : `${STAGES[active].name} 단계`}`}
+        label={`작업 책상 · ${desk.finished ? "다음 작업 대기" : `${STAGES[active].name} 단계`}`}
         className="mt-6 h-52 w-full sm:h-72"
       />
 
@@ -54,7 +49,7 @@ export function TaskDesks({ activity, tasks }: { activity: Activity; tasks: Fetc
                 {i + 1} {s.name}
               </p>
               <p className="mt-1 hidden text-xs text-fg-2 sm:block">{s.hint}</p>
-              <p className={`mt-2 text-xs font-semibold ${state === "지금" ? "text-accent" : state === "끝" ? "text-aurora-2" : "text-fg-2"}`}>{state}</p>
+              <p className={`mt-2 text-xs font-semibold ${state === "지금" ? "text-accent" : state === "끝" ? "text-cheap" : "text-fg-2"}`}>{state}</p>
             </li>
           );
         })}
