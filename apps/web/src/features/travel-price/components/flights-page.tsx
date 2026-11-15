@@ -36,7 +36,8 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
             <p className="mt-6 max-w-[36em] text-body text-fg-2">준비 중 — 통계청 국제항공료 지수를 아직 받지 못했습니다. 받으면 이 자리 아래에 선 그래프 · 3D 비행기 · 작년 대비가 표시됩니다 (월 자료는 발표가 늦어 최근 몇 달을 매달 다시 받아 덮어씁니다).</p>
           )}
         </PhotoHeader>
-        <div className="mx-auto max-w-page px-4 pt-6 pb-10 sm:px-8">
+        <div className="px-4 pt-6 pb-10 sm:px-8">
+        <div className="mx-auto max-w-page">
           {ready && (
             <>
               <div>
@@ -64,6 +65,7 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
               )}
             </>
           )}
+        </div>
         </div>
       </main>
       <PageFooter width="max-w-page" className="space-y-1">

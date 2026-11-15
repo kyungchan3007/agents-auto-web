@@ -32,7 +32,8 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
           </Title>
           <p className="mt-6 max-w-[36em] text-body text-fg-2">세계은행 나라별 물가 수준(한국 = 100)과 오늘 그 나라 통화 신호를 함께 봅니다.</p>
         </PhotoHeader>
-        <div className="mx-auto max-w-page px-4 pt-6 pb-10 sm:px-8">
+        <div className="px-4 pt-6 pb-10 sm:px-8">
+        <div className="mx-auto max-w-page">
           <div>
             {data && data.bands.length > 0 ? (
               <PriceBands bands={data.bands} signalOf={signalOf} percentileOf={percentileOf} latestYear={data.years[0]} />
@@ -53,6 +54,7 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
               {!signals.ok && <p>오늘 환율 신호를 받지 못해 비워 두었습니다 ({signals.reason})</p>}
             </div>
           )}
+        </div>
         </div>
       </main>
       <PageFooter width="max-w-page">자료: 세계은행 물가 수준(PA.NUS.PRVT.PP ÷ PA.NUS.FCRF) · 한국수출입은행</PageFooter>

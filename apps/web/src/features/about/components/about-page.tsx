@@ -22,7 +22,8 @@ export function AboutPage(_props: { signals: Fetched<SignalList>; duty: DutyRule
             <span aria-hidden className="block">어떤 자료를,</span> <span aria-hidden className="block">어떤 기준으로 보여 주나요</span>
           </Title>
         </PhotoHeader>
-        <div className="mx-auto max-w-page px-4 pt-6 pb-10 sm:px-8">
+        <div className="px-4 pt-6 pb-10 sm:px-8">
+        <div className="mx-auto max-w-page">
           <ul className="grid gap-4 sm:grid-cols-2">
             {ABOUT_CARDS.map((c) => (
               <li key={c.id} data-testid="criteria-card" className="rounded-card bg-card px-5 py-5">
@@ -31,6 +32,7 @@ export function AboutPage(_props: { signals: Fetched<SignalList>; duty: DutyRule
               </li>
             ))}
           </ul>
+        </div>
         </div>
       </main>
       <PageFooter width="max-w-page">모든 숫자의 출처는 각 화면 아래에 적습니다</PageFooter>

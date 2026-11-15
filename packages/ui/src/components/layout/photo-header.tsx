@@ -40,7 +40,9 @@ export function PhotoHeader({ name, alt, veil, priority = false, position = "cen
         style={{ objectPosition: position }}
       />
       <div aria-hidden className={`absolute inset-0 -z-10 ${VEIL[veil]}`} />
-      <div className="mx-auto w-full max-w-page px-4 py-10 sm:px-8 sm:py-14">{children}</div>
+      <div className="w-full px-4 py-10 sm:px-8 sm:py-14">
+        <div className="mx-auto max-w-page">{children}</div>
+      </div>
     </section>
   );
 }

@@ -48,8 +48,10 @@ export function TravelTimingSection({ timing }: { timing: TravelTiming }) {
         )}
       </PhotoHeader>
       {timing.kind === "ready" && (
-        <div className="mx-auto max-w-page px-4 pb-16 sm:px-8 sm:pb-24">
-          <Graph timing={timing} />
+        <div className="px-4 pb-16 sm:px-8 sm:pb-24">
+          <div className="mx-auto max-w-page">
+            <Graph timing={timing} />
+          </div>
         </div>
       )}
     </section>
