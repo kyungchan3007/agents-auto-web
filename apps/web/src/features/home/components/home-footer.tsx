@@ -4,7 +4,7 @@ import { PageFooter } from "@hav/ui/layout/page-footer";
 
 export function HomeFooter() {
   return (
-    <PageFooter width="max-w-6xl" className="space-y-2">
+    <PageFooter width="max-w-page" className="space-y-2">
       <p>자료: 한국수출입은행 환율 · 통계청 KOSIS 국제항공료 · 관세청 과세환율 · 한국은행 ECOS 수입물가지수 · 세계은행 물가 수준 · 화면에 보이는 값은 사이트를 만든 시점의 자료입니다</p>
       <p>
         3D 비행기:{" "}

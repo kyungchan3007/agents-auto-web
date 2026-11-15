@@ -23,7 +23,7 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
     <>
       <SiteNav page="currencies" />
       <section data-surface="light" className="bg-surface px-4 pt-10 pb-24 text-fg sm:px-8 sm:pt-16">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-page">
           <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-14">
             <div data-testid="currency-list" className="min-w-0 lg:sticky lg:top-(--hav-nav-h) lg:self-start">
               <Eyebrow>둘러보기</Eyebrow>
@@ -38,7 +38,7 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
           </div>
         </div>
       </section>
-      <PageFooter width="max-w-6xl">신호는 최근 {windowDays}일 중 오늘 값의 위치입니다. 앞으로를 예측하지 않으며, 투자 · 금융 조언이 아닙니다 · {SOURCE_NOTE} ·{" "}
+      <PageFooter width="max-w-page">신호는 최근 {windowDays}일 중 오늘 값의 위치입니다. 앞으로를 예측하지 않으며, 투자 · 금융 조언이 아닙니다 · {SOURCE_NOTE} ·{" "}
           <TextLink href="/about">
             소개 · 판단 기준
           </TextLink>

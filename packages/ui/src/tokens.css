@@ -158,6 +158,9 @@
   --text-lead: 1.3125rem;
   --text-lead--line-height: 1.5;
 
+  /* 본문 폭 1200px (시안 · 1440 화면에서 왼쪽 선 x=120) — 메뉴 · 본문 · 바닥 띠가 같은 폭 (max-w-page · 작업 0170) */
+  --container-page: 75rem;
+
   --radius-card: 0.5rem;
   --radius-field: 0.5rem; /* 입력 칸 · 고르는 줄 */
   --radius-pill: 999px; /* 판정 핀 (둥근 알약) */

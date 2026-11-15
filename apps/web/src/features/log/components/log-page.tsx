@@ -16,7 +16,7 @@ export function LogPage({ tasks, status, builtAt }: { tasks: Fetched<TasksSummar
     <>
       <SiteNav page="log" />
       <main className="bg-surface px-4 pt-14 pb-12 text-fg sm:px-8 sm:pt-20">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-page">
           <Eyebrow>작업실</Eyebrow>
           <Title as="h1" className="mt-3 text-cheap">
             AI 에이전트 팀이 이 사이트를 만듭니다

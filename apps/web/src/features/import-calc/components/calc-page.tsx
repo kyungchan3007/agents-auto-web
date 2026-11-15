@@ -18,7 +18,7 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
     <>
       <SiteNav page="calc" />
       <main className="bg-surface px-4 pt-14 pb-20 text-fg sm:px-8 sm:pt-20 sm:pb-28">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-page">
           <Eyebrow>직구 계산</Eyebrow>
           {hasRates ? (
             <CalcForm rates={latest.data.rates} customs={customs} />
@@ -38,7 +38,7 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
           </div>
         </div>
       </main>
-      <PageFooter width="max-w-6xl">자료: 관세청 과세환율 · 한국은행 ECOS 수입물가지수 · 한국수출입은행 · 면세 한도 관세법 기준</PageFooter>
+      <PageFooter width="max-w-page">자료: 관세청 과세환율 · 한국은행 ECOS 수입물가지수 · 한국수출입은행 · 면세 한도 관세법 기준</PageFooter>
     </>
   );
 }

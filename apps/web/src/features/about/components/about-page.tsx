@@ -20,7 +20,7 @@ export function AboutPage({ signals, duty }: { signals: Fetched<SignalList>; dut
     <>
       <SiteNav page="about" />
       <main className="bg-surface px-4 pt-14 pb-20 text-fg sm:px-8 sm:pt-20 sm:pb-28">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-page">
           <Eyebrow>소개</Eyebrow>
           <Title as="h1" size="poster" className="mt-3 text-cheap">
             어떤 자료를, 어떤 기준으로 보여 주나요
@@ -63,7 +63,7 @@ export function AboutPage({ signals, duty }: { signals: Fetched<SignalList>; dut
           </section>
         </div>
       </main>
-      <PageFooter width="max-w-6xl">모든 숫자의 출처는 각 화면 아래에 적습니다</PageFooter>
+      <PageFooter width="max-w-page">모든 숫자의 출처는 각 화면 아래에 적습니다</PageFooter>
     </>
   );
 }

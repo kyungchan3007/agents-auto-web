@@ -17,7 +17,7 @@ export function TodayBand({ rates, signals, windowDays, problem }: Props) {
   const source = found ? rates.find((r) => r.currency === found.rate.currency) : undefined;
   return (
     <section id="today" data-surface="dark" aria-labelledby="today-title" className="bg-surface px-4 py-14 text-fg sm:px-8 sm:py-20">
-      <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[440px_minmax(0,1fr)] lg:gap-16">
+      <div className="mx-auto grid max-w-page items-center gap-10 lg:grid-cols-[440px_minmax(0,1fr)] lg:gap-16">
         {/* 지구 — 호 색 = 그 나라 통화 신호 · 3D 가 안 되면 이 칸만 빔 (글자는 그대로) */}
         <GlobeLazy
           className="mx-auto size-[260px] sm:size-[360px] lg:size-[440px]"

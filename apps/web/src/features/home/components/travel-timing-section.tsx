@@ -31,7 +31,7 @@ export function TravelTimingSection({ timing }: { timing: TravelTiming }) {
   const copy = travelTimingCopy(timing);
   return (
     <section aria-labelledby="timing-title" className="bg-surface px-4 pt-14 pb-16 text-fg sm:px-8 sm:pt-20 sm:pb-24">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-page">
         <Eyebrow>여행 타이밍</Eyebrow>
         {timing.kind === "ready" ? (
           <>
