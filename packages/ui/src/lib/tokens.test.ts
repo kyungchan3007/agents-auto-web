@@ -92,6 +92,12 @@ describe("크기 단계 — Figma 텍스트 스타일 그대로", () => {
   });
 });
 
+describe("큰 숫자 색 (0169)", () => {
+  it("--hav-figure 를 유틸 색 --color-figure 로 연결 (text-figure)", () => {
+    expect(CSS).toMatch(/--color-figure\s*:\s*var\(--hav-figure\)/);
+  });
+});
+
 describe("글꼴", () => {
   it("--font-display 에 Gasoek One · --font-sans 에 IBM Plex Sans KR (Pretendard 가 아님)", () => {
     expect(defs("--font-display")[0]).toContain("Gasoek One");

@@ -152,3 +152,24 @@ describe("밤 포스터 — @media (prefers-color-scheme: dark)", () => {
     }
   });
 });
+
+// 큰 숫자 전용 색 --hav-figure (text-figure · 작업 0169) — 하늘 종이 위 울트라마린 · 바다 띠 · 칸 위 해 노랑 · 밤 포스터 해 노랑
+// 큰 숫자(Gasoek One · 26px 이상)라 큰 글자 기준 3 이상 (builder 계산은 본문 4.5 도 넘음: 종이 8.49 · 띠 5.91 · 밤 9.68)
+describe("큰 숫자 색 --hav-figure", () => {
+  it("값 — 하늘 종이 #2438A8 · 바다 띠 · elevated #F7C548 · 밤 포스터 light 도 #F7C548", () => {
+    expect(lc(base.light.figure)).toBe("#2438a8");
+    expect(lc(base.dark.figure)).toBe("#f7c548");
+    expect(lc(base.elevated.figure)).toBe("#f7c548");
+    expect(lc(night.light.figure)).toBe("#f7c548");
+  });
+
+  for (const [mode, surfaces] of [["", base], ["밤 ", night]] as const) {
+    for (const [name, v] of Object.entries(surfaces)) {
+      for (const bg of ["surface", "surface-2"]) {
+        it(`${mode}${name}: figure on ${bg} ≥ 3 (큰 글자)`, () => {
+          expect(contrastRatio(v.figure, v[bg])).toBeGreaterThanOrEqual(3);
+        });
+      }
+    }
+  }
+});
