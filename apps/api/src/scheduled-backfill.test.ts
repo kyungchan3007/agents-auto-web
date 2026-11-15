@@ -47,7 +47,7 @@ async function fire(cron: string) {
   await Promise.all(waited);
 }
 
-const logged = (spy: ReturnType<typeof vi.spyOn>) => spy.mock.calls.map((c) => String(c[0]));
+const logged = (spy: { mock: { calls: unknown[][] } }): string[] => spy.mock.calls.map((c) => String(c[0]));
 
 beforeEach(() => {
   vi.useFakeTimers({ toFake: ["Date"] });
@@ -148,7 +148,7 @@ describe("서로 따로 — 하나가 실패해도 나머지는 그대로", () =
     await expect(fire(CRON.fxDaily)).resolves.toBeUndefined();
     expect(collectEcos).toHaveBeenCalledTimes(1);
     expect(collectCustomsRates).toHaveBeenCalledTimes(1);
-    expect(logged(vi.mocked(console.log) as never).some((l) => l.includes('"fx_scheduled"'))).toBe(true);
+    expect(logged(vi.mocked(console.log)).some((l) => l.includes('"fx_scheduled"'))).toBe(true);
     expect(vi.mocked(console.error).mock.calls.length + vi.mocked(console.warn).mock.calls.length).toBeGreaterThan(0);
   });
 
