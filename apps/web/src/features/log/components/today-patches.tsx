@@ -23,7 +23,7 @@ function Stat({ value, label }: { value: number; label: string }) {
   return (
     <div>
       <p className="font-display text-hero font-normal tracking-tighter tabular-nums">
-        <span className="text-accent">{value}</span>
+        <span className="text-figure">{value}</span>
       </p>
       <p className="mt-2 text-lead text-fg-2">{label}</p>
     </div>

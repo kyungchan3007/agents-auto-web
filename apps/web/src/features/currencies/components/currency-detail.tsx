@@ -48,7 +48,7 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
       <h1 className="mt-3 font-display text-[clamp(2.5rem,7vw,4.5rem)] leading-none font-normal tracking-tighter tabular-nums">
         {/* 제목만 읽어도 어떤 통화인지 (작업 0114) — 화면에는 바로 위 줄에 통화명이 있음 */}
         <span className="sr-only">{name}({code}) 환율 </span>
-        <span className="text-accent">{t.value}</span>
+        <span className="text-figure">{t.value}</span>
         <span className="ml-2 text-title text-fg">{t.unit}</span>
       </h1>
       <div className="mt-5 flex flex-wrap items-center gap-3">
