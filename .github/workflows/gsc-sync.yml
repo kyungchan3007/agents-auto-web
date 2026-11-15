@@ -1,4 +1,4 @@
-name: gsc-sync
+name: "수집 · 검색 노출 기록 (Search Console)"
 # Search Console 노출 · 클릭 · 검색어를 D1 에 저장 → /geo (작업 0130)
 #   GSC_SERVICE_ACCOUNT_JSON 은 사람이 등록한 비밀값 · 없으면 건너뜀 · 키 · 토큰은 출력하지 않음
 on:
