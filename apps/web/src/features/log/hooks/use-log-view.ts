@@ -5,7 +5,7 @@ import type { TasksSummary } from "@hav/shared/tasks";
 import { todayPatchCounts } from "@hav/shared/tasks";
 import { useReducedMotion } from "motion/react";
 import type { Fetched } from "../../../shared/api";
-import { liveStatus, todayStats } from "../lib/status";
+import { todayStats } from "../lib/status";
 import { useActivity } from "./use-activity";
 import { useTasks } from "./use-tasks";
 
