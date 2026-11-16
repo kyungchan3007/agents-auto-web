@@ -14,4 +14,5 @@
 | lead-2 | 사고 | test 가 같은 폴더에서 참조 구현을 검증하다 scene.ts · 모델을 덮어썼다 되살림 | lead 확인: 커밋본과 같음 · 앞으로 별도 폴더 |
 | lead-3 | 구현 | builder 2차: 순수 함수 · 훅 · 화면 · 홈 안내판 (테스트 고치지 않음) | 로컬 빌드로 1~5단계 끝까지 확인 |
 | lead-4 | 게이트 | Full 한 번: build PASS · e2e 칩 테스트 간헐 실패(8번 중 2번) → 말풍선 등장 움직임 중에 처음 위치를 잼(17px) → test 가 글꼴 · 위치 안정 뒤 재도록 고침 · 병렬 반복 PASS · 전체 e2e 226 PASS | 보호 파일 FAIL 은 package-lock(three) — 사람 승인 |
+| lead-5 | CI | GPU 없는 CI 에서 인트로 e2e 7건 실패(소프트웨어 WebGL 이 메인 스레드를 막고 말풍선이 계속 움직임) → builder: 그래픽 가속이 없으면 3D 없이 가벼운 배경으로 흐름만 · 말풍선 2px 떨림 무시 → 칩 테스트만 남음 → test: 절대 y 대신 카드 높이 · 상대 위치 비교 | CI gate(f863b48): e2e 226 PASS · 보호 파일만 FAIL(package-lock · 사람 승인) |
 
