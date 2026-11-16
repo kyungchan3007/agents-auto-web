@@ -2,7 +2,7 @@
 //   바다 위 섬 · 하늘 · 구름 · 터미널 · 관제탑 · 활주로 · Kenney 도시(CC0) · 차 · 사람 · 비행기(Poly by Google · CC-BY) · 직원 이동 · 카메라 이동
 //   mountIntroScene(el, api) 가 정리 함수를 돌려줌 · 흐름(단계 · 입력 · 스크롤)은 hooks/use-intro.ts 가 api.state 를 바꾸고 장면이 매 프레임 읽음
 //   모델은 /models/intro/... 를 그대로 불러옴 (apps/web/scripts/make-intro-assets.mjs 가 만든 파일 · 시안의 data: 주소 우회는 쓰지 않음)
-//   비행기 · 카메라 경로 값은 아래 CAMERA_KEYS · PLANE_KEYS · LIFT — 나중에 lib/flight.ts 로 옮기기 쉽게 이 파일 위쪽에 모아 둠
+//   비행기 · 카메라 경로 값과 진행 계산은 lib/flight.ts (순수 함수) — 여기서는 가져다 씀
 import { PLANE_MODEL_URL } from "@hav/shared/travel";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
@@ -12,6 +12,7 @@ import { GTAOPass } from "three/addons/postprocessing/GTAOPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
+import { FLIGHT_START, type Shot, type Vec3, LIFT, advance, autoGoal, cameraAt, liftReached, planeAt, windowDue } from "./flight";
 
 // ── 흐름과 주고받는 값 ─────────────────────────────────────────────
 export type IntroStep = 1 | 2 | 3 | 4 | 5;
@@ -46,35 +47,10 @@ export type SceneApi = {
   onReady?: () => void;
 };
 
-// ── 경로 (시험판 airport-path 와 같음 · 바꾸기 쉽게 위에 모음) ─────────────
-type Vec = [number, number, number];
-type CamKey = { at: number; target: Vec; zoom: number; yaw: number };
-type PlaneKey = { at: number; pos: Vec };
-type Cam = { target: Vec; zoom: number; yaw: number };
+// ── 경로 값은 lib/flight.ts (순수 함수 · 테스트 있음) — 여기서는 가져다 씀 ──
+type Vec = Vec3;
+type Cam = Shot;
 
-/** 바퀴가 뜨는 진행값 — 여기까지만 스크롤 · 그다음은 자동 */
-export const LIFT = 0.8;
-/** 이륙 시작 진행값 (게이트에서 유도로로 나서는 자리) */
-export const FLIGHT_START = 0.35;
-
-// 이륙 구간 카메라 — 늘 남쪽(터미널 쪽)에서 봐서 도시가 활주로 뒤 배경이 되게
-const CAMERA_KEYS: CamKey[] = [
-  { at: 0.35, target: [-6, 0, 1], zoom: 2.5, yaw: 200 },
-  { at: 0.5, target: [-26, 0, 6], zoom: 2.1, yaw: 212 },
-  { at: 0.62, target: [-30, 0, 10], zoom: 2.0, yaw: 200 },
-  { at: 0.8, target: [10, 1, 10], zoom: 1.65, yaw: 190 },
-  { at: 1, target: [44, 16, 10], zoom: 1.35, yaw: 182 },
-];
-const PLANE_KEYS: PlaneKey[] = [
-  { at: 0, pos: [-6, 0, 1.4] },
-  { at: 0.35, pos: [-6, 0, 1.4] },
-  { at: 0.42, pos: [-6, 0, 6] },
-  { at: 0.52, pos: [-34, 0, 6] },
-  { at: 0.57, pos: [-34, 0, 10] },
-  { at: 0.62, pos: [-34, 0, 10] },
-  { at: 0.8, pos: [14, 0, 10] },
-  { at: 1, pos: [58, 30, 8] },
-];
 // 1~3단계 카메라 (직원 · 환전소 · 게이트)
 const SHOT: Record<1 | 2 | 3, Cam> = {
   1: { target: [-8, 2, -11], zoom: 2.1, yaw: 165 },
@@ -92,40 +68,6 @@ const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 const smooth = (t: number) => t * t * (3 - 2 * t);
 const mix = (a: number, b: number, t: number) => a + (b - a) * t;
 const mix3 = (a: Vec, b: Vec, t: number): Vec => [mix(a[0], b[0], t), mix(a[1], b[1], t), mix(a[2], b[2], t)];
-
-function span<T extends { at: number }>(keys: T[], p: number): [T, T, number] {
-  const q = clamp01(p);
-  for (let i = 1; i < keys.length; i++) {
-    if (q <= keys[i].at) {
-      const a = keys[i - 1];
-      const b = keys[i];
-      return [a, b, b.at === a.at ? 1 : (q - a.at) / (b.at - a.at)];
-    }
-  }
-  const l = keys[keys.length - 1];
-  return [l, l, 1];
-}
-function cameraAt(p: number): Cam {
-  const [a, b, t] = span(CAMERA_KEYS, p);
-  const s = smooth(t);
-  return { target: mix3(a.target, b.target, s), zoom: mix(a.zoom, b.zoom, s), yaw: mix(a.yaw, b.yaw, s) };
-}
-function planeAt(p: number): { pos: Vec; heading: number; pitch: number } {
-  const [a, b, t] = span(PLANE_KEYS, p);
-  const pos = mix3(a.pos, b.pos, a.at === 0.62 ? t * t : t);
-  let from = a.pos;
-  let to = b.pos;
-  if (from.every((v, i) => v === to[i])) {
-    const i = PLANE_KEYS.indexOf(b);
-    from = b.pos;
-    to = PLANE_KEYS[Math.min(i + 1, PLANE_KEYS.length - 1)].pos;
-  }
-  const dx = to[0] - from[0];
-  const dy = to[1] - from[1];
-  const dz = to[2] - from[2];
-  const flat = Math.hypot(dx, dz);
-  return { pos, heading: flat === 0 ? 0 : Math.atan2(-dz, dx), pitch: flat === 0 ? 0 : Math.atan2(dy, flat) };
-}
 
 // ── 색 — 홈 색 체계: 바탕은 하늘 종이 · 모형은 흰색 · 포인트는 남색 · 노랑 하나 ──────
 const C = {
@@ -725,18 +667,18 @@ export function mountIntroScene(el: HTMLElement, api: SceneApi): () => void {
 
     let p = 0;
     if (state.flight >= 0) {
-      if (state.auto) state.flightGoal = Math.min(1, state.flightGoal + dt * (still ? 1 : 0.09));
-      state.flight += (state.flightGoal - state.flight) * (still ? 1 : Math.min(1, dt * 5));
+      if (state.auto) state.flightGoal = autoGoal(state.flightGoal, dt, still);
+      state.flight = advance(state.flight, state.flightGoal, dt, still);
       p = Math.min(1, state.flight);
-      if (!state.auto && state.flight >= LIFT - 0.004 && !liftFired) {
+      if (liftReached(state.flight, state.auto) && !liftFired) {
         liftFired = true;
         api.onLift?.();
       }
-      if (state.auto && state.flight >= 0.97 && !endFired) {
+      if (windowDue(state.flight, state.auto, endFired)) {
         endFired = true;
         api.onTakeoffEnd?.();
       }
-      const c = cameraAt(Math.max(FLIGHT_START, p));
+      const c = cameraAt(p);
       const k = smooth(clamp01((state.flight - FLIGHT_START) / 0.12));
       cam = k < 1 && camTo ? { target: mix3(camTo.target, c.target, k), zoom: mix(camTo.zoom, c.zoom, k), yaw: mix(camTo.yaw, c.yaw, k) } : c;
     }
