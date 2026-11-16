@@ -17,6 +17,15 @@ const step = (page: import("@playwright/test").Page) => page.getByTestId("intro-
 const board = (page: import("@playwright/test").Page) => page.locator('#today [data-testid="flap-board"]');
 const PICKED = "tripfx:picked";
 
+/** 인트로가 닫힌 뒤 홈이 원래대로 — 페이지 잠금(html overflow hidden) 없음 · 휠로 아래로 내려감 (작업 0186) */
+async function expectHomeScrolls(page: import("@playwright/test").Page) {
+  await expect.poll(() => page.evaluate(() => document.documentElement.style.overflow)).not.toBe("hidden");
+  await page.mouse.move(700, 500);
+  const before = await page.evaluate(() => window.scrollY);
+  for (let i = 0; i < 6; i++) await page.mouse.wheel(0, 300);
+  await expect.poll(() => page.evaluate(() => window.scrollY), { timeout: 5_000 }).toBeGreaterThan(before + 200);
+}
+
 /** 인트로가 뜨고 1단계(터미널 입구)가 보일 때까지 — 3D 모델을 받는 동안 기다림 */
 async function openIntro(page: import("@playwright/test").Page) {
   await page.goto("/");
@@ -74,6 +83,8 @@ test.describe("데스크톱 인트로", () => {
     await expect(page.getByTestId("picked-pass")).toContainText("파리");
     const saved = await page.evaluate((k) => localStorage.getItem(k), PICKED);
     expect(JSON.parse(saved ?? "null")).toMatchObject({ v: 1, country: "FRA", city: "파리", budget: 2_000_000 });
+    // 작업 0186 — 인트로가 끝난 뒤 홈이 원래대로 스크롤됨 (잠금 · 휠 가로채기가 남으면 안 됨)
+    await expectHomeScrolls(page);
   });
 
   test("이전 — 2 · 3 · 4단계에서 한 단계 앞으로 · 1단계에는 이전이 없음", async ({ page }) => {
@@ -170,6 +181,43 @@ test.describe("데스크톱 인트로", () => {
     await expect(intro(page)).toHaveAttribute("role", "dialog");
     await expect(page.getByRole("button", { name: "건너뛰기" })).toBeVisible();
     await expect(page.getByRole("textbox", { name: "나라나 도시" })).toBeVisible();
+  });
+});
+
+test.describe("기존 홈은 그대로 (작업 0186)", () => {
+  test.skip(({ isMobile }) => isMobile, "데스크톱 인트로의 뒤처리 — 휴대폰은 인트로가 없음");
+  test.use({ viewport: DESKTOP });
+
+  test("건너뛴 뒤 홈이 휠로 스크롤되고 페이지 잠금이 없음", async ({ page }) => {
+    await openIntro(page);
+    await page.getByTestId("intro-skip").click();
+    await expect(intro(page)).toHaveCount(0, { timeout: 10_000 });
+    await expectHomeScrolls(page);
+  });
+
+  test("'오늘 환율'(/#today)로 오면 인트로 없이 그 위치", async ({ page }) => {
+    await page.goto("/#today");
+    await page.waitForTimeout(1500);
+    await expect(intro(page)).toHaveCount(0);
+    await expect(page.locator("#today")).toBeInViewport();
+  });
+
+  test("다른 페이지에서 메뉴 '오늘 환율'을 누르면 인트로 없음", async ({ page }) => {
+    await page.goto("/currencies");
+    await page.getByRole("link", { name: "오늘 환율" }).first().click();
+    await page.waitForURL(/\/#today$/);
+    await page.waitForTimeout(1500);
+    await expect(intro(page)).toHaveCount(0);
+    await expectHomeScrolls(page);
+  });
+
+  test("홈에서 인트로를 건너뛴 뒤 메뉴 '오늘 환율'을 눌러도 인트로가 다시 뜨지 않음", async ({ page }) => {
+    await openIntro(page);
+    await page.getByTestId("intro-skip").click();
+    await expect(intro(page)).toHaveCount(0, { timeout: 10_000 });
+    await page.getByRole("link", { name: "오늘 환율" }).first().click();
+    await page.waitForTimeout(1500);
+    await expect(intro(page)).toHaveCount(0);
   });
 });
 
