@@ -1,0 +1,71 @@
+// 공항 인트로 — 홈 위를 덮는 층 (작업 0185): 3D 공항 도시 · 위에 로고 · 단계 · 건너뛰기 · 직원 머리 위 말풍선 · 왼쪽 아래 탑승권 판 · 창문 전환
+// 그리기만 — 단계 · 입력 · 스크롤 · 창문 전환 순서는 hooks/use-intro.ts · 3D 는 use-intro-scene 이 열릴 때 불러옴 · 늘 건너뛸 수 있음
+import { PLANE_CREDIT } from "@hav/shared/travel";
+import { motion } from "motion/react";
+import { type IntroData, useIntro } from "../hooks/use-intro";
+import { BoardingPass } from "./boarding-pass";
+import { BubbleBudget } from "./bubble-budget";
+import { BubbleGate } from "./bubble-gate";
+import { BubbleSearch } from "./bubble-search";
+import { FlightHint } from "./flight-hint";
+import { PassBoard } from "./pass-board";
+import { WindowTransition } from "./window-transition";
+
+export function Intro({ data }: { data: IntroData }) {
+  const s = useIntro(data);
+  if (s.closed) return null;
+  const bubbleOn = s.loaded && s.step <= 3;
+  const dots = [1, 2, 3, 4, 5];
+  return (
+    <motion.div
+      data-testid="intro"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Tripfx 공항 인트로"
+      initial={false}
+      animate={{ y: s.lifting ? "-104%" : 0 }}
+      transition={{ duration: s.still ? 0 : 0.8, ease: [0.7, 0, 0.25, 1] }}
+      className="fixed inset-0 z-[100] overflow-hidden bg-surface text-fg"
+    >
+      {/* 3D 장면 — 장면을 못 불러와도 흐름은 계속 */}
+      <div ref={s.refs.stage} aria-hidden className="absolute inset-0 z-[2]" />
+      {!s.loaded && <div className="absolute inset-0 z-[6] grid place-items-center bg-surface font-bold text-fg-2">공항으로 가는 중…</div>}
+
+      {/* 상단 띠 — 홈 메뉴처럼 로고 · 단계 · 건너뛰기 */}
+      <div className="pointer-events-none fixed inset-x-0 top-0 z-[5] flex items-center justify-between gap-3 px-6 pt-4">
+        <div className="text-[22px] font-black tracking-tight text-cheap">tripfx</div>
+        <div className="pointer-events-auto flex items-center gap-2.5 rounded-pill border border-line bg-card/90 px-3.5 py-1.5 text-[13px] font-bold">
+          <span data-testid="intro-step">{s.stepLabel}</span>
+          <span aria-hidden className="flex gap-1">
+            {dots.map((n) => (
+              <i key={n} className={`h-1 w-3.5 rounded-sm ${n <= s.step ? "bg-cheap" : "bg-line"}`} />
+            ))}
+          </span>
+        </div>
+        <button type="button" data-testid="intro-skip" onClick={s.skip} className="pointer-events-auto rounded-pill border border-line bg-card px-5 py-2 text-sm font-semibold text-fg hover:bg-surface-2">
+          건너뛰기
+        </button>
+      </div>
+
+      {/* 말풍선 — 안내 직원 머리 위 (위치는 장면이 매 프레임 갱신) */}
+      <section
+        ref={s.refs.bubble}
+        aria-live="polite"
+        className={`absolute z-[4] w-[440px] rounded-[20px] border border-line bg-card px-6 pt-[22px] pb-5 shadow-[0_18px_40px_-18px_rgba(22,36,110,0.35)] transition-[opacity,transform] duration-300 after:absolute after:-bottom-2.5 after:left-[var(--tail,50%)] after:size-[18px] after:-translate-x-1/2 after:rotate-45 after:border-r after:border-b after:border-line after:bg-card after:content-[''] ${bubbleOn ? "opacity-100" : "pointer-events-none translate-y-2.5 opacity-0"}`}
+        style={{ left: 16, top: 84 }}
+      >
+        {s.step === 1 && <BubbleSearch s={s} />}
+        {s.step === 2 && <BubbleBudget s={s} />}
+        {s.step === 3 && <BubbleGate s={s} />}
+      </section>
+      <BoardingPass s={s} />
+      <PassBoard s={s} />
+      <FlightHint s={s} />
+      <WindowTransition s={s} />
+
+      <p className="fixed right-4 bottom-2 z-[3] m-0 text-[11px] text-fg-2 [text-shadow:0_0_6px_#fff]">
+        환율 한국수출입은행 · 물가 세계은행 · 항공료 통계청 · {PLANE_CREDIT.text.replace("3D 비행기: ", "비행기 ")} · 차 · 사람 · 도시 Kenney (CC0)
+      </p>
+    </motion.div>
+  );
+}
