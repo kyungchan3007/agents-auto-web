@@ -104,3 +104,10 @@ export const autoGoal = (goal: number, dtSec: number, still: boolean): number =>
 
 /** 창문 전환을 시작할 때 — 자동 · 0.97 이상 · 아직 전환 중이 아님 */
 export const windowDue = (flight: number, auto: boolean, windowing: boolean): boolean => auto && flight >= WINDOW_AT && !windowing;
+
+/** 3D 장면이 없을 때(그래픽 가속 없음) 훅이 직접 굴리는 이륙 한 프레임 — 장면이 하던 계산(자동 진행 · 따라가기 · 뜸 · 창문 시점)과 같음 */
+export function tickFlight(a: { flight: number; goal: number; auto: boolean; windowing: boolean }, dtSec: number, still: boolean): { flight: number; goal: number; lift: boolean; window: boolean } {
+  const goal = a.auto ? autoGoal(a.goal, dtSec, still) : a.goal;
+  const flight = advance(a.flight, goal, dtSec, still);
+  return { flight, goal, lift: liftReached(flight, a.auto), window: windowDue(flight, a.auto, a.windowing) };
+}
