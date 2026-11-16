@@ -14,7 +14,7 @@
 //     : { kind: "preparing" } | { kind: "ready"; trend: IndexPoint[] /* 오래된 것부터 */; latest: IndexPoint; yoy: number | null; cheapMonth: number | null }
 //     - 없거나 빈 배열이면 { kind: "preparing" } ("준비 중" · 숫자 없음)
 import { describe, expect, it } from "vitest";
-import { type IndexPoint, cheapMonth, fxMonthlyAverage, monthlyAverages, travelView, yoyChange } from "./travel-index";
+import { type IndexPoint, averageYears, cheapMonth, fxMonthlyAverage, monthlyAverages, travelView, yoyChange } from "./travel-index";
 
 /** from ~ to (YYYY-MM · 양끝 포함) 달마다 f(월) 값 */
 function series(from: string, to: string, f: (month: number, year: number) => number): IndexPoint[] {
@@ -67,10 +67,22 @@ describe("달별 평균 · 싼 달", () => {
     expect(cheapMonth(pts)).toBe(7);
   });
 
-  it("자료가 모자라면 고르지 않음 — 1년치뿐 · 12달이 안 채워짐 · 달마다 1개뿐", () => {
-    expect(cheapMonth(series("2025-11", "2026-10", SHAPE))).toBeNull(); // 달마다 1개
-    expect(cheapMonth(series("2023-11", "2026-10", SHAPE).filter((p) => !p.period.endsWith("-03")))).toBeNull(); // 3월이 하나도 없음
+  it("홈과 같은 규칙(작업 0181) — 1년치(달마다 1개) · 24개월 자료로도 값이 있는 달 중 가장 싼 달을 고름 (예전엔 '준비 중')", () => {
+    expect(cheapMonth(series("2025-11", "2026-10", SHAPE))).toBe(4); // 달마다 1개
+    expect(cheapMonth(series("2024-11", "2026-10", SHAPE))).toBe(4); // 24개월
+    expect(cheapMonth(series("2023-11", "2026-10", SHAPE).filter((p) => !p.period.endsWith("-03")))).toBe(4); // 3월이 비어도 있는 달 중에서
+  });
+
+  it("값이 있는 달이 2개 미만이면 고르지 않음(null · '준비 중') · 자료가 없어도 null", () => {
+    expect(cheapMonth([{ period: "2026-10", value: 100 }])).toBeNull();
+    expect(cheapMonth([{ period: "2026-10", value: 100 }, { period: "2025-10", value: 90 }])).toBeNull(); // 같은 달 두 해 = 한 달
     expect(cheapMonth([])).toBeNull();
+  });
+
+  it("averageYears — 같은 달 값이 가장 많은 달의 개수 (24개월 = 2 · 36개월 = 3 · 없으면 0)", () => {
+    expect(averageYears(series("2024-11", "2026-10", SHAPE))).toBe(2);
+    expect(averageYears(THREE_YEARS)).toBe(3);
+    expect(averageYears([])).toBe(0);
   });
 
   it("값이 같으면 앞선 달", () => {

@@ -24,7 +24,9 @@ export function yoyCard(name: string, points: IndexPoint[] | null | undefined): 
   return { label, value, signal, pinText: `작년보다 ${yoy >= 0 ? "+" : "-"}${Math.abs(yoy).toFixed(1)}%` };
 }
 
-export function cheapMonthsCard(airCheap: number | null, tourCheap: number | null): { label: "가장 싼 달 (3년 평균)"; value: string; note: "같은 달 평균 기준" } | null {
+/** years = 평균에 쓴 해 수(받은 자료 그대로 — 24개월이면 2년) · 0 이면 "같은 달 평균" 만 (몇 년인지 지어내지 않음) */
+export function cheapMonthsCard(airCheap: number | null, tourCheap: number | null, years = 0): { label: string; value: string; note: "같은 달 평균 기준" } | null {
   const months = [airCheap, tourCheap].filter((m): m is number => m !== null).map((m) => `${m}월`);
-  return months.length === 0 ? null : { label: "가장 싼 달 (3년 평균)", value: months.join(" · "), note: "같은 달 평균 기준" };
+  if (months.length === 0) return null;
+  return { label: years > 0 ? `가장 싼 달 (최근 ${years}년 평균)` : "가장 싼 달 (같은 달 평균)", value: months.join(" · "), note: "같은 달 평균 기준" };
 }

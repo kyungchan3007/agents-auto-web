@@ -17,16 +17,19 @@ import { monthlyAverages } from "@hav/shared/travel";
 
 export { monthlyAverages };
 
-/** 1~12월 모두 값이 2개 이상일 때만 평균이 가장 낮은 달 · 같으면 앞선 달 · 모자라면 null (고르지 않음) */
+/** 홈 맨 위(features/home/lib/travel-timing.ts travelTiming)와 같은 규칙 — 값이 있는 달이 2개 이상이면 그 달들 중 평균이 가장 낮은 달 · 같으면 앞선 달 · 달이 모자랄 때만 null ("준비 중") (작업 0181: 24개월 자료로도 12달이 다 채워지면 말함) */
 export function cheapMonth(points: IndexPoint[]): number | null {
   const avg = monthlyAverages(points);
-  let best: number | null = null;
-  for (let m = 1; m <= 12; m++) {
-    const a = avg[m];
-    if (!a || a.n < 2) return null;
-    if (best === null || a.avg < avg[best].avg) best = m;
-  }
+  const months = Object.keys(avg).map(Number).sort((a, b) => a - b);
+  if (months.length < 2) return null;
+  let best = months[0];
+  for (const m of months) if (avg[m].avg < avg[best].avg) best = m;
   return best;
+}
+
+/** 싼 달 평균에 쓴 해 수 — 같은 달 값이 가장 많은 달의 개수 (홈 문구 "최근 N년 같은 달 평균"의 N 과 같음) · 값이 없으면 0 */
+export function averageYears(points: IndexPoint[]): number {
+  return Math.max(0, ...Object.values(monthlyAverages(points)).map((a) => a.n));
 }
 
 /** 환율 일별 → 달별 평균 — 0165 직구 화면과 같은 계산이라 @hav/shared/currency 한 곳에 두고 다시 내보냄 */
