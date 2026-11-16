@@ -46,6 +46,7 @@
 - docs/design.md
 
 ## 계획 밖 변경 이유
+- apps/web/scripts/make-intro-assets.mjs — Kenney 모델 · 색상표(차는 흰색 계열)를 public/models/intro/ 로 옮기는 한 번 돌리는 스크립트 (시안 build3.py 의 mono 와 같은 처리 · sharp · 새 의존성 없음)
 
 ## 위험
 - **무게:** three + 모델 약 5MB — 인트로가 열릴 때만 불러오고 데스크톱 한정. 홈 첫 그림(LCP)에는 영향 없어야 함 → e2e 로 홈이 인트로 없이 그려지는지 확인.
