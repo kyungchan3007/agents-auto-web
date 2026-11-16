@@ -72,7 +72,7 @@ export function searchPlaces(query: string, countries: IntroCountry[], limit = 6
     const cityIn = c.cities.find((x) => norm(x).includes(k));
     const rank = n.startsWith(k) ? 0 : cityStart ? 1 : n.includes(k) ? 2 : cityIn ? 3 : -1;
     if (rank < 0) continue;
-    hits.push({ country: c, city: rank === 1 ? (cityStart as string) : rank === 3 ? (cityIn as string) : (c.cities[0] ?? ""), rank });
+    hits.push({ country: c, city: rank === 1 ? (cityStart as string) : rank === 3 ? (cityIn as string) : (c.cities[0] ?? ""), rank: rank as Hit["rank"] });
   }
   return hits.sort((a, b) => a.rank - b.rank).slice(0, limit);
 }
