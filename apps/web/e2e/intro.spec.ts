@@ -20,6 +20,7 @@ const PICKED = "tripfx:picked";
 /** 인트로가 닫힌 뒤 홈이 원래대로 — 페이지 잠금(html overflow hidden) 없음 · 휠로 아래로 내려감 (작업 0186) */
 async function expectHomeScrolls(page: import("@playwright/test").Page) {
   await expect.poll(() => page.evaluate(() => document.documentElement.style.overflow)).not.toBe("hidden");
+  await page.evaluate(() => window.scrollTo(0, 0)); // 뒤로 오면 브라우저가 예전 위치(맨 아래)를 되살릴 수 있어 맨 위에서 잼
   await page.mouse.move(700, 500);
   const before = await page.evaluate(() => window.scrollY);
   for (let i = 0; i < 6; i++) await page.mouse.wheel(0, 300);
@@ -218,6 +219,93 @@ test.describe("기존 홈은 그대로 (작업 0186)", () => {
     await page.getByRole("link", { name: "오늘 환율" }).first().click();
     await page.waitForTimeout(1500);
     await expect(intro(page)).toHaveCount(0);
+  });
+});
+
+test.describe("하나씩 다 눌러 보기 (작업 0186)", () => {
+  test.skip(({ isMobile }) => isMobile, "데스크톱 인트로가 있는 홈 기준");
+  test.use({ viewport: DESKTOP });
+
+  /** 홈(인트로를 건너뛴 뒤)의 사이트 안 링크 — 주소 기준 중복 없이 */
+  async function homeLinks(page: import("@playwright/test").Page) {
+    return page.$$eval("a[href]", (as) => [...new Set(as.map((a) => a.getAttribute("href") ?? ""))].filter((h) => h.startsWith("/") && !h.startsWith("//")));
+  }
+
+  test("홈의 사이트 안 링크를 하나씩 — 이동되고, 뒤로 오면 인트로 없이 홈이 스크롤됨", async ({ page }) => {
+    test.setTimeout(300_000);
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(String(e)));
+    await openIntro(page);
+    await page.getByTestId("intro-skip").click();
+    await expect(intro(page)).toHaveCount(0, { timeout: 10_000 });
+    const links = await homeLinks(page);
+    expect(links.length, "홈에 사이트 안 링크가 있음").toBeGreaterThan(3);
+    for (const href of links) {
+      await test.step(`링크 ${href}`, async () => {
+        const link = page.locator(`a[href="${href}"]`).first();
+        await link.scrollIntoViewIfNeeded();
+        await link.click();
+        const [path, hash] = href.split("#");
+        await expect.poll(() => new URL(page.url()).pathname.replace(/\.html$/, "").replace(/\/$/, "") || "/").toBe(path.replace(/\/$/, "") || "/");
+        if (hash) await expect.poll(() => new URL(page.url()).hash).toBe(`#${hash}`);
+        await page.waitForTimeout(600);
+        await expect(intro(page), `${href} 에서 인트로가 뜨면 안 됨`).toHaveCount(0);
+        if (path === "/" || path === "") {
+          // 홈 안 이동(로고 · #위치) — 뒤로 가면 홈 이전 기록(빈 페이지)으로 나가므로 맨 위로만
+          await expectHomeScrolls(page);
+          await page.evaluate(() => window.scrollTo(0, 0));
+          return;
+        }
+        await page.goBack();
+        await page.waitForTimeout(600);
+        await expect(intro(page), `${href} 에서 돌아온 홈에 인트로가 뜨면 안 됨`).toHaveCount(0);
+      });
+    }
+    await expectHomeScrolls(page);
+    expect(errors, "페이지 오류 없음").toEqual([]);
+  });
+
+  test("다른 페이지의 메뉴를 하나씩 — 어느 페이지에서도 인트로 없음 · 홈 메뉴로 와도 없음", async ({ page }) => {
+    test.setTimeout(240_000);
+    for (const start of ["/flights", "/currencies", "/prices", "/calc", "/log", "/geo", "/about"]) {
+      await test.step(`${start} 에서`, async () => {
+        await page.goto(start);
+        await page.waitForTimeout(800);
+        await expect(intro(page)).toHaveCount(0);
+        await page.getByRole("link", { name: "오늘 환율" }).first().click();
+        await page.waitForURL(/\/#today$/);
+        await page.waitForTimeout(800);
+        await expect(intro(page)).toHaveCount(0);
+        await expectHomeScrolls(page);
+      });
+    }
+  });
+
+  test("인트로를 끝까지 한 뒤에도 — 홈 버튼 · 탑승권 보기 · 메뉴가 그대로 동작", async ({ page }) => {
+    test.setTimeout(180_000);
+    await page.addInitScript(([k, v]) => localStorage.setItem(k, v), [PICKED, JSON.stringify({ v: 1, country: "FRA", city: "파리", budget: 1000000 })] as const);
+    await openIntro(page);
+    await page.getByTestId("intro-skip").click();
+    await expect(intro(page)).toHaveCount(0, { timeout: 10_000 });
+    // 탑승권 보기 — 누르면 열리고 다시 누르면 닫힘 · 그동안 홈 스크롤 정상
+    const pass = page.getByTestId("picked-pass");
+    await expect(pass).toContainText("파리");
+    await pass.click();
+    await page.waitForTimeout(400);
+    await pass.click();
+    await expectHomeScrolls(page);
+    // 홈의 보이는 버튼을 하나씩 — 눌러도 인트로가 다시 뜨지 않고 홈이 스크롤됨
+    const count = await page.locator("main button:visible, #today button:visible").count();
+    for (let i = 0; i < count; i++) {
+      const b = page.locator("main button:visible, #today button:visible").nth(i);
+      if (!(await b.isVisible())) continue;
+      await b.scrollIntoViewIfNeeded();
+      await b.click({ trial: false }).catch(() => {});
+      await page.waitForTimeout(300);
+      await expect(intro(page)).toHaveCount(0);
+    }
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expectHomeScrolls(page);
   });
 });
 
