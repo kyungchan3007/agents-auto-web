@@ -8,7 +8,7 @@ import { PLANE_MODEL_URL } from "@hav/shared/travel";
 import { PointLabels } from "@hav/ui/data/point-labels";
 import { PlaneRouteLazy } from "@hav/ui/three/scene/lazy";
 import { useFlightsGraph } from "../hooks/use-flights-graph";
-import { INDEX_BASE_NOTE, type SeriesId, UNIT_NOTE, endLabelText, extremeTexts, legendText, lineStyle, monthTicks, seriesStats, spreadLabels } from "../lib/flights-graph-view";
+import { INDEX_BASE_NOTE, type SeriesId, UNIT_NOTE, axisTicks, endLabelText, extremeTexts, legendText, lineStyle, seriesStats, spreadLabels } from "../lib/flights-graph-view";
 import type { IndexPoint } from "../lib/travel-index";
 
 const W = 1000;
@@ -72,7 +72,7 @@ export function FlightsGraph({ air, tour, fx }: { air: IndexPoint[]; tour: Index
   // 선 오른쪽 끝 이름 + 최근 값 — 휴대폰(그래프 폭이 좁음)에서는 칸이 없어 범례 칩이 최근 값을 보임
   const endOn = pw >= 560;
   const endYs = spreadLabels(lines.map((l) => l.pts[l.pts.length - 1].y * s), END_GAP, -PAD_LABEL, H * s + PAD_LABEL);
-  const ticks = monthTicks(from, to);
+  const ticks = axisTicks(from, to, pw);
   const xPct = (i: number) => ((PAD_X + (to === from ? 0.5 : (i - from) / (to - from)) * (W - PAD_X * 2)) / W) * 100;
   return (
     <div>
@@ -111,10 +111,10 @@ export function FlightsGraph({ air, tour, fx }: { air: IndexPoint[]; tour: Index
             </span>
           ))}
       </div>
-      {/* 가로축 — 6개월 간격 눈금 (휴대폰은 1년 간격만) */}
-      <div className="relative mt-1 h-5 text-small text-fg-2 tabular-nums" aria-hidden style={endOn ? { marginRight: END_W } : undefined}>
-        {ticks.map((t, i) => (
-          <span key={t.idx} data-testid="month-tick" className={`absolute -translate-x-1/2 ${(ticks.length - 1 - i) % 2 === 1 ? "hidden sm:block" : ""}`} style={{ left: `${xPct(t.idx)}%` }}>
+      {/* 가로축 — 처음 · 끝 달은 늘 보이고(끝은 오른쪽으로 붙여 칸 밖으로 안 나감) 사이는 6개월 간격 · 글자가 겹치면 생략 */}
+      <div className="relative mt-1 h-5 text-small whitespace-nowrap text-fg-2 tabular-nums" aria-hidden style={endOn ? { marginRight: END_W } : undefined}>
+        {ticks.map((t) => (
+          <span key={t.idx} data-testid="month-tick" className="absolute whitespace-nowrap" style={{ left: `${xPct(t.idx)}%`, transform: `translateX(${t.anchor === "start" ? "0%" : t.anchor === "end" ? "-100%" : "-50%"})` }}>
             {t.period}
           </span>
         ))}

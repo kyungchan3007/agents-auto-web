@@ -1,6 +1,6 @@
 // 작업 0181 — /flights 그래프 순수 계산 테스트 (라벨 값 = 데이터 · 없는 선은 라벨 없음 · 범례 강조 · 눈금 · 끝 라벨 밀어 띄우기)
 import { describe, expect, it } from "vitest";
-import { INDEX_BASE_NOTE, UNIT_NOTE, endLabelText, extremeTexts, legendText, lineStyle, monthTicks, nextFocus, periodOf, seriesStats, spreadLabels } from "./flights-graph-view";
+import { INDEX_BASE_NOTE, UNIT_NOTE, axisTicks, endLabelText, extremeTexts, legendText, lineStyle, monthTicks, nextFocus, periodOf, seriesStats, spreadLabels } from "./flights-graph-view";
 
 const air = [
   { period: "2025-03", value: 100.2 },
@@ -88,6 +88,34 @@ describe("가로축 눈금", () => {
   it("범위가 6개월보다 짧으면 마지막 달 하나 · step 을 줄 수 있음", () => {
     expect(monthTicks(100, 103).map((t) => t.idx)).toEqual([103]);
     expect(monthTicks(100, 112, 12).map((t) => t.idx)).toEqual([100, 112]);
+  });
+});
+
+describe("axisTicks — 처음 · 끝 달은 늘 보이고 사이는 겹치면 생략", () => {
+  const to = 2026 * 12 + 10; // 2026-11
+  const from = to - 35; // 2023-12
+
+  it("넓은 화면(840px) — 처음 · 끝 + 6개월 간격 사이 눈금 · 끝은 오른쪽(end) · 처음은 왼쪽(start)", () => {
+    const t = axisTicks(from, to, 840);
+    expect(t[0]).toMatchObject({ period: "2023-12", anchor: "start" });
+    expect(t.at(-1)).toMatchObject({ period: "2026-11", anchor: "end" });
+    expect(t.length).toBeGreaterThan(3);
+    expect(t.slice(1, -1).every((x) => x.anchor === "middle")).toBe(true);
+  });
+
+  it("휴대폰(343px) — 처음 · 끝은 그대로 · 사이는 겹치지 않게 줄어듦 (눈금끼리 64px 이상)", () => {
+    const t = axisTicks(from, to, 343);
+    expect(t[0].period).toBe("2023-12");
+    expect(t.at(-1)?.period).toBe("2026-11");
+    const x = (i: number) => (((i - from) / (to - from)) * 936 + 32) / 1000 * 343;
+    for (let i = 1; i < t.length; i++) expect(x(t[i].idx) - x(t[i - 1].idx)).toBeGreaterThanOrEqual(64 - 1e-9);
+    expect(t.length).toBeLessThan(axisTicks(from, to, 840).length);
+  });
+
+  it("끝 눈금이 마지막 달 하나뿐이어도 깨지지 않음 · 한 달 범위 · 순서는 오래된 것부터", () => {
+    expect(axisTicks(to, to, 343)).toEqual([{ idx: to, period: "2026-11", anchor: "middle" }]);
+    const t = axisTicks(from, to, 560);
+    expect(t.map((x) => x.idx)).toEqual([...t.map((x) => x.idx)].sort((a, b) => a - b));
   });
 });
 
