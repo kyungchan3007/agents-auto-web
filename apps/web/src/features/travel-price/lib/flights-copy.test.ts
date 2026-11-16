@@ -57,9 +57,11 @@ describe("yoyCard — 작년 대비 카드", () => {
   });
 });
 
-describe("cheapMonthsCard — 가장 싼 달 (3년 평균)", () => {
+describe("cheapMonthsCard — 가장 싼 달 (평균에 쓴 해 수는 받은 자료대로)", () => {
   it("'4월 · 11월' + 같은 달 평균 기준", () => {
-    expect(cheapMonthsCard(4, 11)).toEqual({ label: "가장 싼 달 (3년 평균)", value: "4월 · 11월", note: "같은 달 평균 기준" });
+    expect(cheapMonthsCard(4, 11, 3)).toEqual({ label: "가장 싼 달 (최근 3년 평균)", value: "4월 · 11월", note: "같은 달 평균 기준" });
+    expect(cheapMonthsCard(4, 11, 2).label).toBe("가장 싼 달 (최근 2년 평균)"); // 24개월 자료 — 3년이라고 쓰지 않음
+    expect(cheapMonthsCard(4, 11).label).toBe("가장 싼 달 (같은 달 평균)"); // 몇 년인지 모르면 지어내지 않음
   });
   it("하나만 있으면 그 달만 · 둘 다 없으면 null", () => {
     expect(cheapMonthsCard(4, null)?.value).toBe("4월");

@@ -7,7 +7,7 @@ import { PageFooter } from "@hav/ui/layout/page-footer";
 import { PhotoHeader } from "@hav/ui/layout/photo-header";
 import { EmphText } from "@hav/ui/text/emph";
 import { Eyebrow, Title } from "@hav/ui/text/heading";
-import { cheapMonth, type IndexPoint } from "../lib/travel-index";
+import { averageYears, cheapMonth, type IndexPoint } from "../lib/travel-index";
 import { cheapMonthsCard, flightsHeadline, yoyCard } from "../lib/flights-copy";
 import { FlightsGraph } from "./flights-graph";
 
@@ -21,7 +21,7 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
   const headline = flightsHeadline(airCheap, tourCheap);
   const ready = !!air && air.length > 1;
   const cards = [yoyCard("국제항공료", air), yoyCard("해외단체여행비", tour)].filter((c): c is NonNullable<typeof c> => c !== null);
-  const cheaps = cheapMonthsCard(airCheap, tourCheap);
+  const cheaps = cheapMonthsCard(airCheap, tourCheap, Math.max(averageYears(air ?? []), averageYears(tour ?? [])));
   return (
     <>
       <SiteNav page="flights" />
