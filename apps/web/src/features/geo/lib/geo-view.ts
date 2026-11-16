@@ -90,3 +90,41 @@ export function geoReading(r: GeoReport): string[] {
     "원인 조사 기록은 GitHub 이슈에 공개합니다",
   ];
 }
+
+/** 자세한 기록 (작업 0180) — 응답을 구간별 표 줄로 · 값이 없는 구간은 empty 로 알려 빈 상태 글자를 보이게 함 (지어내지 않음) */
+export function geoDetail(r: GeoReport) {
+  const ai = r.bots.filter((b) => b.kind !== "engine");
+  const engines = r.bots.filter((b) => b.kind === "engine");
+  const s = r.search;
+  return {
+    answers: answerLines(r),
+    history: answerHistory(r),
+    search: s
+      ? {
+          range: s.firstDay && s.lastDay ? `${s.firstDay} ~ ${s.lastDay}` : "기록 없음",
+          impressions: `${numberText(s.impressions)}회`,
+          clicks: `${numberText(s.clicks)}회`,
+          position: s.position == null ? "자료 없음" : `${s.position}위`,
+          queries: s.queries.map((q) => [q.key, q.impressions, q.clicks, q.position]),
+          pages: s.pages.map((q) => [q.key, q.impressions, q.clicks, q.position]),
+        }
+      : null,
+    aiBots: ai.map((b) => [b.name, KIND_TEXT[b.kind], b.hits, b.lastDay]),
+    aiPages: r.pages.map((p) => [p.path, p.hits]),
+    referrals: r.referrals.map((x) => [x.name, x.hits, x.lastDay]),
+    engineBots: engines.map((b) => [b.name, b.hits, b.lastDay]),
+    period: `지난 30일 (${r.since}부터) · ${r.firstDay ? `첫 기록 ${r.firstDay}` : "아직 기록이 없습니다"}`,
+  };
+}
+
+/** 측정의 한계 — 예전 문구 그대로 (작업 0129 · 0170 에서 화면에서 빠졌다가 0180 에서 되살림) */
+export const GEO_LIMITS = [
+  "봇 방문은 요청에 적힌 봇 이름을 기준으로 센 추정치입니다. 이름은 위조될 수 있습니다.",
+  "유입은 브라우저가 유입 주소를 보낸 방문만 잡힙니다. 앱에서 넘어온 방문은 빠질 수 있습니다.",
+  "방문은 하루 · 봇 이름 · 페이지별 횟수로만 저장합니다. IP 주소 · 전체 User-Agent · 쿼리는 저장하지 않으며, 일반 방문은 이 집계에 넣지 않습니다.",
+  "봇이 읽었다는 것이 AI 답변에 인용되었다는 뜻은 아닙니다.",
+  "검색어는 노출 2회 이상인 것만 표시합니다.",
+  "AI 답변은 에이전트 세션의 웹 검색 기준입니다 (2026-11-07 ~ 09는 API 측정). 같은 질문도 날마다 결과가 달라질 수 있어 경향만 봅니다. 답변 본문은 저장하지 않습니다.",
+] as const;
+
+export const GEO_UNLINKED = "Bing Webmaster Tools에 등록했습니다 (2026-11-05). Bing 검색 · Copilot 인용 수치와 구글 AI 답변 전용 수치는 아직 이 페이지에 연결하지 않았습니다.";

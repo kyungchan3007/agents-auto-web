@@ -1,11 +1,12 @@
 "use client";
 
-// GEO 수치 — 측정 수치 카드 4개 · 읽는 법 (작업 0170 · Figma 07 시안과 같게: 흰 카드 · 시안에 없는 표는 화면에서 뺌 — 자료 가공은 lib/geo-view.ts 에 남음)
+// GEO 수치 — 측정 수치 카드 4개 · 읽는 법 · 자세한 기록(작업 0180: 0170 에서 뺀 표를 흰 카드로 되살림 — GeoDetail)
 import type { GeoReport as Report } from "@hav/shared/geo";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
 import type { Fetched } from "../../../shared/api";
 import { geoCards, geoReading } from "../lib/geo-view";
 import { useGeoReport } from "../hooks/use-geo-report";
+import { GeoDetail } from "./geo-detail";
 
 export function GeoReport({ build }: { build: Fetched<Report> }) {
   const report = useGeoReport(build);
@@ -33,6 +34,8 @@ export function GeoReport({ build }: { build: Fetched<Report> }) {
           ))}
         </ul>
       </section>
+
+      <GeoDetail report={r} />
     </>
   );
 }
