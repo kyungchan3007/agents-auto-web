@@ -27,14 +27,14 @@ export function Intro({ data }: { data: IntroData }) {
       initial={false}
       animate={{ y: s.lifting ? "-104%" : 0 }}
       transition={{ duration: s.still ? 0 : 0.8, ease: [0.7, 0, 0.25, 1] }}
-      className="fixed inset-0 z-[100] overflow-hidden bg-surface text-fg"
+      className={`fixed inset-0 z-[100] overflow-hidden text-fg ${s.phase === 0 ? "bg-surface" : ""}`}
     >
       {/* 3D 장면 — 장면을 못 불러와도 흐름은 계속 */}
-      <div data-intro-stage aria-hidden className="absolute inset-0 z-[2]" style={s.lite ? { background: "linear-gradient(#AFD4E6, #D3E9EE 45%, #EAF4F2)" } : undefined} />
+      <div data-intro-stage aria-hidden className="absolute inset-0 z-[2]" style={{ ...(s.lite ? { background: "linear-gradient(#AFD4E6, #D3E9EE 45%, #EAF4F2)" } : null), visibility: s.stageOff ? "hidden" : "visible" }} />
       {!s.loaded && <div className="absolute inset-0 z-[6] grid place-items-center bg-surface font-bold text-fg-2">공항으로 가는 중…</div>}
 
       {/* 상단 띠 — 홈 메뉴처럼 로고 · 단계 · 건너뛰기 */}
-      <div className="pointer-events-none fixed inset-x-0 top-0 z-[5] flex items-center justify-between gap-3 px-6 pt-4">
+      <div className={`pointer-events-none fixed inset-x-0 top-0 z-[5] flex items-center justify-between gap-3 px-6 pt-4 transition-opacity duration-300 ${s.phase === 0 ? "opacity-100" : "opacity-0"}`}>
         <div className="text-[22px] font-black tracking-tight text-cheap">tripfx</div>
         <div className="pointer-events-auto flex items-center gap-2.5 rounded-pill border border-line bg-card/90 px-3.5 py-1.5 text-[13px] font-bold">
           <span data-testid="intro-step">{s.stepLabel}</span>
@@ -44,7 +44,7 @@ export function Intro({ data }: { data: IntroData }) {
             ))}
           </span>
         </div>
-        <button type="button" data-testid="intro-skip" onClick={s.skip} className="pointer-events-auto rounded-pill border border-line bg-card px-5 py-2 text-sm font-semibold text-fg hover:bg-surface-2">
+        <button type="button" data-testid="intro-skip" onClick={s.skip} tabIndex={s.phase === 0 ? 0 : -1} className="pointer-events-auto rounded-pill border border-line bg-card px-5 py-2 text-sm font-semibold text-fg hover:bg-surface-2">
           건너뛰기
         </button>
       </div>
@@ -65,7 +65,7 @@ export function Intro({ data }: { data: IntroData }) {
       <FlightHint s={s} />
       <WindowTransition s={s} />
 
-      <p className="fixed right-4 bottom-2 z-[3] m-0 text-[11px] text-fg-2 [text-shadow:0_0_6px_#fff]">
+      <p className={`fixed right-4 bottom-2 z-[3] m-0 text-[11px] text-fg-2 transition-opacity duration-300 [text-shadow:0_0_6px_#fff] ${s.phase === 0 ? "opacity-100" : "opacity-0"}`}>
         환율 한국수출입은행 · 물가 세계은행 · 항공료 통계청 · {PLANE_CREDIT.text.replace("3D 비행기: ", "비행기 ")} · 차 · 사람 · 도시 Kenney (CC0)
       </p>
     </motion.div>

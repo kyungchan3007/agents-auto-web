@@ -66,6 +66,8 @@ export function useIntro(data: IntroData) {
   const [loaded, setLoaded] = useState(false);
   // 그래픽 가속이 없으면 3D 없이 가벼운 배경 · 이륙은 이 훅이 굴림
   const [lite, setLite] = useState(false);
+  // 창문이 화면을 덮은 뒤 3D 층을 숨김 (시안: stage.style.visibility = hidden) — 숨기지 않으면 마지막 프레임(확대된 비행기)이 사진 둘레에 다시 보임
+  const [stageOff, setStageOff] = useState(false);
   const [step, setStepState] = useState<IntroStep>(1);
   const [query, setQuery] = useState("");
   const [hover, setHover] = useState<number | null>(null);
@@ -126,6 +128,7 @@ export function useIntro(data: IntroData) {
     setPhase(2);
     if (!(await sleep(800))) return;
     scene.current.hidden = true;
+    setStageOff(true);
     if (!(await sleep(350))) return;
     setPhase(3);
     if (!(await sleep(1900))) return;
@@ -344,6 +347,7 @@ export function useIntro(data: IntroData) {
     closed,
     lifting,
     lite,
+    stageOff,
     loaded,
     still,
     step,
