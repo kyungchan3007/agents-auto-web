@@ -62,20 +62,27 @@ export function monthTicks(from: number, to: number, step = 6): { idx: number; p
 
 export type AxisTick = { idx: number; period: string; anchor: "start" | "middle" | "end" };
 
-/** 가로축 눈금 — 처음 · 끝 달은 늘 보임(처음은 왼쪽 · 끝은 오른쪽으로 붙여 칸 밖으로 안 나감) · 사이 눈금(기본 6개월 간격)은 글자가 겹치면 생략 (작업 0181)
- *  x 는 그래프 칸 안 위치(px) — 선 좌표와 같은 식(양쪽 padX 안쪽 · 전체 폭 W 기준 비율) · gapPx = 눈금 글자 하나가 차지하는 폭(여유 포함) */
-export function axisTicks(from: number, to: number, widthPx: number, opts: { step?: number; gapPx?: number; viewW?: number; padX?: number } = {}): AxisTick[] {
-  const { step = 6, gapPx = 64, viewW = 1000, padX = 32 } = opts;
+/** 눈금 글자 칸(px) — 정렬 방향을 반영: 처음은 x 에서 오른쪽으로 · 끝은 x 에서 왼쪽으로 · 사이는 x 가운데 */
+const tickBox = (anchor: AxisTick["anchor"], x: number, w: number): [number, number] => (anchor === "start" ? [x, x + w] : anchor === "end" ? [x - w, x] : [x - w / 2, x + w / 2]);
+
+/** 가로축 눈금 — 처음 · 끝 달은 늘 보임(처음은 왼쪽 · 끝은 오른쪽으로 붙여 칸 밖으로 안 나감) · 사이 눈금(기본 6개월 간격)은 글자 칸끼리 gapPx 이상 떨어지지 않으면 생략 (작업 0181)
+ *  x 는 그래프 칸 안 위치(px) — 선 좌표와 같은 식(양쪽 padX 안쪽 · 전체 폭 W 기준 비율) · labelPx = 눈금 글자("2025-05") 한 개의 실제 폭 · 겹침은 정렬 방향을 반영한 글자 칸으로 셈 */
+export function axisTicks(from: number, to: number, widthPx: number, opts: { step?: number; labelPx?: number; gapPx?: number; viewW?: number; padX?: number } = {}): AxisTick[] {
+  const { step = 6, labelPx = 60, gapPx = 12, viewW = 1000, padX = 32 } = opts;
   const x = (i: number) => (((to === from ? 0.5 : (i - from) / (to - from)) * (viewW - padX * 2) + padX) / viewW) * widthPx;
+  const anchorOf = (i: number): AxisTick["anchor"] => (to === from ? "middle" : i === to ? "end" : i === from ? "start" : "middle");
+  const boxOf = (i: number) => tickBox(anchorOf(i), x(i), labelPx);
   const kept: number[] = to === from ? [to] : [to, from];
-  // 사이 눈금은 끝에 가까운 것부터 — 이미 고른 눈금과 gapPx 안에 들면 건너뜀
+  // 사이 눈금은 끝에 가까운 것부터 — 이미 고른 눈금의 글자 칸과 gapPx 안에 들면 건너뜀
   for (const t of monthTicks(from, to, step).reverse()) {
     if (t.idx === to || t.idx === from) continue;
-    if (kept.every((k) => Math.abs(x(k) - x(t.idx)) >= gapPx)) kept.push(t.idx);
+    const [l, r] = boxOf(t.idx);
+    if (kept.every((k) => {
+      const [kl, kr] = boxOf(k);
+      return l >= kr + gapPx || r <= kl - gapPx;
+    })) kept.push(t.idx);
   }
-  return kept
-    .sort((a, b) => a - b)
-    .map((i) => ({ idx: i, period: periodOf(i), anchor: to === from ? "middle" : i === to ? "end" : i === from ? "start" : "middle" }));
+  return kept.sort((a, b) => a - b).map((i) => ({ idx: i, period: periodOf(i), anchor: anchorOf(i) }));
 }
 
 /** 끝 라벨 세로 위치를 서로 minGap 이상 띄움 — 입력 순서대로 돌려줌 · lo ~ hi 안 · 겹치면 위에서부터 밀어 내림(넘치면 위로 올림) */

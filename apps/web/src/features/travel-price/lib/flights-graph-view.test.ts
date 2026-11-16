@@ -103,13 +103,34 @@ describe("axisTicks — 처음 · 끝 달은 늘 보이고 사이는 겹치면 �
     expect(t.slice(1, -1).every((x) => x.anchor === "middle")).toBe(true);
   });
 
-  it("휴대폰(343px) — 처음 · 끝은 그대로 · 사이는 겹치지 않게 줄어듦 (눈금끼리 64px 이상)", () => {
+  /** 정렬 방향을 반영한 실제 글자 칸(px) — axisTicks 와 같은 식으로 테스트에서 따로 셈 */
+  const boxes = (t: ReturnType<typeof axisTicks>, widthPx: number, labelPx = 60) =>
+    t.map((k) => {
+      const x = (((k.idx - from) / (to - from)) * 936 + 32) / 1000 * widthPx;
+      return k.anchor === "start" ? [x, x + labelPx] : k.anchor === "end" ? [x - labelPx, x] : [x - labelPx / 2, x + labelPx / 2];
+    });
+
+  it("휴대폰(343px) — 처음 · 끝은 그대로 · 사이는 겹치지 않게 줄어듦 · 이웃한 눈금의 실제 글자 칸이 12px 이상 떨어짐", () => {
     const t = axisTicks(from, to, 343);
     expect(t[0].period).toBe("2023-12");
     expect(t.at(-1)?.period).toBe("2026-11");
-    const x = (i: number) => (((i - from) / (to - from)) * 936 + 32) / 1000 * 343;
-    for (let i = 1; i < t.length; i++) expect(x(t[i].idx) - x(t[i - 1].idx)).toBeGreaterThanOrEqual(64 - 1e-9);
+    const b = boxes(t, 343);
+    for (let i = 1; i < b.length; i++) expect(b[i][0] - b[i - 1][1], `${t[i - 1].period} → ${t[i].period}`).toBeGreaterThanOrEqual(12 - 1e-9);
     expect(t.length).toBeLessThan(axisTicks(from, to, 840).length);
+  });
+
+  it("처음 · 둘째 눈금 — 처음이 왼쪽 정렬(글자가 오른쪽으로 펼쳐짐)이라 둘째 눈금(2025-05 처럼 5개월 뒤)이 맞닿으면 둘째를 생략 (375 폭 · 두 해 구간)", () => {
+    // 2024-12 ~ 2026-11 이 아니라 사용자가 본 경우: 처음 2024-12, 사이 후보 2025-05
+    const to2 = 2026 * 12 + 10;
+    const from2 = 2024 * 12 + 11; // 2024-12 (24개월)
+    const t = axisTicks(from2, to2, 343);
+    expect(t[0].period).toBe("2024-12");
+    const b = t.map((k) => {
+      const x = (((k.idx - from2) / (to2 - from2)) * 936 + 32) / 1000 * 343;
+      return k.anchor === "start" ? [x, x + 60] : k.anchor === "end" ? [x - 60, x] : [x - 30, x + 30];
+    });
+    for (let i = 1; i < b.length; i++) expect(b[i][0] - b[i - 1][1], `${t[i - 1].period} → ${t[i].period}`).toBeGreaterThanOrEqual(12 - 1e-9);
+    expect(t.map((k) => k.period)).not.toContain("2025-05"); // 처음 눈금과 맞닿는 후보는 빠짐
   });
 
   it("끝 눈금이 마지막 달 하나뿐이어도 깨지지 않음 · 한 달 범위 · 순서는 오래된 것부터", () => {
