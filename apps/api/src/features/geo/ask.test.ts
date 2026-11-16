@@ -64,9 +64,44 @@ describe("AI 답변 인용 측정 (작업 0139)", () => {
     expect(sql).not.toContain("DROP");
   });
 
-  it("질문 번호는 겹치지 않고 기준선과 같은 24개 (브랜드 8 · 일반 16)", () => {
+  it("질문 번호는 겹치지 않고 24개 (브랜드 8 · 일반 16)", () => {
     expect(new Set(QUESTIONS.map((q) => q.id)).size).toBe(24);
     expect(QUESTIONS.filter((q) => q.group === "brand")).toHaveLength(8);
+  });
+
+  // 작업 0183 — 질문 2판 (2026-11-17 측정부터) · 기준 질문 6개는 번호 · 문구 그대로, 바뀐 질문은 새 번호
+  const KEPT: Record<string, string> = {
+    b1: "Tripfx",
+    b2: "tripfx.pages.dev",
+    b3: "Tripfx 환율",
+    g1: "오늘 달러 환율 싼 편인가요",
+    g2: "지금 환전해도 될까 달러 최근 90일",
+    g7: "해외직구 관세 계산기",
+  };
+  const V1_RETIRED = ["b4", "b5", "b6", "b7", "b8", "g3", "g4", "g5", "g6", "g8", "g9", "g10", "g11", "g12", "g13", "g14", "g15", "g16"];
+
+  it("2판 — 기준 질문 6개는 같은 번호 · 같은 문구로 남음", () => {
+    for (const [id, text] of Object.entries(KEPT)) expect(QUESTIONS.find((q) => q.id === id)?.text, id).toBe(text);
+  });
+
+  it("2판 — 1판에서 뺀 번호는 측정 목록에 없지만 예전 기록은 읽힘", () => {
+    const active = new Set(QUESTIONS.map((q) => q.id));
+    for (const id of V1_RETIRED) {
+      expect(active.has(id), id).toBe(false);
+      expect(questionOf(id)?.text, id).toBeTruthy();
+    }
+    expect(questionOf("b4")?.text).toBe("Tripfx 환율 사이트");
+    expect(questionOf("g16")?.text).toBe("직구 타이밍 환율 언제 살까");
+  });
+
+  it("2판 — 새 질문은 새 번호(1판에 없던 번호) · 문구가 1판과 겹치지 않음", () => {
+    const fresh = QUESTIONS.filter((q) => !(q.id in KEPT));
+    expect(fresh).toHaveLength(18);
+    const retiredTexts = new Set(V1_RETIRED.map((id) => questionOf(id)?.text));
+    for (const q of fresh) {
+      expect(V1_RETIRED, q.id).not.toContain(q.id);
+      expect(retiredTexts.has(q.text), q.text).toBe(false);
+    }
   });
 
   it("요약 — 서비스마다 최근 측정일 · 실패는 인용으로 세지 않음 · 기록이 없으면 null", () => {
@@ -152,7 +187,7 @@ describe("저장소의 세션 측정 결과 파일 (작업 0155)", () => {
     for (const f of files) {
       expect(f).toMatch(/^\d{4}-\d{2}-\d{2}\.json$/);
       const rows = sessionRows(JSON.parse(readFileSync(join(dir, f), "utf8")), (id) => questionOf(id) !== null);
-      expect(rows, f).toHaveLength(QUESTIONS.length);
+      expect(rows, f).toHaveLength(24); // 1판 · 2판 모두 24개 (예전 파일은 1판 번호)
       expect(new Set(rows.map((r) => r.day)), f).toEqual(new Set([f.slice(0, 10)]));
     }
   });
