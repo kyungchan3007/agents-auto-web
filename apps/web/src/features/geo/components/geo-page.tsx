@@ -6,7 +6,7 @@ import { TextLink } from "@hav/ui/text/text-link";
 import type { Fetched } from "../../../shared/api";
 import { REPO_URL } from "../../../shared/site";
 import { SiteNav } from "../../../shared/site-nav";
-import { GEO_LIMITS, GEO_UNLINKED } from "../lib/geo-view";
+import { GEO_LIMITS, GEO_UNLINKED, methodLinkText } from "../lib/geo-view";
 import { GeoReport } from "./geo-report";
 
 export function GeoPage({ build }: { build: Fetched<Report> }) {
@@ -22,9 +22,9 @@ export function GeoPage({ build }: { build: Fetched<Report> }) {
           <GeoReport build={build} />
 
           <section data-testid="geo-method" className="mt-6 rounded-card bg-foam px-6 pt-[22px] pb-[25px]">
-            <h2 className="text-lg font-semibold">질문 목록과 측정 방법</h2>
+            <h2 className="text-lg font-semibold">측정 방법</h2>
             <p className="mt-1 text-small">
-              <TextLink href={`${REPO_URL}/blob/main/docs/geo-measurement.md`}>질문 목록과 측정 방법</TextLink>
+              <TextLink href={`${REPO_URL}/blob/main/docs/geo-measurement.md`}>{methodLinkText(build.ok ? build.data : null)}</TextLink>
             </p>
             <h3 className="mt-5 text-small font-semibold">아직 연결하지 않은 자료</h3>
             <p className="mt-1 text-small text-fg-2">{GEO_UNLINKED}</p>

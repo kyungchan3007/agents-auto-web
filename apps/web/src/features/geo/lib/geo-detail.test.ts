@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { GeoReport } from "@hav/shared/geo";
-import { GEO_LIMITS, geoDetail } from "./geo-view";
+import { GEO_LIMITS, geoDetail, methodLinkText } from "./geo-view";
 
 const base: GeoReport = { since: "2026-10-17", firstDay: null, bots: [], referrals: [], pages: [], verifiedDay: null, search: null, answers: null };
 
@@ -42,5 +42,16 @@ describe("GEO 자세한 기록 (작업 0180)", () => {
     expect(GEO_LIMITS[0]).toContain("이름은 위조될 수 있습니다");
     expect(GEO_LIMITS[4]).toBe("검색어는 노출 2회 이상인 것만 표시합니다.");
     expect(GEO_LIMITS.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("측정 방법 링크 글자 — 질문 수는 측정 기록에서만 · 없으면 수를 쓰지 않음", () => {
+    expect(methodLinkText(null)).toBe("질문 목록과 측정 방법 보기 (GitHub)");
+    expect(methodLinkText(base)).toBe("질문 목록과 측정 방법 보기 (GitHub)");
+    const results = [
+      { question: "a", group: "brand" as const, status: "ok" as const, cited: false, found: false },
+      { question: "b", group: "general" as const, status: "ok" as const, cited: false, found: false },
+    ];
+    const answers = { engines: [{ engine: "claude" as const, day: "2026-11-14", total: 2, ok: 2, cited: 0, found: 0, citedQuestions: [], results }], history: [] };
+    expect(methodLinkText({ ...base, answers })).toBe("질문 2개와 측정 방법 보기 (GitHub)");
   });
 });
