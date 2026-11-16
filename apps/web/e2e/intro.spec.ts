@@ -104,9 +104,10 @@ test.describe("데스크톱 인트로", () => {
     await expect(chips.nth(0)).toContainText("일본");
     await expect(chips.nth(1)).toContainText("태국");
     await expect(chips.nth(2)).toContainText("미국");
-    // 말풍선 등장 움직임(약 250ms)이 끝나 입력칸 위치가 멈춘 뒤에 잼 — 두 번 연속 같은 y 가 나올 때까지 기다림
-    let lastY = Number.NaN;
-    await expect.poll(async () => { const y = (await page.getByTestId("intro-search").boundingBox())?.y ?? Number.NaN; const same = y === lastY; lastY = y; return same; }, { timeout: 5_000, intervals: [100] }).toBe(true);
+    // 글꼴이 들어오고 말풍선 등장 움직임(약 250ms)이 끝나 입력칸 위치가 멈춘 뒤에 잼 — 병렬 · 느린 CPU 에서도 150ms 간격으로 3번 연속(450ms) 같은 y 일 때만 멈춤으로 봄
+    await page.evaluate(() => document.fonts.ready);
+    const ys: number[] = [];
+    await expect.poll(async () => { ys.push((await page.getByTestId("intro-search").boundingBox())?.y ?? Number.NaN); const last3 = ys.slice(-3); return last3.length === 3 && last3.every((y) => y === last3[0]); }, { timeout: 8_000, intervals: [150] }).toBe(true);
     const before = await page.getByTestId("intro-search").boundingBox();
     await page.getByTestId("intro-search").fill("zzzz아무데도없음");
     await expect(page.getByTestId("intro-frow").nth(1)).toHaveAttribute("data-text", "없는 곳입니다");
