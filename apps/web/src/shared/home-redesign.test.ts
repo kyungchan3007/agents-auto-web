@@ -34,8 +34,7 @@ describe("홈 자료 — app/page.tsx", () => {
     expect(page).toMatch(/api\.indicator\(\s*"kosis-cpi:air-fare"/);
   });
 
-  it("새 홈이 안 쓰는 자료는 받지 않음 — 물가 수준 · 1년 USD 기록 · 1개월 변화", () => {
-    expect(page).not.toMatch(/priceLevels/);
+  it("새 홈이 안 쓰는 자료는 받지 않음 — 1년 USD 기록 · 1개월 변화 (물가 수준 priceLevels 는 작업 0185 공항 인트로 2단계 '물가'가 씀 · intro-structure.test.ts 가 받는지 검사)", () => {
     expect(page).not.toMatch(/api\.changes/);
     expect(page).not.toMatch(/api\.history\(/);
   });
