@@ -21,3 +21,4 @@
 | 0177 | 홈 첫 화면 출발 안내판 (사진에 걸치기) | test → builder | 머지됨 | task/0177-flap-board | apps/web/src/features/home/** · packages/ui/src/components/** · packages/ui/src/lib/** |
 | 0180 | /geo 자세한 기록 되살리기 (Quick) | geo | 머지됨 | task/0180-geo-detail | apps/web/src/features/geo/** · apps/web/src/app/geo/** |
 | 0181 | 여행 타이밍 그래프 숫자 라벨 · 선 구분 (Quick) | builder | PR 대기 | task/0181-flights-graph | apps/web/src/features/travel-price/** |
+| 0182 | 2026-11-16 AI 답변 세션 측정 (Quick) | geo | 진행 중 | task/0182-geo-answers-1116 | apps/api/data/geo-answers/2026-11-16.json |
