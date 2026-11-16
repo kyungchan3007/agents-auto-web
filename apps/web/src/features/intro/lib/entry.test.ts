@@ -34,6 +34,10 @@ describe("인트로를 띄울지 (작업 0186)", () => {
     expect(shouldShowIntro({ ...base, firstPath: "/currencies" })).toBe(false);
   });
 
+  it("뒤로 · 앞으로 가기로 홈에 오면 띄우지 않음 (다른 화면을 보고 돌아온 것)", () => {
+    expect(shouldShowIntro({ ...base, navType: "back_forward" })).toBe(false);
+  });
+
   it("폭 700 이하 · 끄기 스위치면 띄우지 않음 (0185 그대로)", () => {
     expect(shouldShowIntro({ ...base, wide: false })).toBe(false);
     expect(shouldShowIntro({ ...base, off: true })).toBe(false);
