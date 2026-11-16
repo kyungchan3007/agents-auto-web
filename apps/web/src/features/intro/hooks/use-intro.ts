@@ -30,6 +30,7 @@ import {
 } from "../lib/flow";
 import type { IntroStep, SceneApi, SceneState } from "../lib/scene-types";
 import { useIntroScene } from "./use-intro-scene";
+import { INTRO_CLOSED_EVENT } from "../lib/entry";
 
 /** 인트로가 쓰는 값 — 빌드 때 받은 환율 · 신호 · 물가 수준 · 국제항공료 지수 (없으면 빈 배열 · null) */
 export type IntroData = {
@@ -82,7 +83,7 @@ export function useIntro(data: IntroData) {
   // 장면과 공유하는 값 · 최신 값 상자 — 변경 가능해서 ref 로 두고, 렌더 중에는 읽지 않음 (콜백 · 효과에서만)
   const scene = useRef<SceneState>({ step: 1, flight: -1, flightGoal: FLIGHT_START, auto: false, zoomIn: false, hidden: false });
   // 최신 값을 콜백(장면 · 타이머 · 이벤트)이 읽도록 — 렌더마다 갱신
-  const live = useRef({ step: 1 as IntroStep, pick: null as { iso: string; city: string } | null, budget: 1_000_000, printing: "off" as Printing, windowing: false });
+  const live = useRef({ step: 1 as IntroStep, pick: null as { iso: string; city: string } | null, budget: 1_000_000, printing: "off" as Printing, windowing: false, closed: false });
   const run = useRef(0);
   const alive = useRef(true);
 
@@ -92,6 +93,9 @@ export function useIntro(data: IntroData) {
     live.current.budget = budget;
     live.current.printing = printing;
   }, [pick, budget, printing]);
+  useEffect(() => {
+    live.current.closed = closed;
+  }, [closed]);
 
   /** 일정 시간 기다림 — 움직임 줄이기면 바로 · 인트로가 닫히거나 건너뛰면 false (이어 하던 순서를 멈춤) */
   const sleep = (ms: number): Promise<boolean> => {
@@ -301,12 +305,13 @@ export function useIntro(data: IntroData) {
   // 스크롤(휠 · 방향키)은 4단계에서만 이륙을 움직임 — 휠은 페이지가 따라 움직이지 않게 passive:false
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
+      if (live.current.closed) return;
       const s = live.current.step;
       if (s === 4 || s === 5) e.preventDefault();
       if (s === 4 && !scene.current.auto) scene.current.flightGoal = nudge(scene.current.flightGoal, scrollDelta(e.deltaY));
     };
     const onKey = (e: KeyboardEvent) => {
-      if (live.current.step !== 4) return;
+      if (live.current.closed || live.current.step !== 4) return;
       const d = keyDelta(e.key);
       if (d === 0) return;
       e.preventDefault();
@@ -320,17 +325,27 @@ export function useIntro(data: IntroData) {
     };
   }, []);
 
+  // 닫히면 인트로 문(use-intro-enabled)에 알려 부품을 내림 → 아래 효과들의 정리(페이지 잠금 해제 · 휠 · 3D 그리기 멈춤)가 실행됨 (작업 0186)
+  useEffect(() => {
+    if (closed) window.dispatchEvent(new Event(INTRO_CLOSED_EVENT));
+  }, [closed]);
+
   // 인트로가 떠 있는 동안 아래 홈이 스크롤되지 않게 · 닫히면 되돌림 · 정리에서 진행 중인 순서도 멈춤
   useEffect(() => {
     alive.current = true;
     const html = document.documentElement;
     const before = html.style.overflow;
     html.style.overflow = "hidden";
+    const unlock = () => {
+      html.style.overflow = before;
+    };
+    window.addEventListener(INTRO_CLOSED_EVENT, unlock);
     // 장면이 오래 안 떠도(느린 망) 흐름은 시작
     const safety = window.setTimeout(() => setLoaded(true), 20000);
     return () => {
       alive.current = false;
       window.clearTimeout(safety);
+      window.removeEventListener(INTRO_CLOSED_EVENT, unlock);
       html.style.overflow = before;
     };
   }, []);
