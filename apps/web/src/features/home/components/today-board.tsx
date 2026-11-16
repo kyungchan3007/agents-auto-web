@@ -6,6 +6,7 @@ import { DateText } from "@hav/ui/text/date-text";
 import { type Destination, type SignalRow, cheapestDestination } from "../lib/destinations";
 import { DESTINATIONS } from "../lib/places";
 import { todayBoard } from "../lib/today-board";
+import { PickedBoard } from "./picked-board";
 
 type Props = { rates: FxRate[]; signals: SignalRow[]; windowDays: number; problem: string | null };
 
@@ -19,16 +20,19 @@ export function TodayBoard({ rates, signals, windowDays, problem }: Props) {
   return (
     <section id="today" aria-labelledby="today-title" className="px-4 pt-6 pb-8 text-fg sm:px-8 sm:pt-8 sm:pb-10">
       <div className="mx-auto max-w-page">
-        <h2 id="today-title" className="text-base font-semibold text-accent">
-          {board.title}
-        </h2>
-        <FlapBoard rows={board.rows} cols={BOARD_COLS} label={board.label} className="mt-3" />
-        <p className="mt-5 text-body text-accent">{board.evidence}</p>
-        {source?.source === "frankfurter" && (
-          <p className="mt-2 text-small text-fg-2">
-            수출입은행 값을 받지 못해 예비 출처(Frankfurter) 값입니다 · 기준일 <DateText date={source.date} />
-          </p>
-        )}
+        {/* 인트로에서 나라를 골랐으면 PickedBoard 가 같은 판으로 "내가 고른 여행지" 를 그림 · 아니면 아래 지금 안내판 그대로 (서버가 그림) */}
+        <PickedBoard rates={rates} signals={signals} windowDays={windowDays}>
+          <h2 id="today-title" className="text-base font-semibold text-accent">
+            {board.title}
+          </h2>
+          <FlapBoard rows={board.rows} cols={BOARD_COLS} label={board.label} className="mt-3" />
+          <p className="mt-5 text-body text-accent">{board.evidence}</p>
+          {source?.source === "frankfurter" && (
+            <p className="mt-2 text-small text-fg-2">
+              수출입은행 값을 받지 못해 예비 출처(Frankfurter) 값입니다 · 기준일 <DateText date={source.date} />
+            </p>
+          )}
+        </PickedBoard>
       </div>
     </section>
   );
