@@ -10,6 +10,20 @@
       "name": "web-bff",
       "url": "http://localhost:8791",
       "port": 8791
+    },
+    {
+      "name": "web-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "-w",
+        "@hav/web",
+        "--",
+        "-p",
+        "3210"
+      ],
+      "port": 3210
     }
   ]
 }
