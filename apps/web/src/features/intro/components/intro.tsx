@@ -30,7 +30,7 @@ export function Intro({ data }: { data: IntroData }) {
       className="fixed inset-0 z-[100] overflow-hidden bg-surface text-fg"
     >
       {/* 3D 장면 — 장면을 못 불러와도 흐름은 계속 */}
-      <div data-intro-stage aria-hidden className="absolute inset-0 z-[2]" />
+      <div data-intro-stage aria-hidden className="absolute inset-0 z-[2]" style={s.lite ? { background: "linear-gradient(#AFD4E6, #D3E9EE 45%, #EAF4F2)" } : undefined} />
       {!s.loaded && <div className="absolute inset-0 z-[6] grid place-items-center bg-surface font-bold text-fg-2">공항으로 가는 중…</div>}
 
       {/* 상단 띠 — 홈 메뉴처럼 로고 · 단계 · 건너뛰기 */}
@@ -54,7 +54,7 @@ export function Intro({ data }: { data: IntroData }) {
         data-intro-bubble
         aria-live="polite"
         className={`absolute z-[4] w-[440px] rounded-[20px] border border-line bg-card px-6 pt-[22px] pb-5 shadow-[0_18px_40px_-18px_rgba(22,36,110,0.35)] transition-[opacity,transform] duration-300 after:absolute after:-bottom-2.5 after:left-[var(--tail,50%)] after:size-[18px] after:-translate-x-1/2 after:rotate-45 after:border-r after:border-b after:border-line after:bg-card after:content-[''] ${bubbleOn ? "opacity-100" : "pointer-events-none translate-y-2.5 opacity-0"}`}
-        style={{ left: 16, top: 84 }}
+        style={s.lite ? { left: "50%", top: "16%", transform: "translateX(-50%)" } : { left: 16, top: 84 }}
       >
         {s.step === 1 && <BubbleSearch s={s} />}
         {s.step === 2 && <BubbleBudget s={s} />}

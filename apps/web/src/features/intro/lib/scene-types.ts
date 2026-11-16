@@ -29,6 +29,8 @@ export type SceneApi = {
   onLift?: () => void;
   /** 뜬 뒤 거의 끝까지 올라감 (flight ≥ 0.97) — 흐름이 창문 전환을 시작함 */
   onTakeoffEnd?: () => void;
+  /** 그래픽 가속이 없어(WebGL 없음 · 소프트웨어 렌더) 3D 장면 없이 가벼운 배경으로 진행함 — 이때 이륙은 훅이 직접 굴림 (장면 본체는 불러오지 않음) */
+  onLite?: () => void;
   /** 모델을 모두 불러와 장면이 그려질 준비가 됨 */
   onReady?: () => void;
 };
