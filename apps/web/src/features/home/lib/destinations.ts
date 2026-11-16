@@ -11,10 +11,10 @@ export type RateRow = { currency: string; unit: number; baseRate: number };
 export const NO_RATE_COPY = "오늘 환율을 아직 받지 못했습니다";
 
 /** 통화 짧은 이름 — 끝의 "화" 를 뗌 (엔화 → 엔 · 유로 · 달러) */
-const shortName = (currency: string) => currencyName(currency).replace(/화$/, "");
+export const shortName = (currency: string) => currencyName(currency).replace(/화$/, "");
 
 /** 100 이상은 반올림 정수(쉼표) · 100 미만은 소수 첫째 자리 + "원" */
-function wonText(baseRate: number): string {
+export function wonText(baseRate: number): string {
   return `${baseRate >= 100 ? Math.round(baseRate).toLocaleString("ko-KR") : baseRate.toFixed(1)}원`;
 }
 

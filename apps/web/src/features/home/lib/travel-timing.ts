@@ -37,6 +37,6 @@ export function travelTimingCopy(t: TravelTiming): { title: string | null; messa
   const span = t.complete ? "1년 중" : "받은 달 중";
   return {
     title: `${t.cheapest}월에 떠나세요`,
-    message: `통계청 국제항공료 지수로 보면 ${t.cheapest}월이 ${span} 가장 낮고, ${t.priciest}월이 가장 높습니다. 최근 ${t.years}년 같은 달 평균으로 비교했습니다.`,
+    message: `통계청 국제항공료 지수로 보면 ${t.cheapest}월이 ${span} 가장 낮고, ${t.priciest}월이 가장 높습니다.`,
   };
 }
