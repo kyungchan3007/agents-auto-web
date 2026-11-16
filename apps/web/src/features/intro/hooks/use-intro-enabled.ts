@@ -14,7 +14,10 @@ export function useIntroEnabled(): boolean {
     } catch {
       off = false;
     }
-    setEnabled(window.matchMedia("(min-width: 701px)").matches && !off);
+    const wide = window.matchMedia("(min-width: 701px)").matches;
+    // 마운트 직후에 켬 (서버 HTML 과 첫 그림은 인트로 없이 같게)
+    const t = window.setTimeout(() => setEnabled(wide && !off), 0);
+    return () => window.clearTimeout(t);
   }, []);
   return enabled;
 }

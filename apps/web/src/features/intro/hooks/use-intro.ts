@@ -5,7 +5,7 @@
 // 값은 빌드 때 받은 것 — 없으면 "없음" (지어내지 않음) · 고른 나라 · 예산은 브라우저 저장소에만
 import { kstDate } from "@hav/shared/date";
 import { PICK_EVENT, type PickedTrip, writePicked } from "@hav/shared/travel";
-import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FLIGHT_START, keyDelta, meter, nudge, scrollDelta } from "../lib/flight";
 import {
   type Hit,
@@ -45,6 +45,9 @@ export type Rect = { left: number; top: number; width: number; height: number };
 export type WindowPhase = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export type Printing = "off" | "out" | "fold";
 
+/** 인트로 화면의 DOM 조각 — 화면이 data-intro-이름 으로 표시함 (ref 를 화면에 넘기지 않음) */
+const part = (name: string): HTMLElement | null => document.querySelector<HTMLElement>(`[data-intro-${name}]`);
+
 const safeStorage = (): Storage | null => {
   try {
     return window.localStorage;
@@ -72,19 +75,19 @@ export function useIntro(data: IntroData) {
   const [lifting, setLifting] = useState(false);
   const [closed, setClosed] = useState(false);
 
-  const stage = useRef<HTMLDivElement>(null);
-  const bubble = useRef<HTMLElement>(null);
-  const ticket = useRef<HTMLDivElement>(null);
-  const meterBar = useRef<HTMLElement>(null);
+  // 장면과 공유하는 값 · 최신 값 상자 — 변경 가능해서 ref 로 두고, 렌더 중에는 읽지 않음 (콜백 · 효과에서만)
   const scene = useRef<SceneState>({ step: 1, flight: -1, flightGoal: FLIGHT_START, auto: false, zoomIn: false, hidden: false });
   // 최신 값을 콜백(장면 · 타이머 · 이벤트)이 읽도록 — 렌더마다 갱신
   const live = useRef({ step: 1 as IntroStep, pick: null as { iso: string; city: string } | null, budget: 1_000_000, printing: "off" as Printing, windowing: false });
   const run = useRef(0);
   const alive = useRef(true);
 
-  live.current.pick = pick;
-  live.current.budget = budget;
-  live.current.printing = printing;
+  // 렌더가 끝난 뒤 최신 값 상자에 반영 (타이머 · 이벤트가 읽음)
+  useEffect(() => {
+    live.current.pick = pick;
+    live.current.budget = budget;
+    live.current.printing = printing;
+  }, [pick, budget, printing]);
 
   /** 일정 시간 기다림 — 움직임 줄이기면 바로 · 인트로가 닫히거나 건너뛰면 false (이어 하던 순서를 멈춤) */
   const sleep = (ms: number): Promise<boolean> => {
@@ -201,7 +204,7 @@ export function useIntro(data: IntroData) {
     end: () => {},
     frame: (_i: { flight: number; staff: { x: number; y: number } | null }) => {},
   });
-  handlers.current = {
+  const nextHandlers: typeof handlers.current = {
     ready: () => setLoaded(true),
     lift: () => {
       // 바퀴가 뜸 — 그다음은 자동 (5단계 표시)
@@ -212,7 +215,7 @@ export function useIntro(data: IntroData) {
       void windowTransition();
     },
     frame: ({ flight, staff }) => {
-      const b = bubble.current;
+      const b = part("bubble");
       if (b && staff && live.current.step <= 3) {
         // 말풍선을 직원 머리 위에 붙임
         const w = b.offsetWidth;
@@ -222,17 +225,22 @@ export function useIntro(data: IntroData) {
         b.style.left = `${left}px`;
         b.style.top = `${top}px`;
         b.style.setProperty("--tail", `${Math.min(w - 30, Math.max(30, staff.x - left))}px`);
-        const t = ticket.current;
+        const t = part("ticket");
         if (t) {
           t.style.left = `${left + 26}px`;
           t.style.width = `${w - 52}px`;
           t.style.top = `${top + h - 14}px`;
         }
       }
-      if (meterBar.current) meterBar.current.style.width = `${Math.round(meter(flight) * 100)}%`;
+      const bar = part("meter");
+      if (bar) bar.style.width = `${Math.round(meter(flight) * 100)}%`;
     },
   };
-  const api = useRef<SceneApi>({
+  useEffect(() => {
+    handlers.current = nextHandlers;
+  });
+  // 장면이 마운트될 때(효과 안에서) 한 번 부름 — 같은 공유 값(scene)과 최신 처리(handlers)를 가리키는 콜백
+  const makeApi = (): SceneApi => ({
     state: scene.current,
     still,
     onFrame: (i) => handlers.current.frame(i),
@@ -240,7 +248,7 @@ export function useIntro(data: IntroData) {
     onTakeoffEnd: () => handlers.current.end(),
     onReady: () => handlers.current.ready(),
   });
-  useIntroScene(stage, api.current);
+  useIntroScene(() => part("stage"), makeApi);
 
   // 스크롤(휠 · 방향키)은 4단계에서만 이륙을 움직임 — 휠은 페이지가 따라 움직이지 않게 passive:false
   useEffect(() => {
@@ -282,12 +290,12 @@ export function useIntro(data: IntroData) {
   // 단계가 바뀌면 그 단계의 첫 입력칸 · 버튼으로 포커스
   useEffect(() => {
     if (!loaded) return;
-    const t = window.setTimeout(() => bubble.current?.querySelector<HTMLElement>("[data-autofocus]")?.focus({ preventScroll: true }), still ? 0 : 380);
+    const t = window.setTimeout(() => part("bubble")?.querySelector<HTMLElement>("[data-autofocus]")?.focus({ preventScroll: true }), still ? 0 : 380);
     return () => window.clearTimeout(t);
   }, [loaded, step, still]);
 
   const passVisible = !!pick && (step === 4 || (step === 5 && phase === 0));
-  return {
+  const view = {
     closed,
     lifting,
     loaded,
@@ -295,7 +303,6 @@ export function useIntro(data: IntroData) {
     step,
     stepLabel: stepLabel(step),
     canGoBack: canGoBack(step),
-    refs: { stage: stage as RefObject<HTMLDivElement>, bubble: bubble as RefObject<HTMLElement>, ticket: ticket as RefObject<HTMLDivElement>, meter: meterBar as RefObject<HTMLElement> },
     // 1단계
     query,
     setQuery: (q: string) => {
@@ -343,6 +350,7 @@ export function useIntro(data: IntroData) {
     skip: () => void skip(),
     pickedCity: pick?.city ?? "",
   };
+  return { view };
 }
 
-export type IntroView = ReturnType<typeof useIntro>;
+export type IntroView = ReturnType<typeof useIntro>["view"];
