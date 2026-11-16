@@ -6,7 +6,7 @@
 import { kstDate } from "@hav/shared/date";
 import { PICK_EVENT, type PickedTrip, writePicked } from "@hav/shared/travel";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { FLIGHT_START, keyDelta, meter, nudge, scrollDelta } from "../lib/flight";
+import { FLIGHT_START, keyDelta, meter, nudge, scrollDelta, tickFlight } from "../lib/flight";
 import {
   type Hit,
   type Signal,
@@ -64,6 +64,8 @@ export function useIntro(data: IntroData) {
   const [today] = useState<string>(() => kstDate());
 
   const [loaded, setLoaded] = useState(false);
+  // 그래픽 가속이 없으면 3D 없이 가벼운 배경 · 이륙은 이 훅이 굴림
+  const [lite, setLite] = useState(false);
   const [step, setStepState] = useState<IntroStep>(1);
   const [query, setQuery] = useState("");
   const [hover, setHover] = useState<number | null>(null);
@@ -200,12 +202,14 @@ export function useIntro(data: IntroData) {
   // 장면과 주고받는 콜백 — 한 번 만든 같은 객체 (장면이 마운트 때 붙잡음) · 최신 처리는 handlers 가 가리킴
   const handlers = useRef({
     ready: () => {},
+    lite: () => {},
     lift: () => {},
     end: () => {},
     frame: (_i: { flight: number; staff: { x: number; y: number } | null }) => {},
   });
   const nextHandlers: typeof handlers.current = {
     ready: () => setLoaded(true),
+    lite: () => setLite(true),
     lift: () => {
       // 바퀴가 뜸 — 그다음은 자동 (5단계 표시)
       scene.current.auto = true;
@@ -222,14 +226,18 @@ export function useIntro(data: IntroData) {
         const h = b.offsetHeight;
         const left = Math.min(window.innerWidth - w - 16, Math.max(16, staff.x - w * 0.72));
         const top = Math.max(84, staff.y - h - 22);
-        b.style.left = `${left}px`;
-        b.style.top = `${top}px`;
-        b.style.setProperty("--tail", `${Math.min(w - 30, Math.max(30, staff.x - left))}px`);
-        const t = part("ticket");
-        if (t) {
-          t.style.left = `${left + 26}px`;
-          t.style.width = `${w - 52}px`;
-          t.style.top = `${top + h - 14}px`;
+        // 2px 이하의 떨림은 무시 — 직원이 자리에 서면 말풍선이 가만히 있어 눌러도 안 움직임
+        const moved = !(Math.abs(left - Number.parseFloat(b.style.left)) < 2 && Math.abs(top - Number.parseFloat(b.style.top)) < 2);
+        if (moved) {
+          b.style.left = `${left}px`;
+          b.style.top = `${top}px`;
+          b.style.setProperty("--tail", `${Math.min(w - 30, Math.max(30, staff.x - left))}px`);
+          const t = part("ticket");
+          if (t) {
+            t.style.left = `${left + 26}px`;
+            t.style.width = `${w - 52}px`;
+            t.style.top = `${top + h - 14}px`;
+          }
         }
       }
       const bar = part("meter");
@@ -244,11 +252,48 @@ export function useIntro(data: IntroData) {
     state: scene.current,
     still,
     onFrame: (i) => handlers.current.frame(i),
+    onLite: () => handlers.current.lite(),
     onLift: () => handlers.current.lift(),
     onTakeoffEnd: () => handlers.current.end(),
     onReady: () => handlers.current.ready(),
   });
   useIntroScene(() => part("stage"), makeApi);
+
+  // 3D 없이(가벼운 모드) 이륙 — 장면이 하던 진행 계산을 훅이 매 프레임 굴림 (진행 막대 · 바퀴가 뜸 · 창문 시점)
+  useEffect(() => {
+    if (!lite) return;
+    let raf = 0;
+    let last = performance.now();
+    const tick = (now: number) => {
+      const dt = Math.min(0.1, (now - last) / 1000);
+      last = now;
+      const sc = scene.current;
+      if (sc.flight >= 0) {
+        const r = tickFlight({ flight: sc.flight, goal: sc.flightGoal, auto: sc.auto, windowing: live.current.windowing }, dt, still);
+        sc.flight = r.flight;
+        sc.flightGoal = r.goal;
+        if (r.lift) handlers.current.lift();
+        if (r.window) handlers.current.end();
+        const bar = part("meter");
+        if (bar) bar.style.width = `${Math.round(meter(sc.flight) * 100)}%`;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [lite, still]);
+
+  // 가벼운 모드 — 말풍선이 고정 자리에 있으니 탑승권 출구를 그 아래에 한 번 맞춤
+  useEffect(() => {
+    if (!lite || printing === "off") return;
+    const b = part("bubble");
+    const t = part("ticket");
+    if (!b || !t) return;
+    const r = b.getBoundingClientRect();
+    t.style.left = `${r.left + 26}px`;
+    t.style.width = `${r.width - 52}px`;
+    t.style.top = `${r.bottom - 14}px`;
+  }, [lite, printing]);
 
   // 스크롤(휠 · 방향키)은 4단계에서만 이륙을 움직임 — 휠은 페이지가 따라 움직이지 않게 passive:false
   useEffect(() => {
@@ -298,6 +343,7 @@ export function useIntro(data: IntroData) {
   const view = {
     closed,
     lifting,
+    lite,
     loaded,
     still,
     step,
