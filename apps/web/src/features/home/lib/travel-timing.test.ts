@@ -14,7 +14,7 @@
 //   export function travelTimingCopy(t: TravelTiming): { title: string | null; message: string }
 //     - preparing: title null · message "국제항공료 지수를 아직 받지 못했습니다"
 //     - ready: title `${cheapest}월에 떠나세요`
-//       message complete: `통계청 국제항공료 지수로 보면 ${cheapest}월이 1년 중 가장 낮고, ${priciest}월이 가장 높습니다. 최근 ${years}년 같은 달 평균으로 비교했습니다.`
+//       message complete: `통계청 국제항공료 지수로 보면 ${cheapest}월이 1년 중 가장 낮고, ${priciest}월이 가장 높습니다.` (작업 0185: '최근 N년 같은 달 평균으로 비교했습니다.' 문장은 뺌 — 사용자 "필요없을 거 같아")
 //       message complete 가 아니면 "1년 중" 대신 "받은 달 중" (없는 달을 비교한 척하지 않음)
 import { describe, expect, it } from "vitest";
 import { type IndexPoint, travelTiming, travelTimingCopy } from "./travel-timing";
@@ -115,12 +115,18 @@ describe("travelTimingCopy — 문구는 받은 값으로만", () => {
   it("3년치 → 'N월에 떠나세요' + 설명 한 줄", () => {
     expect(travelTimingCopy(travelTiming(THREE_YEARS))).toEqual({
       title: "4월에 떠나세요",
-      message: "통계청 국제항공료 지수로 보면 4월이 1년 중 가장 낮고, 8월이 가장 높습니다. 최근 3년 같은 달 평균으로 비교했습니다.",
+      message: "통계청 국제항공료 지수로 보면 4월이 1년 중 가장 낮고, 8월이 가장 높습니다.",
     });
   });
 
-  it("2년치 → '최근 2년'", () => {
-    expect(travelTimingCopy(travelTiming(series("2024-11", "2026-10", SHAPE))).message).toContain("최근 2년 같은 달 평균으로 비교했습니다.");
+  it("몇 년치여도 '같은 달 평균으로 비교했습니다' 문장이 없음 (작업 0185)", () => {
+    for (const pts of [THREE_YEARS, series("2024-11", "2026-10", SHAPE)]) {
+      const m = travelTimingCopy(travelTiming(pts)).message;
+      expect(m).not.toMatch(/같은 달 평균/);
+      expect(m).not.toMatch(/비교했습니다/);
+      expect(m).not.toMatch(/최근 \d+년/);
+    }
+    expect(travelTimingCopy(travelTiming(series("2024-11", "2026-10", SHAPE))).message).toMatch(/가장 낮고, \d+월이 가장 높습니다\.$/);
   });
 
   it("일부 달만 → '1년 중' 대신 '받은 달 중'", () => {
