@@ -133,6 +133,14 @@ describe("소개 /about (P7 · SR-ABT-01)", () => {
 });
 
 describe("GEO 측정 /geo (P6 · SR-GEO-01) — geo 소유 화면", () => {
+  it("자세한 기록을 되살림(작업 0180) — 시안에 없어도 표 · 측정 방법 · 한계가 화면에 있음", () => {
+    expect(T.geo).toMatch(/\bgeoDetail\b/);
+    for (const id of ["geo-answers", "geo-search", "geo-bots", "geo-method", "geo-questions"]) expect(T.geo, id).toMatch(new RegExp(`(data-testid=|id=)"${id}"`)); // Card 는 id 를 prop 으로 받아 data-testid 로 붙임
+    for (const word of ["질문별 결과", "측정한 날마다 기록", "상위 검색어", "AI 봇별 방문", "측정의 한계", "아직 연결하지 않은 자료"]) expect(T.geo, word).toContain(word);
+    expect(T.geo).toMatch(/<details/);
+    expect(T.geo).toMatch(/\bDataTable\b/);
+  });
+
   it("큰 제목 · 측정 수치 카드(geoCards) · 읽는 법(geoReading)", () => {
     expect(T.geo).toContain("AI 검색에서 이 사이트가 어떻게 쓰이는지 잽니다");
     expect(T.geo).toContain("이 수치를 읽는 법");
