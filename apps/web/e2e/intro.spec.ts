@@ -104,7 +104,10 @@ test.describe("데스크톱 인트로", () => {
     await expect(chips.nth(0)).toContainText("일본");
     await expect(chips.nth(1)).toContainText("태국");
     await expect(chips.nth(2)).toContainText("미국");
-    const before = await page.getByTestId("intro").locator("[data-testid='intro-search']").boundingBox();
+    // 말풍선 등장 움직임(약 250ms)이 끝나 입력칸 위치가 멈춘 뒤에 잼 — 두 번 연속 같은 y 가 나올 때까지 기다림
+    let lastY = Number.NaN;
+    await expect.poll(async () => { const y = (await page.getByTestId("intro-search").boundingBox())?.y ?? Number.NaN; const same = y === lastY; lastY = y; return same; }, { timeout: 5_000, intervals: [100] }).toBe(true);
+    const before = await page.getByTestId("intro-search").boundingBox();
     await page.getByTestId("intro-search").fill("zzzz아무데도없음");
     await expect(page.getByTestId("intro-frow").nth(1)).toHaveAttribute("data-text", "없는 곳입니다");
     await expect(chips).toHaveCount(0);
