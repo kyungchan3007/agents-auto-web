@@ -22,4 +22,4 @@
 | 0180 | /geo 자세한 기록 되살리기 (Quick) | geo | 머지됨 | task/0180-geo-detail | apps/web/src/features/geo/** · apps/web/src/app/geo/** |
 | 0181 | 여행 타이밍 그래프 숫자 라벨 · 선 구분 (Quick) | builder | PR 대기 | task/0181-flights-graph | apps/web/src/features/travel-price/** |
 | 0182 | 2026-11-16 AI 답변 세션 측정 (Quick) | geo | PR 대기 | task/0182-geo-answers-1116 | apps/api/data/geo-answers/2026-11-16.json |
-| 0185 | 공항 인트로 — 출발 안내판 입력 · 탑승권 · 스크롤 이륙 · 창문 전환 (Full) | test → builder | 진행 중 | task/0185-intro-airport | apps/web/src/features/intro/** · apps/web/public/models/intro/** · 홈 안내판 · page.tsx |
+| 0185 | 공항 인트로 — 출발 안내판 입력 · 탑승권 · 스크롤 이륙 · 창문 전환 (Full) | test → builder | PR 대기 | task/0185-intro-airport | apps/web/src/features/intro/** · apps/web/public/models/intro/** · 홈 안내판 · page.tsx |
