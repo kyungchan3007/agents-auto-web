@@ -46,6 +46,8 @@
 - docs/design.md
 
 ## 계획 밖 변경 이유
+- apps/web/playwright.config.ts · apps/web/playwright.responsive.config.ts — 다른 e2e 는 홈 첫 화면이 바로 보인다고 가정하므로 storageState 로 인트로 끄기 스위치(localStorage tripfx:intro-off=1)를 기본으로 넣음 (test 결정 · 인트로 e2e 만 스위치 없이)
+- 기존 단위 테스트(home-redesign.test.ts 등) — 0169 의 '홈 page.tsx 는 priceLevels 를 받지 않음' 기대를 인트로 물가가 쓰므로 고침
 - apps/web/scripts/make-intro-assets.mjs — Kenney 모델 · 색상표(차는 흰색 계열)를 public/models/intro/ 로 옮기는 한 번 돌리는 스크립트 (시안 build3.py 의 mono 와 같은 처리 · sharp · 새 의존성 없음)
 
 ## 위험
@@ -62,3 +64,4 @@
 - `bash .agents/checks.sh` (full)
 
 ## 계획과 달라진 점
+- test 가 같은 작업 폴더에서 참조 구현을 검증하다 scene.ts · models/intro 를 한 번 덮어썼다가 커밋본으로 되살림 — lead 확인: 작업 폴더 깨끗 · scene.ts · 모델은 커밋본(b448f04 · 71cbf2d)과 같음 · builder 는 1차 끝에 미커밋 변경이 없었다고 보고. 앞으로 참조 구현 검증은 별도 폴더에서.
