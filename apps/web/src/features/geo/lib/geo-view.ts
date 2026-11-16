@@ -128,3 +128,10 @@ export const GEO_LIMITS = [
 ] as const;
 
 export const GEO_UNLINKED = "Bing Webmaster Tools에 등록했습니다 (2026-11-05). Bing 검색 · Copilot 인용 수치와 구글 AI 답변 전용 수치는 아직 이 페이지에 연결하지 않았습니다.";
+
+/** 측정 방법 링크 글자 (작업 0180) — 질문 수는 실제 측정 기록에서만, 없으면 수를 쓰지 않음 */
+export function methodLinkText(r: GeoReport | null): string {
+  const top = r?.answers ? widest(r.answers) : null;
+  const n = top?.results.length ?? 0;
+  return n > 0 ? `질문 ${numberText(n)}개와 측정 방법 보기 (GitHub)` : "질문 목록과 측정 방법 보기 (GitHub)";
+}
