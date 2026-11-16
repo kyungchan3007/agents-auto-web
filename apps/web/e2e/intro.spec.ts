@@ -104,16 +104,25 @@ test.describe("데스크톱 인트로", () => {
     await expect(chips.nth(0)).toContainText("일본");
     await expect(chips.nth(1)).toContainText("태국");
     await expect(chips.nth(2)).toContainText("미국");
-    // 글꼴이 들어오고 말풍선 등장 움직임(약 250ms)이 끝나 입력칸 위치가 멈춘 뒤에 잼 — 병렬 · 느린 CPU 에서도 150ms 간격으로 3번 연속(450ms) 같은 y 일 때만 멈춤으로 봄
+    // 카드(말풍선 data-intro-bubble)의 높이 · 입력칸의 카드 안 상대 위치(input.y − card.y)로 잼 — 절대 화면 y 는 등장 움직임 · 말풍선 따라가기에 흔들려 쓰지 않음 (같은 순간에 함께 잼)
+    const card = page.locator("[data-intro-bubble]");
+    await expect(card).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
-    const ys: number[] = [];
-    await expect.poll(async () => { ys.push((await page.getByTestId("intro-search").boundingBox())?.y ?? Number.NaN); const last3 = ys.slice(-3); return last3.length === 3 && last3.every((y) => y === last3[0]); }, { timeout: 8_000, intervals: [150] }).toBe(true);
-    const before = await page.getByTestId("intro-search").boundingBox();
+    const measure = () => page.evaluate(() => {
+      const c = document.querySelector("[data-intro-bubble]")!.getBoundingClientRect();
+      const i = document.querySelector('[data-testid="intro-search"]')!.getBoundingClientRect();
+      return { h: c.height, rel: i.y - c.y };
+    });
+    // 등장 움직임이 끝나 카드 높이가 멈출 때까지(150ms 간격 두 번 같음)
+    let prev = await measure();
+    await expect.poll(async () => { const now = await measure(); const same = Math.abs(now.h - prev.h) < 0.5; prev = now; return same; }, { timeout: 8_000, intervals: [150] }).toBe(true);
+    const before = await measure();
     await page.getByTestId("intro-search").fill("zzzz아무데도없음");
     await expect(page.getByTestId("intro-frow").nth(1)).toHaveAttribute("data-text", "없는 곳입니다");
     await expect(chips).toHaveCount(0);
-    const after = await page.getByTestId("intro-search").boundingBox();
-    expect(Math.abs((after?.y ?? 0) - (before?.y ?? 0)), "카드가 줄어 입력칸이 움직이지 않음").toBeLessThanOrEqual(1);
+    const after = await measure();
+    expect(Math.abs(after.h - before.h), "칩이 사라져도 카드 높이 그대로").toBeLessThanOrEqual(1);
+    expect(Math.abs(after.rel - before.rel), "카드 안에서 입력칸 위치 그대로").toBeLessThanOrEqual(1);
   });
 
   test("건너뛰기 — 1단계에서 누르면 바로 홈 · 안내판은 지금 그대로 · 고른 값 저장 없음", async ({ page }) => {
