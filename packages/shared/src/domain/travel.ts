@@ -124,3 +124,67 @@ export const PLANE_CREDIT = {
   sourceUrl: "https://poly.pizza/m/8ciDd9k8wha",
   licenseUrl: "https://creativecommons.org/licenses/by/4.0/",
 } as const;
+
+// ── 인트로에서 고른 여행지 저장 (작업 0185) — 홈 안내판과 인트로가 함께 읽음 (기능 폴더끼리 직접 참조 못 해 여기에 둠) ──
+// 브라우저 저장소(localStorage)에만 두고 서버로 보내지 않음 · 잘못된 값은 무시(null · false) · 저장소가 막혀도(비공개 창) 죽지 않음
+
+/** localStorage 키 */
+export const PICKED_STORAGE_KEY = "tripfx:picked";
+/** 인트로가 끝날 때 window 로 보내는 이벤트 이름 (detail = PickedTrip) */
+export const PICK_EVENT = "tripfx:intro-pick";
+/** 값이 "1" 이면 인트로를 열지 않는 끄기 스위치 (e2e · 개발용 · 화면에 노출하지 않음) */
+export const INTRO_OFF_KEY = "tripfx:intro-off";
+
+const MAX_BUDGET = 1e10;
+
+export type PickedTrip = {
+  v: 1;
+  /** ISO alpha-3 — TRAVEL_COUNTRIES 의 키 */
+  country: string;
+  /** 도시 이름 1~20자 */
+  city: string;
+  /** 환전 예산(원) · 0 이상 정수 · 최대 1e10 */
+  budget: number;
+};
+
+/** 저장된 글을 읽음 — JSON 이 아니거나 모양이 틀리면 null · 모르는 필드는 버림 */
+export function parsePicked(raw: string | null | undefined): PickedTrip | null {
+  if (!raw) return null;
+  let j: unknown;
+  try {
+    j = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  if (typeof j !== "object" || j === null) return null;
+  const o = j as Record<string, unknown>;
+  const { v, country, city, budget } = o;
+  if (v !== 1) return null;
+  if (typeof country !== "string" || !Object.hasOwn(TRAVEL_COUNTRIES, country)) return null;
+  if (typeof city !== "string" || city.length < 1 || Array.from(city).length > 20) return null;
+  if (typeof budget !== "number" || !Number.isInteger(budget) || budget < 0 || budget > MAX_BUDGET) return null;
+  return { v: 1, country, city, budget };
+}
+
+export const serializePicked = (p: PickedTrip): string => JSON.stringify(p);
+
+/** 저장소에서 읽음 — 저장소가 없거나 던지면 null */
+export function readPicked(storage: Pick<Storage, "getItem"> | null | undefined): PickedTrip | null {
+  if (!storage) return null;
+  try {
+    return parsePicked(storage.getItem(PICKED_STORAGE_KEY));
+  } catch {
+    return null;
+  }
+}
+
+/** 저장소에 씀 (한 번에 한 값 · 덮어씀) — 잘못된 값이면 쓰지 않고 false · 저장소가 던져도 false */
+export function writePicked(storage: Pick<Storage, "setItem"> | null | undefined, p: PickedTrip): boolean {
+  if (!storage || !parsePicked(serializePicked(p))) return false;
+  try {
+    storage.setItem(PICKED_STORAGE_KEY, serializePicked(p));
+    return true;
+  } catch {
+    return false;
+  }
+}
