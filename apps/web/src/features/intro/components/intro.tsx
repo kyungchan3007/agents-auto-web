@@ -1,3 +1,5 @@
+"use client";
+
 // 공항 인트로 — 홈 위를 덮는 층 (작업 0185): 3D 공항 도시 · 위에 로고 · 단계 · 건너뛰기 · 직원 머리 위 말풍선 · 왼쪽 아래 탑승권 판 · 창문 전환
 // 그리기만 — 단계 · 입력 · 스크롤 · 창문 전환 순서는 hooks/use-intro.ts · 3D 는 use-intro-scene 이 열릴 때 불러옴 · 늘 건너뛸 수 있음
 import { PLANE_CREDIT } from "@hav/shared/travel";
@@ -12,7 +14,7 @@ import { PassBoard } from "./pass-board";
 import { WindowTransition } from "./window-transition";
 
 export function Intro({ data }: { data: IntroData }) {
-  const s = useIntro(data);
+  const { view: s } = useIntro(data);
   if (s.closed) return null;
   const bubbleOn = s.loaded && s.step <= 3;
   const dots = [1, 2, 3, 4, 5];
@@ -28,7 +30,7 @@ export function Intro({ data }: { data: IntroData }) {
       className="fixed inset-0 z-[100] overflow-hidden bg-surface text-fg"
     >
       {/* 3D 장면 — 장면을 못 불러와도 흐름은 계속 */}
-      <div ref={s.refs.stage} aria-hidden className="absolute inset-0 z-[2]" />
+      <div data-intro-stage aria-hidden className="absolute inset-0 z-[2]" />
       {!s.loaded && <div className="absolute inset-0 z-[6] grid place-items-center bg-surface font-bold text-fg-2">공항으로 가는 중…</div>}
 
       {/* 상단 띠 — 홈 메뉴처럼 로고 · 단계 · 건너뛰기 */}
@@ -49,7 +51,7 @@ export function Intro({ data }: { data: IntroData }) {
 
       {/* 말풍선 — 안내 직원 머리 위 (위치는 장면이 매 프레임 갱신) */}
       <section
-        ref={s.refs.bubble}
+        data-intro-bubble
         aria-live="polite"
         className={`absolute z-[4] w-[440px] rounded-[20px] border border-line bg-card px-6 pt-[22px] pb-5 shadow-[0_18px_40px_-18px_rgba(22,36,110,0.35)] transition-[opacity,transform] duration-300 after:absolute after:-bottom-2.5 after:left-[var(--tail,50%)] after:size-[18px] after:-translate-x-1/2 after:rotate-45 after:border-r after:border-b after:border-line after:bg-card after:content-[''] ${bubbleOn ? "opacity-100" : "pointer-events-none translate-y-2.5 opacity-0"}`}
         style={{ left: 16, top: 84 }}

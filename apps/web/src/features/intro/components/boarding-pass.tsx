@@ -15,7 +15,7 @@ export function BoardingPass({ s }: { s: IntroView }) {
   if (!t || s.boardingPrinting === "off") return null;
   const fold = s.boardingPrinting === "fold";
   return (
-    <div ref={s.refs.ticket} className="pointer-events-none fixed z-[3] h-[340px] overflow-hidden" aria-hidden>
+    <div data-intro-ticket className="pointer-events-none fixed z-[3] h-[340px] overflow-hidden" aria-hidden>
       <motion.div
         initial={{ y: "-102%" }}
         animate={fold ? { x: "-40%", y: "60%", scale: 0.3, opacity: 0 } : { y: 0 }}

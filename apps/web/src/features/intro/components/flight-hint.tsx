@@ -14,7 +14,7 @@ export function FlightHint({ s }: { s: IntroView }) {
       </b>
       <span className="text-[13px] text-fg-2">바퀴가 땅에서 떨어지면 그다음은 자동으로 이어집니다 (방향키 ↓ ↑ 도 됩니다)</span>
       <div className="mt-2.5 h-1.5 overflow-hidden rounded-[3px] bg-surface-2">
-        <i ref={s.refs.meter} className="block h-full w-0 bg-cheap" />
+        <i data-intro-meter className="block h-full w-0 bg-cheap" />
       </div>
       <button type="button" data-testid="intro-back" onClick={s.back} className="mt-2 border-0 bg-transparent py-0.5 text-[13px] font-semibold text-fg-2 hover:text-fg hover:underline">
         ← 이전 · 게이트로
