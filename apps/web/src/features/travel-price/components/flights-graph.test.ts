@@ -26,8 +26,14 @@ describe("FlightsGraph 소스", () => {
     expect(src).toMatch(/fxVals\.length > 0/);
   });
 
-  it("최저 · 최고 라벨 글은 seriesStats · extremeTexts(받은 값)에서 · 선 끝 이름 + 최근 값은 endLabelText · 가로축은 monthTicks", () => {
-    for (const f of ["seriesStats(", "extremeTexts(", "endLabelText(", "monthTicks(", "spreadLabels("]) expect(src, f).toContain(f);
+  it("최저 · 최고 라벨 글은 seriesStats · extremeTexts(받은 값)에서 · 선 끝 이름 + 최근 값은 endLabelText · 가로축은 axisTicks", () => {
+    for (const f of ["seriesStats(", "extremeTexts(", "endLabelText(", "axisTicks(", "spreadLabels("]) expect(src, f).toContain(f);
+  });
+
+  it("가로축 눈금 — axisTicks(처음 · 끝은 늘 보임) · 줄바꿈 금지(whitespace-nowrap) · 끝 눈금은 안쪽으로 붙임(-100%)", () => {
+    expect(src).toContain("axisTicks(");
+    expect(src).toMatch(/data-testid="month-tick" className="absolute whitespace-nowrap"/);
+    expect(src).toMatch(/"-100%"/);
   });
 
   it("3D 비행기 · 노란 점은 그대로 — PlaneRouteLazy 가 항공료 선 점들을 따라감 · 노란 점(--hav-sun)", () => {
