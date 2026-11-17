@@ -40,3 +40,29 @@ describe("photoSrc · photoSrcSet", () => {
     expect(PHOTO_SIZES).toBe("100vw");
   });
 });
+
+// 작업 0201 — 나라 사진 (테스트 먼저 · 구현 전에는 FAIL 이 정상)
+//   export const COUNTRY_PHOTO_NAMES = ["country-jpn", … , "country-eur"] as const   // 19개 나라 + 유로 기본 1장 = 20장
+//   export function countryPhoto(iso: string): PhotoName | null                      // 나라(ISO alpha-3) → 사진 이름 · 유로 나라는 country-eur · 사진 없는 나라 · 모르는 값은 null (지금 사진을 씀)
+//   PhotoName 은 화면 사진 5장 + 나라 사진 20장 (photoSrc · photoSrcSet 이 그대로 동작)
+import { COUNTRY_PHOTO_NAMES, countryPhoto } from "./photo";
+
+describe("countryPhoto", () => {
+  it("사진이 있는 나라 → country-소문자코드", () => {
+    expect(countryPhoto("JPN")).toBe("country-jpn");
+    expect(countryPhoto("IND")).toBe("country-ind");
+    expect(countryPhoto("TUR")).toBe("country-tur");
+    expect(countryPhoto("USA")).toBe("country-usa");
+  });
+  it("유로 나라는 유럽 사진 한 장을 같이 씀", () => {
+    for (const c of ["FRA", "DEU", "ITA", "ESP", "PRT", "NLD", "AUT", "GRC", "FIN"]) expect(countryPhoto(c)).toBe("country-eur");
+  });
+  it("사진 없는 나라 · 모르는 값 · 빈 값 → null (지금 사진)", () => {
+    for (const c of ["ARE", "MYS", "IDN", "", "XXX", "toString", "__proto__"]) expect(countryPhoto(c)).toBeNull();
+  });
+  it("사진 이름 20장 · 나라 19 + 유럽 · 모두 srcset 규칙을 따름", () => {
+    expect(COUNTRY_PHOTO_NAMES).toHaveLength(20);
+    expect(COUNTRY_PHOTO_NAMES).toContain("country-eur");
+    for (const n of COUNTRY_PHOTO_NAMES) expect(photoSrcSet(n)).toBe(`/images/photos/${n}-640.webp 640w, /images/photos/${n}-1024.webp 1024w, /images/photos/${n}-1672.webp 1672w`);
+  });
+});
