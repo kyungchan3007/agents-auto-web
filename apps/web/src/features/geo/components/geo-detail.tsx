@@ -3,7 +3,7 @@
 import type { GeoReport } from "@hav/shared/geo";
 import { DataTable } from "@hav/ui/data/data-table";
 import type { ReactNode } from "react";
-import { geoDetail } from "../lib/geo-view";
+import { GEO_EDITION_NOTES, geoDetail } from "../lib/geo-view";
 
 const EMPTY = "아직 기록이 없습니다.";
 
@@ -54,8 +54,13 @@ export function GeoDetail({ report }: { report: GeoReport }) {
           ) : null,
         )}
         <Sub title="측정한 날마다 기록" empty={d.history.length === 0}>
-          <DataTable head={["날짜", "서비스", "저장된 질문", "응답 받음", "답에 인용"]} rows={d.history} caption="측정한 날마다 D1 에 저장된 질문 수" />
+          <DataTable head={["날짜", "서비스", "저장된 질문", "응답 받음", "답에 인용", "질문 판"]} rows={d.history} caption="측정한 날마다 D1 에 저장된 질문 수와 그 날 쓴 질문 판" />
         </Sub>
+        <ul data-testid="geo-editions" className="mt-3 list-disc space-y-1 pl-5 text-small text-fg-2">
+          {GEO_EDITION_NOTES.map((t) => (
+            <li key={t}>{t}</li>
+          ))}
+        </ul>
       </Card>
 
       <Card id="geo-search" title="구글 검색 노출 (Search Console)">

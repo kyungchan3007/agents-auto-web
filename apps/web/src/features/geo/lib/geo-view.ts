@@ -47,9 +47,28 @@ export function answerLines(r: GeoReport) {
   });
 }
 
-/** 날짜별 저장 기록 — 최근 날부터 */
+/** 측정 질문 판 (작업 0183 · 0196) — from 날부터 그 판 질문으로 측정 · 사이트 이름이 바뀐 날(3판)을 기준으로 앞뒤를 나눠 봄. api 의 questions.ts 머리말과 같은 날짜 */
+const EDITIONS = [
+  { from: "2026-11-05", edition: 1, label: "1판 · Tripfx" },
+  { from: "2026-11-17", edition: 2, label: "2판 · Tripfx" },
+  { from: "2026-11-18", edition: 3, label: "3판 · 플랩 flapfx" },
+] as const;
+
+/** 그 날 쓴 질문 판 — 첫 측정일 전이면 null */
+export function editionOf(day: string) {
+  return [...EDITIONS].reverse().find((e) => day >= e.from) ?? null;
+}
+
+/** 판 설명 — 화면 줄글 (표 없음) */
+export const GEO_EDITION_NOTES = [
+  "질문은 판으로 나눕니다. 1판은 2026-11-05 ~ 11-16, 2판은 11-17, 3판은 2026-11-18 측정부터입니다.",
+  "3판은 사이트 이름이 플랩 · flapfx 로 바뀌어(주소 flapfx.com) 브랜드 질문 8개만 이름과 주소로 바꾼 것입니다. 일반 질문 16개는 그대로입니다.",
+  "1 · 2판은 Tripfx 이름으로 측정한 결과입니다. 판이 바뀐 날 앞뒤의 브랜드 질문 결과는 이름이 달라 바로 비교하지 않고, 이어지는 비교는 일반 질문으로 봅니다.",
+] as const;
+
+/** 날짜별 저장 기록 — 최근 날부터 · 마지막 칸은 그 날의 질문 판 */
 export function answerHistory(r: GeoReport) {
-  return [...(r.answers?.history ?? [])].reverse().map((h) => [h.day, ENGINE_TEXT[h.engine], h.total, h.ok, h.cited]);
+  return [...(r.answers?.history ?? [])].reverse().map((h) => [h.day, ENGINE_TEXT[h.engine], h.total, h.ok, h.cited, editionOf(h.day)?.label ?? "기록 없음"]);
 }
 
 type Answers = NonNullable<GeoReport["answers"]>;
