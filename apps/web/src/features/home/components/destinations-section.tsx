@@ -4,8 +4,9 @@ import { DestinationRow } from "@hav/ui/data/destination-row";
 import { SectionTitle } from "@hav/ui/text/heading";
 import Link from "next/link";
 import type { DestinationRowData } from "../lib/destinations";
+import { MORE_CURRENCIES_HREF, moreCurrenciesText } from "../lib/more-currencies";
 
-export function DestinationsSection({ rows, windowDays }: { rows: DestinationRowData[]; windowDays: number }) {
+export function DestinationsSection({ rows, windowDays, moreCount }: { rows: DestinationRowData[]; windowDays: number; moreCount: number | null }) {
   return (
     <section id="destinations" aria-labelledby="destinations-title" className="bg-surface px-4 pt-6 pb-16 text-fg sm:px-8 sm:pt-8 sm:pb-20">
       <div className="mx-auto max-w-page">
@@ -39,6 +40,9 @@ export function DestinationsSection({ rows, windowDays }: { rows: DestinationRow
             );
           })}
         </div>
+        <Link href={MORE_CURRENCIES_HREF} data-testid="more-currencies" className="mt-5 inline-block text-body text-cheap hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
+          {moreCurrenciesText(moreCount)}
+        </Link>
       </div>
     </section>
   );
