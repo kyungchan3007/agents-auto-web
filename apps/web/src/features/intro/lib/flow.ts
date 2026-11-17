@@ -179,7 +179,7 @@ export function ticketOf(a: { country: IntroCountry; city: string; budget: numbe
       { label: "항공료", value: a.airfare },
     ],
     code: `${a.today.replaceAll("-", "")}${c.currency ?? "XXX"}${c.base === null ? "0" : String(Math.round(c.base * 100))}`,
-    footer: [`${a.today} · ${c.currency ?? ""} ${c.base === null ? "" : rateNum(c)}`.trimEnd(), "tripfx.pages.dev"],
+    footer: [`${a.today} · ${c.currency ?? ""} ${c.base === null ? "" : rateNum(c)}`.trimEnd(), "flapfx.com"],
   };
 }
 

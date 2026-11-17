@@ -23,7 +23,7 @@ export function BoardingPass({ s }: { s: IntroView }) {
         className="rounded-b-2xl bg-card px-5 pt-[18px] pb-3.5 shadow-[0_20px_40px_-22px_rgba(22,36,110,0.5)]"
       >
         <div className="flex justify-between text-[10px] font-extrabold tracking-wider text-fg-2">
-          <span>TRIPFX · BOARDING PASS</span>
+          <span>FLAPFX · BOARDING PASS</span>
           <span>TFX 1116</span>
         </div>
         <div className="my-2 flex items-baseline gap-3">

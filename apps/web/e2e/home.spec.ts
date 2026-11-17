@@ -118,7 +118,7 @@ const style = (loc: import("@playwright/test").Locator) => loc.first().evaluate(
 
 test("글꼴 — 맨 위 큰 제목 · 로고는 Pretendard 800 (Gasoek One 아님)", async ({ page }) => {
   await page.goto("/");
-  for (const loc of [page.getByRole("heading", { level: 1 }), page.getByRole("banner").getByRole("link", { name: /tripfx/i })]) {
+  for (const loc of [page.getByRole("heading", { level: 1 }), page.getByRole("banner").getByRole("link", { name: /flapfx/i })]) {
     const s = await style(loc);
     expect(s.family).toMatch(FONT);
     expect(s.family).not.toMatch(/Gasoek/i);

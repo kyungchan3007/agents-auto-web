@@ -308,7 +308,7 @@ describe("ticketOf — 탑승권 내용", () => {
     const t = ticketOf(base);
     expect(t.code).toBe("20261116JPY90000");
     expect(t.footer[0].startsWith("2026-11-16")).toBe(true);
-    expect(t.footer[1]).toBe("tripfx.pages.dev");
+    expect(t.footer[1]).toBe("flapfx.com");
   });
 
   it("값이 없으면 '환율 없음' · '판정 없음' · '데이터 없음' · 바코드 XXX0 (지어내지 않음)", () => {

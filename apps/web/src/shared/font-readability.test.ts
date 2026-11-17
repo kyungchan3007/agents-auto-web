@@ -3,7 +3,7 @@
 //
 // builder 가 할 것 (prd F1~F5 · sdd)
 //   font-display 를 직접 쓰는 곳은 아래 허용 목록 6개 파일뿐 (주석 설명은 세지 않음):
-//     packages/ui components/text/heading.tsx (Title — 맨 위 큰 제목) · components/text/big-number.tsx (큰 숫자) · components/layout/nav-bar.tsx (로고 tripfx) ·
+//     packages/ui components/text/heading.tsx (Title — 맨 위 큰 제목) · components/text/big-number.tsx (큰 숫자) · components/layout/nav-bar.tsx (로고 flapfx) ·
 //     apps/web features/home/components/today-band.tsx (바다 띠 큰 문장 · 노란 큰 숫자) · features/currencies/components/currency-detail.tsx (통화 큰 환율) · features/import-calc/components/calc-result.tsx (직구 결과 금액)
 //     (홈 여행 타이밍 큰 문장 · 직구 큰 문장 · 각 화면 맨 위 제목은 Title 부품을 통해 Gasoek — 직접 쓰지 않음)
 //   heading.tsx: 새 부품 SectionTitle(구간 제목 · 카드 제목) — font-sans + font-bold (font-display 아님) · Title 은 font-display 유지

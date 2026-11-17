@@ -226,7 +226,7 @@ export function mountIntroScene(el: HTMLElement, api: SceneApi): () => void {
     const face = new THREE.MeshStandardMaterial({ map: t, roughness: 0.6 });
     return new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.3), [mat(C.red), mat(C.red), mat(C.red), mat(C.red), face, face]);
   };
-  const s1 = sign("TRIPFX", 8, 2);
+  const s1 = sign("FLAPFX", 8, 2);
   s1.position.set(-8, 5.4, -4.9);
   scene.add(shade(s1));
   const s2 = sign("출발 DEPARTURES", 9, 1.6);

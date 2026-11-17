@@ -1,4 +1,4 @@
-// 이 사이트(tripfx)의 상단 메뉴 — 모든 페이지가 같이 씀
+// 이 사이트(플랩)의 상단 메뉴 — 모든 페이지가 같이 씀
 // 메뉴 모양은 디자인 시스템(@hav/ui/layout/nav-bar) · 사이트 이름 · 링크 같은 이 사이트 설정만 여기 (디자인 시스템은 사이트를 모름)
 // 순서 (작업 0168 · R4): 여행 타이밍 · 오늘 환율 · 통화 · 여행 물가 · 직구 계산 · 작업실 · GEO 측정 — 소개(/about)는 메뉴에 없고 바닥 띠에서 · "오늘 환율"은 홈 바다 띠(id="today")로
 import { NavBar } from "@hav/ui/layout/nav-bar";
@@ -8,7 +8,7 @@ export type Page = "home" | "currencies" | "prices" | "flights" | "calc" | "log"
 export function SiteNav({ page }: { page: Page }) {
   return (
     <NavBar
-      title="tripfx"
+      title="flapfx"
       links={[
         { href: "/flights", label: "여행 타이밍", current: page === "flights" },
         { href: "/#today", label: "오늘 환율" },

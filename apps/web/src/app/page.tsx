@@ -5,7 +5,7 @@ import { introDataOf } from "@/features/intro/lib/intro-data";
 import { api, mustHave } from "@/shared/api";
 
 export const metadata: Metadata = {
-  title: "Tripfx — 오늘 환율 · 여행 물가 · 직구 세금 계산",
+  title: "플랩 — 환전 타이밍 · 오늘 환율 · 여행 물가 · 직구 세금 계산",
   alternates: { canonical: "/" },
 };
 
