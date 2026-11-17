@@ -31,8 +31,8 @@
 - 구글은 IndexNow 를 받지 않음 → Search Console 사이트맵 · 색인 요청으로
 
 ## AI 답변 인용 (작업 0139 · 0149)
-- 2026-11-10 부터: 사용자가 말하면 Claude Code 세션이 측정 질문 24개(`apps/api/src/features/geo/questions.ts` 의 `QUESTIONS` · 2026-11-17 부터 2판)를 직접 웹 검색해 `apps/api/data/geo-answers/날짜.json` 을 PR 로 올린다 → 머지되면 `geo-ask.yml` 이 D1 에 저장 (작업 0149)
-  - found = 검색 결과에 tripfx.pages.dev 주소가 있음 · cited = 세션이 답의 출처로 그 주소를 씀 · 검색하지 않은 질문은 파일에 넣지 않는다 (지어내지 않음)
+- 2026-11-10 부터: 사용자가 말하면 Claude Code 세션이 측정 질문 24개(`apps/api/src/features/geo/questions.ts` 의 `QUESTIONS` · 2026-11-18 부터 3판)를 직접 웹 검색해 `apps/api/data/geo-answers/날짜.json` 을 PR 로 올린다 → 머지되면 `geo-ask.yml` 이 D1 에 저장 (작업 0149)
+  - found = 검색 결과에 우리 사이트 주소(2026-11-17 까지 tripfx.pages.dev · 이후 flapfx.com)가 있음 · cited = 세션이 답의 출처로 그 주소를 씀 · 검색하지 않은 질문은 파일에 넣지 않는다 (지어내지 않음)
   - 매일 05:00 API 예약은 끔 — 2026-11-08 ~ 10 Anthropic API 크레딧 소진(HTTP 400)으로 모두 실패했고, 충전하지 않기로 함
 - 처음(작업 0139): `geo-ask.yml` 이 매일 한국 05:00 에 같은 질문을 AI 검색 API 에 물었다 (지금은 손으로 실행할 때만)
 - 서비스: Claude(Anthropic 웹 검색 · `claude-opus-5-5` effort low) · ChatGPT(OpenAI Responses API 웹 검색) · Perplexity(Sonar). 키(GitHub 비밀값 `ANTHROPIC_API_KEY` · `OPENAI_API_KEY` · `PERPLEXITY_API_KEY`)가 있는 서비스만 측정하고, 없는 서비스는 기록하지 않는다 (0 으로 채우지 않음)
@@ -58,6 +58,25 @@
   - 통화 상세(최근 90일 위치): g24 `엔화 100엔 환율 최근 90일 중 낮은 편인지` · g25 `유로 환율 최근 90일 최저 여행 환전` · g26 `환율 지금 싼지 최근 90일 백분위로 판단`
   - 여행 물가(/prices): g27 `여행 갈 나라 물가 한국 100 기준 비교` · g28 `베트남 여행 물가 한국보다 싼가 환율`
 - 읽는 법: 날짜별 "답에 인용" 합계는 1판 · 2판끼리 바로 비교하지 않는다. 이어지는 비교는 기준 질문 6개로만 한다.
+
+## 질문 3판 (2026-11-18 측정부터 · 작업 0196 · #215)
+- 바꾼 이유: 2026-11-17 사이트 이름이 Tripfx 에서 플랩 · flapfx(주소 flapfx.com)로 바뀌었다 (#208). 브랜드 질문이 옛 이름과 옛 주소를 묻고 있어서는 새 사이트를 측정할 수 없다.
+- 측정 목적: 이름이 비슷한 사이트가 많아도 GEO 작업(색인 · 사이트맵 · 구조화 데이터 · 문구)을 하면 노출이 늘어나는지 본다.
+- 바꾼 방법
+  - 브랜드 질문 8개만 이름 · 주소를 바꾸고 새 번호(b14 ~ b21)를 쓴다. 일반 질문 16개는 번호 · 문구 그대로다.
+  - 1 · 2판 브랜드 질문(b1 ~ b3 · b9 ~ b13)은 측정하지 않지만 예전 기록을 그때 문구로 읽을 수 있게 `RETIRED_QUESTIONS` 에 남긴다. 지난 측정 결과 파일은 고치지 않는다.
+- 질문 바뀐 내용 (전 → 후)
+  - b1 `Tripfx` → b14 `플랩 flapfx`
+  - b2 `tripfx.pages.dev` → b15 `flapfx.com`
+  - b3 `Tripfx 환율` → b16 `플랩 flapfx 환율`
+  - b9 `Tripfx 여행 타이밍` → b17 `플랩 flapfx 여행 타이밍`
+  - b10 `Tripfx 국제항공료 지수` → b18 `플랩 flapfx 국제항공료 지수`
+  - b11 `Tripfx 과세환율 직구 계산` → b19 `플랩 flapfx 과세환율 직구 계산`
+  - b12 `Tripfx 이번 주 가장 싸게 갈 수 있는 곳` → b20 `플랩 flapfx 이번 주 가장 싸게 갈 수 있는 곳`
+  - b13 `Tripfx AI 에이전트가 만든 환율 사이트` → b21 `플랩 flapfx AI 에이전트가 만든 환율 사이트`
+- 비교 구간: Tripfx 시기(1판 2026-11-05 ~ 11-16 · 2판 11-17 · 색인되지 않은 때)와 flapfx 시기(3판 11-18 ~)를 나눠 본다. 측정 페이지(/geo) 날짜별 기록의 "질문 판" 칸이 판이 바뀐 날을 보여 준다.
+- 읽는 법: 브랜드 질문은 이름이 달라 3판 앞뒤를 바로 비교하지 않는다. 이어지는 비교는 일반 질문(g1 · g2 · g7 · g17 ~ g29)으로 본다.
+- 판정 주소: `isOurSite` 는 작업 0190 에서 flapfx.com 으로 바뀌었다(확인만 함). 옛 tripfx.pages.dev 는 우리 사이트로 세지 않는다.
 
 ## 새로 측정하면
 - 결과를 `apps/api/data/geo-answers/날짜.json` 으로 PR → 머지되면 D1 에 저장되어 측정 페이지 "AI 답변 인용" 에 나옴 (작업 0149)
