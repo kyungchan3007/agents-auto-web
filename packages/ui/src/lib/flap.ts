@@ -42,3 +42,19 @@ export function flipPlan(cells: string[], opts: { totalMs?: number; steps?: numb
 export function flipDurationMs(plan: FlipStep[]): number {
   return plan.reduce((m, p) => Math.max(m, p.delayMs + p.frames.length * p.stepMs), 0);
 }
+
+/**
+ * 글자가 바뀔 때 한 시각의 칸들 (작업 0194 · 인트로 로딩 안내판) — 이미 보이던 글자(from)에서 새 글자(to)로
+ * 같은 칸은 넘어가지 않고 · 차례가 안 온 칸은 이전 글자 · 넘어가는 중이면 그 칸의 단계 글자 · 끝나면 새 글자 (난수 없음)
+ */
+export function cellsAt(from: string[], to: string[], plan: FlipStep[], elapsedMs: number): string[] {
+  return to.map((cell, i) => {
+    const prev = from[i] ?? " ";
+    const step = plan[i];
+    if (prev === cell || !step) return cell;
+    const local = elapsedMs - step.delayMs;
+    if (local < 0) return prev;
+    const k = Math.floor(local / step.stepMs);
+    return k >= step.frames.length ? cell : step.frames[k];
+  });
+}
