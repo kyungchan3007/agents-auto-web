@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps<"/currencies/[code]
   // 설명 글에 기준일 · 값 · 신호 (작업 0093) — 빌드 때 받은 값만
   const d = await loadDetail(code);
   const description = describeCurrency(code, d.rate, d.signal.ok ? d.signal.data.signal : null);
-  return { title: `${currencyName(code)} ${code} · 통화 둘러보기 · Tripfx`, description, openGraph: { description }, alternates: { canonical: `/currencies/${code}` } };
+  return { title: `${currencyName(code)} ${code} · 통화 둘러보기 · 플랩`, description, openGraph: { description }, alternates: { canonical: `/currencies/${code}` } };
 }
 
 export default async function Page({ params }: PageProps<"/currencies/[code]">) {

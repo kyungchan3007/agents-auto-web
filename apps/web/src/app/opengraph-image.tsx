@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
 export const dynamic = "force-static";
-export const alt = "Tripfx — 지금 환율이 싼 편인지, 여행 · 직구 전에 한눈에";
+export const alt = "플랩 — 지금 환율이 싼 편인지, 여행 · 직구 전에 한눈에";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -29,7 +29,7 @@ export default async function Image() {
       {/* 글자 자리를 하늘 종이색으로 덮어 읽히게 (왼쪽 → 오른쪽) */}
       <div style={{ position: "absolute", top: 0, left: 0, width: 1200, height: 630, display: "flex", backgroundImage: "linear-gradient(90deg, rgba(234,244,242,0.96) 0%, rgba(234,244,242,0.88) 45%, rgba(234,244,242,0) 85%)" }} />
       <div style={{ position: "relative", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 96px", width: 1200, height: 630 }}>
-        <div style={{ fontSize: 34, fontWeight: 500, color: "#4A5A8C" }}>Tripfx · 환율 · 여행 물가 · 직구 계산</div>
+        <div style={{ fontSize: 34, fontWeight: 500, color: "#4A5A8C" }}>플랩 · 환율 · 여행 물가 · 직구 계산</div>
         <div style={{ marginTop: 28, fontSize: 84, fontWeight: 700, lineHeight: 1.15, display: "flex", flexDirection: "column" }}>
           <span>오늘, 그 통화는</span>
           <span style={{ color: "#2438A8" }}>싼 편일까?</span>

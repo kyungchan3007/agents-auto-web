@@ -23,7 +23,7 @@ export function Intro({ data }: { data: IntroData }) {
       data-testid="intro"
       role="dialog"
       aria-modal="true"
-      aria-label="Tripfx 공항 인트로"
+      aria-label="플랩 공항 인트로"
       initial={false}
       animate={{ y: s.lifting ? "-104%" : 0 }}
       transition={{ duration: s.still ? 0 : 0.8, ease: [0.7, 0, 0.25, 1] }}
@@ -35,7 +35,7 @@ export function Intro({ data }: { data: IntroData }) {
 
       {/* 상단 띠 — 홈 메뉴처럼 로고 · 단계 · 건너뛰기 */}
       <div className={`pointer-events-none fixed inset-x-0 top-0 z-[5] flex items-center justify-between gap-3 px-6 pt-4 transition-opacity duration-300 ${s.phase === 0 ? "opacity-100" : "opacity-0"}`}>
-        <div className="text-[22px] font-black tracking-tight text-cheap">tripfx</div>
+        <div className="text-[22px] font-black tracking-tight text-cheap">flapfx</div>
         <div className="pointer-events-auto flex items-center gap-2.5 rounded-pill border border-line bg-card/90 px-3.5 py-1.5 text-[13px] font-bold">
           <span data-testid="intro-step">{s.stepLabel}</span>
           <span aria-hidden className="flex gap-1">

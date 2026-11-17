@@ -174,6 +174,6 @@ describe("공유 미리보기(OG) 이미지", () => {
     expect(og).toMatch(/size\s*=\s*\{\s*width:\s*1200\s*,\s*height:\s*630\s*\}/);
     expect(og).toMatch(/export const alt\b/);
     expect(og).toMatch(/dynamic\s*=\s*"force-static"/);
-    expect(og).toContain("Tripfx");
+    expect(og).toContain("플랩");
   });
 });

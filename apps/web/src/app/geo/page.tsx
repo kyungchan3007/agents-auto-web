@@ -3,7 +3,7 @@ import { GeoPage } from "@/features/geo/components/geo-page";
 import { api } from "@/shared/api";
 
 export const metadata: Metadata = {
-  title: "GEO 측정 · Tripfx",
+  title: "GEO 측정 · 플랩",
   description: "구글 검색 노출 · AI 봇 방문 · AI 서비스 유입 · AI 검색 인용 측정 기록을 공개합니다",
   alternates: { canonical: "/geo" },
 };
