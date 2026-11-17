@@ -222,7 +222,8 @@ test.describe("직구 계산 — 예시 값 · 고정 크기 (작업 0200)", () 
   const input = (page: Page) => tid(page, "calc-input");
   const sizes = async (page: Page) => {
     const [a, b, c] = [await box(tid(page, "calc-input")), await box(tid(page, "calc-result")), await box(tid(page, "import-price-section"))];
-    return { inputH: Math.round(a.height), resultH: Math.round(b.height), importY: Math.round(c.y) };
+    // 맨 위 큰 문장은 입력으로 바뀌어 줄 수가 달라질 수 있어(칸 밖) 입력 칸 위에서 아래 칸까지 거리로 비교 (같은 화면 좌표라 스크롤과 무관)
+    return { inputH: Math.round(a.height), resultH: Math.round(b.height), importGap: Math.round(c.y - a.y) };
   };
 
   test("처음 — 달러 · 180 · 미국 목록통관 결과가 보이고 '예시' 표시 · 고치면 표시만 사라짐", async ({ page }) => {
