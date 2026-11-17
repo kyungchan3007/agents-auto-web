@@ -16,7 +16,7 @@
 //     - 전체 걸리는 시간(flipDurationMs)은 totalMs(기본 1500)에 맞음 — totalMs 는 1000 ~ 2000 으로 자름 (사용자 "1~2초")
 //   export function flipDurationMs(plan: FlipStep[]): number     // max(delayMs + frames.length × stepMs) · 빈 plan 은 0
 import { describe, expect, it } from "vitest";
-import { EMPTY_TEXT, flipDurationMs, flipPlan, toCells } from "./flap";
+import { EMPTY_TEXT, cellsAt, flipDurationMs, flipPlan, toCells } from "./flap";
 
 const J = (cells: string[]) => cells.join("");
 
@@ -112,5 +112,48 @@ describe("flipPlan — 넘어가는 차례", () => {
     expect(one).toHaveLength(1);
     expect(one[0].delayMs).toBe(0);
     expect(one[0].frames.at(-1)).toBe("도");
+  });
+});
+
+// ── 작업 0194: 글자가 바뀔 때 — 이미 보이는 글자에서 새 글자로 넘어가는 한 시각의 칸들 (인트로 로딩 안내판) ──
+// builder 가 만들 것 — packages/ui/src/lib/flap.ts
+//   export function cellsAt(from: string[], to: string[], plan: FlipStep[], elapsedMs: number): string[]
+//     - 길이는 to 와 같음 · 같은 칸(from[i] === to[i])은 처음부터 끝까지 그 글자 (넘어가지 않음)
+//     - 아직 차례가 안 온 칸(elapsedMs < delayMs)은 from[i] · 넘어가는 중이면 그 칸 frames 의 단계 글자 · 다 끝나면(delayMs + frames.length × stepMs 이상) to[i]
+//     - 난수 없음 — 같은 입력이면 같은 결과
+describe("cellsAt — 바뀐 칸만 넘어감 (작업 0194)", () => {
+  const from = toCells("ICN → 탑승 준비 중", 14);
+  const to = toCells("어디로 떠나시나요?", 14);
+  const plan = flipPlan(to, { totalMs: 1100 });
+
+  it("시작 직전에는 이전 글자 · 모두 끝나면 새 글자", () => {
+    expect(cellsAt(from, to, plan, -1)).toEqual(from);
+    expect(cellsAt(from, to, plan, flipDurationMs(plan))).toEqual(to);
+    expect(cellsAt(from, to, plan, 99_999)).toEqual(to);
+  });
+
+  it("길이는 to 와 같음 · 같은 입력이면 같은 결과(난수 없음)", () => {
+    const a = cellsAt(from, to, plan, 400);
+    expect(a).toHaveLength(14);
+    expect(cellsAt(from, to, plan, 400)).toEqual(a);
+  });
+
+  it("같은 칸은 넘어가지 않음 — 이전과 같은 글자는 어느 시각에도 그대로", () => {
+    const same = toCells("게이트 배정 중", 14);
+    const nextPlan = flipPlan(same, { totalMs: 1100 });
+    for (const t of [0, 200, 500, 900, 1500]) expect(cellsAt(same, same, nextPlan, t)).toEqual(same);
+    const changed = toCells("게이트 배정 끝", 14);
+    const p2 = flipPlan(changed, { totalMs: 1100 });
+    // "게이트 배정 " 까지는 같은 칸 — 마지막 글자만 바뀜
+    const mid = cellsAt(same, changed, p2, 600);
+    expect(mid.slice(0, 7)).toEqual(same.slice(0, 7));
+  });
+
+  it("넘어가는 중에는 이전도 최종도 아닌 단계 글자가 나올 수 있고, 마지막 칸은 가장 늦게 끝남", () => {
+    const seen = new Set<string>();
+    for (let t = 0; t <= 1200; t += 40) cellsAt(from, to, plan, t).forEach((c, i) => c !== from[i] && c !== to[i] && seen.add(c));
+    expect(seen.size).toBeGreaterThan(0);
+    const last = cellsAt(from, to, plan, flipDurationMs(plan) - 1);
+    expect(last.slice(0, 10)).toEqual(to.slice(0, 10)); // 앞쪽 칸들은 이미 끝남
   });
 });

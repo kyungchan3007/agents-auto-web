@@ -32,6 +32,8 @@ async function openIntro(page: import("@playwright/test").Page) {
   await page.goto("/");
   await expect(intro(page)).toBeVisible({ timeout: 20_000 });
   await expect(step(page)).toHaveText("1 / 5 · 터미널 입구", { timeout: 30_000 });
+  // 로딩 화면(작업 0194)이 열려 내려간 뒤에야 1단계를 누를 수 있음
+  await expect(page.getByTestId("intro-loading")).toHaveCount(0, { timeout: 30_000 });
 }
 
 test.describe("데스크톱 인트로", () => {
@@ -353,5 +355,77 @@ test.describe("인트로가 없는 경우", () => {
     await page.setViewportSize({ width: 375, height: 800 });
     await page.goto("/");
     await expect(page.getByText(/같은 달 평균으로 비교했습니다/)).toHaveCount(0);
+  });
+});
+
+// 작업 0194 — 인트로 로딩 화면(시안 A · 출발 안내판이 열림): 로딩(안내판 두 줄 · 진행률 % 없음) → 3D 준비 · 첫 줄이 맞춰진 뒤 "어디로 떠나시나요?" → 안내판이 내려가며 흐려짐 + 바탕이 위 · 아래로 열림(0.9초) → 1단계
+// 표시: data-testid="intro-loading"(로딩 층 · 움직임 줄이기면 data-still="true") · "intro-loading-board"(안내판) · "intro-loading-row"(줄 · data-text = 그 줄의 최종 글)
+test.describe("로딩 화면 (작업 0194)", () => {
+  test.skip(({ isMobile }) => isMobile, "인트로는 폭 700 초과에서만");
+  test.use({ viewport: DESKTOP });
+  const loading = (page: import("@playwright/test").Page) => page.getByTestId("intro-loading");
+  const rows = (page: import("@playwright/test").Page) => page.getByTestId("intro-loading-row");
+
+  test("로딩 보임 → '어디로 떠나시나요?' → 열림 → 1단계 · 로고 · 안내 글 · 진행률 % 없음", async ({ page }) => {
+    await page.goto("/");
+    await expect(loading(page)).toBeVisible({ timeout: 20_000 });
+    await expect(loading(page)).toContainText("flapfx");
+    await expect(loading(page)).toContainText("환율 · 여행 타이밍");
+    await expect(rows(page).first()).toHaveAttribute("data-text", "ICN → 탑승 준비 중");
+    expect(await loading(page).innerText()).not.toMatch(/\d\s*%/);
+    await expect(page.getByTestId("intro-skip")).toBeVisible(); // 건너뛰기는 로딩 위에서도 보임
+    // 3D 가 준비되면 첫 줄이 바뀜
+    await expect(rows(page).first()).toHaveAttribute("data-text", "어디로 떠나시나요?", { timeout: 30_000 });
+    await expect(loading(page)).toHaveCount(0, { timeout: 15_000 }); // 열린 뒤에는 로딩 부품이 내려감
+    await expect(step(page)).toHaveText("1 / 5 · 터미널 입구");
+    // 1단계가 그대로 — 입력해서 안내판이 바뀜
+    const search = page.getByTestId("intro-search");
+    await search.fill("파리");
+    await expect(page.getByTestId("intro-frow").first()).toHaveAttribute("data-text", "ICN → 파리");
+  });
+
+  test("로딩 중 건너뛰기 — 바로 홈 · 로딩 부품도 사라지고 홈이 원래대로(스크롤 · 잠금 해제)", async ({ page }) => {
+    await page.goto("/");
+    await expect(loading(page)).toBeVisible({ timeout: 20_000 });
+    await page.getByTestId("intro-skip").click();
+    await expect(intro(page)).toHaveCount(0, { timeout: 10_000 });
+    await expect(loading(page)).toHaveCount(0);
+    await expect(board(page)).toBeVisible();
+    await expectHomeScrolls(page);
+  });
+
+  test("열린 뒤 건너뛰어도 홈이 원래대로 (작업 0186 교훈)", async ({ page }) => {
+    await openIntro(page);
+    await expect(loading(page)).toHaveCount(0);
+    await page.getByTestId("intro-skip").click();
+    await expect(intro(page)).toHaveCount(0, { timeout: 10_000 });
+    await expectHomeScrolls(page);
+  });
+
+  test("움직임 줄이기 — 넘김 · 열림 없이 페이드만 · 흐름은 같음", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    await expect(loading(page)).toBeVisible({ timeout: 20_000 });
+    await expect(loading(page)).toHaveAttribute("data-still", "true");
+    await expect(step(page)).toHaveText("1 / 5 · 터미널 입구", { timeout: 30_000 });
+    await expect(loading(page)).toHaveCount(0, { timeout: 15_000 });
+  });
+
+  test("가벼운 모드(3D 없음) — 같은 로딩 → 열림 · 아주 빨리 준비돼도 로딩이 번쩍이지 않고 첫 줄이 맞춰진 뒤 열림", async ({ page }) => {
+    await page.addInitScript(() => {
+      const orig = HTMLCanvasElement.prototype.getContext;
+      // @ts-expect-error — WebGL 만 막음(가속 없는 환경을 흉내)
+      HTMLCanvasElement.prototype.getContext = function (type: string, ...rest: unknown[]) {
+        return /webgl/.test(type) ? null : orig.call(this, type, ...(rest as []));
+      };
+    });
+    await page.goto("/");
+    await expect(loading(page)).toBeVisible({ timeout: 20_000 });
+    await expect(rows(page).first()).toHaveAttribute("data-text", "ICN → 탑승 준비 중");
+    await page.waitForTimeout(800); // 3D 가 없어 곧 준비되지만 첫 줄이 맞춰지는 동안은 그대로 보임
+    await expect(loading(page)).toBeVisible();
+    await expect(rows(page).first()).toHaveAttribute("data-text", "어디로 떠나시나요?", { timeout: 15_000 });
+    await expect(loading(page)).toHaveCount(0, { timeout: 15_000 });
+    await expect(step(page)).toHaveText("1 / 5 · 터미널 입구");
   });
 });
