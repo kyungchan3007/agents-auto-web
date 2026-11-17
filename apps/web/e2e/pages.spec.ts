@@ -118,6 +118,11 @@ test.describe("여행 물가 /prices (SR-PRC-01)", () => {
 test.describe("여행 물가 — 통화로 거르기 (작업 0193)", () => {
   const bandsOf = (page: Page) => tid(page, "price-bands");
   const filtered = (page: Page) => page.getByTestId("price-filter");
+  // 전체 목록은 구간마다 나라 2곳만 보이고 나머지는 "나라 더 보기" 로 펼침 — 전체 목록 확인은 펼친 뒤에
+  const openAll = async (page: Page) => {
+    await bandsOf(page).getByRole("button", { name: /나라 더 보기/ }).click();
+    await expect(bandsOf(page).getByRole("button", { name: "나라 접기" })).toBeVisible();
+  };
 
   test("상세 → 링크 → 그 통화 나라만 · 안내 · 전체 보기", async ({ page }) => {
     await page.goto("/currencies/JPY");
@@ -130,7 +135,9 @@ test.describe("여행 물가 — 통화로 거르기 (작업 0193)", () => {
     await filtered(page).getByRole("link", { name: /전체 보기/ }).click();
     await expect(page).toHaveURL(/\/prices\/?$/);
     await expect(filtered(page)).toHaveCount(0);
+    await openAll(page);
     await expect(bandsOf(page)).toContainText("태국");
+    await expect(bandsOf(page)).toContainText("일본");
   });
 
   test("유로 — 유로 나라가 여럿 보이고 일본은 안 보임 · 자료 없는 나라는 '물가 자료 없음'", async ({ page }) => {
@@ -146,6 +153,7 @@ test.describe("여행 물가 — 통화로 거르기 (작업 0193)", () => {
   test("모르는 코드 — 거르지 않고 전체 + 안내", async ({ page }) => {
     await page.goto("/prices?currency=ZZZ");
     await expect(filtered(page)).toContainText("전체");
+    await openAll(page);
     await expect(bandsOf(page)).toContainText("일본");
     await expect(bandsOf(page)).toContainText("태국");
   });
@@ -153,6 +161,7 @@ test.describe("여행 물가 — 통화로 거르기 (작업 0193)", () => {
   test("주소에 통화가 없으면 안내 없이 전체", async ({ page }) => {
     await page.goto("/prices");
     await expect(filtered(page)).toHaveCount(0);
+    await openAll(page);
     await expect(bandsOf(page)).toContainText("일본");
   });
 });
