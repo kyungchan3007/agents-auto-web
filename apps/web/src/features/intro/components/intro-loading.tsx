@@ -23,7 +23,7 @@ export function IntroLoading({ s }: { s: IntroView }) {
       style={{ opacity: s.still && open ? 0 : 1, transition: s.still ? `opacity ${STILL_FADE_MS}ms ease` : "none" }}
     >
       <span className="sr-only" role="status">
-        플랩 인트로를 준비하는 중입니다
+        Flapfx 인트로를 준비하는 중입니다
       </span>
       {/* 바탕 두 장 — 열리면 위는 위로 · 아래는 아래로 */}
       <div aria-hidden className="absolute inset-x-0 top-0 h-1/2 border-b border-line/60 bg-surface" style={slide("translateY(-101%)")} />

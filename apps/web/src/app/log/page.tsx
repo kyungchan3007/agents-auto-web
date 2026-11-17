@@ -4,7 +4,7 @@ import { api } from "@/shared/api";
 
 // 탭 제목에서 "만드는 중" 은 뺌 (2026-10-30 사용자 · 작업 0105) · 검색에서 구별되게 페이지 이름만 (작업 0114)
 export const metadata: Metadata = {
-  title: "작업실 · 플랩",
+  title: "작업실 · Flapfx",
   alternates: { canonical: "/log" },
   description: "AI 코딩 에이전트가 이 사이트를 만드는 과정을 실시간으로",
 };

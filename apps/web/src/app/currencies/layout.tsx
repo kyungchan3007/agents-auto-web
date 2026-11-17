@@ -3,7 +3,7 @@ import { BrowseLayout } from "@/features/currencies/components/browse-layout";
 import { api } from "@/shared/api";
 
 export const metadata: Metadata = {
-  title: "통화 둘러보기 · 플랩",
+  title: "통화 둘러보기 · Flapfx",
   description: "통화마다 오늘 환율 · 싼 편인지 · 최근 1년 흐름",
 };
 

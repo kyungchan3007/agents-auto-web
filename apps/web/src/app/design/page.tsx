@@ -15,7 +15,7 @@ import { Tooltip } from "@hav/ui/feedback/tooltip";
 import type { Metadata } from "next";
 
 // 개발용 확인 페이지 — 검색에 내보내지 않음 (작업 0076)
-export const metadata: Metadata = { title: "디자인 시스템 · 플랩", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "디자인 시스템 · Flapfx", robots: { index: false, follow: false } };
 
 // 디자인 시스템 확인용 — 숫자는 모두 예시 (실제 데이터 아님) · 새 테마 "하늘 종이 · 바다 띠"의 공통 컴포넌트 (작업 0168)
 export default function DesignPage() {

@@ -8,7 +8,7 @@ const LABEL: Record<Signal, string> = { cheap: "최근 90일 중 싼 편", norma
 
 export function describeCurrency(code: string, rate: Pick<FxRate, "date" | "baseRate" | "unit"> | null, signal: Signal | null): string {
   const name = `${currencyName(code)}(${code})`;
-  if (!rate) return `${name} 환율 · 1년 흐름 · 환율 계산기 — 플랩`;
+  if (!rate) return `${name} 환율 · 1년 흐름 · 환율 계산기 — Flapfx`;
   const t = rateText(rate);
   const where = signal ? ` · ${LABEL[signal]} (예측 아님)` : "";
   return `${name} ${rate.date} 기준 ${t.value}${t.unit}${where} · 원 ↔ ${code} 환율 계산기 · 1개월 ~ 1년 흐름`;

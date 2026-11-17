@@ -24,7 +24,7 @@ export function Intro({ data }: { data: IntroData }) {
       data-testid="intro"
       role="dialog"
       aria-modal="true"
-      aria-label="플랩 공항 인트로"
+      aria-label="Flapfx 공항 인트로"
       initial={false}
       animate={{ y: s.lifting ? "-104%" : 0 }}
       transition={{ duration: s.still ? 0 : 0.8, ease: [0.7, 0, 0.25, 1] }}

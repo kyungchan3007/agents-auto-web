@@ -4,7 +4,7 @@ import { fxMonthlyAverage } from "@/features/travel-price/lib/travel-index";
 import { api } from "@/shared/api";
 
 export const metadata: Metadata = {
-  title: "여행 타이밍 · 항공료 · 단체여행비 물가지수 · 플랩",
+  title: "여행 타이밍 · 항공료 · 단체여행비 물가지수 · Flapfx",
   alternates: { canonical: "/flights" },
   description: "국제항공료 · 해외단체여행비 소비자물가지수 — 작년 같은 달과 비교하고 어느 달이 싼 편인지 · 원/달러 환율 월평균과 나란히",
 };

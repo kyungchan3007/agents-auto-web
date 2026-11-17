@@ -4,8 +4,8 @@ import { DUTY_FREE_USD, RULES_SOURCE } from "@/features/import-calc/lib/rules";
 import { api } from "@/shared/api";
 
 export const metadata: Metadata = {
-  title: "소개 · 판단 기준 · 플랩",
-  description: "플랩이 쓰는 자료의 출처와 환율 신호 · 여행 물가 · 직구 세금을 계산하는 기준",
+  title: "소개 · 판단 기준 · Flapfx",
+  description: "Flapfx가 쓰는 자료의 출처와 환율 신호 · 여행 물가 · 직구 세금을 계산하는 기준",
   alternates: { canonical: "/about" },
 };
 
