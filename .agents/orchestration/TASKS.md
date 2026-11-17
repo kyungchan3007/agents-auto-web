@@ -26,4 +26,4 @@
 | 0186 | 패치(버그) — 인트로가 닫힌 뒤 홈 스크롤 · "오늘 환율"에서 인트로가 다시 뜸 | 설치 에이전트 | 머지됨 (#203) | task/0186 | apps/web/src/features/intro/** |
 | 0187 | 2026-11-17 AI 답변 세션 측정 — 질문 2판 첫 측정 (Quick) | geo | 머지됨 (#204) | task/0187-geo-answers-1117 | apps/api/data/geo-answers/2026-11-17.json |
 | 0191 | 홈 도착지별 환전 타이밍 → "다른 통화 N개 모두 보기" 링크 (#218 · Quick) | builder | PR 대기 | task/0191-currencies-link | apps/web/src/features/home/** · apps/web/e2e/** |
-| 0192 | /currencies 통화 검색 · 자동완성 (#219 · Full) | test → builder | 진행 중 | task/0192-currency-search | packages/shared/src/domain/travel.ts · currency-search.ts · apps/web/src/features/currencies/** · intro/lib/places.ts · flow.ts |
+| 0192 | /currencies 통화 검색 · 자동완성 (#219 · Full) | test → builder | PR 대기 | task/0192-currency-search | packages/shared/src/domain/travel.ts · currency-search.ts · apps/web/src/features/currencies/** · intro/lib/places.ts · flow.ts |
