@@ -6,6 +6,8 @@
 | --- | --- | --- | --- |
 | lead-1 | 계획 | request · prd · sdd 작성 | 공용 표 이동(경계 변경)이 있어 Full · 검색창은 0170 에서 빠졌고 계산 함수만 남은 것을 확인 |
 | lead-2 | 맡김 | test 에게 테스트 먼저 → builder 구현 | Full 절차 · 기존 matchCurrency 는 그대로 두고 새 함수 |
+| test-1 | 단위 테스트 | currency-search.test.ts · travel.test.ts(TRAVEL_CITIES) · intro flow.test.ts 를 공용 표 import 로 | 결과 모양 CurrencyHit{code,matches[{country,city?}]} 는 sdd 에 없어 테스트 머리글에 계약으로 적음 · 별도 worktree 의 참조 구현으로 통화 검색 단위 테스트 통과 확인 후 폐기 |
+| test-2 | e2e | currency-search.spec.ts (콤보박스 속성 · 키보드 · 마우스/터치 · Esc · 결과 없음 · 인트로 꺼짐) | 화면 약속(data-testid=currency-search 등)을 머리글에 적음 · 빌드 반복 금지라 e2e 는 돌리지 않음(구현 뒤 확인) |
 
 ## 허점
 -
