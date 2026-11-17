@@ -12,7 +12,7 @@
 //     - 수입물가가 없거나 비었거나, 환율이 없거나, 둘 다 있는 달이 하나도 없으면 { kind: "preparing" } ("준비 중" · 숫자 없음)
 //   (0164 travel-price 의 fxMonthlyAverage 와 같은 계산 — 두 기능이 따로 머지돼도 되게 각자 둠 · 합칠지는 lead 판단)
 import { describe, expect, it } from "vitest";
-import { alignMonthly, importPriceView, monthlyFx } from "./import-price";
+import { alignMonthly, importPriceKpis, importPriceView, monthlyFx } from "./import-price";
 
 describe("환율 월평균", () => {
   it("일별 → 달별 평균 · 오래된 달부터", () => {
@@ -81,5 +81,32 @@ describe("importPriceView — 자료가 없으면 '준비 중'", () => {
         { period: "2026-10", fx: 1410, price: null },
       ],
     });
+  });
+});
+
+// 작업 0200 — 수입물가와 환율 영역의 큰 숫자 두 개 (최근 값 + 전달보다)
+//   importPriceKpis(rows: AlignedMonth[]): { price: Kpi | null; fx: Kpi | null }   Kpi = { period: string; value: number; delta: number | null }
+//   - 각 값의 가장 최근 달 · delta = 그 값 − 바로 앞에 있는 값 (앞이 없으면 null) · 값이 하나도 없으면 null (지어내지 않음)
+describe("importPriceKpis", () => {
+  it("최근 값과 전달보다 차이", () => {
+    const rows = [
+      { period: "2026-08", fx: 1400, price: 150 },
+      { period: "2026-09", fx: 1360, price: 159.72 },
+      { period: "2026-10", fx: 1338, price: 156.86 },
+    ];
+    const k = importPriceKpis(rows);
+    expect(k.fx).toMatchObject({ period: "2026-10", value: 1338, delta: -22 });
+    expect(k.price?.period).toBe("2026-10");
+    expect(k.price?.value).toBe(156.86);
+    expect(k.price?.delta).toBeCloseTo(-2.86, 5);
+  });
+  it("한쪽이 마지막 달에 없으면 그 값의 가장 최근 달 · 값이 하나뿐이면 delta null · 없으면 null", () => {
+    const k = importPriceKpis([
+      { period: "2026-09", fx: 1360, price: 159 },
+      { period: "2026-10", fx: 1338, price: null },
+    ]);
+    expect(k.price).toEqual({ period: "2026-09", value: 159, delta: null });
+    expect(k.fx?.delta).toBe(-22);
+    expect(importPriceKpis([])).toEqual({ price: null, fx: null });
   });
 });

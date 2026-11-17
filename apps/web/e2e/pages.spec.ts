@@ -197,17 +197,72 @@ test.describe("직구 계산 /calc (SR-CALC-01)", () => {
     await expect(tid(page, "calc-result")).toContainText("숫자");
   });
 
-  test("배치 — 넓은 화면은 입력이 결과 왼쪽 · 휴대폰은 입력 → 결과 → 과세환율 → 수입물가 순서로 쌓임", async ({ page }) => {
+  test("배치 — 넓은 화면은 입력이 결과 왼쪽 · 수입물가(가로 전체) → 과세환율 · 휴대폰은 입력 → 결과 → 수입물가 → 과세환율 순서로 쌓임 (작업 0200)", async ({ page }) => {
     await page.goto("/calc");
-    const [input, result, customs, imports] = [await box(tid(page, "calc-input")), await box(tid(page, "calc-result")), await box(tid(page, "customs-section")), await box(tid(page, "import-price-section"))];
+    const [input, result, imports, customs] = [await box(tid(page, "calc-input")), await box(tid(page, "calc-result")), await box(tid(page, "import-price-section")), await box(tid(page, "customs-section"))];
+    expect(input.y + input.height).toBeLessThanOrEqual(imports.y + 1);
+    expect(result.y + result.height).toBeLessThanOrEqual(imports.y + 1);
+    expect(imports.y + imports.height).toBeLessThanOrEqual(customs.y + 1);
     if (isPhone()) {
       expect(input.y).toBeLessThan(result.y);
-      expect(result.y).toBeLessThan(customs.y);
-      expect(customs.y).toBeLessThan(imports.y);
     } else {
       expect(input.x).toBeLessThan(result.x);
-      expect(customs.x).toBeLessThan(imports.x); // 과세환율 · 수입물가는 2단
+      // 수입물가 · 과세환율은 가로 전체 (위 입력 + 결과 묶음과 같은 폭)
+      expect(Math.abs(imports.x - input.x)).toBeLessThan(2);
+      expect(Math.abs(imports.x + imports.width - (result.x + result.width))).toBeLessThan(2);
+      expect(Math.abs(customs.width - imports.width)).toBeLessThan(2);
+      // 입력 묶음과 결과 칸은 같은 높이
+      expect(Math.abs(input.height - result.height)).toBeLessThan(2);
     }
+  });
+});
+
+// 작업 0200 (#235) — 처음 들어오면 예시 값 · 값을 바꿔도 칸이 움직이지 않음 · 다른 통화로 오면 빈 칸
+test.describe("직구 계산 — 예시 값 · 고정 크기 (작업 0200)", () => {
+  const input = (page: Page) => tid(page, "calc-input");
+  const sizes = async (page: Page) => {
+    const [a, b, c] = [await box(tid(page, "calc-input")), await box(tid(page, "calc-result")), await box(tid(page, "import-price-section"))];
+    return { inputH: Math.round(a.height), resultH: Math.round(b.height), importY: Math.round(c.y) };
+  };
+
+  test("처음 — 달러 · 180 · 미국 목록통관 결과가 보이고 '예시' 표시 · 고치면 표시만 사라짐", async ({ page }) => {
+    await page.goto("/calc");
+    await expect(input(page).getByLabel(/통화/)).toHaveValue("USD");
+    await expect(input(page).getByLabel(/물건 값/)).toHaveValue("180");
+    await expect(input(page).getByLabel(/보내는 곳/)).toContainText("미국");
+    await expect(tid(page, "calc-result")).toContainText("면세 한도 안");
+    await expect(tid(page, "calc-result")).toContainText("원");
+    await expect(tid(page, "calc-example")).toContainText("예시");
+    await input(page).getByLabel(/관세율/).fill("8");
+    await expect(tid(page, "calc-example")).toHaveCount(0);
+    await expect(input(page).getByLabel(/물건 값/)).toHaveValue("180");
+  });
+
+  test("값을 바꿔도(결과 · 한도 넘음 · 빈 값 · 오류) 입력 · 결과 칸 높이와 아래 칸 위치가 그대로", async ({ page }) => {
+    await page.goto("/calc");
+    const before = await sizes(page);
+    const price = input(page).getByLabel(/물건 값/);
+    for (const v of ["250", "abc", "", "99999999", "180"]) {
+      await price.fill(v);
+      await input(page).getByLabel(/관세율/).fill(v === "250" ? "8" : "");
+      expect(await sizes(page)).toEqual(before);
+    }
+    await input(page).getByLabel(/국제 배송비/).fill("xyz");
+    expect(await sizes(page)).toEqual(before);
+  });
+
+  test("다른 통화로 들어오면(?currency=JPY) 예시 없이 빈 칸", async ({ page }) => {
+    await page.goto("/calc?currency=JPY");
+    await expect(input(page).getByLabel(/통화/)).toHaveValue("JPY");
+    await expect(input(page).getByLabel(/물건 값/)).toHaveValue("");
+    await expect(tid(page, "calc-example")).toHaveCount(0);
+  });
+
+  test("수입물가와 환율 — 큰 숫자 두 개 · 선 끝 금액", async ({ page }) => {
+    await page.goto("/calc");
+    const sec = tid(page, "import-price-section");
+    await expect(sec.locator('[data-testid="import-kpi"]')).toHaveCount(2);
+    await expect(sec.locator('[data-testid="import-end-label"]')).toHaveCount(2);
   });
 });
 
