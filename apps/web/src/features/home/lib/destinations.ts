@@ -1,6 +1,7 @@
 // 홈 "이번 주 가장 싸게 갈 수 있는 곳" · 도착지별 환전 타이밍 줄 — 순수 함수 (작업 0169)
 // 판정 · 눈금은 사이트 신호 규칙 그대로 (docs/domain/signal.md SIG-01~05) — 최근 90일 백분위 · 핀 글은 근거 숫자 + 판정 ("하위 12% · 쌈" · 작업 0170) · 없는 숫자는 지어내지 않음
-import { currencyName } from "@hav/shared/currency";
+import { currencyFlag, currencyName } from "@hav/shared/currency";
+import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import { pinBasis } from "@hav/ui/data/signal-pin";
 
 export type Signal = "cheap" | "normal" | "expensive";
@@ -34,8 +35,11 @@ export function cheapestDestination(signals: SignalRow[], rates: RateRow[], dest
 export type DestinationRowData = {
   id: string;
   city: string;
-  /** 국기에 쓸 통화 코드 (없으면 국기 칸만 비움 · 작업 0199) */
+  /** 통화 코드 (작업 0199) */
   currency: string | null;
+  /** 국기 — 도착지 나라 국기(파리 → 프랑스) · 나라가 없으면 통화 대표 국기 · 둘 다 없으면 null (작업 0199) */
+  flag: string | null;
+  flagLabel: string;
   currencyLabel: string;
   rateText: string | null;
   signal: Signal | null;
@@ -59,6 +63,8 @@ export function destinationRows(signals: SignalRow[], rates: RateRow[], destinat
       id: d.id,
       city: d.name,
       currency: currency ?? null,
+      flag: (d.country ? TRAVEL_COUNTRIES[d.country]?.flag : undefined) ?? (currency ? currencyFlag(currency) : null),
+      flagLabel: `${(d.country ? TRAVEL_COUNTRIES[d.country]?.name : undefined) ?? d.name} 국기`,
       currencyLabel: rate && rate.unit > 1 ? `${name} ${rate.unit}` : name,
       rateText: rate ? wonText(rate.baseRate) : null,
       signal: hasSignal ? (s?.signal ?? null) : null,
