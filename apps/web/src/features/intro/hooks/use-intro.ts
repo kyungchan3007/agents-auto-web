@@ -4,6 +4,7 @@
 // 화면(components)은 이 훅이 돌려주는 값을 그리기만 함 · 3D 장면과는 sceneState(공유 객체)로 주고받음 (장면은 use-intro-scene 이 동적으로 붙임)
 // 값은 빌드 때 받은 것 — 없으면 "없음" (지어내지 않음) · 고른 나라 · 예산은 브라우저 저장소에만
 import { kstDate } from "@hav/shared/date";
+import { countryPhoto, photoSrc } from "@hav/ui/layout/photo-header";
 import { PICK_EVENT, type PickedTrip, writePicked } from "@hav/shared/travel";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FLIGHT_START, keyDelta, meter, nudge, scrollDelta, tickFlight } from "../lib/flight";
@@ -420,6 +421,8 @@ export function useIntro(data: IntroData) {
     back,
     skip: () => void skip(),
     pickedCity: pick?.city ?? "",
+    /** 창문 전환 사진 — 고른 나라 사진(없으면 지금 사진 · 작업 0201) */
+    photo: photoSrc(countryPhoto(pick?.iso) ?? "window-fjord", 1672),
   };
   return { view };
 }

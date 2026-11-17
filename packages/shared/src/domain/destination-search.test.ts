@@ -1,12 +1,12 @@
 // 작업 0201 — 여행지 검색 · 자주 가는 곳 (테스트 먼저 · 구현 전에는 FAIL 이 정상)
 //
-// builder 가 만들 것 — apps/web/src/shared/destination-search.ts (순수 함수 · 홈 시트와 여행 물가 시트가 같이 씀)
+// builder 가 만들 것 — packages/shared/src/domain/destination-search.ts (@hav/shared/destination-search) (순수 함수 · 홈 시트와 여행 물가 시트가 같이 씀)
 //   export type DestinationHit = { country: string /* ISO alpha-3 · TRAVEL_COUNTRIES 키 */; city: string; label: string /* "일본 도쿄" */ }
 //   export function searchDestinations(query: string, limit?: number /* 기본 8 */): DestinationHit[]
 //     - 도시 이름 · 나라 이름으로 찾음 (앞부분 일치 → 포함 순) · 나라 이름이 맞으면 그 나라 도시 모두(대표 도시 먼저)
 //     - 빈 칸 · 공백 · 못 찾음 → [] · 같은 (나라, 도시) 는 한 번만 · TRAVEL_COUNTRIES 에 없는 나라는 뺌 (저장할 수 없음)
 //   export const POPULAR_DESTINATIONS: DestinationHit[]   // 자주 가는 곳 칩 — 모두 저장할 수 있는 값
-import { TRAVEL_CITIES, TRAVEL_COUNTRIES, parsePicked, serializePicked } from "@hav/shared/travel";
+import { TRAVEL_CITIES, TRAVEL_COUNTRIES, parsePicked, serializePicked } from "./travel";
 import { describe, expect, it } from "vitest";
 import { POPULAR_DESTINATIONS, searchDestinations } from "./destination-search";
 

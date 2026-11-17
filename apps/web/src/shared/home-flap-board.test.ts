@@ -103,7 +103,7 @@ describe("사진 아래 하늘 종이 위에 놓음 (B2 · 작업 0177 수정: �
   });
 
   it("홈 맨 위 사진 구간(travel-timing-section)이 fadeBottom 을 켬 · 다른 화면의 PhotoHeader 는 그대로", () => {
-    expect(read(join(WEB_SRC, "features/home/components/travel-timing-section.tsx"))).toMatch(/<PhotoHeader\b[^>]*\bfadeBottom\b/);
+    expect(read(join(WEB_SRC, "features/home/components/travel-timing-section.tsx"))).toMatch(/<(?:Picked)?PhotoHeader\b[^>]*\bfadeBottom\b/);
   });
 });
 

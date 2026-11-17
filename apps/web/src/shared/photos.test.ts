@@ -130,7 +130,7 @@ describe("다섯 화면에만 — 맨 위 구간", () => {
   const SCREENS: [string, string, string, "light" | "ultramarine"][] = [
     ["apps/web/src/features/home/components/travel-timing-section.tsx", "홈 여행 타이밍", "window-fjord", "light"],
     ["apps/web/src/features/travel-price/components/flights-page.tsx", "/flights", "window-sunrise", "light"],
-    ["apps/web/src/features/travel-price/components/price-page.tsx", "/prices", "swiss-traveler", "light"],
+    ["apps/web/src/features/travel-price/components/prices-header.tsx", "/prices", "swiss-traveler", "light"], // 작업 0201: 머리가 prices-header.tsx 로 (고른 나라 사진)
     ["apps/web/src/features/import-calc/components/calc-page.tsx", "/calc", "plane-below", "ultramarine"],
     ["apps/web/src/features/about/components/about-page.tsx", "/about", "plane-sunset", "light"],
   ];
@@ -138,7 +138,7 @@ describe("다섯 화면에만 — 맨 위 구간", () => {
   for (const [file, label, photo, veil] of SCREENS) {
     it(`${label} — PhotoHeader name="${photo}" veil="${veil}" priority`, () => {
       const s = read(join(ROOT, file));
-      const tag = /<PhotoHeader\b[^>]*>/.exec(s)?.[0] ?? "";
+      const tag = /<(?:Picked)?PhotoHeader\b[^>]*>/.exec(s)?.[0] ?? ""; // 홈은 고른 나라 사진을 읽는 PickedPhotoHeader (작업 0201)
       expect(tag, "PhotoHeader 사용").not.toBe("");
       expect(tag).toContain(`name="${photo}"`);
       expect(tag).toContain(`veil="${veil}"`);
@@ -158,7 +158,7 @@ describe("다섯 화면에만 — 맨 위 구간", () => {
     const users = sources(WEB_SRC)
       .map((f) => f.replace(`${ROOT}/`, ""))
       .filter((f) => /<PhotoHeader\b/.test(read(join(ROOT, f))))
-      .filter((f) => !allowed.has(f) && !f.startsWith("apps/web/src/app/design/"));
+      .filter((f) => !allowed.has(f) && f !== "apps/web/src/features/home/components/picked-photo-header.tsx" && !f.startsWith("apps/web/src/app/design/"));
     expect(users).toEqual([]);
   });
 });
