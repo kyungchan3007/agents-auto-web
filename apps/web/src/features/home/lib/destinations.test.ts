@@ -8,7 +8,7 @@
 //   cheapestDestination(signals: SignalRow[], rates: RateRow[], destinations: Destination[]): { destination: Destination; rate: RateRow; percentile: number } | null
 //     - 신호 · 백분위 · 환율이 모두 있는 도착지 중 백분위가 가장 낮은 곳 · 같으면 destinations 순서가 앞선 곳 · 없으면 null
 //   destinationRows(signals, rates, destinations): DestinationRowData[]   // destinations 와 같은 순서 · 개수
-//     DestinationRowData = { id; city: string; currency: string | null; currencyLabel: string; rateText: string | null; signal: Signal | null; position: number | null; percentile: number | null; pinText: string | null; note: string | null; href: string | null }
+//     DestinationRowData = { id; city: string; currency: string | null; flag: string | null; flagLabel: string; currencyLabel: string; rateText: string | null; signal: Signal | null; position: number | null; percentile: number | null; pinText: string | null; note: string | null; href: string | null }
 //       city = name · currencyLabel = 통화 짧은 이름(currencyName 에서 끝의 "화" 뗌: 엔화 → 엔) + (환율이 있고 unit > 1 이면 " " + unit) → "엔 100" · "바트" · "유로" · "달러" · 환율이 없으면 이름만(단위를 지어내지 않음)
 //       rateText = baseRate 가 100 이상이면 반올림 정수(쉼표) · 100 미만이면 소수 첫째 자리 + "원" → "912원" · "39.8원" · "1,486원" · 환율이 없으면 null
 //       signal = 신호 · position = percentile (0 쌈 ~ 1 비쌈 · 눈금 위치) · 신호나 백분위가 없으면 둘 다 null
@@ -74,10 +74,14 @@ describe("cheapestDestination", () => {
 });
 
 describe("destinationRows", () => {
+  it("국기는 도착지 나라 국기 (파리 → 프랑스 · 유로라도 EU 아님) · 나라가 없으면 통화 대표 국기 (작업 0199)", () => {
+    expect(destinationRows(SIGNALS, RATES, DEST).map((r) => r.flag)).toEqual(["JP", "TH", "FR", "US"]);
+    expect(destinationRows(SIGNALS, RATES, [{ id: "x", name: "어딘가", currency: "EUR" }])[0]).toMatchObject({ flag: "EU", flagLabel: "어딘가 국기" });
+  });
   it("destinations 와 같은 순서 · 도시 · 통화 · 환율 · 신호 · 눈금 위치 · 링크", () => {
     const rows = destinationRows(SIGNALS, RATES, DEST);
     expect(rows.map((r) => r.id)).toEqual(["tokyo", "bangkok", "paris", "newyork"]);
-    expect(rows[0]).toEqual({ id: "tokyo", city: "도쿄", currency: "JPY", currencyLabel: "엔 100", rateText: "912원", signal: "cheap", position: 0.12, percentile: 0.12, pinText: "하위 12% · 쌈", note: null, href: "/currencies/JPY" });
+    expect(rows[0]).toEqual({ id: "tokyo", city: "도쿄", currency: "JPY", flag: "JP", flagLabel: "일본 국기", currencyLabel: "엔 100", rateText: "912원", signal: "cheap", position: 0.12, percentile: 0.12, pinText: "하위 12% · 쌈", note: null, href: "/currencies/JPY" });
     expect(rows.map((r) => r.currencyLabel)).toEqual(["엔 100", "바트", "유로", "달러"]);
     expect(rows.map((r) => r.rateText)).toEqual(["912원", "39.8원", "1,486원", "1,383원"]);
     expect(rows.map((r) => r.signal)).toEqual(["cheap", "cheap", "normal", "expensive"]);
