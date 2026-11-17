@@ -6,7 +6,7 @@
 //   "intro-frow"(출발 안내판 줄 · data-text = 그 줄의 최종 글 — 칸이 넘어가는 중에도 같은 값) · "intro-budget"(예산 입력) · "intro-out"(환산 결과 · 환율이 없으면 없음) · "intro-next"(다음 · 게이트로)
 //   "intro-back"(이전 · 2~4단계) · "intro-boardbtn"(탑승하기) · "intro-hint"(4단계 스크롤 안내)
 //   홈: "picked-pass"(왼쪽 아래 '탑승권 보기' 버튼) · 안내판은 홈의 flap-board(aria-label)
-// 인트로를 끄는 법(끄기 스위치): localStorage["tripfx:intro-off"] = "1" — playwright.config 의 storageState 로 다른 e2e 는 기본 꺼 둠 · 이 파일만 켬
+// 인트로를 끄는 법(끄기 스위치): localStorage["flapfx:intro-off"] = "1" — playwright.config 의 storageState 로 다른 e2e 는 기본 꺼 둠 · 이 파일만 켬
 import { expect, test } from "@playwright/test";
 
 test.use({ storageState: { cookies: [], origins: [] } }); // 이 파일은 인트로를 켠 채로
@@ -15,7 +15,7 @@ const DESKTOP = { width: 1440, height: 900 };
 const intro = (page: import("@playwright/test").Page) => page.getByTestId("intro");
 const step = (page: import("@playwright/test").Page) => page.getByTestId("intro-step");
 const board = (page: import("@playwright/test").Page) => page.locator('#today [data-testid="flap-board"]');
-const PICKED = "tripfx:picked";
+const PICKED = "flapfx:picked";
 
 /** 인트로가 닫힌 뒤 홈이 원래대로 — 페이지 잠금(html overflow hidden) 없음 · 휠로 아래로 내려감 (작업 0186) */
 async function expectHomeScrolls(page: import("@playwright/test").Page) {
@@ -329,9 +329,9 @@ test.describe("인트로가 없는 경우", () => {
     await expect(intro(page)).toBeVisible({ timeout: 20_000 });
   });
 
-  test("끄기 스위치 — localStorage tripfx:intro-off = 1 이면 데스크톱에서도 인트로 없음", async ({ page }) => {
+  test("끄기 스위치 — localStorage flapfx:intro-off = 1 이면 데스크톱에서도 인트로 없음", async ({ page }) => {
     await page.setViewportSize(DESKTOP);
-    await page.addInitScript(() => localStorage.setItem("tripfx:intro-off", "1"));
+    await page.addInitScript(() => localStorage.setItem("flapfx:intro-off", "1"));
     await page.goto("/");
     await page.waitForLoadState("networkidle");
     await expect(intro(page)).toHaveCount(0);

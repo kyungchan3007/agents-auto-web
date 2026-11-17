@@ -1,4 +1,4 @@
-// GitHub Actions 가 부름: AI 검색에 고정 질문 → 출처에 tripfx 가 나왔는지 → SQL (표준 출력) · 진행은 표준 오류 (작업 0139)
+// GitHub Actions 가 부름: AI 검색에 고정 질문 → 출처에 우리 사이트(flapfx.com)가 나왔는지 → SQL (표준 출력) · 진행은 표준 오류 (작업 0139)
 //   --from <폴더>: API 를 부르지 않고 세션 측정 결과 파일(apps/api/data/geo-answers/*.json)만 SQL 로 (작업 0149)
 //   키가 있는 서비스만 측정 · 없으면 그 서비스는 기록하지 않음(측정 안 함) · 키 · 답변 본문은 출력하지 않음
 //   ANTHROPIC_API_KEY=... OPENAI_API_KEY=... PERPLEXITY_API_KEY=... node --experimental-strip-types apps/api/scripts/geo-ask.ts > .tmp/geo-ask.sql

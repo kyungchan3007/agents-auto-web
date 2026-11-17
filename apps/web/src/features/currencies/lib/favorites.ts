@@ -1,7 +1,7 @@
 // 즐겨찾는 통화 — 이 브라우저에만 저장 (localStorage · 보내지 않음) · 목록 맨 위에 (작업 0089)
 //   저장소를 못 쓰는 브라우저(사생활 보호 모드 등)에서는 그냥 빈 목록 — 화면은 그대로 동작 · 저장소 접근은 use-favorites.ts
 
-export const FAVORITES_KEY = "tripfx:favorites";
+export const FAVORITES_KEY = "flapfx:favorites";
 const MAX = 20;
 
 /** 저장된 글 → 통화 코드 목록 (모양이 틀리면 빈 목록 · 중복 · 이상한 값은 버림) */

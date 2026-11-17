@@ -129,11 +129,11 @@ export const PLANE_CREDIT = {
 // 브라우저 저장소(localStorage)에만 두고 서버로 보내지 않음 · 잘못된 값은 무시(null · false) · 저장소가 막혀도(비공개 창) 죽지 않음
 
 /** localStorage 키 */
-export const PICKED_STORAGE_KEY = "tripfx:picked";
+export const PICKED_STORAGE_KEY = "flapfx:picked";
 /** 인트로가 끝날 때 window 로 보내는 이벤트 이름 (detail = PickedTrip) */
-export const PICK_EVENT = "tripfx:intro-pick";
+export const PICK_EVENT = "flapfx:intro-pick";
 /** 값이 "1" 이면 인트로를 열지 않는 끄기 스위치 (e2e · 개발용 · 화면에 노출하지 않음) */
-export const INTRO_OFF_KEY = "tripfx:intro-off";
+export const INTRO_OFF_KEY = "flapfx:intro-off";
 
 const MAX_BUDGET = 1e10;
 

@@ -7,7 +7,7 @@ const fakeApi = (respond: (r: Request) => Response | Promise<Response> = () => R
   const api: ApiBinding = { fetch: async (r) => (seen.push(r), respond(r)) };
   return { api, seen };
 };
-const get = (path: string, init?: RequestInit) => new Request(`https://tripfx.pages.dev${path}`, init);
+const get = (path: string, init?: RequestInit) => new Request(`https://flapfx.com${path}`, init);
 
 describe("BFF 허용 경로", () => {
   it("읽기 경로는 API 로 넘기고 쿼리도 그대로", async () => {

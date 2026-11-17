@@ -3,12 +3,12 @@
 //   폭 700 이하 · 끄기 스위치도 띄우지 않음 (작업 0185 그대로)
 
 /** 인트로가 닫힐 때(끝 · 건너뛰기) 보내는 이벤트 — 인트로 문이 부품을 내림 (작업 0186) */
-export const INTRO_CLOSED_EVENT = "tripfx:intro-closed";
+export const INTRO_CLOSED_EVENT = "flapfx:intro-closed";
 
 export type IntroEntry = {
   /** 폭 701 이상 */
   wide: boolean;
-  /** 끄기 스위치(localStorage tripfx:intro-off = "1") */
+  /** 끄기 스위치(localStorage flapfx:intro-off = "1") */
   off: boolean;
   /** location.hash */
   hash: string;

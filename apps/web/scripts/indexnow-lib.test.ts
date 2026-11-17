@@ -6,10 +6,10 @@ import { SITE_URL } from "../src/shared/site";
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>https://tripfx.pages.dev/</loc><lastmod>2026-11-09</lastmod></url>
-<url><loc>https://tripfx.pages.dev/about</loc><lastmod>2026-11-01T00:00:00.000Z</lastmod></url>
-<url><loc>https://tripfx.pages.dev/currencies/USD</loc><lastmod>2026-11-09</lastmod></url>
-<url><loc>https://tripfx.pages.dev/geo</loc></url>
+<url><loc>https://flapfx.com/</loc><lastmod>2026-11-09</lastmod></url>
+<url><loc>https://flapfx.com/about</loc><lastmod>2026-11-01T00:00:00.000Z</lastmod></url>
+<url><loc>https://flapfx.com/currencies/USD</loc><lastmod>2026-11-09</lastmod></url>
+<url><loc>https://flapfx.com/geo</loc></url>
 <url><loc>https://evil.example/</loc><lastmod>2026-11-09</lastmod></url>
 </urlset>`;
 
@@ -17,23 +17,23 @@ describe("IndexNow 색인 요청 (작업 0144)", () => {
   const entries = parseSitemap(xml, SITE_URL);
   it("sitemap 에서 이 사이트 주소와 변경일만", () => {
     expect(entries).toEqual([
-      { loc: "https://tripfx.pages.dev/", lastmod: "2026-11-09" },
-      { loc: "https://tripfx.pages.dev/about", lastmod: "2026-11-01" },
-      { loc: "https://tripfx.pages.dev/currencies/USD", lastmod: "2026-11-09" },
-      { loc: "https://tripfx.pages.dev/geo", lastmod: null },
+      { loc: "https://flapfx.com/", lastmod: "2026-11-09" },
+      { loc: "https://flapfx.com/about", lastmod: "2026-11-01" },
+      { loc: "https://flapfx.com/currencies/USD", lastmod: "2026-11-09" },
+      { loc: "https://flapfx.com/geo", lastmod: null },
     ]);
   });
   it("그날 바뀐 주소만 · 전부 보내기 · 바뀐 것이 없으면 빈 목록", () => {
-    expect(changedUrls(entries, "2026-11-09")).toEqual(["https://tripfx.pages.dev/", "https://tripfx.pages.dev/currencies/USD"]);
+    expect(changedUrls(entries, "2026-11-09")).toEqual(["https://flapfx.com/", "https://flapfx.com/currencies/USD"]);
     expect(changedUrls(entries, "2026-11-09", true)).toHaveLength(4);
     expect(changedUrls(entries, "2026-11-10")).toEqual([]);
   });
   it("요청 본문 — 호스트 · 키 · 키 파일 주소", () => {
-    expect(indexNowBody(["https://tripfx.pages.dev/"], SITE_URL)).toEqual({
-      host: "tripfx.pages.dev",
+    expect(indexNowBody(["https://flapfx.com/"], SITE_URL)).toEqual({
+      host: "flapfx.com",
       key: INDEXNOW_KEY,
-      keyLocation: `https://tripfx.pages.dev/${INDEXNOW_KEY}.txt`,
-      urlList: ["https://tripfx.pages.dev/"],
+      keyLocation: `https://flapfx.com/${INDEXNOW_KEY}.txt`,
+      urlList: ["https://flapfx.com/"],
     });
   });
   it("키 파일이 public 에 있고 내용이 키와 같음 (다르면 403)", () => {
@@ -47,7 +47,7 @@ describe("보낼 범위 — 어제 · 오늘 (작업 0146)", () => {
     const since = sinceDate(new Date("2026-11-09T17:18:20Z"));
     expect(since).toBe("2026-11-09");
     const entries = parseSitemap(xml, SITE_URL);
-    expect(changedUrls(entries, since)).toEqual(["https://tripfx.pages.dev/", "https://tripfx.pages.dev/currencies/USD"]);
+    expect(changedUrls(entries, since)).toEqual(["https://flapfx.com/", "https://flapfx.com/currencies/USD"]);
   });
   it("제때 돌면(16:00 한국) 어제부터", () => {
     expect(sinceDate(new Date("2026-11-10T07:00:00Z"))).toBe("2026-11-09");

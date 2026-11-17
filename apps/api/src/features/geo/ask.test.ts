@@ -4,27 +4,29 @@ import { fileURLToPath } from "node:url";
 import type Anthropic from "@anthropic-ai/sdk";
 import { GeoReport } from "@hav/shared/geo";
 import { describe, expect, it } from "vitest";
-import { answersSql, claudeHit, failReason, isTripfx, openaiHit, perplexityHit, sessionRows, shouldStop } from "./ask";
+import { answersSql, claudeHit, failReason, isOurSite, openaiHit, perplexityHit, sessionRows, shouldStop } from "./ask";
 import { QUESTIONS, questionOf } from "./questions";
 import { type AnswerInput, answersSummary, geoReport } from "./summary";
 
 describe("AI 답변 인용 측정 (작업 0139)", () => {
-  it("tripfx 주소 판정 — 도메인만 · 비슷한 이름은 아님", () => {
-    expect(isTripfx("https://tripfx.pages.dev/currencies/USD")).toBe(true);
-    expect(isTripfx("https://abc123.tripfx.pages.dev/")).toBe(true);
-    expect(isTripfx("https://tripfx.pages.dev.evil.com/")).toBe(false);
-    expect(isTripfx("https://tripfix.com/")).toBe(false);
-    expect(isTripfx("tripfx.pages.dev")).toBe(false);
-    expect(isTripfx(null)).toBe(false);
+  it("우리 사이트 주소 판정 — 도메인만 · 비슷한 이름은 아님 (작업 0190)", () => {
+    expect(isOurSite("https://flapfx.com/currencies/USD")).toBe(true);
+    expect(isOurSite("https://www.flapfx.com/")).toBe(true);
+    expect(isOurSite("https://abc123-agents-auto-web.developfff.workers.dev/")).toBe(true);
+    expect(isOurSite("https://flapfx.com.evil.com/")).toBe(false);
+    expect(isOurSite("https://notflapfx.com/")).toBe(false);
+    expect(isOurSite("https://tripfx.pages.dev/")).toBe(false);
+    expect(isOurSite("flapfx.com")).toBe(false);
+    expect(isOurSite(null)).toBe(false);
   });
 
   it("Claude — 검색 결과에만 있으면 found · 인용 표시에 있으면 cited", () => {
     const content = [
-      { type: "web_search_tool_result", tool_use_id: "t", content: [{ type: "web_search_result", url: "https://tripfx.pages.dev/", title: "Tripfx" }] },
+      { type: "web_search_tool_result", tool_use_id: "t", content: [{ type: "web_search_result", url: "https://flapfx.com/", title: "Tripfx" }] },
       { type: "text", text: "답", citations: [{ type: "web_search_result_location", url: "https://example.com/", cited_text: "", encrypted_index: "", title: null }] },
     ] as unknown as Anthropic.Beta.BetaContentBlock[];
     expect(claudeHit(content)).toEqual({ cited: false, found: true });
-    const cited = [{ type: "text", text: "답", citations: [{ type: "web_search_result_location", url: "https://tripfx.pages.dev/calc" }] }] as unknown as Anthropic.Beta.BetaContentBlock[];
+    const cited = [{ type: "text", text: "답", citations: [{ type: "web_search_result_location", url: "https://flapfx.com/calc" }] }] as unknown as Anthropic.Beta.BetaContentBlock[];
     expect(claudeHit(cited)).toEqual({ cited: true, found: true });
   });
 
@@ -36,18 +38,18 @@ describe("AI 답변 인용 측정 (작업 0139)", () => {
   it("OpenAI — url_citation · 검색 출처", () => {
     const json = {
       output: [
-        { type: "web_search_call", action: { sources: [{ type: "url", url: "https://tripfx.pages.dev/" }] } },
+        { type: "web_search_call", action: { sources: [{ type: "url", url: "https://flapfx.com/" }] } },
         { type: "message", content: [{ type: "output_text", text: "답", annotations: [{ type: "url_citation", url: "https://example.com/" }] }] },
       ],
     };
     expect(openaiHit(json)).toEqual({ cited: false, found: true });
-    expect(openaiHit({ output: [{ type: "message", content: [{ annotations: [{ type: "url_citation", url: "https://tripfx.pages.dev/prices" }] }] }] })).toEqual({ cited: true, found: true });
+    expect(openaiHit({ output: [{ type: "message", content: [{ annotations: [{ type: "url_citation", url: "https://flapfx.com/prices" }] }] }] })).toEqual({ cited: true, found: true });
     expect(openaiHit("이상한 응답")).toEqual({ cited: false, found: false });
   });
 
   it("Perplexity — citations · search_results", () => {
-    expect(perplexityHit({ citations: ["https://tripfx.pages.dev/"], search_results: [] })).toEqual({ cited: true, found: true });
-    expect(perplexityHit({ citations: ["https://a.com/"], search_results: [{ url: "https://tripfx.pages.dev/" }] })).toEqual({ cited: false, found: true });
+    expect(perplexityHit({ citations: ["https://flapfx.com/"], search_results: [] })).toEqual({ cited: true, found: true });
+    expect(perplexityHit({ citations: ["https://a.com/"], search_results: [{ url: "https://flapfx.com/" }] })).toEqual({ cited: false, found: true });
     expect(perplexityHit({})).toEqual({ cited: false, found: false });
   });
 
