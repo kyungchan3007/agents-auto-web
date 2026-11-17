@@ -1,20 +1,21 @@
 // AI 답변 인용 측정 질문 — 번호는 저장 키라 바꾸지 않음 · 질문을 바꾸면 새 번호를 쓴다 (예전 기록과 섞이지 않게 · 작업 0139)
 //   1판: 2026-11-05 ~ 11-16 (docs/geo-measurement.md 기준선) · 2판: 2026-11-17 측정부터 (작업 0183)
+//   3판: 2026-11-18 측정부터 (작업 0196 · #215) — 사이트 이름이 플랩 · flapfx 로 바뀌어(#208) 브랜드 질문 8개만 새 번호(b14 ~ b21)로 바꿈. 일반 질문 16개는 그대로 두어 이름 · 주소 말고는 비교가 이어짐
 //   2판은 기준 질문 6개(b1 · b2 · b3 · g1 · g2 · g7)를 그대로 두어 1판과 이어서 비교하고,
 //   나머지 18개는 사이트 페이지가 실제로 답하는 좁은 질문으로 바꿈 (여행 타이밍 · 이번 주 가장 싼 도착지 · 과세환율 · 수입물가 · 최근 90일 위치 · 한국 100 기준 물가)
 
 export type Question = { id: string; group: "brand" | "general"; text: string };
 
-/** 지금 측정하는 질문 24개 (2판 · 브랜드 8 · 일반 16) */
+/** 지금 측정하는 질문 24개 (3판 · 브랜드 8 · 일반 16) */
 export const QUESTIONS: Question[] = [
-  { id: "b1", group: "brand", text: "Tripfx" },
-  { id: "b2", group: "brand", text: "tripfx.pages.dev" },
-  { id: "b3", group: "brand", text: "Tripfx 환율" },
-  { id: "b9", group: "brand", text: "Tripfx 여행 타이밍" },
-  { id: "b10", group: "brand", text: "Tripfx 국제항공료 지수" },
-  { id: "b11", group: "brand", text: "Tripfx 과세환율 직구 계산" },
-  { id: "b12", group: "brand", text: "Tripfx 이번 주 가장 싸게 갈 수 있는 곳" },
-  { id: "b13", group: "brand", text: "Tripfx AI 에이전트가 만든 환율 사이트" },
+  { id: "b14", group: "brand", text: "플랩 flapfx" },
+  { id: "b15", group: "brand", text: "flapfx.com" },
+  { id: "b16", group: "brand", text: "플랩 flapfx 환율" },
+  { id: "b17", group: "brand", text: "플랩 flapfx 여행 타이밍" },
+  { id: "b18", group: "brand", text: "플랩 flapfx 국제항공료 지수" },
+  { id: "b19", group: "brand", text: "플랩 flapfx 과세환율 직구 계산" },
+  { id: "b20", group: "brand", text: "플랩 flapfx 이번 주 가장 싸게 갈 수 있는 곳" },
+  { id: "b21", group: "brand", text: "플랩 flapfx AI 에이전트가 만든 환율 사이트" },
   { id: "g1", group: "general", text: "오늘 달러 환율 싼 편인가요" },
   { id: "g2", group: "general", text: "지금 환전해도 될까 달러 최근 90일" },
   { id: "g7", group: "general", text: "해외직구 관세 계산기" },
@@ -33,8 +34,16 @@ export const QUESTIONS: Question[] = [
   { id: "g29", group: "general", text: "11월 해외여행 항공료 싼 시기" },
 ];
 
-/** 1판에만 있던 질문 — 측정하지 않지만 예전 기록(2026-11-05 ~ 11-16)을 읽을 때 씀 */
+/** 지금은 측정하지 않는 질문 — 1 · 2판(2026-11-05 ~ 11-17, 사이트 이름 Tripfx 시기)에 쓴 것이라 예전 기록을 그때 문구로 읽을 때 씀 */
 export const RETIRED_QUESTIONS: Question[] = [
+  { id: "b1", group: "brand", text: "Tripfx" },
+  { id: "b2", group: "brand", text: "tripfx.pages.dev" },
+  { id: "b3", group: "brand", text: "Tripfx 환율" },
+  { id: "b9", group: "brand", text: "Tripfx 여행 타이밍" },
+  { id: "b10", group: "brand", text: "Tripfx 국제항공료 지수" },
+  { id: "b11", group: "brand", text: "Tripfx 과세환율 직구 계산" },
+  { id: "b12", group: "brand", text: "Tripfx 이번 주 가장 싸게 갈 수 있는 곳" },
+  { id: "b13", group: "brand", text: "Tripfx AI 에이전트가 만든 환율 사이트" },
   { id: "b4", group: "brand", text: "Tripfx 환율 사이트" },
   { id: "b5", group: "brand", text: "Tripfx 직구 계산기" },
   { id: "b6", group: "brand", text: "Tripfx 여행 물가" },
