@@ -22,7 +22,7 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
   const open = opened || unfolded;
   const more = unfolded ? 0 : bands.reduce((n, b) => n + Math.max(0, b.rows.length - FOLDED), 0);
   return (
-    <div data-testid="price-bands">
+    <div id="price-bands" data-testid="price-bands" className="scroll-mt-24">
       <div className="grid items-start gap-4 lg:grid-cols-3">
         {bands.map((b) => (
           <section key={b.id} aria-labelledby={`band-${b.id}`} className={`min-w-0 rounded-card bg-card px-6 py-5 ${BAND_CARD[b.id]}`}>
@@ -55,9 +55,17 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
         ))}
       </div>
       {more > 0 && (
-        <button type="button" onClick={toggle} aria-expanded={open} className="mt-4 text-body text-cheap hover:underline">
-          {open ? "나라 접기" : `나라 더 보기 (${more}곳) ›`}
-        </button>
+        // 펼친 상태에서는 화면 아래에 붙어 따라옴 (sticky) — 긴 목록 중간에서도 접기를 바로 누름 (작업 0198 · #231)
+        <div className={`z-10 mt-4 flex justify-center ${open ? "sticky bottom-4" : ""}`}>
+          <button
+            type="button"
+            onClick={toggle}
+            aria-expanded={open}
+            className="min-h-11 rounded-pill border-2 border-cheap bg-card px-6 text-body font-semibold text-cheap hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cheap"
+          >
+            {open ? "나라 접기" : `나라 더 보기 (${more}곳) ›`}
+          </button>
+        </div>
       )}
     </div>
   );
