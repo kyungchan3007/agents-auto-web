@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { INTRO_OFF_KEY, PICKED_STORAGE_KEY, PICK_EVENT, type PickedTrip, bandOf, countriesOf, parsePicked, readPicked, relativeText, serializePicked, TRAVEL_COUNTRIES, travelBands, writePicked } from "./travel";
+import { INTRO_OFF_KEY, PICKED_STORAGE_KEY, PICK_EVENT, type PickedTrip, bandOf, countriesOf, parsePicked, readPicked, relativeText, serializePicked, TRAVEL_CITIES, TRAVEL_COUNTRIES, travelBands, writePicked } from "./travel";
 
 const row = (country: string, relative: number, year = 2025) => ({ country, year, level: relative * 0.6, relative, source: "worldbank:test" });
 
@@ -128,5 +128,26 @@ describe("고른 여행지 저장 (작업 0185)", () => {
 
   it("저장소에 망가진 글이 있어도 null (다시 인트로를 하면 덮어씀)", () => {
     expect(readPicked(store({ [PICKED_STORAGE_KEY]: "{oops" }))).toBeNull();
+  });
+});
+
+describe("TRAVEL_CITIES — 나라별 도시 표 (작업 0192: 인트로 INTRO_CITIES 를 공용으로 옮김 · 통화 검색과 인트로가 같이 씀)", () => {
+  it("TRAVEL_COUNTRIES 의 모든 나라를 덮고 모르는 나라 키는 없음", () => {
+    expect(Object.keys(TRAVEL_CITIES).sort()).toEqual(Object.keys(TRAVEL_COUNTRIES).sort());
+  });
+
+  it("나라마다 도시가 1개 이상 · 빈 글자 · 중복 없음", () => {
+    for (const [iso, cities] of Object.entries(TRAVEL_CITIES)) {
+      expect(cities.length, iso).toBeGreaterThan(0);
+      for (const c of cities) expect(c.trim().length, `${iso} ${c}`).toBeGreaterThan(0);
+      expect(new Set(cities).size, iso).toBe(cities.length);
+    }
+  });
+
+  it("인트로가 쓰던 값 그대로 — 첫 도시가 대표 도시", () => {
+    expect(TRAVEL_CITIES.JPN).toEqual(["도쿄", "오사카", "후쿠오카", "삿포로", "오키나와", "교토"]);
+    expect(TRAVEL_CITIES.USA[0]).toBe("뉴욕");
+    expect(TRAVEL_CITIES.USA).toContain("LA");
+    expect(TRAVEL_CITIES.DEU).toContain("프랑크푸르트");
   });
 });
