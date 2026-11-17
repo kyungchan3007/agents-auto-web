@@ -45,6 +45,15 @@
   - 언제: API 배포가 끝난 뒤(머지마다) · 이슈 열림 · 제목 바뀜 · 손으로 · **저장소 주인이 연 이슈만** 이름으로 씀 (공개 저장소라 누구나 이슈를 열 수 있음)
 - 순서: ① 기록 API (0046) → ② BFF (0048) → 홈 성능 → ③ 만드는 중 페이지 → ④ 🧳 3D 캐릭터
 
+## 사이트 Worker — Workers 로 옮김 (2026-11-17 · 작업 0189 · 사용자 결정: "Workers 로 새로")
+- 사이트 이름이 플랩 · 주소가 `flapfx.com` 으로 바뀜 (#208). `tripfx.pages.dev` 는 끊고, 새 Cloudflare **Workers** 프로젝트 `flapfx` 에서 배포한다 (어드민 페이지도 여기에).
+- 화면은 그대로 정적 내보내기(`apps/web/out`)를 Workers 정적 자산으로. Pages Functions 자리는 `apps/web/worker/index.ts` 가 대신함
+  - `/bff/*` → `src/bff/proxy.ts` (서비스 바인딩 `API`) · 페이지 → 자산 + `src/bff/track-visit.ts` (D1 `DB`)
+  - Worker 를 먼저 지나는 경로는 `worker/routes.ts` → `wrangler.jsonc` `assets.run_worker_first` (이미지 · 스크립트는 Worker 를 지나지 않음)
+- 설정 `apps/web/wrangler.jsonc` · Workers Builds: 루트 = 저장소 맨 위 · 빌드 `npx turbo run build --filter=@hav/web` · 배포 `npx wrangler deploy --config apps/web/wrangler.jsonc`
+- 운영 빌드 지킴(`mustHave`)은 Pages(`CF_PAGES`) · Workers Builds(`WORKERS_CI`) 둘 다 main 일 때 동작
+- 전환 기간에는 옛 Pages 설정(맨 위 `wrangler.jsonc` · `functions/` · `public/_routes.json`)을 남겨 둠 → Workers 로 옮긴 뒤 지움
+
 ## 자동 배포 (2026-10-28 · 작업 0042 · 사용자 확인: "CI할때자동으로 배포될수 있게 해야지")
 | 무엇 | 언제 | 어떻게 |
 | --- | --- | --- |
