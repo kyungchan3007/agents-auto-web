@@ -3,7 +3,7 @@
 //
 // builder 가 만들 것 (sdd 파일 계획)
 //   apps/web/src/features/intro/
-//     lib/flow.ts · lib/flight.ts · lib/places.ts   (순수 · react · three 를 가져오지 않음 — 각 *.test.ts 머리 주석)
+//     lib/flow.ts · lib/flight.ts   (순수 · 도시 표는 작업 0192 에서 @hav/shared/travel 의 TRAVEL_CITIES 로 옮김 · react · three 를 가져오지 않음 — 각 *.test.ts 머리 주석)
 //     lib/scene.ts       three 를 가져오는 유일한 파일 · export function mountIntroScene(el, api): () => void  (정리 함수를 돌려줌 · three 객체 dispose)
 //     hooks/use-intro-enabled.ts   export function useIntroEnabled(): boolean — 처음 값 false(서버 HTML 에 인트로 없음) · 마운트 뒤 폭 700 초과(window.matchMedia("(min-width: 701px)") 또는 innerWidth > 700)이고 localStorage[INTRO_OFF_KEY] !== "1" 일 때만 true
 //     hooks/use-intro.ts           단계 · 입력 · 탑승권 · 스크롤(휠 passive:false · 방향키) · 창문 전환 순서 · 저장(writePicked + window 이벤트 PICK_EVENT) · prefers-reduced-motion · 정리(removeEventListener)
@@ -34,7 +34,7 @@ const rel = (f: string) => f.replace(`${WEB}/`, "");
 
 describe("파일 구성", () => {
   const MUST = [
-    "lib/flow.ts", "lib/flight.ts", "lib/places.ts", "lib/scene.ts",
+    "lib/flow.ts", "lib/flight.ts", "lib/scene.ts",
     "hooks/use-intro.ts", "hooks/use-intro-scene.ts", "hooks/use-intro-enabled.ts",
     "components/intro-gate.tsx", "components/intro.tsx", "components/boarding-pass.tsx", "components/window-transition.tsx",
   ];
@@ -85,8 +85,8 @@ describe("three 는 인트로가 열릴 때만 — 홈 첫 로딩 무게 그대�
     expect(h).toMatch(/\bmountIntroScene\b/);
   });
 
-  it("순수 lib(flow · flight · places)는 react · three 를 가져오지 않음", () => {
-    for (const f of ["lib/flow.ts", "lib/flight.ts", "lib/places.ts"]) expect(read(join(INTRO, f)), f).not.toMatch(/from\s*"(react|three|next)[^"]*"/);
+  it("순수 lib(flow · flight)는 react · three 를 가져오지 않음", () => {
+    for (const f of ["lib/flow.ts", "lib/flight.ts"]) expect(read(join(INTRO, f)), f).not.toMatch(/from\s*"(react|three|next)[^"]*"/);
   });
 });
 

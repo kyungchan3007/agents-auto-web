@@ -25,6 +25,9 @@
 - .agents/specs/0192-currency-search/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- apps/web/src/shared/intro-structure.test.ts — 도시 표를 공용으로 옮기면서 `features/intro/lib/places.ts` 가 사라져, 이 파일을 있어야 할 파일로 적어 둔 구조 테스트의 목록에서 뺌 (옮김 자체는 sdd 접근대로)
+- packages/shared/package.json — exports 한 줄(`./currency-search`) · 파일 계획의 "필요할 때"
+- apps/web/src/features/currencies/lib/search-view.ts · .test.ts — 제안 줄 · 결과 없음 문구 순수 함수 (features/currencies/** 안)
 
 ## 위험
 - 인트로 출발 안내판 검색 회귀 → 기존 intro 단위 · e2e 로 확인.
