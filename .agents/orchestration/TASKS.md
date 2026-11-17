@@ -20,6 +20,8 @@
 | 0176 | 큰 제목 · 큰 숫자 글꼴 Gasoek One → Pretendard 800 | test → builder | 머지됨 | task/0176-font-pretendard (base: task/0175) | packages/ui/src/tokens.css · apps/web/src/app/layout.tsx · apps/web/public/fonts/** · 제목 · 숫자 부품 |
 | 0177 | 홈 첫 화면 출발 안내판 (사진에 걸치기) | test → builder | 머지됨 | task/0177-flap-board | apps/web/src/features/home/** · packages/ui/src/components/** · packages/ui/src/lib/** |
 | 0180 | /geo 자세한 기록 되살리기 (Quick) | geo | 머지됨 | task/0180-geo-detail | apps/web/src/features/geo/** · apps/web/src/app/geo/** |
-| 0181 | 여행 타이밍 그래프 숫자 라벨 · 선 구분 (Quick) | builder | PR 대기 | task/0181-flights-graph | apps/web/src/features/travel-price/** |
-| 0182 | 2026-11-16 AI 답변 세션 측정 (Quick) | geo | PR 대기 | task/0182-geo-answers-1116 | apps/api/data/geo-answers/2026-11-16.json |
-| 0185 | 공항 인트로 — 출발 안내판 입력 · 탑승권 · 스크롤 이륙 · 창문 전환 (Full) | test → builder | PR 대기 | task/0185-intro-airport | apps/web/src/features/intro/** · apps/web/public/models/intro/** · 홈 안내판 · page.tsx |
+| 0181 | 여행 타이밍 그래프 숫자 라벨 · 선 구분 (Quick) | builder | 머지됨 | task/0181-flights-graph | apps/web/src/features/travel-price/** |
+| 0182 | 2026-11-16 AI 답변 세션 측정 (Quick) | geo | 머지됨 | task/0182-geo-answers-1116 | apps/api/data/geo-answers/2026-11-16.json |
+| 0185 | 공항 인트로 — 출발 안내판 입력 · 탑승권 · 스크롤 이륙 · 창문 전환 (Full) | test → builder | 머지됨 | task/0185-intro-airport | apps/web/src/features/intro/** · apps/web/public/models/intro/** · 홈 안내판 · page.tsx |
+| 0186 | 패치(버그) — 인트로가 닫힌 뒤 홈 스크롤 · "오늘 환율"에서 인트로가 다시 뜸 | 설치 에이전트 | 머지됨 (#203) | task/0186 | apps/web/src/features/intro/** |
+| 0187 | 2026-11-17 AI 답변 세션 측정 — 질문 2판 첫 측정 (Quick) | geo | 진행 중 | task/0187-geo-answers-1117 | apps/api/data/geo-answers/2026-11-17.json |
