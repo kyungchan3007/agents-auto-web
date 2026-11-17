@@ -1,5 +1,6 @@
 // 3 도착지별 환전 타이밍 — 도착지 줄(0168) 네 줄 · 줄 전체가 그 통화 상세로 (작업 0169)
 // 눈금 · 판정은 사이트 신호 규칙 그대로 (최근 90일 안의 위치 · SIG-01~05) · 핀 글은 "쌈 · 보통 · 비쌈" 글자만 · 신호가 없으면 "신호 없음"
+import { CurrencyFlag } from "@hav/ui/data/currency-flag";
 import { DestinationRow } from "@hav/ui/data/destination-row";
 import { SectionTitle } from "@hav/ui/text/heading";
 import Link from "next/link";
@@ -18,7 +19,12 @@ export function DestinationsSection({ rows, windowDays, moreCount }: { rows: Des
           {rows.map((row) => {
             const body = (
               <DestinationRow
-                city={row.city}
+                city={
+                  <span className="flex items-center gap-3">
+                    {row.currency && <CurrencyFlag currency={row.currency} className="h-5 w-[30px] shrink-0" />}
+                    <span className="min-w-0">{row.city}</span>
+                  </span>
+                }
                 currency={
                   <>
                     {row.currencyLabel}

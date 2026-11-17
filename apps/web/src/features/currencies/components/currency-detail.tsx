@@ -5,6 +5,7 @@ import { currencyName, rangeOf, rateText, toUnit } from "@hav/shared/currency";
 import type { FxHistory, FxRate } from "@hav/shared/fx";
 import type { CurrencySignal } from "@hav/shared/signal";
 import { countriesOf } from "@hav/shared/travel";
+import { CurrencyFlag } from "@hav/ui/data/currency-flag";
 import { SignalPin } from "@hav/ui/data/signal-pin";
 import { StatTile } from "@hav/ui/data/stat-tile";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
@@ -40,7 +41,12 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
   return (
     <div className="min-w-0">
       <Eyebrow>
-        {currencyListName(code)} · {code}
+        <span className="inline-flex items-center gap-2">
+          <CurrencyFlag currency={code} className="h-4 w-6 shrink-0" />
+          <span>
+            {currencyListName(code)} · {code}
+          </span>
+        </span>
       </Eyebrow>
       <h1 className="mt-4 font-display text-[clamp(3.25rem,9vw,6.5rem)] leading-[1.05] font-extrabold tracking-display text-figure tabular-nums">
         {/* 제목만 읽어도 어떤 통화인지 (작업 0114) — 화면에는 바로 위 줄에 통화명이 있음 */}

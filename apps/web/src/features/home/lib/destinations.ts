@@ -34,6 +34,8 @@ export function cheapestDestination(signals: SignalRow[], rates: RateRow[], dest
 export type DestinationRowData = {
   id: string;
   city: string;
+  /** 국기에 쓸 통화 코드 (없으면 국기 칸만 비움 · 작업 0199) */
+  currency: string | null;
   currencyLabel: string;
   rateText: string | null;
   signal: Signal | null;
@@ -56,6 +58,7 @@ export function destinationRows(signals: SignalRow[], rates: RateRow[], destinat
     return {
       id: d.id,
       city: d.name,
+      currency: currency ?? null,
       currencyLabel: rate && rate.unit > 1 ? `${name} ${rate.unit}` : name,
       rateText: rate ? wonText(rate.baseRate) : null,
       signal: hasSignal ? (s?.signal ?? null) : null,
