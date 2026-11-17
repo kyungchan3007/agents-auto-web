@@ -151,3 +151,19 @@ test("홈 — 도착지 설명 줄의 '예측이 아니며 투자 · 금융 조�
   await expect(page.locator("#destinations")).toContainText("예측이 아니며 투자 · 금융 조언이 아닙니다");
   await expect(page.getByRole("contentinfo")).toContainText("한국수출입은행");
 });
+
+// 작업 0191 — 도착지 목록 아래 통화 전체 링크 (개수는 빌드 때 받은 통화 수에서 위 목록 수를 뺀 값 · 자료가 없으면 개수 없이)
+test("도착지 목록 아래 '다른 통화 N개 모두 보기 ›' — 누르면 /currencies · 휴대폰에서도 겹침 · 가로 넘침 없음", async ({ page }) => {
+  await page.goto("/");
+  const link = page.locator("#destinations").getByTestId("more-currencies");
+  await expect(link).toBeVisible();
+  await expect(link).toHaveText(/^(다른 통화 \d+개 모두 보기 ›|통화 모두 보기 ›)$/);
+  const lastRow = await page.locator('#destinations [data-testid="dest-city"]').last().boundingBox();
+  const box = await link.boundingBox();
+  expect(box && lastRow && box.y).toBeGreaterThan((lastRow?.y ?? 0) + (lastRow?.height ?? 0));
+  const width = page.viewportSize()?.width ?? 0;
+  expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(width);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await link.click();
+  await expect(page).toHaveURL(/\/currencies\/?$/);
+});
