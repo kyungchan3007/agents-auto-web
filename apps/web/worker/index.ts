@@ -1,4 +1,4 @@
-// 사이트 Worker 진입점 (작업 0189) — Cloudflare Workers(flapfx)로 배포할 때 Pages Functions(functions/) 자리를 대신함
+// 사이트 Worker 진입점 (작업 0189) — Cloudflare Workers(agents-auto-web · flapfx.com)로 배포 · 예전 Pages Functions 자리
 //   /bff · /bff/* → API Worker 프록시 (src/bff/proxy.ts · 서비스 바인딩 API)
 //   그 밖(페이지) → 정적 자산을 그대로 돌려주고, GEO 방문 기록은 뒤에서 (src/bff/track-visit.ts · D1 DB)
 //   어떤 요청이 여기를 지나는지는 routes.ts → wrangler.jsonc assets.run_worker_first
