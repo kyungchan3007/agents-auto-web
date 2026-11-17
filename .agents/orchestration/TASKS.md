@@ -31,4 +31,4 @@
 | 0194 | 인트로 로딩 화면 · 전환 — 시안 A 출발 안내판이 열림 (#221 · Quick) | builder | 머지됨 (#227) | task/0194-intro-loading | apps/web/src/features/intro/** · apps/web/e2e/intro*.spec.ts |
 | 0196 | AI 측정 질문 3판 — 브랜드 이름을 플랩 · flapfx 로 (#215) | geo | 머지됨 (#226) | task/0196-geo-q3 | apps/api/src/features/geo/** · apps/web/src/features/geo/** · docs/geo-measurement.md |
 | 0195 | 플랩 파비콘 · 앱 아이콘 · 남은 이름 검사 (#222) | builder | 시안 선택 대기 | task/0195-flap-icons | apps/web/src/app/icon.svg · apple-icon.png · public/icons/** |
-| 0197 | 사이트 이름 표기 플랩 → Flapfx (#228 · Full) | builder | 진행 중 | task/0197-flapfx-name | apps/web/src/** · apps/api/src/features/geo/** · docs/** · README.md |
+| 0197 | 사이트 이름 표기 플랩 → Flapfx (#228 · Full) | builder | PR 대기 | task/0197-flapfx-name | apps/web/src/** · apps/api/src/features/geo/** · docs/** · README.md |
