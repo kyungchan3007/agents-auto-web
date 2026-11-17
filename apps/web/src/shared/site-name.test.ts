@@ -8,7 +8,8 @@ import { describe, expect, it } from "vitest";
 import { SITE_NAME } from "./site";
 
 const ROOT = join(__dirname, "../../../..");
-const SKIP_PREFIX = ["apps/api/data/", ".agents/", "apps/web/wrangler.jsonc"];
+// 검사 자신 · 그 e2e 는 "플랩" 을 설명 글로 적으므로 뺌
+const SKIP_PREFIX = ["apps/api/data/", ".agents/", "apps/web/wrangler.jsonc", "apps/web/src/shared/site-name.test.ts", "apps/web/e2e/site-name.spec.ts"];
 const BINARY = /\.(png|jpe?g|webp|gif|ico|woff2?|glb|gltf|bin|jpg|mp4|pdf)$/i;
 
 function trackedTextFiles(): string[] {
