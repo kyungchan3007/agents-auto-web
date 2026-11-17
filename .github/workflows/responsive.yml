@@ -1,6 +1,6 @@
 name: "검사 · 운영 화면 크기별 확인"
 # 운영 사이트 반응형 점검 — 크롬 · 파이어폭스 · 사파리 엔진 × 320 · 375 · 768 · 1280 (작업 0110)
-#   main 에 머지되면 Pages 배포를 기다렸다가 · 매일 한 번 · 손으로도
+#   main 에 머지되면 사이트 배포(Workers Builds)를 기다렸다가 · 매일 한 번 · 손으로도
 #   운영 페이지를 열기만 함 (빌드 안 함 → D1 읽기 없음)
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
           node-version: 22
       - run: npm ci
       - run: npx -w @hav/web playwright install --with-deps firefox webkit
-      - name: Pages 배포 기다림 (머지 때만)
+      - name: 사이트 배포 기다림 (머지 때만 · Workers Builds)
         if: github.event_name == 'push'
         run: sleep 300
       - run: npm -w @hav/web run test:responsive

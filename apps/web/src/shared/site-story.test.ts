@@ -74,9 +74,10 @@ describe("README.md — 기존 형식 유지 (다른 저장소와 같은 구성)
   });
 
   it("사이트 · 작업실 · GEO 측정 주소", () => {
-    expect(readme).toContain("https://tripfx.pages.dev");
-    expect(readme).toMatch(/tripfx\.pages\.dev\/log/);
-    expect(readme).toMatch(/tripfx\.pages\.dev\/geo/);
+    expect(readme).toContain("https://flapfx.com");
+    expect(readme).toMatch(/flapfx\.com\/log/);
+    expect(readme).toMatch(/flapfx\.com\/geo/);
+    expect(readme).not.toMatch(/tripfx\.pages\.dev/); // 옛 주소 (2026-11-17 삭제 · 작업 0190)
   });
 
   it("개인 사정을 드러내는 말 없음 — 포트폴리오 · FDE · 채용 · 지원", () => {
