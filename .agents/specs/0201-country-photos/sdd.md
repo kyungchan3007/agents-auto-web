@@ -32,6 +32,8 @@
 - .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- `packages/shared/package.json`(exports 한 줄) · `packages/shared/src/domain/destination-search.ts` · `.test.ts` — 여행지 검색은 홈 · 여행 물가 두 기능이 쓰는 공통 모듈이라 앱 공용 폴더에 둘 수 없음(구조 검사 role-boundary). `currency-search`(0192)와 같은 방식.
+- `packages/ui/src/components/form/pick-trip.tsx` · `packages/ui/src/hooks/use-pick-trip.ts` · `use-picked-trip.ts` — 시트도 두 기능이 쓰므로 `@hav/ui`(sdd 가 허용한 "시트를 디자인 시스템으로 올릴 때") · 훅은 ui 규칙대로 `hooks/use-*.ts`. ui `package.json` 은 그대로.
 
 ## 위험
 - 사진 용량: 20장 × 3폭 — 크기 상한을 넘으면 품질을 낮춤 (검사로 막힘).
@@ -45,3 +47,11 @@
 - 미리보기 실제 Chrome (휴대폰 · 넓은 화면)
 
 ## 계획과 달라진 점
+- **공통 모듈 위치**: 시트 · 검색은 홈과 여행 물가 두 기능이 쓰므로 앱 공용 폴더(`apps/web/src/shared`)가 아니라 승격 — 검색 순수 함수 `packages/shared/src/domain/destination-search.ts`(`@hav/shared/destination-search` · `packages/shared/package.json` exports 한 줄), 시트 `packages/ui/src/components/form/pick-trip.tsx`, 훅 `packages/ui/src/hooks/use-pick-trip.ts` · `use-picked-trip.ts`. (구조 검사 role-boundary 가 앱 공용 폴더를 7개 파일로 고정) → 파일 계획 밖이라 여기에 이유를 적음. ui `package.json` 은 건드리지 않음(`./hooks/*` · `./*` 가 이미 맞음).
+- **PhotoHeader**: `country` 속성을 받아 그 나라 사진(`countryPhoto`)이 있으면 쓰고 없으면 `name`. `@hav/ui` 공개 경로가 components 아래뿐이라 `countryPhoto` · `photoSrc` 는 `photo-header.tsx` 에서 다시 내보냄(인트로 창문이 씀).
+- **고른 값 읽기**: 홈의 `use-picked-destination`(0185 · 구조 검사가 고정)은 그대로 두고, 여행 물가 · 시트용으로 같은 방식의 `use-picked-trip` 을 ui 에 따로 둠(작은 중복 · 검사를 깨지 않으려고).
+- **맨 위 머리**: 서버 HTML 은 그대로(window-fjord · swiss-traveler · 가장 싼 나라 문장) 두고, 클라이언트 감싸개 `PickedPhotoHeader`(홈) · `PricesHeader`(여행 물가)가 마운트 뒤에 고른 값을 읽어 바꿈. 그래서 `price-page.tsx` 의 머리가 `prices-header.tsx` 로 옮겨 가 구조 검사 3개(`photos` · `number-emphasis` · `home-flap-board`)의 파일 경로 · 정규식을 갱신.
+- **예산**: 시트에는 예산 입력이 없어 인트로에서 넣은 예산을 이어 쓰고, 없으면 0 → 홈 탑승권 요약에서 예산 줄을 숨김(`picked-board.tsx` · 계획 안).
+- **여행 물가 문장 기준**: 구간 3칸과 같은 `BAND_EDGE`(0.9 · 1.1) — 그 사이는 "한국과 물가가 비슷합니다". 안 골랐거나 자료 없는 나라(두바이)는 가장 싼 나라 문장.
+- 사진은 `튀르키에.png`(파일 이름 철자가 '튀르키예' 가 아님)를 튀르키예(TUR)로 읽음. 사진 20장 모두 1670~1672×941 → 1672×941 로 cover. 변환은 `make-photos.mjs --countries`.
+
