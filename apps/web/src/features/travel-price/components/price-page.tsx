@@ -12,7 +12,9 @@ import { Eyebrow, Title } from "@hav/ui/text/heading";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
 import { pricesHeadline } from "../lib/prices-copy";
 import { BudgetPlanner } from "./budget-planner";
+import { Suspense } from "react";
 import { PriceBands } from "./price-bands";
+import { PriceView } from "./price-view";
 
 export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; signals: Fetched<SignalList> }) {
   const data = levels.ok ? travelBands(levels.data) : null;
@@ -37,7 +39,10 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
         <div className="mx-auto max-w-page">
           <div>
             {data && data.bands.length > 0 ? (
-              <PriceBands bands={data.bands} signalOf={signalOf} percentileOf={percentileOf} latestYear={data.years[0]} />
+              // 주소의 ?currency= 는 브라우저에서 읽음(정적 사이트) — 읽기 전 · 검색 · AI 가 읽는 HTML 은 전체 목록 (작업 0193)
+              <Suspense fallback={<PriceBands bands={data.bands} signalOf={signalOf} percentileOf={percentileOf} latestYear={data.years[0]} />}>
+                <PriceView bands={data.bands} missing={data.missing} signalOf={signalOf} percentileOf={percentileOf} latestYear={data.years[0]} />
+              </Suspense>
             ) : (
               <EmptyState>물가 자료를 받지 못했습니다 ({levels.ok ? "여행지 나라 자료 없음" : levels.reason})</EmptyState>
             )}
