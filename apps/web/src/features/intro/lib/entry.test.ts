@@ -3,7 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { shouldShowIntro } from "./entry";
 
-const base = { wide: true, off: false, hash: "", shownBefore: false, navType: "navigate", referrer: "", origin: "https://tripfx.pages.dev", firstPath: "/" } as const;
+const base = { wide: true, off: false, hash: "", shownBefore: false, navType: "navigate", referrer: "", origin: "https://flapfx.com", firstPath: "/" } as const;
 
 describe("인트로를 띄울지 (작업 0186)", () => {
   it("주소창 · 즐겨찾기로 처음 들어오면 띄움", () => {
@@ -15,7 +15,7 @@ describe("인트로를 띄울지 (작업 0186)", () => {
   });
 
   it("새로고침이면 띄움 (예전 주소가 사이트 안이어도)", () => {
-    expect(shouldShowIntro({ ...base, navType: "reload", referrer: "https://tripfx.pages.dev/currencies" })).toBe(true);
+    expect(shouldShowIntro({ ...base, navType: "reload", referrer: "https://flapfx.com/currencies" })).toBe(true);
   });
 
   it("주소에 #위치(예: #today)가 있으면 띄우지 않음 — '오늘 환율' 링크", () => {
@@ -23,7 +23,7 @@ describe("인트로를 띄울지 (작업 0186)", () => {
   });
 
   it("사이트 안 다른 페이지에서 링크로 홈에 오면 띄우지 않음", () => {
-    expect(shouldShowIntro({ ...base, referrer: "https://tripfx.pages.dev/prices" })).toBe(false);
+    expect(shouldShowIntro({ ...base, referrer: "https://flapfx.com/prices" })).toBe(false);
   });
 
   it("이 문서에서 이미 한 번 띄웠으면(홈 → 다른 화면 → 홈) 다시 띄우지 않음", () => {

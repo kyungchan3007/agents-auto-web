@@ -28,7 +28,7 @@ const GeoAnswers = z.object({
       /** 질문 수 · 응답을 받은 질문 수 (실패는 ok 에 들어가지 않음) */
       total: z.number().int().nonnegative(),
       ok: z.number().int().nonnegative(),
-      /** 답의 인용 표시에 tripfx 가 나온 질문 수 · 검색 결과에 나온 질문 수 */
+      /** 답의 인용 표시에 우리 사이트가 나온 질문 수 · 검색 결과에 나온 질문 수 */
       cited: z.number().int().nonnegative(),
       found: z.number().int().nonnegative(),
       citedQuestions: z.array(z.string()),

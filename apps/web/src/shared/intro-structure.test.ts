@@ -117,8 +117,8 @@ describe("서버 HTML 에는 인트로 없음 · 폭 700 초과에서만 · 끄�
     expect(p).toMatch(/api\.latest\(\)/);
   });
 
-  it("끄기 스위치는 화면 글에 노출하지 않음 (tripfx:intro-off 는 상수로만)", () => {
-    for (const f of SRC(INTRO).filter((x) => x.endsWith(".tsx"))) expect(read(f), rel(f)).not.toMatch(/tripfx:intro-off/);
+  it("끄기 스위치는 화면 글에 노출하지 않음 (flapfx:intro-off 는 상수로만)", () => {
+    for (const f of SRC(INTRO).filter((x) => x.endsWith(".tsx"))) expect(read(f), rel(f)).not.toMatch(/flapfx:intro-off/);
   });
 });
 

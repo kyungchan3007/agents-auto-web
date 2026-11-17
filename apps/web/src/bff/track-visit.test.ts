@@ -14,7 +14,7 @@ function setup(ua: string | null, opts: { path?: string; status?: number; fail?:
   if (ua) headers["user-agent"] = ua;
   if (opts.referer) headers.referer = opts.referer;
   const res = new Response("ok", { status: opts.status ?? 200 });
-  const ctx = { request: new Request(`https://tripfx.pages.dev${opts.path ?? "/"}`, { headers }), next: async () => res, env: { DB: db }, waitUntil: (p: Promise<unknown>) => waits.push(p) };
+  const ctx = { request: new Request(`https://flapfx.com${opts.path ?? "/"}`, { headers }), next: async () => res, env: { DB: db }, waitUntil: (p: Promise<unknown>) => waits.push(p) };
   return { ctx, res, bind, waits };
 }
 

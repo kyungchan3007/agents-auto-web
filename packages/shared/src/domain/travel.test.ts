@@ -51,9 +51,9 @@ describe("여행지 나라 고르기", () => {
 // 작업 0185 — 인트로에서 고른 여행지 저장 (홈 안내판 · 인트로가 함께 씀 → 기능 폴더끼리 직접 참조 못 해 @hav/shared/travel 에 둠) (테스트 먼저 · 구현 전에는 FAIL 이 정상)
 //
 // builder 가 만들 것 — packages/shared/src/domain/travel.ts
-//   export const PICKED_STORAGE_KEY = "tripfx:picked"            // localStorage 키 (브라우저 안에만 · 서버로 안 보냄)
-//   export const PICK_EVENT = "tripfx:intro-pick"                 // 인트로가 끝날 때 window 로 보내는 이벤트 이름 (detail = PickedTrip)
-//   export const INTRO_OFF_KEY = "tripfx:intro-off"               // 값 "1" 이면 인트로를 열지 않는 끄기 스위치 (e2e · 개발용 · 화면에 노출하지 않음)
+//   export const PICKED_STORAGE_KEY = "flapfx:picked"            // localStorage 키 (브라우저 안에만 · 서버로 안 보냄)
+//   export const PICK_EVENT = "flapfx:intro-pick"                 // 인트로가 끝날 때 window 로 보내는 이벤트 이름 (detail = PickedTrip)
+//   export const INTRO_OFF_KEY = "flapfx:intro-off"               // 값 "1" 이면 인트로를 열지 않는 끄기 스위치 (e2e · 개발용 · 화면에 노출하지 않음)
 //   export type PickedTrip = { v: 1; country: string /* ISO alpha-3 · TRAVEL_COUNTRIES 의 키 */; city: string /* 1~20자 */; budget: number /* 원 · 0 이상 정수 · 최대 1e10 */ }
 //   export function parsePicked(raw: string | null | undefined): PickedTrip | null   // 잘못된 값은 무시(null) — JSON 아님 · v 가 1 아님 · 모르는 나라 · 빈/긴 도시 · 예산이 음수/소수/NaN/너무 큼/숫자 아님
 //   export function serializePicked(p: PickedTrip): string                           // JSON.stringify
@@ -68,9 +68,9 @@ describe("고른 여행지 저장 (작업 0185)", () => {
   };
 
   it("키 · 이벤트 이름 · 끄기 스위치 이름", () => {
-    expect(PICKED_STORAGE_KEY).toBe("tripfx:picked");
-    expect(PICK_EVENT).toBe("tripfx:intro-pick");
-    expect(INTRO_OFF_KEY).toBe("tripfx:intro-off");
+    expect(PICKED_STORAGE_KEY).toBe("flapfx:picked");
+    expect(PICK_EVENT).toBe("flapfx:intro-pick");
+    expect(INTRO_OFF_KEY).toBe("flapfx:intro-off");
   });
 
   it("쓴 값을 그대로 읽음 (serialize → parse)", () => {

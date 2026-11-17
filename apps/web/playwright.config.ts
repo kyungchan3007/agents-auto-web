@@ -7,12 +7,12 @@ export default defineConfig({
   timeout: 30_000,
   retries: process.env.CI ? 1 : 0,
   reporter: [["list"]],
-  // 작업 0185: 홈 위를 덮는 공항 인트로를 기본 꺼 둠(끄기 스위치 localStorage tripfx:intro-off=1) — 다른 e2e 는 홈 첫 화면이 바로 보인다고 가정 · e2e/intro.spec.ts 만 켬
+  // 작업 0185: 홈 위를 덮는 공항 인트로를 기본 꺼 둠(끄기 스위치 localStorage flapfx:intro-off=1) — 다른 e2e 는 홈 첫 화면이 바로 보인다고 가정 · e2e/intro.spec.ts 만 켬
   use: {
     baseURL: "http://127.0.0.1:4399",
     channel: "chrome",
     trace: "off",
-    storageState: { cookies: [], origins: [{ origin: "http://127.0.0.1:4399", localStorage: [{ name: "tripfx:intro-off", value: "1" }] }] },
+    storageState: { cookies: [], origins: [{ origin: "http://127.0.0.1:4399", localStorage: [{ name: "flapfx:intro-off", value: "1" }] }] },
   },
   projects: [
     { name: "넓은 화면", use: { ...devices["Desktop Chrome"], channel: "chrome" } },

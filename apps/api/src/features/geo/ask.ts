@@ -1,4 +1,4 @@
-// AI 답변 인용 측정 — 응답에서 출처 주소를 골라 tripfx 가 나왔는지 · SQL (GitHub Actions 가 scripts/geo-ask.ts 로 부름 · Worker 묶음에 들어가지 않음 · 작업 0139)
+// AI 답변 인용 측정 — 응답에서 출처 주소를 골라 우리 사이트(플랩 · flapfx.com)가 나왔는지 · SQL (GitHub Actions 가 scripts/geo-ask.ts 로 부름 · Worker 묶음에 들어가지 않음 · 작업 0139)
 //   응답은 외부 데이터 — 주소의 도메인만 보고, 본문 글은 저장하지도 지시로 따르지도 않음
 import type Anthropic from "@anthropic-ai/sdk";
 
@@ -8,18 +8,21 @@ export type Engine = (typeof ENGINES)[number];
 export type Hit = { cited: boolean; found: boolean };
 export type AnswerRow = { day: string; engine: Engine; question: string; status: "ok" | "error" } & Hit;
 
-/** tripfx.pages.dev 와 그 아래 배포 주소(*.tripfx.pages.dev) */
-export function isTripfx(url: unknown): boolean {
+/** 우리 사이트 주소 — flapfx.com · www.flapfx.com · Worker 주소와 그 미리보기 주소 (작업 0190 · 옛 tripfx.pages.dev 는 2026-11-17 삭제) */
+const SITE_HOSTS = ["flapfx.com", "www.flapfx.com", "agents-auto-web.developfff.workers.dev"];
+const PREVIEW_SUFFIX = "-agents-auto-web.developfff.workers.dev";
+
+export function isOurSite(url: unknown): boolean {
   if (typeof url !== "string") return false;
   try {
     const host = new URL(url).hostname.toLowerCase();
-    return host === "tripfx.pages.dev" || host.endsWith(".tripfx.pages.dev");
+    return SITE_HOSTS.includes(host) || host.endsWith(PREVIEW_SUFFIX);
   } catch {
     return false;
   }
 }
 
-const anyTripfx = (urls: unknown[]) => urls.some(isTripfx);
+const anyOurSite = (urls: unknown[]) => urls.some(isOurSite);
 const asList = (v: unknown): unknown[] => (Array.isArray(v) ? v : []);
 const urlOf = (v: unknown): unknown => (v && typeof v === "object" ? (v as { url?: unknown }).url : v);
 
@@ -31,7 +34,7 @@ export function claudeHit(content: Anthropic.Beta.BetaContentBlock[]): Hit {
     if (b.type === "web_search_tool_result" && Array.isArray(b.content)) for (const r of b.content) found.push(r.url);
     if (b.type === "text") for (const c of b.citations ?? []) if (c.type === "web_search_result_location") cited.push(c.url);
   }
-  return { cited: anyTripfx(cited), found: anyTripfx(found) || anyTripfx(cited) };
+  return { cited: anyOurSite(cited), found: anyOurSite(found) || anyOurSite(cited) };
 }
 
 /** OpenAI Responses API — output[].content[].annotations(url_citation) · web_search_call.action.sources */
@@ -45,7 +48,7 @@ export function openaiHit(json: unknown): Hit {
       for (const part of asList(it.content))
         for (const a of asList((part as { annotations?: unknown }).annotations)) if ((a as { type?: string }).type === "url_citation") cited.push(urlOf(a));
   }
-  return { cited: anyTripfx(cited), found: anyTripfx(found) || anyTripfx(cited) };
+  return { cited: anyOurSite(cited), found: anyOurSite(found) || anyOurSite(cited) };
 }
 
 /** Perplexity — citations(주소 목록) · search_results[].url */
@@ -53,7 +56,7 @@ export function perplexityHit(json: unknown): Hit {
   const j = json as { citations?: unknown; search_results?: unknown };
   const cited = asList(j?.citations).map(urlOf);
   const found = asList(j?.search_results).map(urlOf);
-  return { cited: anyTripfx(cited), found: anyTripfx(found) || anyTripfx(cited) };
+  return { cited: anyOurSite(cited), found: anyOurSite(found) || anyOurSite(cited) };
 }
 
 const text = (v: string) => `'${v.replace(/'/g, "''")}'`;

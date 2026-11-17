@@ -6,7 +6,7 @@ export type VisitKind = "training" | "search" | "user" | "engine" | "referral" |
 export type Visit = { kind: VisitKind; name: string; path: string };
 
 const BOTS: { token: string; kind: VisitKind; name: string }[] = [
-  { token: "tripfx-verify", kind: "test", name: "Tripfx-Verify" }, // 운영 확인용 — 공개 수치에서 뺌
+  { token: "flapfx-verify", kind: "test", name: "Flapfx-Verify" }, // 운영 확인용 — 공개 수치에서 뺌
   { token: "oai-searchbot", kind: "search", name: "OAI-SearchBot" },
   { token: "chatgpt-user", kind: "user", name: "ChatGPT-User" },
   { token: "gptbot", kind: "training", name: "GPTBot" },

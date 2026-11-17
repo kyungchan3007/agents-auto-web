@@ -11,7 +11,7 @@ describe("GEO 응답 (작업 0129)", () => {
       row("2026-11-06", "training", "GPTBot", "/about", 3),
       row("2026-11-06", "engine", "Googlebot", "/", 9),
       row("2026-11-06", "referral", "ChatGPT", "/calc", 1),
-      row("2026-11-07", "test", "Tripfx-Verify", "/geo", 5),
+      row("2026-11-07", "test", "Flapfx-Verify", "/geo", 5),
     ],
     "2026-10-08",
   );

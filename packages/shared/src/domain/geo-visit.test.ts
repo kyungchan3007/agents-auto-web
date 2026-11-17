@@ -35,6 +35,6 @@ describe("GEO 방문 분류 (작업 0129)", () => {
     expect(v("/없는곳", "GPTBot")).toBeNull();
   });
   it("운영 확인용 이름은 test 로", () => {
-    expect(v("/geo", "Tripfx-Verify/1.0")?.kind).toBe("test");
+    expect(v("/geo", "Flapfx-Verify/1.0")?.kind).toBe("test");
   });
 });
