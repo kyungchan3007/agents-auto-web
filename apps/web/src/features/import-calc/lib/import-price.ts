@@ -24,3 +24,17 @@ export function importPriceView(fxRows: FxDay[] | null | undefined, price: Month
   const both = rows.filter((r) => r.fx !== null && r.price !== null).length;
   return both === 0 ? { kind: "preparing" } : { kind: "ready", rows, both };
 }
+
+export type Kpi = { period: string; value: number; delta: number | null };
+
+/** 큰 숫자 두 개 — 각 값의 가장 최근 달 + 바로 앞 값과의 차이 (앞이 없으면 delta null · 값이 없으면 null · 작업 0200) */
+export function importPriceKpis(rows: AlignedMonth[]): { price: Kpi | null; fx: Kpi | null } {
+  const kpi = (key: "fx" | "price"): Kpi | null => {
+    const have = rows.filter((r) => r[key] !== null) as (AlignedMonth & Record<typeof key, number>)[];
+    const last = have[have.length - 1];
+    if (!last) return null;
+    const prev = have[have.length - 2];
+    return { period: last.period, value: last[key], delta: prev ? last[key] - prev[key] : null };
+  };
+  return { price: kpi("price"), fx: kpi("fx") };
+}

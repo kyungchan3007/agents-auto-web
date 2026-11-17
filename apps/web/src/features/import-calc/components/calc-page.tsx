@@ -1,7 +1,7 @@
 "use client";
 
-// 직구 계산 페이지 — 하늘 종이 바탕 · 큰 문장(입력으로 바뀜) → 입력 · 결과 2단 → 이번 주 과세환율 · 수입물가와 환율 2단 (작업 0170 · Figma 05)
-// 환율은 빌드 때 받은 값 · 계산은 브라우저에서 (IMP-01) · 모바일은 입력 → 결과 → 과세환율 → 수입물가 순서로 쌓임
+// 직구 계산 페이지 — 하늘 종이 바탕 · 큰 문장(입력으로 바뀜) → 입력 · 결과 2단 → 수입물가와 환율(가로 전체) → 이번 주 과세환율 (작업 0200 · 시안 B)
+// 환율은 빌드 때 받은 값 · 계산은 브라우저에서 (IMP-01) · 모바일은 입력 → 결과 → 수입물가 → 과세환율 순서로 쌓임
 import type { Fetched } from "@/shared/api";
 import { SiteNav } from "@/shared/site-nav";
 import type { FxLatest } from "@hav/shared/fx";
@@ -41,9 +41,10 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
           ) : (
             <EmptyState>환율을 받지 못해 계산할 수 없습니다 ({latest.ok ? "통화 없음" : latest.reason})</EmptyState>
           )}
-          <div className="mt-6 grid items-start gap-4 lg:grid-cols-2">
-            <CustomsSection points={trend} bank={latest.ok ? latest.data.rates.find((r) => r.currency === "USD") : undefined} />
+          {/* 가로 전체 두 칸 — 수입물가와 환율 → 이번 주 과세환율 (작업 0200 · 시안 B) */}
+          <div className="mt-6 grid gap-4">
             <ImportPriceSection fxRows={usdDays} price={importPrice} />
+            <CustomsSection points={trend} bank={latest.ok ? latest.data.rates.find((r) => r.currency === "USD") : undefined} />
           </div>
         </div>
         </div>

@@ -8,6 +8,7 @@ import { useQueryParam } from "@hav/ui/hooks/use-query-param";
 import { kstDate } from "@hav/shared/date";
 import { type CalcInput, type Rate, calc } from "../lib/calc";
 import { type CustomsRate, pickRate } from "../lib/customs-rate";
+import { EXAMPLE, exampleFor } from "../lib/example";
 
 export function useCalcForm(rates: FxRate[], customs: Record<string, CustomsRate> = {}) {
   const table = Object.fromEntries(rates.map((r) => [r.currency, r]));
@@ -18,16 +19,25 @@ export function useCalcForm(rates: FxRate[], customs: Record<string, CustomsRate
   // /calc?currency=JPY (통화 둘러보기에서 옴) · 서버 그림은 달러
   const fromUrl = useQueryParam("currency");
   const [picked, setInput] = useState<Partial<CalcInput>>({});
+  const [touched, setTouched] = useState(false);
   const currency = picked.currency ?? (table[fromUrl] ? fromUrl : "USD");
-  const input: CalcInput = { price: "", shipping: "", dutyRate: "", ...picked, currency, route: picked.route ?? (currency === "USD" ? "us-list" : "other") };
+  // 처음 들어온 그대로면(달러 · 환율 있음) 예시 값 — 한 칸이라도 고치면 "예시" 표시만 사라지고 값은 남음 (작업 0200)
+  const example = touched ? null : exampleFor(currency, !!used[currency]);
+  const input: CalcInput = { price: example ? EXAMPLE.price : "", shipping: "", dutyRate: "", ...picked, currency, route: picked.route ?? (currency === "USD" ? "us-list" : "other") };
   const result = input.price.trim() !== "" ? calc(input, used) : null;
   return {
     codes: groupByRegion(rates).flatMap((g) => g.items.map((r) => r.currency)),
     input,
     result,
+    example: example !== null,
     rate: table[input.currency],
     source: picks[input.currency]?.source,
-    set: (k: keyof CalcInput) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setInput((i) => ({ ...i, [k]: e.target.value })),
+    set: (k: keyof CalcInput) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const v = e.target.value;
+      // 처음 고칠 때 예시 값을 입력 상태로 옮겨 둠 (표시만 사라지고 값은 그대로)
+      setInput((i) => ({ ...(example ? { price: EXAMPLE.price } : {}), ...i, [k]: v }));
+      setTouched(true);
+    },
     err: (f: string) => (result && !result.ok && result.field === f ? result.reason : null),
   };
 }
