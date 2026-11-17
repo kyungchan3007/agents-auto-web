@@ -1,8 +1,7 @@
 // 인트로 흐름의 글 · 계산 — 순수 함수 (three · React 없음 · 기능 폴더 밖은 @hav/shared 만 가져옴 · 작업 0185 · 테스트 flow.test.ts)
 // 숫자는 빌드 때 받은 값 — 없으면 null · "없음" · "환율 없음" 으로 보임 (지어내지 않음)
 import { currencyName } from "@hav/shared/currency";
-import { type PickedTrip, TRAVEL_COUNTRIES, monthlyAverages } from "@hav/shared/travel";
-import { INTRO_CITIES } from "./places";
+import { type PickedTrip, TRAVEL_CITIES, TRAVEL_COUNTRIES, monthlyAverages } from "@hav/shared/travel";
 
 export const ORIGIN = "ICN";
 /** 출발 안내판 한 줄의 칸 수 (홈 안내판과 같음) */
@@ -45,7 +44,7 @@ export function introCountries(input: {
     return {
       iso,
       country: c.name,
-      cities: INTRO_CITIES[iso] ?? [],
+      cities: TRAVEL_CITIES[iso] ?? [],
       currency: cur,
       currencyLabel: label,
       currencyShort: label ? label.replace(/화$/, "") : null,
