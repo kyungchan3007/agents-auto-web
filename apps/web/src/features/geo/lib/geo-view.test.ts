@@ -57,8 +57,8 @@ describe("GEO 화면 자료 (작업 0129)", () => {
     ]);
     expect(openai).toEqual({ engine: "openai", name: "ChatGPT", measured: false });
     expect(answerHistory(r)).toEqual([
-      ["2026-11-07", "Claude", 2, 1, 1],
-      ["2026-11-06", "Claude", 24, 24, 0],
+      ["2026-11-07", "Claude", 2, 1, 1, "1판 · Tripfx"],
+      ["2026-11-06", "Claude", 24, 24, 0, "1판 · Tripfx"],
     ]);
   });
 });
