@@ -7,6 +7,7 @@ import type { FxChanges, FxLatest } from "@hav/shared/fx";
 import type { SignalList } from "@hav/shared/signal";
 import type { ReactNode } from "react";
 import { CurrencyList } from "./currency-list";
+import { CurrencySearch } from "./currency-search";
 import { Eyebrow } from "@hav/ui/text/heading";
 import { TextLink } from "@hav/ui/text/text-link";
 import { PageFooter } from "@hav/ui/layout/page-footer";
@@ -27,6 +28,9 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
           <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-10">
             <div data-testid="currency-list" className="min-w-0 lg:sticky lg:top-(--hav-nav-h) lg:self-start">
               <Eyebrow>둘러보기</Eyebrow>
+              <div className="mt-4">
+                <CurrencySearch codes={items.map((i) => i.currency)} />
+              </div>
               <div className="mt-4">
                 <CurrencyList items={items} />
               </div>
