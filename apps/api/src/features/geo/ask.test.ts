@@ -71,22 +71,22 @@ describe("AI 답변 인용 측정 (작업 0139)", () => {
     expect(QUESTIONS.filter((q) => q.group === "brand")).toHaveLength(8);
   });
 
-  // 작업 0196 — 질문 3판 (2026-11-18 측정부터 · 사이트 이름이 플랩 · flapfx 로 바뀜) · 일반 질문은 번호 · 문구 그대로, 브랜드 질문은 새 번호
+  // 작업 0196 — 질문 3판 (2026-11-18 측정부터 · 사이트 이름이 Flapfx 로 바뀜) · 일반 질문은 번호 · 문구 그대로, 브랜드 질문은 새 번호
   const KEPT: Record<string, string> = {
     g1: "오늘 달러 환율 싼 편인가요",
     g2: "지금 환전해도 될까 달러 최근 90일",
     g7: "해외직구 관세 계산기",
   };
-  // 전(1 · 2판 Tripfx) → 후(3판 플랩 · flapfx)
+  // 전(1 · 2판 Tripfx) → 후(3판 Flapfx)
   const RENAMED: Record<string, [string, string]> = {
-    b1: ["b14", "플랩 flapfx"],
+    b1: ["b14", "Flapfx"],
     b2: ["b15", "flapfx.com"],
-    b3: ["b16", "플랩 flapfx 환율"],
-    b9: ["b17", "플랩 flapfx 여행 타이밍"],
-    b10: ["b18", "플랩 flapfx 국제항공료 지수"],
-    b11: ["b19", "플랩 flapfx 과세환율 직구 계산"],
-    b12: ["b20", "플랩 flapfx 이번 주 가장 싸게 갈 수 있는 곳"],
-    b13: ["b21", "플랩 flapfx AI 에이전트가 만든 환율 사이트"],
+    b3: ["b16", "Flapfx 환율"],
+    b9: ["b17", "Flapfx 여행 타이밍"],
+    b10: ["b18", "Flapfx 국제항공료 지수"],
+    b11: ["b19", "Flapfx 과세환율 직구 계산"],
+    b12: ["b20", "Flapfx 이번 주 가장 싸게 갈 수 있는 곳"],
+    b13: ["b21", "Flapfx AI 에이전트가 만든 환율 사이트"],
   };
   const V1_RETIRED = ["b4", "b5", "b6", "b7", "b8", "g3", "g4", "g5", "g6", "g8", "g9", "g10", "g11", "g12", "g13", "g14", "g15", "g16"];
   const V2_GENERAL = ["g17", "g18", "g19", "g20", "g21", "g22", "g23", "g24", "g25", "g26", "g27", "g28", "g29"];
@@ -96,10 +96,10 @@ describe("AI 답변 인용 측정 (작업 0139)", () => {
     expect(general).toHaveLength(16);
     for (const id of ["g17", "g18", "g19", "g20", "g21", "g22", "g23", "g24", "g25", "g26", "g27", "g28", "g29"]) expect(general.some((q) => q.id === id), id).toBe(true);
     for (const [id, text] of Object.entries(KEPT)) expect(QUESTIONS.find((q) => q.id === id)?.text, id).toBe(text);
-    expect(general.some((q) => /tripfx|Tripfx|flapfx|플랩/.test(q.text))).toBe(false);
+    expect(general.some((q) => /tripfx|flapfx/i.test(q.text))).toBe(false);
   });
 
-  it("3판 — 브랜드 질문 8개는 새 번호 · 문구에 Tripfx · tripfx.pages.dev 가 없고 플랩 · flapfx · flapfx.com 으로 바뀜", () => {
+  it("3판 — 브랜드 질문 8개는 새 번호 · 문구에 Tripfx · tripfx.pages.dev 가 없고 Flapfx · flapfx.com 으로 바뀜", () => {
     const brand = QUESTIONS.filter((q) => q.group === "brand");
     expect(brand).toHaveLength(8);
     for (const [oldId, [newId, text]] of Object.entries(RENAMED)) {
@@ -167,7 +167,7 @@ describe("질문별 결과 순서 (작업 0142)", () => {
   it("저장 순서 · 번호 문자열 순이 아니라 질문 목록 순서", () => {
     const rows: AnswerInput[] = ["g10", "g2", "b14", "g1"].map((question) => ({ day: "2026-11-07", engine: "claude", question, status: "ok", cited: 0, found: 0 }));
     const s = answersSummary(rows, questionOf);
-    expect(s?.engines[0].results.map((r) => r.question)).toEqual(["플랩 flapfx", "오늘 달러 환율 싼 편인가요", "지금 환전해도 될까 달러 최근 90일", "한국 대비 일본 물가 수준"]);
+    expect(s?.engines[0].results.map((r) => r.question)).toEqual(["Flapfx", "오늘 달러 환율 싼 편인가요", "지금 환전해도 될까 달러 최근 90일", "한국 대비 일본 물가 수준"]);
   });
 });
 

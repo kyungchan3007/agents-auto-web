@@ -56,13 +56,13 @@ describe("GEO 자세한 기록 (작업 0180)", () => {
   });
 });
 
-// 작업 0196 — 질문 판이 바뀐 날을 표시해 앞뒤를 나눠 봄 (1판 2026-11-05 · 2판 11-17 · 3판 11-18 = 사이트 이름이 플랩 · flapfx 로 바뀐 뒤)
+// 작업 0196 — 질문 판이 바뀐 날을 표시해 앞뒤를 나눠 봄 (1판 2026-11-05 · 2판 11-17 · 3판 11-18 = 사이트 이름이 Flapfx 로 바뀐 뒤)
 describe("측정 질문 판 표시 (작업 0196)", () => {
   it("날짜로 판을 찾음 — 11-16 까지 1판 · 11-17 은 2판 · 11-18 부터 3판 · 첫 측정 전 날짜는 없음", () => {
     expect(editionOf("2026-11-05")).toMatchObject({ edition: 1, label: "1판 · Tripfx" });
     expect(editionOf("2026-11-16")?.edition).toBe(1);
     expect(editionOf("2026-11-17")).toMatchObject({ edition: 2, label: "2판 · Tripfx" });
-    expect(editionOf("2026-11-18")).toMatchObject({ edition: 3, label: "3판 · 플랩 flapfx" });
+    expect(editionOf("2026-11-18")).toMatchObject({ edition: 3, label: "3판 · Flapfx" });
     expect(editionOf("2026-12-31")?.edition).toBe(3);
     expect(editionOf("2026-11-04")).toBeNull();
   });
@@ -72,7 +72,7 @@ describe("측정 질문 판 표시 (작업 0196)", () => {
     const answers = { engines: [], history: [history("2026-11-16"), history("2026-11-17"), history("2026-11-18")] };
     const d = geoDetail({ ...base, answers });
     expect(d.history.map((row) => [row[0], row[5]])).toEqual([
-      ["2026-11-18", "3판 · 플랩 flapfx"],
+      ["2026-11-18", "3판 · Flapfx"],
       ["2026-11-17", "2판 · Tripfx"],
       ["2026-11-16", "1판 · Tripfx"],
     ]);
@@ -81,7 +81,7 @@ describe("측정 질문 판 표시 (작업 0196)", () => {
   it("판 설명 — 바뀐 날 · 이유 · 비교하는 법을 한국어로 (표 없이 줄글)", () => {
     const text = GEO_EDITION_NOTES.join(" ");
     expect(text).toContain("2026-11-18");
-    expect(text).toContain("플랩");
+    expect(text).toContain("Flapfx");
     expect(text).toContain("flapfx.com");
     expect(text).toContain("일반 질문");
     expect(text).not.toMatch(/\|/);
