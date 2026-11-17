@@ -18,13 +18,18 @@
 - .agents/specs/0196-geo-q3/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- 위 파일 계획의 apps/api/src/features/geo/** · apps/web/src/features/geo/** 안의 파일(questions.ts · ask.test.ts · geo-view.ts · geo-view.test.ts · geo-detail.test.ts · geo-detail.tsx)은 계획 안이고, 게이트 경고는 경로를 정확한 파일 이름으로만 비교해서 뜬 것이다.
+- .agents/orchestration/TASKS.md: 작업 보드 상태 갱신(lead 가 만든 줄 그대로 · 이 작업에서 고치지 않음).
+- geo-view.test.ts: 날짜별 기록 줄에 "질문 판" 칸이 늘어 기존 기대값을 맞춤.
 
 ## 완료 기준
-- [ ] bash .agents/checks.sh PASS
-- [ ] 브랜드 질문만 바뀌고 일반 질문은 그대로 (단위 테스트)
-- [ ] docs 에 3판 이유 · 비교 구간
-- [ ] /geo 에 판 바뀐 날 표시 · 지난 결과 파일 변경 없음
-- [ ] 브랜치 미리보기에서 /geo 확인
+- [x] bash .agents/checks.sh PASS (LOOP=quick)
+- [x] 브랜드 질문만 바뀌고 일반 질문은 그대로 (단위 테스트)
+- [x] docs 에 3판 이유 · 비교 구간
+- [x] /geo 에 판 바뀐 날 표시 · 지난 결과 파일 변경 없음
+- [ ] 브랜치 미리보기에서 /geo 확인 (빌드 · e2e 는 D1 읽기 한도 때문에 돌리지 않음 · lead 확인)
 
 ## 허점
--
+- 브랜드 질문은 번호가 새로라 3판 앞뒤 브랜드 결과를 바로 비교할 수 없다(일반 질문으로만 이어짐).
+- 판 날짜(1판 11-05 · 2판 11-17 · 3판 11-18)는 web 의 geo-view.ts 와 api 의 questions.ts 머리말에 각각 적혀 있어 다음 판에서 두 곳을 같이 고쳐야 한다.
+- 3판 첫 측정(2026-11-18) 결과 파일은 b14 ~ b21 번호를 써야 한다(옛 번호는 읽히기만 함).
