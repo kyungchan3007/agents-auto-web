@@ -75,7 +75,7 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
 
       {countriesOf(code).length > 0 && (
         <p className="mt-8">
-          <a href="/prices" className="text-body text-cheap hover:underline">
+          <a href={`/prices?currency=${code}`} className="text-body text-cheap hover:underline">
             이 통화 쓰는 나라 물가 보기 ›
           </a>
         </p>

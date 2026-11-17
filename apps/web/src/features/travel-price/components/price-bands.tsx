@@ -15,11 +15,12 @@ const BAND_CARD: Record<Band, string> = { cheap: "border-2 border-cheap", simila
 const BAND_TEXT: Record<Band, string> = { cheap: "text-cheap", similar: "text-cheap", pricey: "text-expensive" };
 const FOLDED = 2;
 
-type Props = { bands: PriceBand[]; signalOf: Record<string, Signal | null>; percentileOf?: Record<string, number | null>; latestYear?: number };
+type Props = { bands: PriceBand[]; signalOf: Record<string, Signal | null>; percentileOf?: Record<string, number | null>; latestYear?: number; /** 걸러 보일 때는 접지 않고 모두 보임 (작업 0193) */ unfolded?: boolean };
 
-export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear }: Props) {
-  const { open, toggle } = usePriceBands();
-  const more = bands.reduce((n, b) => n + Math.max(0, b.rows.length - FOLDED), 0);
+export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unfolded = false }: Props) {
+  const { open: opened, toggle } = usePriceBands();
+  const open = opened || unfolded;
+  const more = unfolded ? 0 : bands.reduce((n, b) => n + Math.max(0, b.rows.length - FOLDED), 0);
   return (
     <div data-testid="price-bands">
       <div className="grid items-start gap-4 lg:grid-cols-3">
