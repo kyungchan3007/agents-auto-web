@@ -1,4 +1,4 @@
-// BFF — 같은 주소의 /bff/* 를 API Worker 로 넘긴다 (Pages Functions · 서비스 바인딩 · functions/bff/[[path]].ts 가 부름)
+// BFF — 같은 주소의 /bff/* 를 API Worker 로 넘긴다 (서비스 바인딩 · apps/web/worker/index.ts 가 부름 · 작업 0189)
 // 브라우저는 이 주소만 안다: CORS 없음 · API 주소가 화면 코드에 없음 · 캐시를 여기 한곳에서 정함
 // 읽기 경로만 허용 — 쓰기(POST /activity) · 관리(/fx/collect · /prices/collect)는 여기서 안 보임
 import type { ApiError } from "@hav/shared/errors";

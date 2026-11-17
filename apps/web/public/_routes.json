@@ -1,5 +1,0 @@
-{
-  "version": 1,
-  "include": ["/", "/currencies", "/currencies/*", "/prices", "/calc", "/log", "/about", "/geo", "/robots.txt", "/sitemap.xml", "/bff/*"],
-  "exclude": []
-}

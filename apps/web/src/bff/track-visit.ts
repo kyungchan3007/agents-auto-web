@@ -1,4 +1,4 @@
-// GEO 방문 기록 — Pages 함수(functions/_middleware.ts)가 부름 · 응답을 먼저 만들고 기록은 뒤에서 (작업 0129)
+// GEO 방문 기록 — 사이트 Worker(apps/web/worker/index.ts)가 부름 · 응답을 먼저 만들고 기록은 뒤에서 (작업 0129 · 0189)
 //   실패해도 페이지는 그대로 · 일반 방문은 저장하지 않음 · 저장하는 것은 classifyVisit 결과뿐
 import { kstDate } from "@hav/shared/kst";
 import { classifyVisit } from "@hav/shared/geo-visit";
