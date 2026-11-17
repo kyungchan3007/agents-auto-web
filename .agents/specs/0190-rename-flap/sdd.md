@@ -34,6 +34,7 @@
 - .agents/specs/0190-rename-flap/**
 
 ## 계획 밖 변경 이유
+- apps/api/scripts/geo-ask.ts — 첫 줄 주석의 "출처에 tripfx" 를 "우리 사이트(flapfx.com)" 로 (측정 판정을 바꾼 것과 같은 내용)
 - HANDOFF.md — 인수인계 표의 사이트 주소가 옛 `tripfx.pages.dev` 라 새 주소로 (한 줄)
 
 ## 위험

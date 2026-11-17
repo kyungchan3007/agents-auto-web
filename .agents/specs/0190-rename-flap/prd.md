@@ -27,7 +27,7 @@
 - 저장 키가 바뀌면 기존 방문자의 즐겨찾기 · 고른 여행지가 한 번 사라짐 (확인됨: 같이 바꿈)
 
 ## 완료 기준
-- [ ] bash .agents/checks.sh PASS (보호 파일은 harness-approved 라벨로 승인)
-- [ ] 저장소에서 `tripfx.pages.dev` 가 비목표(지난 기록 · GSC_SITE) 말고는 남지 않음
-- [ ] Full 게이트(build · e2e) 통과
+- [x] bash .agents/checks.sh PASS (보호 파일은 harness-approved 라벨로 승인 — 로컬은 이 항목만 FAIL)
+- [x] 저장소에서 `tripfx.pages.dev` 가 비목표(지난 기록 · GSC_SITE) 말고는 남지 않음
+- [x] Full 게이트(build · e2e) 통과 — e2e 233
 - [ ] 머지 뒤 flapfx.com 에서 제목 · canonical · sitemap · robots · og 가 새 이름 · 주소
