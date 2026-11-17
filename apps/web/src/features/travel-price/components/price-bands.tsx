@@ -5,6 +5,8 @@
 import { SectionTitle } from "@hav/ui/text/heading";
 import type { Signal } from "@hav/shared/signal";
 import type { Band } from "@hav/shared/travel";
+import { Flag } from "@hav/ui/data/flag";
+import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import { SignalPin } from "@hav/ui/data/signal-pin";
 import Link from "next/link";
 import { usePriceBands } from "../hooks/use-price-bands";
@@ -34,10 +36,13 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
                 const signal = r.currency ? signalOf[r.currency] : null;
                 return (
                   <li key={r.country} className="flex items-center justify-between gap-3">
-                    <span className="min-w-0">
+                    <span className="flex min-w-0 items-center gap-3">
+                      <Flag country={TRAVEL_COUNTRIES[r.country]?.flag ?? null} label={`${r.name} 국기`} className="h-4 w-6 shrink-0" />
+                      <span className="min-w-0">
                       <span className="block text-[1.125rem] font-semibold text-fg">{r.name}</span>
                       <span className="block text-small text-fg-2">
                         물가 {Math.round(r.relative * 100)} (한국 100){r.year !== latestYear ? ` · ${r.year}년 자료` : ""}
+                      </span>
                       </span>
                     </span>
                     {r.currency && signal ? (

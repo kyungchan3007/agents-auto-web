@@ -236,6 +236,7 @@
 | 데이터 | Cloudflare D1 · Drizzle ORM |
 | 배포 · 자동화 | Cloudflare Workers(정적 자산 + Worker) · Workers Builds · GitHub Actions · Turborepo |
 | 검증 | Vitest · Playwright |
+| 국기 그림 | country-flag-icons (MIT License) — 서버에서 SVG 로 그려 HTML 에 넣음 |
 | AI 에이전트 | Claude Code · Codex · OpenRig(에이전트 팀) · Herdr(터미널 한 화면) |
 
 ---
