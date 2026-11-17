@@ -75,8 +75,8 @@ describe("사진 파일 — 5장 × 3폭", () => {
     }
   });
 
-  it("폭별 파일만 있음 — 원본 이름(폭 없는 파일)을 그대로 두지 않음 (사이트에 안 쓰는 무거운 파일을 싣지 않게)", () => {
-    const extra = existsSync(PHOTOS) ? readdirSync(PHOTOS).filter((f) => !/^(window-fjord|window-sunrise|swiss-traveler|plane-below|plane-sunset)-(640|1024|1672)\.webp$/.test(f)) : ["(폴더 없음)"];
+  it("폭별 파일만 있음 — 원본 이름(폭 없는 파일)을 그대로 두지 않음 (사이트에 안 쓰는 무거운 파일을 싣지 않게 · 나라 사진은 작업 0201 · country-코드 · 20장은 country-photos.test.ts 가 따로 검사)", () => {
+    const extra = existsSync(PHOTOS) ? readdirSync(PHOTOS).filter((f) => !/^(window-fjord|window-sunrise|swiss-traveler|plane-below|plane-sunset|country-[a-z]{3})-(640|1024|1672)\.webp$/.test(f)) : ["(폴더 없음)"];
     expect(extra).toEqual([]);
   });
 });
