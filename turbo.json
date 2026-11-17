@@ -5,7 +5,7 @@
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**", "out/**", "dist/**"],
       "env": ["TRIPFX_API_URL"],
-      "passThroughEnv": ["CF_PAGES", "CF_PAGES_BRANCH"]
+      "passThroughEnv": ["CF_PAGES", "CF_PAGES_BRANCH", "WORKERS_CI", "WORKERS_CI_BRANCH"]
     },
     "lint": {
       "dependsOn": ["^lint"]
