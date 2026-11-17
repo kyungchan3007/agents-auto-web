@@ -81,6 +81,11 @@ describe("운영 빌드 지키기 (작업 0076)", () => {
     const good = { ok: true as const, data: 1 };
     expect(mustHave(good, "환율", prod)).toBe(good);
   });
+
+  it("Workers Builds 운영 빌드(main)에서도 멈춤 · 브랜치 미리보기는 그대로 (작업 0189)", () => {
+    expect(() => mustHave(bad, "환율", { WORKERS_CI: "1", WORKERS_CI_BRANCH: "main" })).toThrow(/운영 빌드 멈춤/);
+    expect(mustHave(bad, "환율", { WORKERS_CI: "1", WORKERS_CI_BRANCH: "task/x" })).toBe(bad);
+  });
 });
 
 // 실제 배포 API 확인 — 네트워크가 필요해서 평소엔 건너뜀: LIVE_API=1 npx vitest run src/shared

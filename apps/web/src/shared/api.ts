@@ -24,12 +24,16 @@ export const getJson = <T extends z.ZodType>(path: string, schema: T, opts: ApiO
 export const LIVE: ApiOptions = { base: "/bff", timeoutMs: 8_000 };
 
 /**
- * 운영 배포 빌드(Cloudflare Pages · main)에서 꼭 필요한 자료를 못 받으면 빌드를 멈춤 — 실패한 빌드는 배포되지 않아 예전 사이트가 그대로 남음
+ * 운영 배포 빌드(Cloudflare Pages 또는 Workers Builds · main)에서 꼭 필요한 자료를 못 받으면 빌드를 멈춤 — 실패한 빌드는 배포되지 않아 예전 사이트가 그대로 남음
  * 2026-10-29 D1 읽기 한도 초과로 API 가 500 일 때, 그대로 빌드하면 멀쩡한 사이트를 "자료 없음" 으로 덮을 뻔했음 (작업 0076)
  * 미리보기 · 로컬 빌드는 지금처럼 "자료 없음" 화면으로 (FX-02)
+ * Workers Builds(작업 0189)는 WORKERS_CI=1 · WORKERS_CI_BRANCH 를 넣어 줌 — Pages 의 CF_PAGES · CF_PAGES_BRANCH 와 같은 뜻
  */
+const isProductionBuild = (env: Record<string, string | undefined>) =>
+  (env.CF_PAGES === "1" && env.CF_PAGES_BRANCH === "main") || (env.WORKERS_CI === "1" && env.WORKERS_CI_BRANCH === "main");
+
 export function mustHave<T>(f: Fetched<T>, what: string, env: Record<string, string | undefined> = process.env): Fetched<T> {
-  if (!f.ok && env.CF_PAGES === "1" && env.CF_PAGES_BRANCH === "main") throw new Error(`운영 빌드 멈춤: ${what} 을 받지 못함 (${f.reason}) — 예전 배포를 그대로 둠`);
+  if (!f.ok && isProductionBuild(env)) throw new Error(`운영 빌드 멈춤: ${what} 을 받지 못함 (${f.reason}) — 예전 배포를 그대로 둠`);
   return f;
 }
 
