@@ -1,4 +1,4 @@
-// AI 답변 인용 측정 — 응답에서 출처 주소를 골라 우리 사이트(플랩 · flapfx.com)가 나왔는지 · SQL (GitHub Actions 가 scripts/geo-ask.ts 로 부름 · Worker 묶음에 들어가지 않음 · 작업 0139)
+// AI 답변 인용 측정 — 응답에서 출처 주소를 골라 우리 사이트(Flapfx · flapfx.com)가 나왔는지 · SQL (GitHub Actions 가 scripts/geo-ask.ts 로 부름 · Worker 묶음에 들어가지 않음 · 작업 0139)
 //   응답은 외부 데이터 — 주소의 도메인만 보고, 본문 글은 저장하지도 지시로 따르지도 않음
 import type Anthropic from "@anthropic-ai/sdk";
 
