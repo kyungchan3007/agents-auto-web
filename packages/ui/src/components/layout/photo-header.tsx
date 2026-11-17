@@ -3,10 +3,15 @@
 //   막(veil): light = 하늘 종이색 그라데이션 (데스크톱 왼쪽 → 오른쪽 · 모바일 아래 → 위)로 글자가 읽히게 · ultramarine = 울트라마린 막 + 흰 글자
 //   이 부품만 그라데이션을 씀 (장식이 아니라 글자를 읽히게 하는 막)
 import type { ReactNode } from "react";
-import { PHOTO_SIZES, type PhotoName, photoSrc, photoSrcSet } from "../../lib/photo";
+import { PHOTO_SIZES, type PhotoName, countryPhoto, photoSrc, photoSrcSet } from "../../lib/photo";
+
+// 나라 사진 이름 · 주소를 화면(기능 폴더)이 쓰도록 다시 내보냄 — @hav/ui 의 공개 경로는 components 아래뿐 (작업 0201)
+export { countryPhoto, photoSrc };
 
 type Props = {
   name: PhotoName;
+  /** 고른 나라(ISO alpha-3) — 그 나라 사진이 있으면 name 대신 씀 · 없으면 name (작업 0201) */
+  country?: string | null;
   alt: string;
   veil: "light" | "ultramarine";
   priority?: boolean;
@@ -24,13 +29,14 @@ const VEIL = {
 } as const;
 const TEXT = { light: "", ultramarine: "text-foam" } as const;
 
-export function PhotoHeader({ name, alt, veil, priority = false, position = "center", fadeBottom = false, children }: Props) {
+export function PhotoHeader({ name, country, alt, veil, priority = false, position = "center", fadeBottom = false, children }: Props) {
+  const shown: PhotoName = (country ? countryPhoto(country) : null) ?? name;
   return (
     <section data-testid="photo-header" data-veil={veil} className={`group/photo relative isolate flex min-h-[22rem] items-end overflow-hidden bg-surface sm:min-h-[26rem] ${TEXT[veil]}`}>
       <img
         data-testid="photo-header-img"
-        src={photoSrc(name, 1024)}
-        srcSet={photoSrcSet(name)}
+        src={photoSrc(shown, 1024)}
+        srcSet={photoSrcSet(shown)}
         sizes={PHOTO_SIZES}
         alt={alt}
         width={1672}

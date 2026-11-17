@@ -3,11 +3,10 @@
 import { motion } from "motion/react";
 import type { IntroView } from "../hooks/use-intro";
 
-const PHOTO = "/images/photos/window-fjord-1672.webp";
 const EASE = [0.65, 0, 0.3, 1] as const;
 
 export function WindowTransition({ s }: { s: IntroView }) {
-  const { phase, target, still } = s;
+  const { phase, target, still, photo: PHOTO } = s;
   if (phase === 0) return null;
   const d = (sec: number) => (still ? 0 : sec);
   const full = { left: 0, top: 0, width: typeof window === "undefined" ? 1440 : window.innerWidth, height: typeof window === "undefined" ? 900 : window.innerHeight };

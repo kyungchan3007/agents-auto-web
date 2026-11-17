@@ -2,10 +2,10 @@
 // 지수가 없으면 큰 제목 대신 "아직 받지 못했습니다" · 그래프 · 비행기 없음 (숫자 · 달을 지어내지 않음)
 import { PLANE_MODEL_URL } from "@hav/shared/travel";
 import { PlaneRouteLazy } from "@hav/ui/three/scene/lazy";
-import { PhotoHeader } from "@hav/ui/layout/photo-header";
 import { EmphText } from "@hav/ui/text/emph";
 import { Eyebrow, Title } from "@hav/ui/text/heading";
 import { type TravelTiming, travelTimingCopy } from "../lib/travel-timing";
+import { PickedPhotoHeader } from "./picked-photo-header";
 
 const W = 1000;
 const H = 300;
@@ -33,7 +33,7 @@ export function TravelTimingSection({ timing }: { timing: TravelTiming }) {
   const copy = travelTimingCopy(timing);
   return (
     <section aria-labelledby="timing-title" className="bg-surface text-fg">
-      <PhotoHeader name="window-fjord" alt="비행기 창밖으로 보이는 피오르" veil="light" priority fadeBottom>
+      <PickedPhotoHeader name="window-fjord" alt="비행기 창밖으로 보이는 피오르" veil="light" priority fadeBottom>
         <Eyebrow>여행 타이밍</Eyebrow>
         {timing.kind === "ready" ? (
           <>
@@ -47,7 +47,7 @@ export function TravelTimingSection({ timing }: { timing: TravelTiming }) {
             {copy.message}
           </Title>
         )}
-      </PhotoHeader>
+      </PickedPhotoHeader>
     </section>
   );
 }

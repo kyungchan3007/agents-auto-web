@@ -1,6 +1,6 @@
-// 여행지 검색 · 자주 가는 곳 — 순수 함수 (작업 0201) · 홈 "내 여행지 고르기" 시트와 여행 물가 시트가 같이 씀
-// 나라 · 도시 자료는 @hav/shared/travel (인트로 1단계와 같은 자료 · 같은 저장 값 PickedTrip) — 인트로 폴더를 가져오지 않음 (0185 규칙)
-import { TRAVEL_CITIES, TRAVEL_COUNTRIES } from "@hav/shared/travel";
+// 여행지 검색 · 자주 가는 곳 — 순수 함수 (작업 0201) · 홈 "내 여행지 고르기" 시트와 여행 물가 시트가 같이 씀 (두 기능이 쓰는 공통 모듈이라 앱 공용 폴더가 아니라 @hav/shared 로)
+// 나라 · 도시 자료는 travel.ts (인트로 1단계와 같은 자료 · 같은 저장 값 PickedTrip) — 인트로 폴더를 가져오지 않음 (0185 규칙)
+import { TRAVEL_CITIES, TRAVEL_COUNTRIES } from "./travel";
 
 export type DestinationHit = { country: string; city: string; label: string };
 

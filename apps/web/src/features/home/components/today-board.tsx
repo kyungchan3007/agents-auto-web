@@ -6,6 +6,7 @@ import { DateText } from "@hav/ui/text/date-text";
 import { type Destination, type SignalRow, cheapestDestination } from "../lib/destinations";
 import { DESTINATIONS } from "../lib/places";
 import { todayBoard } from "../lib/today-board";
+import { PickTrip } from "@hav/ui/form/pick-trip";
 import { PickedBoard } from "./picked-board";
 
 type Props = { rates: FxRate[]; signals: SignalRow[]; windowDays: number; problem: string | null };
@@ -33,6 +34,8 @@ export function TodayBoard({ rates, signals, windowDays, problem }: Props) {
             </p>
           )}
         </PickedBoard>
+        {/* 휴대폰은 인트로가 없어 여기서 여행지를 고름 (넓은 화면에서도 보임 · 인트로를 끈 사람) — 고르면 안내판 · 사진이 바로 바뀜 (작업 0201) */}
+        <PickTrip label="내 여행지 고르기" changeLabel="여행지 바꾸기" className="mt-6" />
       </div>
     </section>
   );

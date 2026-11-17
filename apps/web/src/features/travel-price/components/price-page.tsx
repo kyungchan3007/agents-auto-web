@@ -6,14 +6,12 @@ import type { PriceLevels } from "@hav/shared/prices";
 import type { SignalList } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES, travelBands } from "@hav/shared/travel";
 import { PageFooter } from "@hav/ui/layout/page-footer";
-import { PhotoHeader } from "@hav/ui/layout/photo-header";
-import { EmphText } from "@hav/ui/text/emph";
-import { Eyebrow, Title } from "@hav/ui/text/heading";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
 import { pricesHeadline } from "../lib/prices-copy";
 import { BudgetPlanner } from "./budget-planner";
 import { Suspense } from "react";
 import { PriceBands } from "./price-bands";
+import { PricesHeader } from "./prices-header";
 import { PriceView } from "./price-view";
 
 export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; signals: Fetched<SignalList> }) {
@@ -28,13 +26,7 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
     <>
       <SiteNav page="prices" />
       <main className="bg-surface text-fg">
-        <PhotoHeader name="swiss-traveler" alt="스위스 풍경을 바라보는 여행자" veil="light" priority>
-          <Eyebrow>여행 물가</Eyebrow>
-          <Title as="h1" size="page" className="mt-3 text-cheap">
-            <EmphText text={headline ? headline.title : "여행 물가 자료를 받지 못했습니다"} />
-          </Title>
-          <p className="mt-6 max-w-[36em] text-body text-fg-2">세계은행 나라별 물가 수준(한국 = 100)과 오늘 그 나라 통화 신호를 함께 봅니다.</p>
-        </PhotoHeader>
+        <PricesHeader rows={rows.map((r) => ({ country: r.country, name: r.name, relative: r.relative, year: r.year }))} title={headline ? headline.title : "여행 물가 자료를 받지 못했습니다"} />
         <div className="px-4 pt-6 pb-10 sm:px-8">
         <div className="mx-auto max-w-page">
           <div>
