@@ -1,0 +1,40 @@
+// 사이트 Worker(flapfx) 설정 — Cloudflare Workers Builds 가 배포 (작업 0189)
+//   빌드: npx turbo run build --filter=@hav/web (저장소 맨 위에서) → apps/web/out
+//   배포: npx wrangler deploy --config apps/web/wrangler.jsonc
+//   미리보기(브랜치): npx wrangler versions upload --config apps/web/wrangler.jsonc
+// 저장소 맨 위 wrangler.jsonc 는 옛 Pages(tripfx) 설정 — 전환이 끝나면 지움 · API Worker 설정은 apps/api/wrangler.jsonc
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "flapfx",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "out",
+    "binding": "ASSETS",
+    // Next 정적 내보내기: /currencies → currencies.html · 없는 주소 → 404.html
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    // worker/routes.ts 와 같아야 함 (routes.test.ts 가 검사)
+    "run_worker_first": [
+      "/",
+      "/currencies",
+      "/currencies/*",
+      "/prices",
+      "/calc",
+      "/log",
+      "/about",
+      "/geo",
+      "/robots.txt",
+      "/sitemap.xml",
+      "/bff/*"
+    ]
+  },
+  // /bff/* 가 API Worker 를 바로 부름 (인터넷을 거치지 않음)
+  "services": [{ "binding": "API", "service": "tripfx-api" }],
+  // 페이지 방문 집계 (geo_hits · 작업 0129) · 표는 apps/api 마이그레이션이 만듦
+  "d1_databases": [{ "binding": "DB", "database_name": "hav-db", "database_id": "eccde06e-211e-4eb0-95e5-c0c30f8ad278" }],
+  "workers_dev": true,
+  "preview_urls": true,
+  "observability": { "enabled": true },
+  "upload_source_maps": true
+}
