@@ -10,6 +10,7 @@ import { HomeFooter } from "./home-footer";
 import { TodayBoard } from "./today-board";
 import { TravelTimingGraph, TravelTimingSection } from "./travel-timing-section";
 import { type Destination, destinationRows } from "../lib/destinations";
+import { moreCurrenciesCount } from "../lib/more-currencies";
 import { DESTINATIONS } from "../lib/places";
 import { travelTiming } from "../lib/travel-timing";
 
@@ -26,7 +27,7 @@ export function Home({ latest, signals, airFare }: HomeData) {
       <TravelTimingSection timing={timing} />
       <TodayBoard rates={rates} signals={signalRows} windowDays={windowDays} problem={!latest.ok ? latest.reason : null} />
       <TravelTimingGraph timing={timing} />
-      <DestinationsSection rows={destinationRows(signalRows, rates, DESTINATIONS as Destination[])} windowDays={windowDays} />
+      <DestinationsSection rows={destinationRows(signalRows, rates, DESTINATIONS as Destination[])} windowDays={windowDays} moreCount={moreCurrenciesCount(rates, DESTINATIONS)} />
       <HomeFooter />
     </>
   );
