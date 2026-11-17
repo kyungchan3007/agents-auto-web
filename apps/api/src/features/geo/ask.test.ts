@@ -71,39 +71,63 @@ describe("AI 답변 인용 측정 (작업 0139)", () => {
     expect(QUESTIONS.filter((q) => q.group === "brand")).toHaveLength(8);
   });
 
-  // 작업 0183 — 질문 2판 (2026-11-17 측정부터) · 기준 질문 6개는 번호 · 문구 그대로, 바뀐 질문은 새 번호
+  // 작업 0196 — 질문 3판 (2026-11-18 측정부터 · 사이트 이름이 플랩 · flapfx 로 바뀜) · 일반 질문은 번호 · 문구 그대로, 브랜드 질문은 새 번호
   const KEPT: Record<string, string> = {
-    b1: "Tripfx",
-    b2: "tripfx.pages.dev",
-    b3: "Tripfx 환율",
     g1: "오늘 달러 환율 싼 편인가요",
     g2: "지금 환전해도 될까 달러 최근 90일",
     g7: "해외직구 관세 계산기",
   };
+  // 전(1 · 2판 Tripfx) → 후(3판 플랩 · flapfx)
+  const RENAMED: Record<string, [string, string]> = {
+    b1: ["b14", "플랩 flapfx"],
+    b2: ["b15", "flapfx.com"],
+    b3: ["b16", "플랩 flapfx 환율"],
+    b9: ["b17", "플랩 flapfx 여행 타이밍"],
+    b10: ["b18", "플랩 flapfx 국제항공료 지수"],
+    b11: ["b19", "플랩 flapfx 과세환율 직구 계산"],
+    b12: ["b20", "플랩 flapfx 이번 주 가장 싸게 갈 수 있는 곳"],
+    b13: ["b21", "플랩 flapfx AI 에이전트가 만든 환율 사이트"],
+  };
   const V1_RETIRED = ["b4", "b5", "b6", "b7", "b8", "g3", "g4", "g5", "g6", "g8", "g9", "g10", "g11", "g12", "g13", "g14", "g15", "g16"];
+  const V2_GENERAL = ["g17", "g18", "g19", "g20", "g21", "g22", "g23", "g24", "g25", "g26", "g27", "g28", "g29"];
 
-  it("2판 — 기준 질문 6개는 같은 번호 · 같은 문구로 남음", () => {
+  it("3판 — 일반 질문 16개는 같은 번호 · 같은 문구 (이름 · 주소 말고는 비교가 이어짐)", () => {
+    const general = QUESTIONS.filter((q) => q.group === "general");
+    expect(general).toHaveLength(16);
+    for (const id of ["g17", "g18", "g19", "g20", "g21", "g22", "g23", "g24", "g25", "g26", "g27", "g28", "g29"]) expect(general.some((q) => q.id === id), id).toBe(true);
     for (const [id, text] of Object.entries(KEPT)) expect(QUESTIONS.find((q) => q.id === id)?.text, id).toBe(text);
+    expect(general.some((q) => /tripfx|Tripfx|flapfx|플랩/.test(q.text))).toBe(false);
   });
 
-  it("2판 — 1판에서 뺀 번호는 측정 목록에 없지만 예전 기록은 읽힘", () => {
+  it("3판 — 브랜드 질문 8개는 새 번호 · 문구에 Tripfx · tripfx.pages.dev 가 없고 플랩 · flapfx · flapfx.com 으로 바뀜", () => {
+    const brand = QUESTIONS.filter((q) => q.group === "brand");
+    expect(brand).toHaveLength(8);
+    for (const [oldId, [newId, text]] of Object.entries(RENAMED)) {
+      expect(brand.find((q) => q.id === newId)?.text, newId).toBe(text);
+      expect(QUESTIONS.some((q) => q.id === oldId), `${oldId} 는 측정 목록 밖`).toBe(false);
+    }
+    for (const q of brand) expect(/tripfx/i.test(q.text), q.text).toBe(false);
+  });
+
+  it("3판 — 바뀐 브랜드 번호의 예전 질문은 측정 목록에 없지만 예전 기록은 그때 문구로 읽힘", () => {
     const active = new Set(QUESTIONS.map((q) => q.id));
-    for (const id of V1_RETIRED) {
+    for (const id of [...V1_RETIRED, ...Object.keys(RENAMED)]) {
       expect(active.has(id), id).toBe(false);
       expect(questionOf(id)?.text, id).toBeTruthy();
     }
+    expect(questionOf("b1")?.text).toBe("Tripfx");
+    expect(questionOf("b2")?.text).toBe("tripfx.pages.dev");
+    expect(questionOf("b13")?.text).toBe("Tripfx AI 에이전트가 만든 환율 사이트");
     expect(questionOf("b4")?.text).toBe("Tripfx 환율 사이트");
     expect(questionOf("g16")?.text).toBe("직구 타이밍 환율 언제 살까");
+    expect(V2_GENERAL.every((id) => active.has(id))).toBe(true); // 2판 일반 질문은 3판에도 그대로 측정
   });
 
-  it("2판 — 새 질문은 새 번호(1판에 없던 번호) · 문구가 1판과 겹치지 않음", () => {
-    const fresh = QUESTIONS.filter((q) => !(q.id in KEPT));
-    expect(fresh).toHaveLength(18);
-    const retiredTexts = new Set(V1_RETIRED.map((id) => questionOf(id)?.text));
-    for (const q of fresh) {
-      expect(V1_RETIRED, q.id).not.toContain(q.id);
-      expect(retiredTexts.has(q.text), q.text).toBe(false);
-    }
+  it("3판 — 새 번호는 1 · 2판에 없던 번호 · 질문 번호는 겹치지 않음", () => {
+    const old = new Set([...Object.keys(RENAMED), ...V1_RETIRED]);
+    for (const [, [newId]] of Object.entries(RENAMED)) expect(old.has(newId), newId).toBe(false);
+    const all = [...QUESTIONS.map((q) => q.id), ...old];
+    expect(new Set(all).size).toBe(all.length);
   });
 
   it("요약 — 서비스마다 최근 측정일 · 실패는 인용으로 세지 않음 · 기록이 없으면 null", () => {
