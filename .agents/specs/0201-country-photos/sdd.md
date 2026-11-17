@@ -32,8 +32,12 @@
 - .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
-- `packages/shared/package.json`(exports 한 줄) · `packages/shared/src/domain/destination-search.ts` · `packages/shared/src/domain/destination-search.test.ts` — 여행지 검색은 홈 · 여행 물가 두 기능이 쓰는 공통 모듈이라 앱 공용 폴더에 둘 수 없음(구조 검사 role-boundary). `currency-search`(0192)와 같은 방식.
-- `packages/ui/src/components/form/pick-trip.tsx` · `packages/ui/src/hooks/use-pick-trip.ts` · `packages/ui/src/hooks/use-picked-trip.ts` — 시트도 두 기능이 쓰므로 `@hav/ui`(sdd 가 허용한 "시트를 디자인 시스템으로 올릴 때") · 훅은 ui 규칙대로 `hooks/use-*.ts`. ui `package.json` 은 그대로.
+- packages/shared/package.json — exports 한 줄(`./destination-search`) · `currency-search`(0192)와 같은 방식
+- packages/shared/src/domain/destination-search.ts — 여행지 검색은 홈 · 여행 물가 두 기능이 쓰는 공통 모듈이라 앱 공용 폴더에 둘 수 없음(구조 검사 role-boundary)
+- packages/shared/src/domain/destination-search.test.ts — 위 파일의 단위 테스트(앱 공용 폴더에서 옮김)
+- packages/ui/src/components/form/pick-trip.tsx — 시트도 두 기능이 쓰므로 `@hav/ui`(sdd 가 허용한 "시트를 디자인 시스템으로 올릴 때") · ui `package.json` 은 그대로
+- packages/ui/src/hooks/use-pick-trip.ts — 시트 상태 훅(ui 규칙: 화면은 그리기만 · 훅은 hooks/use-*.ts)
+- packages/ui/src/hooks/use-picked-trip.ts — 고른 값 읽기 훅(홈 훅은 구조 검사가 고정해 그대로 두고 같은 방식으로 따로 둠)
 
 ## 위험
 - 사진 용량: 20장 × 3폭 — 크기 상한을 넘으면 품질을 낮춤 (검사로 막힘).
