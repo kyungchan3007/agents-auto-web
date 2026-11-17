@@ -20,7 +20,7 @@ test.describe("통화 /currencies/USD (SR-CUR-01)", () => {
     const detail = tid(page, "currency-detail");
     await expect(detail).toContainText("USD");
     await expect(detail).toContainText("실제로 바꿀 때");
-    await expect(detail.getByRole("link", { name: /이 통화 쓰는 나라 물가 보기/ })).toHaveAttribute("href", "/prices");
+    await expect(detail.getByRole("link", { name: /이 통화 쓰는 나라 물가 보기/ })).toHaveAttribute("href", "/prices?currency=USD");
     // 1년 최저 · 최고 · 평균은 받은 값으로만 — 있으면 세 칸 모두 보임
     for (const label of ["1년 최저", "1년 최고", "1년 평균"]) await expect(detail).toContainText(label);
   });
@@ -111,6 +111,49 @@ test.describe("여행 물가 /prices (SR-PRC-01)", () => {
     await expect(bands).toBeVisible();
     for (const label of ["한국보다 싼 곳", "비슷한 곳", "한국보다 비싼 곳"]) await expect(bands).toContainText(label);
     await expect(tid(page, "budget")).toContainText("여행 하루 예산");
+  });
+});
+
+// 작업 0193 — 통화 상세의 "이 통화 쓰는 나라 물가 보기" 를 누르면 그 통화를 쓰는 나라만 보임 → 전체 보기로 돌아감
+test.describe("여행 물가 — 통화로 거르기 (작업 0193)", () => {
+  const bandsOf = (page: Page) => tid(page, "price-bands");
+  const filtered = (page: Page) => page.getByTestId("price-filter");
+
+  test("상세 → 링크 → 그 통화 나라만 · 안내 · 전체 보기", async ({ page }) => {
+    await page.goto("/currencies/JPY");
+    await tid(page, "currency-detail").getByRole("link", { name: /이 통화 쓰는 나라 물가 보기/ }).click();
+    await expect(page).toHaveURL(/\/prices\/?\?currency=JPY$/);
+    await expect(filtered(page)).toContainText("엔화를 쓰는 나라 1곳");
+    await expect(bandsOf(page)).toContainText("일본");
+    await expect(bandsOf(page)).not.toContainText("태국");
+    await expect(bandsOf(page)).not.toContainText("미국");
+    await filtered(page).getByRole("link", { name: /전체 보기/ }).click();
+    await expect(page).toHaveURL(/\/prices\/?$/);
+    await expect(filtered(page)).toHaveCount(0);
+    await expect(bandsOf(page)).toContainText("태국");
+  });
+
+  test("유로 — 유로 나라가 여럿 보이고 일본은 안 보임 · 자료 없는 나라는 '물가 자료 없음'", async ({ page }) => {
+    await page.goto("/prices?currency=EUR");
+    await expect(filtered(page)).toContainText(/유로를 쓰는 나라 \d+곳/);
+    await expect(bandsOf(page)).toContainText("프랑스");
+    await expect(bandsOf(page)).toContainText("독일");
+    await expect(bandsOf(page)).not.toContainText("일본");
+    // 핀란드는 자료가 있으면 목록에, 없으면 "물가 자료 없음" 으로 — 둘 중 하나로는 반드시 보임
+    await expect(page.getByText("핀란드").first()).toBeVisible();
+  });
+
+  test("모르는 코드 — 거르지 않고 전체 + 안내", async ({ page }) => {
+    await page.goto("/prices?currency=ZZZ");
+    await expect(filtered(page)).toContainText("전체");
+    await expect(bandsOf(page)).toContainText("일본");
+    await expect(bandsOf(page)).toContainText("태국");
+  });
+
+  test("주소에 통화가 없으면 안내 없이 전체", async ({ page }) => {
+    await page.goto("/prices");
+    await expect(filtered(page)).toHaveCount(0);
+    await expect(bandsOf(page)).toContainText("일본");
   });
 });
 
