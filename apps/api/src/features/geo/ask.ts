@@ -8,7 +8,7 @@ export type Engine = (typeof ENGINES)[number];
 export type Hit = { cited: boolean; found: boolean };
 export type AnswerRow = { day: string; engine: Engine; question: string; status: "ok" | "error" } & Hit;
 
-/** 우리 사이트 주소 — flapfx.com · www.flapfx.com · Worker 주소와 그 미리보기 주소 (작업 0190 · 옛 tripfx.pages.dev 는 2026-11-17 삭제) */
+/** 우리 사이트 주소 — flapfx.com · www.flapfx.com · Worker 주소와 그 미리보기 주소 (작업 0190 · 옛 Pages 주소는 2026-11-17 삭제) */
 const SITE_HOSTS = ["flapfx.com", "www.flapfx.com", "agents-auto-web.developfff.workers.dev"];
 const PREVIEW_SUFFIX = "-agents-auto-web.developfff.workers.dev";
 
