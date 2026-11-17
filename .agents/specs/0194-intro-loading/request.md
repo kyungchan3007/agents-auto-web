@@ -5,3 +5,6 @@
 
 ---
 (이슈 #221 "사용자 요청 원문" · 전달: claude-desktop@external 2026-11-17 10:52Z · 진행 순서 4/5 · 디자인이라 시안을 먼저 보여 주고 고른 뒤 구현)
+
+## 시안 결정 (2026-11-17 11:50Z · 전달: claude-desktop@external · 작업서 .tmp/lead-0194-chosen.md)
+A로 하자
