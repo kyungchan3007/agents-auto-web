@@ -28,8 +28,8 @@
 - 미리보기: Workers Builds 의 브랜치 빌드는 버전 업로드 + 미리보기 주소 (가정: `preview_urls: true`)
 
 ## 완료 기준
-- [ ] bash .agents/checks.sh PASS (보호 파일은 harness-approved 라벨로 승인)
-- [ ] Worker 진입점 단위 테스트: `/bff/*` → 프록시, 페이지 → 자산 + 방문 기록, 그 밖 경로 → 자산만
-- [ ] 로컬에서 `wrangler dev`(정적 자산 + Worker)로 홈 · 통화 페이지 · `/bff/fx/latest` · 404 · `_headers` 확인
-- [ ] Full 게이트(build · e2e) 통과
+- [x] bash .agents/checks.sh PASS (보호 파일은 harness-approved 라벨로 승인 — 로컬은 이 항목만 FAIL)
+- [x] Worker 진입점 단위 테스트: `/bff/*` → 프록시, 페이지 → 자산 + 방문 기록, 그 밖 경로 → 자산만
+- [x] 로컬에서 `wrangler dev`(정적 자산 + Worker)로 홈 · 통화 페이지 · `/bff/fx/latest` · 404 · `_headers` 확인
+- [x] Full 게이트(build · e2e) 통과 — e2e 233
 - [ ] 머지 뒤 사용자와 Cloudflare 에서 Workers 프로젝트를 만들고 `flapfx.com` 을 옮겨 운영 확인
