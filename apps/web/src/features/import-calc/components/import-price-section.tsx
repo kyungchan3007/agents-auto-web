@@ -1,11 +1,14 @@
 // 수입물가 영역 — 원/달러 월평균과 한국은행 수입물가지수(원화기준 · 2020=100)를 한 차트에 (작업 0165)
 //   두 값의 단위가 달라 "처음 같은 달 = 100" 으로 맞춰 겹쳐 그림 · 숫자는 아래 표로도 (색 · 그림만으로 전하지 않음) · 자료가 없으면 "준비 중"
+import { numberText } from "@hav/shared/format";
 import { SectionTitle } from "@hav/ui/text/heading";
-import { type FxDay, type MonthPoint, importPriceView } from "../lib/import-price";
+import { type FxDay, type Kpi, type MonthPoint, importPriceKpis, importPriceView } from "../lib/import-price";
 
 const W = 600;
-const H = 180;
+const H = 200;
 const PAD = 10;
+/** 선 끝 금액을 놓을 오른쪽 여백 (viewBox 폭 기준) */
+const RIGHT = 90;
 
 export function ImportPriceSection({ fxRows, price }: { fxRows: FxDay[] | null; price: MonthPoint[] | null }) {
   const v = importPriceView(fxRows, price);
@@ -14,9 +17,38 @@ export function ImportPriceSection({ fxRows, price }: { fxRows: FxDay[] | null; 
       <SectionTitle id="import-price-title" className="text-[1.625rem] leading-tight text-cheap">
         수입물가와 환율
       </SectionTitle>
-      <p className="mt-2 text-body text-fg-2">환율이 오르면 수입물가도 따라 오릅니다 (한국은행)</p>
+      <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-4">
+        <p className="max-w-md text-body text-fg-2">환율이 오르면 수입물가도 따라 오릅니다 (한국은행)</p>
+        {v.kind === "ready" && <Kpis rows={v.rows} />}
+      </div>
       {v.kind === "preparing" ? <p className="mt-2 text-body text-fg-2">준비 중 — 수입물가지수를 아직 받지 못했습니다</p> : <Chart rows={v.rows} />}
     </section>
+  );
+}
+
+const signed = (n: number, d: number) => `${n > 0 ? "+" : ""}${numberText(n, { maximumFractionDigits: d })}`;
+
+// 큰 숫자 두 개 — 수입물가지수 · 원/달러 월평균의 가장 최근 달과 전달보다 (작업 0200)
+function Kpis({ rows }: { rows: { period: string; fx: number | null; price: number | null }[] }) {
+  const k = importPriceKpis(rows);
+  const items: { key: string; label: string; k: Kpi | null; value: (n: number) => string; delta: (n: number) => string }[] = [
+    { key: "price", label: "수입물가지수", k: k.price, value: (n) => numberText(n, { maximumFractionDigits: 2 }), delta: (n) => signed(n, 2) },
+    { key: "fx", label: "원/달러 월평균", k: k.fx, value: (n) => `${numberText(n, { maximumFractionDigits: 0 })}원`, delta: (n) => `${signed(n, 0)}원` },
+  ];
+  return (
+    <div className="flex gap-8">
+      {items.map((i) =>
+        i.k ? (
+          <div key={i.key} data-testid="import-kpi" className="min-w-0">
+            <p className="text-small text-fg-2">
+              {i.label} ({i.k.period})
+            </p>
+            <p className="text-[1.75rem] leading-tight font-extrabold tracking-display text-fg tabular-nums">{i.value(i.k.value)}</p>
+            {i.k.delta !== null && <p className="text-small text-fg-2">전달보다 {i.delta(i.k.delta)}</p>}
+          </div>
+        ) : null,
+      )}
+    </div>
   );
 }
 
@@ -27,17 +59,41 @@ function Chart({ rows }: { rows: { period: string; fx: number | null; price: num
   const all = idx.flatMap((r) => [r.fx, r.price]).filter((n): n is number => n !== null);
   const lo = Math.min(...all);
   const hi = Math.max(...all);
-  const x = (i: number) => PAD + (rows.length === 1 ? 0.5 : i / (rows.length - 1)) * (W - PAD * 2);
+  const x = (i: number) => PAD + (rows.length === 1 ? 0.5 : i / (rows.length - 1)) * (W - PAD * 2 - RIGHT);
   const y = (n: number) => (hi === lo ? H / 2 : PAD + (1 - (n - lo) / (hi - lo)) * (H - PAD * 2));
   // 비어 있는 달은 잇지 않고 끊음
   const path = (key: "fx" | "price") => idx.map((r, i) => (r[key] === null ? "" : `${idx[i - 1]?.[key] == null ? "M" : "L"}${x(i).toFixed(1)},${y(r[key] as number).toFixed(1)}`)).join(" ");
   const last = rows[rows.length - 1];
+  // 선 끝 — 각 값의 가장 최근 달 점과 금액 (HTML 글자라 휴대폰에서도 작아지지 않음)
+  const end = (key: "fx" | "price") => {
+    let i = idx.length - 1;
+    while (i >= 0 && idx[i][key] === null) i--;
+    return i < 0 ? null : { left: (x(i) / W) * 100, top: (y(idx[i][key] as number) / H) * 100, raw: rows[i][key] as number };
+  };
+  const ends = [
+    { key: "fx" as const, color: "var(--hav-cheap)", e: end("fx"), text: (n: number) => `${numberText(n, { maximumFractionDigits: 0 })}원` },
+    { key: "price" as const, color: "var(--hav-band)", e: end("price"), text: (n: number) => numberText(n, { maximumFractionDigits: 2 }) },
+  ];
   return (
     <div>
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`원/달러 월평균과 수입물가지수 — ${rows[0].period}부터 ${last.period}까지, 처음 같은 달을 100으로 맞춤`} className="mt-4 block h-auto w-full overflow-visible">
-        <path d={path("fx")} fill="none" stroke="var(--hav-cheap)" strokeWidth={2.5} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-        <path d={path("price")} fill="none" stroke="var(--hav-band)" strokeWidth={2.5} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-      </svg>
+      <p className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-small text-fg-2">
+        <span className="inline-flex items-center gap-2"><i className="inline-block h-1 w-5 rounded-pill" style={{ background: "var(--hav-cheap)" }} />원/달러 월평균</span>
+        <span className="inline-flex items-center gap-2"><i className="inline-block h-1 w-5 rounded-pill" style={{ background: "var(--hav-band)" }} />수입물가지수</span>
+        <span>· {rows.find((r) => r.fx !== null && r.price !== null)?.period} = 100 으로 맞춤</span>
+      </p>
+      <div className="relative mt-3">
+        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`원/달러 월평균과 수입물가지수 — ${rows[0].period}부터 ${last.period}까지, 처음 같은 달을 100으로 맞춤`} className="block h-auto w-full overflow-visible">
+          <path d={path("fx")} fill="none" stroke="var(--hav-cheap)" strokeWidth={2.5} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+          <path d={path("price")} fill="none" stroke="var(--hav-band)" strokeWidth={2.5} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+        </svg>
+        {ends.map((l) =>
+          l.e ? (
+            <span key={l.key} data-testid="import-end-label" className="absolute -translate-y-1/2 pl-2 text-small font-semibold whitespace-nowrap tabular-nums" style={{ left: `${l.e.left}%`, top: `${l.e.top}%`, color: l.color }}>
+              ● {l.text(l.e.raw)}
+            </span>
+          ) : null,
+        )}
+      </div>
     </div>
   );
 }

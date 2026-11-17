@@ -10,11 +10,11 @@ import type { useCalcForm } from "../hooks/use-calc-form";
 
 // 입력 상태는 위(calc-page)에서 한 번 만들어 내려받음 — 맨 위 큰 문장(사진 위)이 같은 입력으로 바뀌어야 해서 (작업 0175)
 export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
-  const { codes, input, result, rate, source, set, err } = form;
+  const { codes, input, result, rate, source, set, err, example } = form;
   return (
     <>
-      <div className="grid items-start gap-4 lg:grid-cols-2">
-      <form data-testid="calc-input" className="grid content-start gap-4 rounded-card bg-card px-6 py-6" onSubmit={(e) => e.preventDefault()} aria-label="직구 계산 입력">
+      <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
+      <form data-testid="calc-input" className="grid content-start gap-4 rounded-card bg-card px-6 py-6 sm:grid-cols-2" onSubmit={(e) => e.preventDefault()} aria-label="직구 계산 입력">
         <Field label="통화" htmlFor="currency">
           <Select id="currency" value={input.currency} onChange={set("currency")}>
             {codes.map((c) => (
@@ -24,10 +24,10 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
             ))}
           </Select>
         </Field>
-        <Field label="물건 값" hint="현지 세금 · 현지 배송비까지 넣은 값" htmlFor="price" error={err("price")}>
+        <Field label="물건 값" hint="현지 세금 · 현지 배송비까지 넣은 값" htmlFor="price" error={err("price")} badge={example}>
           <UnitInput unit={input.currency} id="price" inputMode="decimal" autoComplete="off" value={input.price} onChange={set("price")} placeholder="180" />
         </Field>
-        <Field label="보내는 곳" htmlFor="route">
+        <Field label="보내는 곳" htmlFor="route" wide>
           <Select id="route" value={input.route} onChange={set("route")}>
             {(Object.keys(ROUTE_LABEL) as Route[]).map((k) => (
               <option key={k} value={k}>
@@ -50,15 +50,24 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
   );
 }
 
-function Field({ label, hint, htmlFor, error, children }: { label: string; hint?: string; htmlFor: string; error?: string | null; children: ReactNode }) {
+// 힌트 · 오류는 같은 자리(최소 두 줄 높이) — 오류가 떠도 칸이 커지지 않음 (작업 0200) · 보내는 곳은 두 칸 폭
+function Field({ label, hint, htmlFor, error, wide, badge, children }: { label: string; hint?: string; htmlFor: string; error?: string | null; wide?: boolean; badge?: boolean; children: ReactNode }) {
   return (
-    <div>
-      <label htmlFor={htmlFor} className="text-small text-fg-2">
-        {label}
-      </label>
+    <div className={wide ? "sm:col-span-2" : ""}>
+      <div className="flex items-baseline justify-between gap-2">
+        <label htmlFor={htmlFor} className="text-small text-fg-2">
+          {label}
+        </label>
+        {badge && (
+          <span data-testid="calc-example" className="text-small font-semibold text-cheap">
+            예시 값 — 바꿔 넣어 보세요
+          </span>
+        )}
+      </div>
       <div className="mt-1.5">{children}</div>
-      {hint && <p className="mt-1.5 text-small text-fg-2">{hint}</p>}
-      {error && <p className="mt-1.5 text-sm text-expensive">{error}</p>}
+      {(hint || error) && (
+        <p className={`mt-1.5 min-h-[2.75rem] overflow-hidden text-small ${error ? "text-expensive" : "text-fg-2"}`}>{error ?? hint}</p>
+      )}
     </div>
   );
 }

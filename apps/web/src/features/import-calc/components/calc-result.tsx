@@ -12,7 +12,9 @@ const won = (v: number | null) => (v == null ? "—" : `${numberText(v)}원`);
 export function CalcResult({ result: r, rate, source, dutyRate }: { result: Result | null; rate: FxRate | undefined; source?: RateSource; dutyRate: string }) {
   const rateText = source ? source.label : rate ? `${rate.date} 기준 · ${SOURCE_NAME[rate.source]}` : "환율을 받지 못했습니다";
   return (
-    <div data-testid="calc-result" className="rounded-card bg-pin-cheap px-6 py-6 text-foam" aria-live="polite">
+    // 크기 고정 — 휴대폰은 정해진 높이 · 넓은 화면은 입력 묶음과 같은 높이 (바깥은 늘어나는 칸 · 안쪽을 겹쳐 넘치는 글은 칸 안에서 스크롤 · 작업 0200)
+    <div data-testid="calc-result" className="relative h-[30rem] rounded-card bg-pin-cheap text-foam lg:h-auto" aria-live="polite">
+      <div className="h-full overflow-y-auto px-6 py-6 lg:absolute lg:inset-0">
       {r?.ok && !r.over && (
         <Stamp>면세 한도 안 (${r.limitUsd})</Stamp>
       )}
@@ -33,6 +35,7 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
         </dl>
       )}
       <p className="mt-4 text-small">예상 금액입니다. 실제 세금은 통관 때 정해집니다.</p>
+      </div>
     </div>
   );
 }
