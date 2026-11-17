@@ -16,6 +16,7 @@
     "./tasks": "./src/contracts/tasks.ts",
     "./currency": "./src/domain/currency.ts",
     "./travel": "./src/domain/travel.ts",
+    "./currency-search": "./src/domain/currency-search.ts",
     "./status": "./src/contracts/status.ts",
     "./freshness": "./src/domain/freshness.ts",
     "./kst": "./src/utils/kst.ts",
