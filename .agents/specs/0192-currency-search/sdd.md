@@ -39,3 +39,6 @@
 - Full 게이트 한 번 · 브랜치 미리보기에서 실제 브라우저 확인
 
 ## 계획과 달라진 점
+- 검색 순수 함수는 `packages/shared/src/domain/currency-search.ts` 에 두고 `@hav/shared/currency-search` 로 내보냄(exports 한 줄).
+- 제안 줄 문구(`search-view.ts`)는 화면 기능 안(features/currencies/lib)에 둠 — 나라 · 도시가 많으면 앞의 둘만 보이고 "외 N곳".
+- 엔터에서 활성 줄이 없으면 첫 제안으로 감 (테스트 계약에 없는 편의).
