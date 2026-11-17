@@ -265,3 +265,50 @@ test("메뉴 — 새 화면으로 이동 (휴대폰은 메뉴 버튼을 먼저 �
     await expect(page).toHaveURL(new RegExp(`${path}/?$`));
   }
 });
+
+// 작업 0198 — "나라 더 보기 · 나라 접기" 가 버튼으로 보이고, 펼친 뒤에도 접기를 쉽게 찾고, 접으면 목록 머리로 돌아감 (#231)
+test.describe("여행 물가 — 나라 접기 버튼 (작업 0198)", () => {
+  const bandsOf = (page: Page) => tid(page, "price-bands");
+  const openBtn = (page: Page) => bandsOf(page).getByRole("button", { name: /나라 더 보기/ });
+  const foldBtn = (page: Page) => bandsOf(page).getByRole("button", { name: "나라 접기" });
+
+  test("버튼 모양 — 테두리 알약 · 높이 44px 이상 · 초점 표시", async ({ page }) => {
+    await page.goto("/prices");
+    const btn = openBtn(page);
+    await expect(btn).toBeVisible();
+    expect((await box(btn)).height).toBeGreaterThanOrEqual(44);
+    const style = await btn.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { border: parseFloat(s.borderTopWidth), radius: parseFloat(s.borderTopLeftRadius) };
+    });
+    expect(style.border).toBeGreaterThanOrEqual(2);
+    expect(style.radius).toBeGreaterThanOrEqual(20);
+    await page.keyboard.press("Tab");
+    await btn.focus();
+    const outline = await btn.evaluate((el) => getComputedStyle(el).outlineStyle);
+    expect(outline).not.toBe("none");
+  });
+
+  test("펼친 뒤 목록 중간까지 스크롤해도 나라 접기가 화면 안에 보임", async ({ page }) => {
+    await page.goto("/prices");
+    await openBtn(page).click();
+    const fold = foldBtn(page);
+    await expect(fold).toBeVisible();
+    const bands = await box(bandsOf(page));
+    const vh = page.viewportSize()?.height ?? 0;
+    // 목록 윗부분 · 중간에서 각각 접기 버튼이 화면 안에 있는지
+    for (const frac of [0.15, 0.5]) {
+      await page.evaluate((y) => window.scrollTo(0, y), Math.max(0, bands.y + bands.height * frac - vh / 2 + (await page.evaluate(() => window.scrollY))));
+      await expect(fold).toBeInViewport();
+    }
+  });
+
+  test("접으면 목록 머리가 화면 안에 들어오고 더 보기로 돌아감", async ({ page }) => {
+    await page.goto("/prices");
+    await openBtn(page).click();
+    await foldBtn(page).click();
+    await expect(openBtn(page)).toBeVisible();
+    await expect(page.locator('[data-testid="price-bands"] section').first()).toBeInViewport();
+    await expect(bandsOf(page).locator("ul").first().locator("li")).toHaveCount(2);
+  });
+});
