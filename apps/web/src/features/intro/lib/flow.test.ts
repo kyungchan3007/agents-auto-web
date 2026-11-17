@@ -2,8 +2,8 @@
 // 사용자: "나라별로 입력할 수 있게" · "입력하면 밑에 엔화 바트 달러 나오는데 그게 유저가 검색한 나라로" · "숫자는 빌드 때 받은 값 · 없으면 '없음'(지어내지 않음)"
 //
 // builder 가 만들 것
-//   apps/web/src/features/intro/lib/places.ts
-//     export const INTRO_CITIES: Record<string /* TRAVEL_COUNTRIES 키 */, string[]>   // 나라마다 1개 이상 · 첫 도시가 대표 도시 (시안 countries.json 그대로 — 일본: 도쿄 오사카 후쿠오카 삿포로 오키나와 교토 · 태국: 방콕 치앙마이 푸껫 파타야 …)
+//   packages/shared/src/domain/travel.ts (작업 0192 — 인트로 places.ts 의 도시 표를 공용 TRAVEL_CITIES 로 옮김)
+//     export const TRAVEL_CITIES: Record<string /* TRAVEL_COUNTRIES 키 */, string[]>   // 나라마다 1개 이상 · 첫 도시가 대표 도시 (시안 countries.json 그대로 — 일본: 도쿄 오사카 후쿠오카 삿포로 오키나와 교토 · 태국: 방콕 치앙마이 푸껫 파타야 …)
 //   apps/web/src/features/intro/lib/flow.ts   (three · React 없음 · 기능 폴더 밖은 @hav/shared 만 가져옴)
 //     export const ORIGIN = "ICN" · export const BOARD_COLS = 12
 //     export type Signal = "cheap" | "normal" | "expensive"
@@ -21,10 +21,9 @@
 //     export function ticketOf(a: { country: IntroCountry; city: string; budget: number; month: number; airfare: string; today: string /* YYYY-MM-DD */ }): { route: [string, string]; rows: { label: string; value: string }[]; code: string; footer: [string, string] }
 //     export const STEP_NAMES: string[] · stepLabel(step) · canGoBack(step) · prevStep(step) · pickedOf(country: string, city: string, budget: number): PickedTrip
 import { currencyName } from "@hav/shared/currency";
-import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
+import { TRAVEL_CITIES, TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import { describe, expect, it } from "vitest";
 import { BOARD_COLS, ORIGIN, STEP_NAMES, airfareInfo, boardRows, budgetLine, canGoBack, convertBudget, formatWon, introCountries, parseBudget, pickedOf, pinLine, prevStep, priceLine, quickPicks, rateNote, searchPlaces, stepLabel, ticketOf, wonText } from "./flow";
-import { INTRO_CITIES } from "./places";
 
 const INPUT = {
   rates: [
@@ -52,25 +51,25 @@ const by = (iso: string) => ALL.find((c) => c.iso === iso)!;
 const short = (code: string) => currencyName(code).replace(/화$/, "");
 
 describe("나라 · 도시 목록", () => {
-  it("INTRO_CITIES — TRAVEL_COUNTRIES 의 모든 나라에 도시가 1개 이상 · 모르는 나라 키 없음", () => {
-    expect(Object.keys(INTRO_CITIES).sort()).toEqual(Object.keys(TRAVEL_COUNTRIES).sort());
-    for (const [iso, cities] of Object.entries(INTRO_CITIES)) {
+  it("TRAVEL_CITIES — TRAVEL_COUNTRIES 의 모든 나라에 도시가 1개 이상 · 모르는 나라 키 없음", () => {
+    expect(Object.keys(TRAVEL_CITIES).sort()).toEqual(Object.keys(TRAVEL_COUNTRIES).sort());
+    for (const [iso, cities] of Object.entries(TRAVEL_CITIES)) {
       expect(cities.length, iso).toBeGreaterThan(0);
       for (const c of cities) expect(c.trim().length, `${iso} ${c}`).toBeGreaterThan(0);
     }
   });
 
   it("대표 도시(첫 도시) · 시안 목록", () => {
-    expect(INTRO_CITIES.JPN).toEqual(["도쿄", "오사카", "후쿠오카", "삿포로", "오키나와", "교토"]);
-    expect(INTRO_CITIES.THA).toEqual(["방콕", "치앙마이", "푸껫", "파타야"]);
-    expect(INTRO_CITIES.USA[0]).toBe("뉴욕");
-    expect(INTRO_CITIES.FRA).toEqual(["파리", "니스"]);
-    expect(INTRO_CITIES.VNM).toContain("다낭");
-    expect(INTRO_CITIES.MAC).toEqual(["마카오"]);
+    expect(TRAVEL_CITIES.JPN).toEqual(["도쿄", "오사카", "후쿠오카", "삿포로", "오키나와", "교토"]);
+    expect(TRAVEL_CITIES.THA).toEqual(["방콕", "치앙마이", "푸껫", "파타야"]);
+    expect(TRAVEL_CITIES.USA[0]).toBe("뉴욕");
+    expect(TRAVEL_CITIES.FRA).toEqual(["파리", "니스"]);
+    expect(TRAVEL_CITIES.VNM).toContain("다낭");
+    expect(TRAVEL_CITIES.MAC).toEqual(["마카오"]);
   });
 
   it("도시 이름은 판(12칸)에 'ICN → 도시' 로 들어갈 만큼 짧음 (최대 8자)", () => {
-    for (const [iso, cities] of Object.entries(INTRO_CITIES)) for (const c of cities) expect([...c].length, `${iso} ${c}`).toBeLessThanOrEqual(8);
+    for (const [iso, cities] of Object.entries(TRAVEL_CITIES)) for (const c of cities) expect([...c].length, `${iso} ${c}`).toBeLessThanOrEqual(8);
   });
 });
 
@@ -81,7 +80,7 @@ describe("introCountries — 빌드 때 받은 값을 나라에 붙임 (없으�
 
   it("일본 — 엔(100) 900원 · 최근 90일 낮은 편 신호 · 물가 112", () => {
     expect(by("JPN")).toEqual({
-      iso: "JPN", country: "일본", cities: INTRO_CITIES.JPN, currency: "JPY", currencyLabel: currencyName("JPY"), currencyShort: short("JPY"), per: 100, base: 900, signal: "cheap", price: 112,
+      iso: "JPN", country: "일본", cities: TRAVEL_CITIES.JPN, currency: "JPY", currencyLabel: currencyName("JPY"), currencyShort: short("JPY"), per: 100, base: 900, signal: "cheap", price: 112,
     });
   });
 
