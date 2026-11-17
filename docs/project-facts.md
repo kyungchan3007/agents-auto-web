@@ -74,5 +74,5 @@
 - 금액 기록 없음 → 글에 금액 쓰지 않음
 
 ## 9. 주소
-- 사이트 https://flapfx.com (플랩 · 2026-11-17 이름 · 주소 바꿈 · 옛 tripfx.pages.dev 삭제) · 작업실 /log · GEO 측정 /geo
+- 사이트 https://flapfx.com (Flapfx · 2026-11-17 이름 · 주소 바꿈 · 옛 tripfx.pages.dev 삭제) · 작업실 /log · GEO 측정 /geo
 - API https://tripfx-api.developfff.workers.dev
