@@ -10,13 +10,14 @@ import { BubbleBudget } from "./bubble-budget";
 import { BubbleGate } from "./bubble-gate";
 import { BubbleSearch } from "./bubble-search";
 import { FlightHint } from "./flight-hint";
+import { IntroLoading } from "./intro-loading";
 import { PassBoard } from "./pass-board";
 import { WindowTransition } from "./window-transition";
 
 export function Intro({ data }: { data: IntroData }) {
   const { view: s } = useIntro(data);
   if (s.closed) return null;
-  const bubbleOn = s.loaded && s.step <= 3;
+  const bubbleOn = s.revealed && s.step <= 3;
   const dots = [1, 2, 3, 4, 5];
   return (
     <motion.div
@@ -31,12 +32,13 @@ export function Intro({ data }: { data: IntroData }) {
     >
       {/* 3D 장면 — 장면을 못 불러와도 흐름은 계속 */}
       <div data-intro-stage aria-hidden className="absolute inset-0 z-[2]" style={{ ...(s.lite ? { background: "linear-gradient(#AFD4E6, #D3E9EE 45%, #EAF4F2)" } : null), visibility: s.stageOff ? "hidden" : "visible" }} />
-      {!s.loaded && <div className="absolute inset-0 z-[6] grid place-items-center bg-surface font-bold text-fg-2">공항으로 가는 중…</div>}
+      {/* 로딩 화면 — 출발 안내판 · 열리면 1단계 (작업 0194) · 아래 위 띠(건너뛰기)가 이 층 위에 있어 로딩 중에도 건너뛸 수 있음 */}
+      <IntroLoading s={s} />
 
       {/* 상단 띠 — 홈 메뉴처럼 로고 · 단계 · 건너뛰기 */}
       <div className={`pointer-events-none fixed inset-x-0 top-0 z-[5] flex items-center justify-between gap-3 px-6 pt-4 transition-opacity duration-300 ${s.phase === 0 ? "opacity-100" : "opacity-0"}`}>
-        <div className="text-[22px] font-black tracking-tight text-cheap">flapfx</div>
-        <div className="pointer-events-auto flex items-center gap-2.5 rounded-pill border border-line bg-card/90 px-3.5 py-1.5 text-[13px] font-bold">
+        <div className={`text-[22px] font-black tracking-tight text-cheap transition-opacity duration-500 ${s.revealed ? "opacity-100" : "opacity-0"}`}>flapfx</div>
+        <div className={`pointer-events-auto flex items-center gap-2.5 rounded-pill border border-line bg-card/90 px-3.5 py-1.5 text-[13px] font-bold transition-opacity duration-500 ${s.revealed ? "opacity-100" : "opacity-0"}`}>
           <span data-testid="intro-step">{s.stepLabel}</span>
           <span aria-hidden className="flex gap-1">
             {dots.map((n) => (

@@ -46,7 +46,6 @@ export function useFlapRows(texts: string[], opts: { cols: number; totalMs?: num
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
     // texts 는 key 로 비교 (내용이 바뀔 때만 다시 시작)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, cols, totalMs, skip]);
 
   return skip ? texts.map(cellsOf) : shown;

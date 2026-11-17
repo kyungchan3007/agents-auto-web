@@ -29,6 +29,7 @@ import {
   ticketOf,
 } from "../lib/flow";
 import type { IntroStep, SceneApi, SceneState } from "../lib/scene-types";
+import { useIntroLoading } from "./use-intro-loading";
 import { useIntroScene } from "./use-intro-scene";
 import { INTRO_CLOSED_EVENT } from "../lib/entry";
 
@@ -65,6 +66,9 @@ export function useIntro(data: IntroData) {
   const [today] = useState<string>(() => kstDate());
 
   const [loaded, setLoaded] = useState(false);
+  // 로딩 화면(작업 0194) — 3D 준비 + 최소 표시 시간 뒤 "어디로 떠나시나요?" → 열림 · 열리기 시작하면 1단계 부품(말풍선 · 포커스)을 켬
+  const loading = useIntroLoading(loaded, still);
+  const revealed = loading.stage === "open" || loading.stage === "done";
   // 그래픽 가속이 없으면 3D 없이 가벼운 배경 · 이륙은 이 훅이 굴림
   const [lite, setLite] = useState(false);
   // 창문이 화면을 덮은 뒤 3D 층을 숨김 (시안: stage.style.visibility = hidden) — 숨기지 않으면 마지막 프레임(확대된 비행기)이 사진 둘레에 다시 보임
@@ -352,10 +356,10 @@ export function useIntro(data: IntroData) {
 
   // 단계가 바뀌면 그 단계의 첫 입력칸 · 버튼으로 포커스
   useEffect(() => {
-    if (!loaded) return;
+    if (!revealed) return;
     const t = window.setTimeout(() => part("bubble")?.querySelector<HTMLElement>("[data-autofocus]")?.focus({ preventScroll: true }), still ? 0 : 380);
     return () => window.clearTimeout(t);
-  }, [loaded, step, still]);
+  }, [revealed, step, still]);
 
   const passVisible = !!pick && (step === 4 || (step === 5 && phase === 0));
   const view = {
@@ -364,6 +368,8 @@ export function useIntro(data: IntroData) {
     lite,
     stageOff,
     loaded,
+    loading,
+    revealed,
     still,
     step,
     stepLabel: stepLabel(step),
