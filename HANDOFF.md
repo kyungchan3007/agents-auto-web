@@ -10,7 +10,7 @@
 | --- | --- |
 | 저장소 | [kyungchan3007/harness-auto-web](https://github.com/kyungchan3007/harness-auto-web) 공개 · main 보호(필수 검사 `gate`) · 자동 머지 켬 |
 | 보드 | GitHub Projects [auto-web #11](https://github.com/users/kyungchan3007/projects/11) · `.tmp/board.sh <번호> <상태>` 로 옮김 (로컬 도구) |
-| 사이트 | **`tripfx.pages.dev`** — Cloudflare Pages ↔ GitHub 연결 · main 머지마다 자동 배포 · PR 마다 미리보기 |
+| 사이트 | **`flapfx.com`** (플랩) — Cloudflare Workers `agents-auto-web` ↔ GitHub 연결(Workers Builds) · main 머지마다 자동 배포 · 브랜치마다 미리보기 · 옛 `tripfx.pages.dev` 는 2026-11-17 삭제 (작업 0190) |
 | API | **`https://tripfx-api.developfff.workers.dev`** — Worker `tripfx-api` · D1 `hav-db` · Cron 평일 03:00 UTC(환율) · 매달 1일 04:00 UTC(물가) |
 | 비밀값 | `KOREAEXIM_KEY` · `ADMIN_TOKEN` (사람이 wrangler secret 으로 등록 · 에이전트는 값을 모름) |
 | 데이터 | 환율 1년치(수출입은행 244일 · 예비 2일 · 공휴일 16일 비움) · 물가 200개국 — 사람이 `.tmp/backfill.sh` 로 채움 |
