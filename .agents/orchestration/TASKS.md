@@ -33,4 +33,4 @@
 | 0195 | 플랩 파비콘 · 앱 아이콘 · 남은 이름 검사 (#222) | builder | 머지됨 (#230) | task/0195-flap-icons | apps/web/src/app/icon.svg · apple-icon.png · public/icons/** |
 | 0197 | 사이트 이름 표기 플랩 → Flapfx (#228 · Full) | builder | 머지됨 (#229) | task/0197-flapfx-name | apps/web/src/** · apps/api/src/features/geo/** · docs/** · README.md |
 | 0198 | 여행 물가 나라 더 보기 · 접기를 알약 버튼으로 · 펼치면 화면 아래에 붙음 (#231) | builder | 머지됨 (#232) | task/0198-fold-button | apps/web/src/features/travel-price/** · apps/web/e2e/** |
-| 0199 | 나라 국기(SVG) — 홈 도착지 · 통화 · 여행 물가 (#234) | builder | 진행 중 | task/0199-country-flags | apps/web/src/features/{home,currencies,travel-price}/** · packages/ui/src/components/data/*flag.tsx |
+| 0199 | 나라 국기(SVG) — 홈 도착지 · 통화 · 여행 물가 (#234) | builder | PR 대기 | task/0199-country-flags | apps/web/src/features/{home,currencies,travel-price}/** · packages/ui/src/components/data/*flag.tsx |
