@@ -28,5 +28,5 @@
 | 0191 | 홈 도착지별 환전 타이밍 → "다른 통화 N개 모두 보기" 링크 (#218 · Quick) | builder | PR 대기 | task/0191-currencies-link | apps/web/src/features/home/** · apps/web/e2e/** |
 | 0192 | /currencies 통화 검색 · 자동완성 (#219 · Full) | test → builder | PR 대기 | task/0192-currency-search | packages/shared/src/domain/travel.ts · currency-search.ts · apps/web/src/features/currencies/** · intro/lib/places.ts · flow.ts |
 | 0193 | 패치(버그) — "이 통화 쓰는 나라 물가 보기"가 그 통화 나라를 보여 줌 (#220 · Quick) | builder | PR 대기 | task/0193-prices-by-currency | apps/web/src/features/travel-price/** · currencies/components/currency-detail.tsx |
-| 0194 | 인트로 로딩 화면 · 전환 — 시안 A 출발 안내판이 열림 (#221 · Quick) | builder | 진행 중 | task/0194-intro-loading | apps/web/src/features/intro/** · apps/web/e2e/intro*.spec.ts |
+| 0194 | 인트로 로딩 화면 · 전환 — 시안 A 출발 안내판이 열림 (#221 · Quick) | builder | PR 대기 | task/0194-intro-loading | apps/web/src/features/intro/** · apps/web/e2e/intro*.spec.ts |
 | 0196 | AI 측정 질문 3판 — 브랜드 이름을 플랩 · flapfx 로 (#215) | geo | PR 대기 | task/0196-geo-q3 | apps/api/src/features/geo/** · apps/web/src/features/geo/** · docs/geo-measurement.md |
