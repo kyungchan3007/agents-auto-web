@@ -17,7 +17,7 @@
 | 공개 일지 | git 커밋 · PR · 작업 폴더 (데이터 저장 위치와 무관 · 수집 기록은 운영용) | 확인됨 |
 | 로그인 · 알림 수단 | 이메일 매직 링크 · 이메일 알림 | 가정 |
 | 패키지 매니저 · 이름 | npm workspaces · `@hav/<이름>` | 가정 |
-| 주소 | 사이트 `tripfx.pages.dev` · API `tripfx-api.developfff.workers.dev` — Cloudflare 무료 주소, `saju-me` 는 쓰지 않음 · 도메인은 나중에 사면 연결만 바꿈 | 확인됨 (2026-10-28) |
+| 주소 | 사이트 `flapfx.com` (플랩 · Workers `agents-auto-web`) · API `tripfx-api.developfff.workers.dev` | 확인됨 (2026-11-17 · 작업 0190 · 옛 `tripfx.pages.dev` 는 삭제) |
 
 ## 전체 그림
 ```text
@@ -52,7 +52,8 @@
   - Worker 를 먼저 지나는 경로는 `worker/routes.ts` → `wrangler.jsonc` `assets.run_worker_first` (이미지 · 스크립트는 Worker 를 지나지 않음)
 - 설정 `apps/web/wrangler.jsonc` · Workers Builds: 루트 = 저장소 맨 위 · 빌드 `npx turbo run build --filter=@hav/web` · 배포 `npx wrangler deploy --config apps/web/wrangler.jsonc`
 - 운영 빌드 지킴(`mustHave`)은 Pages(`CF_PAGES`) · Workers Builds(`WORKERS_CI`) 둘 다 main 일 때 동작
-- 전환 기간에는 옛 Pages 설정(맨 위 `wrangler.jsonc` · `functions/` · `public/_routes.json`)을 남겨 둠 → Workers 로 옮긴 뒤 지움
+- 옛 Pages 설정(맨 위 `wrangler.jsonc` · `functions/` · `public/_routes.json`)은 Pages 프로젝트 삭제(2026-11-17)와 함께 지움 (작업 0190) · Worker 이름 `agents-auto-web` · 도메인 `flapfx.com` · `www.flapfx.com` 은 `apps/web/wrangler.jsonc` `routes` 가 원본
+- 평일 다시 만들기 · 수집 뒤 다시 빌드는 Workers Builds 배포 후크(`daily-rebuild` · main) — 비밀값 이름은 그대로 `PAGES_DEPLOY_HOOK`
 
 ## 자동 배포 (2026-10-28 · 작업 0042 · 사용자 확인: "CI할때자동으로 배포될수 있게 해야지")
 | 무엇 | 언제 | 어떻게 |

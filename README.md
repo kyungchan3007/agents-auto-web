@@ -1,18 +1,18 @@
 <div align="center">
 
-# 💱 Tripfx
+# 💱 플랩 (flapfx)
 
 **AI 코딩 에이전트를 활용한 서비스 개발 · 운영 학습 프로젝트**
 
 개인 프로젝트 · 기획 · 설계 · 검증 담당 (구현 · 운영은 AI 에이전트) · 2026.10 ~
 
-[🌐 tripfx.pages.dev](https://tripfx.pages.dev) · [🛠️ 작업실](https://tripfx.pages.dev/log) · [📡 GEO 측정](https://tripfx.pages.dev/geo)
+[🌐 flapfx.com](https://flapfx.com) · [🛠️ 작업실](https://flapfx.com/log) · [📡 GEO 측정](https://flapfx.com/geo)
 
 <br>
 
 ![next](https://img.shields.io/badge/Next.js_16-정적_사이트-000000?logo=next.js&logoColor=white)
 ![hono](https://img.shields.io/badge/Hono-Workers-E36002?logo=hono&logoColor=white)
-![cloudflare](https://img.shields.io/badge/Cloudflare-Pages_·_D1-F38020?logo=cloudflare&logoColor=white)
+![cloudflare](https://img.shields.io/badge/Cloudflare-Workers_·_D1-F38020?logo=cloudflare&logoColor=white)
 ![agents](https://img.shields.io/badge/Claude_Code·Codex-agents-8A2BE2)
 ![openrig](https://img.shields.io/badge/OpenRig-에이전트_팀-2438A8)
 ![herdr](https://img.shields.io/badge/Herdr-터미널_한_화면-17A398)
@@ -188,11 +188,11 @@
 ## 🏗️ 아키텍처
 
 - **API (Cloudflare Workers)** — 환율 · 물가 데이터의 예약 수집과 D1 저장을 담당하며 조회 API를 제공합니다.
-- **사이트 (Cloudflare Pages)** — 빌드 시 API 데이터로 정적 페이지를 생성하며, 새 환율이 저장되면 다시 빌드됩니다.
-- **BFF (Pages Functions)** — 작업실의 실시간 조회 요청을 같은 주소의 `/bff` 경로에서 받아 서비스 바인딩으로 API를 호출합니다.
+- **사이트 (Cloudflare Workers)** — 빌드 시 API 데이터로 정적 페이지를 생성해 Worker 정적 자산으로 올리며, 새 환율이 저장되면 다시 빌드됩니다.
+- **BFF (사이트 Worker)** — 작업실의 실시간 조회 요청을 같은 주소의 `/bff` 경로에서 받아 서비스 바인딩으로 API를 호출합니다.
 - **GitHub** — 에이전트의 변경 사항은 PR에서 게이트와 개발자 검증을 거쳐 병합됩니다. Actions는 보안 점검 · 검색 자료 수집 · 색인 요청을 수행합니다.
 
-<img src="docs/images/architecture.png" width="100%" alt="Tripfx 아키텍처: 외부 데이터 · API Worker · D1 · Pages 정적 사이트 · BFF · GitHub(에이전트 · PR · 게이트 · 개발자 검증 · Actions)" />
+<img src="docs/images/architecture.png" width="100%" alt="플랩 아키텍처: 외부 데이터 · API Worker · D1 · 정적 사이트 · BFF · GitHub(에이전트 · PR · 게이트 · 개발자 검증 · Actions)" />
 
 ---
 
@@ -201,7 +201,7 @@
 - **사이트 준비** — robots.txt · sitemap.xml · IndexNow 키 파일, 구글 · Bing 소유 확인 태그, 인용용 콘텐츠(통화 절반만 적용한 비교군 포함)
 - **검색 엔진 등록 · 알림** — Google Search Console · Bing Webmaster Tools에 등록하고, 평일마다 바뀐 페이지를 IndexNow로 전송
 - **단계별 측정** — 봇 방문, 검색 노출, AI 답변 인용, AI 서비스 유입을 나눠 측정
-- **저장 · 공개** — 측정 결과를 D1에 날짜별로 보관하고 [GEO 측정 페이지](https://tripfx.pages.dev/geo)에 공개
+- **저장 · 공개** — 측정 결과를 D1에 날짜별로 보관하고 [GEO 측정 페이지](https://flapfx.com/geo)에 공개
 
 <img src="docs/images/geo-flow.png" width="100%" alt="GEO 측정 흐름: 사이트 준비 → 검색 엔진 등록 · 알림 → 단계별 측정 → 저장 · 공개" />
 
@@ -211,7 +211,7 @@
 
 | 결정 | 비교 | 선택 |
 | --- | --- | --- |
-| 화면 렌더링 | Workers SSR vs Pages 정적 생성 + BFF | 정적 생성 + BFF |
+| 화면 렌더링 | Workers SSR vs 정적 생성 + BFF | 정적 생성 + BFF (Pages → Workers 정적 자산으로 옮김 · 2026-11-17) |
 | 데이터베이스 | PostgreSQL vs D1(SQLite) + Drizzle | D1 + Drizzle |
 | 브라우저의 API 호출 | API 직접 호출 vs 같은 주소의 BFF | BFF (서비스 바인딩) |
 | 환율 수집 실행 | GitHub Actions 예약 vs Worker Cron | Worker Cron · Actions는 예비 |
@@ -234,7 +234,7 @@
 | 사이트 | Next.js 16 (정적 내보내기) · React · TypeScript · Tailwind CSS · three.js |
 | API | Hono · Cloudflare Workers · Zod |
 | 데이터 | Cloudflare D1 · Drizzle ORM |
-| 배포 · 자동화 | Cloudflare Pages · Pages Functions · GitHub Actions · Turborepo |
+| 배포 · 자동화 | Cloudflare Workers(정적 자산 + Worker) · Workers Builds · GitHub Actions · Turborepo |
 | 검증 | Vitest · Playwright |
 | AI 에이전트 | Claude Code · Codex · OpenRig(에이전트 팀) · Herdr(터미널 한 화면) |
 
@@ -247,7 +247,7 @@ apps/web        사이트 (Next.js 정적 내보내기)
 apps/api        API (Hono · Workers · D1 · Drizzle)
 packages/ui     디자인 시스템 · 3D
 packages/shared 공용 타입 · zod 스키마
-functions/bff   동일 주소의 /bff/*
+apps/web/worker 동일 주소의 /bff/* · 방문 기록
 docs            구조 · 디자인 · 기능별 규칙
 .agents         게이트 · 보호 파일 목록 · 작업 폴더
 ```
