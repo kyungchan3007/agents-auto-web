@@ -17,7 +17,7 @@
 | 공개 일지 | git 커밋 · PR · 작업 폴더 (데이터 저장 위치와 무관 · 수집 기록은 운영용) | 확인됨 |
 | 로그인 · 알림 수단 | 이메일 매직 링크 · 이메일 알림 | 가정 |
 | 패키지 매니저 · 이름 | npm workspaces · `@hav/<이름>` | 가정 |
-| 주소 | 사이트 `flapfx.com` (플랩 · Workers `agents-auto-web`) · API `tripfx-api.developfff.workers.dev` | 확인됨 (2026-11-17 · 작업 0190 · 옛 `tripfx.pages.dev` 는 삭제) |
+| 주소 | 사이트 `flapfx.com` (Flapfx · Workers `agents-auto-web`) · API `tripfx-api.developfff.workers.dev` | 확인됨 (2026-11-17 · 작업 0190 · 옛 `tripfx.pages.dev` 는 삭제) |
 
 ## 전체 그림
 ```text
@@ -46,7 +46,7 @@
 - 순서: ① 기록 API (0046) → ② BFF (0048) → 홈 성능 → ③ 만드는 중 페이지 → ④ 🧳 3D 캐릭터
 
 ## 사이트 Worker — Workers 로 옮김 (2026-11-17 · 작업 0189 · 사용자 결정: "Workers 로 새로")
-- 사이트 이름이 플랩 · 주소가 `flapfx.com` 으로 바뀜 (#208). `tripfx.pages.dev` 는 끊고, 새 Cloudflare **Workers** 프로젝트 `flapfx` 에서 배포한다 (어드민 페이지도 여기에).
+- 사이트 이름이 Flapfx · 주소가 `flapfx.com` 으로 바뀜 (#208). `tripfx.pages.dev` 는 끊고, 새 Cloudflare **Workers** 프로젝트 `flapfx` 에서 배포한다 (어드민 페이지도 여기에).
 - 화면은 그대로 정적 내보내기(`apps/web/out`)를 Workers 정적 자산으로. Pages Functions 자리는 `apps/web/worker/index.ts` 가 대신함
   - `/bff/*` → `src/bff/proxy.ts` (서비스 바인딩 `API`) · 페이지 → 자산 + `src/bff/track-visit.ts` (D1 `DB`)
   - Worker 를 먼저 지나는 경로는 `worker/routes.ts` → `wrangler.jsonc` `assets.run_worker_first` (이미지 · 스크립트는 Worker 를 지나지 않음)

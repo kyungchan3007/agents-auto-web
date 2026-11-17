@@ -1,6 +1,6 @@
 <div align="center">
 
-# 💱 플랩 (flapfx)
+# 💱 Flapfx
 
 **AI 코딩 에이전트를 활용한 서비스 개발 · 운영 학습 프로젝트**
 
@@ -192,7 +192,7 @@
 - **BFF (사이트 Worker)** — 작업실의 실시간 조회 요청을 같은 주소의 `/bff` 경로에서 받아 서비스 바인딩으로 API를 호출합니다.
 - **GitHub** — 에이전트의 변경 사항은 PR에서 게이트와 개발자 검증을 거쳐 병합됩니다. Actions는 보안 점검 · 검색 자료 수집 · 색인 요청을 수행합니다.
 
-<img src="docs/images/architecture.png" width="100%" alt="플랩 아키텍처: 외부 데이터 · API Worker · D1 · 정적 사이트 · BFF · GitHub(에이전트 · PR · 게이트 · 개발자 검증 · Actions)" />
+<img src="docs/images/architecture.png" width="100%" alt="Flapfx 아키텍처: 외부 데이터 · API Worker · D1 · 정적 사이트 · BFF · GitHub(에이전트 · PR · 게이트 · 개발자 검증 · Actions)" />
 
 ---
 
