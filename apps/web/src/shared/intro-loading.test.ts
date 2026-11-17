@@ -40,9 +40,9 @@ describe("인트로 화면 — 로딩 부품", () => {
 
 describe("로딩 부품 — 진행률 없음 · 난수 없음 · 움직임 줄이기", () => {
   const files = () => ["components/intro-loading.tsx", "hooks/use-intro-loading.ts", "lib/loading.ts"].map((f) => code(read(join(INTRO, f))));
-  it("진행률(%)을 그리지 않음 — 숫자 + % 글자 · 진행 막대(progress)가 없음", () => {
+  it("진행률(%)을 그리지 않음 — 화면 글자에 숫자 + % 가 없고 진행 막대(progress)가 없음 (CSS 의 translateY(-101%) 같은 값은 해당 없음)", () => {
     for (const s of files()) {
-      expect(s).not.toMatch(/\d\s*%|%\s*\)|<progress|role="progressbar"|aria-valuenow/);
+      expect(s).not.toMatch(/>\s*\d+\s*%|\d+\s*%\s*<|\d+\s*%["`]|퍼센트|<progress|role="progressbar"|aria-valuenow/);
     }
   });
   it("난수 없음 (Math.random 을 쓰지 않음)", () => {
