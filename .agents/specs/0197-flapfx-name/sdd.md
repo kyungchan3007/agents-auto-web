@@ -18,6 +18,8 @@
 - .agents/specs/0197-flapfx-name/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- docs/images/architecture.png · docs/images/src/architecture.svg — 문서 그림의 제목이 이름을 담고 있어(png 는 옛 "Tripfx 아키텍처" 그대로였음) 새 svg 로 다시 그림 · docs/** 범위 안
+- apps/web/src/shared/site-name.test.ts 가 자기 자신 · site-name.spec.ts 는 설명 글에 "플랩" 을 적으므로 검사에서 제외
 
 ## 위험
 - 인트로 말풍선 문구를 보는 e2e 가 깨짐 → 같은 PR 에서 맞춤.
@@ -27,3 +29,4 @@
 - 단위 + 검사 테스트 · Full 게이트 한 번 · 미리보기 실제 브라우저(탭 제목 · 홈 제목 · 인트로 말풍선 · 404)
 
 ## 계획과 달라진 점
+- 남긴 한글 "플랩": apps/web/wrangler.jsonc 주석 1줄(보호 파일) · "스플릿 플랩"(글자판 이름: flap.ts · flap.test.ts · flap-board.tsx · today-board.tsx · docs/design.md) · .agents/specs · apps/api/data(지난 기록) — 검사 테스트가 이 경로를 뺌
