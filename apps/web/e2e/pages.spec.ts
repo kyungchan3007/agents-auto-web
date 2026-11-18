@@ -42,8 +42,9 @@ test.describe("통화 /currencies/USD (SR-CUR-01)", () => {
     const group = page.getByRole("group", { name: "기간" });
     const num = (t: string | null) => Number((t ?? "").replace(/[^\d.]/g, ""));
     await group.getByRole("button", { name: "1년" }).click();
-    const maxLabel = detail.locator('[data-testid="extreme-max"]');
-    const minLabel = detail.locator('[data-testid="extreme-min"]');
+    // 작업 0219 그래프 2D — 최고 · 최저 점의 꼬리표(공통 선 그래프 chart-mark)
+    const maxLabel = detail.locator('[data-testid="chart-mark"][data-kind="max"]');
+    const minLabel = detail.locator('[data-testid="chart-mark"][data-kind="min"]');
     await expect(maxLabel).toHaveText(/^최고 [\d,]+(\.\d+)?원$/);
     await expect(minLabel).toHaveText(/^최저 [\d,]+(\.\d+)?원$/);
     const [max1y, min1y] = [num(await maxLabel.textContent()), num(await minLabel.textContent())];

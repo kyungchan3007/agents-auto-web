@@ -1,7 +1,7 @@
 // 작업 0219 — 새 디자인 통화 상세 (시안 A) · 테스트 먼저
 //   표시: data-testid="currency-jump"(위쪽 검색 + 칩 줄) · "currency-search" · "currency-chips"(칩 줄 nav · 링크마다 국기 · aria-current) · "currency-detail"(본문) · "big-rate"(큰 환율 h1 · data-final)
 //        "route-card"(1년 최저 · 최고 · 평균 한 카드) · "route-plane"(오늘 점 · data-position) · "route-min" · "route-max"(카운트업) · "route-avg"
-//        "converter"(탑승권) · "converter-board"(결과 글자판) · "year-flow"(1년 흐름 구간) · "year-line"(선 · 그려짐) · "currency-list"(맨 아래 다른 통화 목록)
+//        "converter"(탑승권) · "converter-board"(결과 글자판) · "year-flow"(1년 흐름 구간) · "currency-list"(맨 아래 다른 통화 목록)
 import { type Page, expect, test } from "@playwright/test";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
@@ -226,35 +226,6 @@ test.describe("새 통화 상세 — 계산 결과 글자판 카운트업 (작�
 });
 
 test.describe("새 통화 상세 — 1년 흐름 · 아래 목록 (작업 0219)", () => {
-  test("선이 그려지며 나타남(한 번) · 움직임 줄이기면 처음부터 다 그려짐 · 자바스크립트 끄면 다 그려짐", async ({ page, browser, baseURL }) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/currencies/USD");
-    const line = tid(page, "year-line");
-    await line.scrollIntoViewIfNeeded();
-    for (let i = 0; i < 3; i++) {
-      expect(await line.evaluate((el) => getComputedStyle(el).strokeDashoffset)).toMatch(/^0(px)?$/);
-      await page.waitForTimeout(60);
-    }
-    const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL });
-    const p2 = await ctx.newPage();
-    await p2.goto("/currencies/USD");
-    expect(await p2.locator('[data-testid="year-line"]').evaluate((el) => getComputedStyle(el).strokeDashoffset)).toMatch(/^0(px)?$/);
-    await ctx.close();
-  });
-
-  test("움직임 켜짐 — 화면에 들어오면 그려지는 중(선이 일부)이다가 끝나면 다 그려짐 · 다시 보여도 다시 안 그림", async ({ page }) => {
-    await page.goto("/currencies/USD");
-    const line = tid(page, "year-line");
-    await line.scrollIntoViewIfNeeded();
-    await expect.poll(() => line.evaluate((el) => el.getAnimations().length), { timeout: 3000 }).toBeGreaterThan(0);
-    await page.waitForTimeout(1800);
-    expect(await line.evaluate((el) => getComputedStyle(el).strokeDashoffset)).toMatch(/^0(px)?$/);
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await line.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(100);
-    expect(await line.evaluate((el) => el.getAnimations().length)).toBe(0);
-  });
-
   test("기간 탭 1개월 · 3개월 · 1년 — 누르면 aria-pressed 가 바뀜 (지금 기능 그대로)", async ({ page }) => {
     await page.goto("/currencies/USD");
     const tabs = tid(page, "year-flow").getByRole("group", { name: "기간" });
