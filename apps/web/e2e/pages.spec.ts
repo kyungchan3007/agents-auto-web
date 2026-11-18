@@ -36,6 +36,7 @@ test.describe("통화 /currencies/USD (SR-CUR-01)", () => {
   });
 
   test("그래프 최고 · 최저 금액 — 카드와 같은 값 · 기간을 바꾸면 그 기간 값 · 라벨이 그래프 안 (작업 0175)", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" }); // 카드 숫자가 카운트업 중이면 값이 달라 보임 (작업 0219) — 움직임 줄이기는 처음부터 최종 값
     await page.goto("/currencies/USD");
     const detail = tid(page, "currency-detail");
     const group = page.getByRole("group", { name: "기간" });
@@ -68,12 +69,13 @@ test.describe("통화 /currencies/USD (SR-CUR-01)", () => {
     expect(a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height, "두 라벨이 겹침").toBe(false);
   });
 
-  test("배치 — 넓은 화면은 목록이 상세 왼쪽 · 휴대폰은 목록이 위 · 상세가 아래", async ({ page }) => {
+  test("배치 — 위쪽 검색 · 칩 → 상세 → 맨 아래 목록 (작업 0219 · 넓은 화면 · 휴대폰 같은 순서)", async ({ page }) => {
     await page.goto("/currencies/USD");
     const list = await box(tid(page, "currency-list"));
     const detail = await box(tid(page, "currency-detail"));
-    if (isPhone()) expect(list.y).toBeLessThan(detail.y);
-    else expect(list.x).toBeLessThan(detail.x);
+    const jump = await box(tid(page, "currency-jump"));
+    expect(jump.y).toBeLessThan(detail.y);
+    expect(list.y).toBeGreaterThanOrEqual(detail.y + detail.height - 1);
   });
 });
 
