@@ -1,47 +1,50 @@
 "use client";
 
-// 실제로 바꿀 때 — 시안(작업 0170 · Figma 02): 흰 카드 · 제목 · 외화 입력칸 "=" 노란 원화 결과칸 · 빠른 금액 칩 · 한 줄 안내
-//   입력은 이 화면 상태에만 (보내지 않음 · 저장하지 않음) · 기준일 · 출처를 같이 (FX-01) · 송금 환율이 있으면 그 값도 · 없으면 그 값은 숨김
+// 실제로 바꿀 때 — 새 디자인(작업 0219 · 시안 A): 흰 탑승권 안 짙은 남색 칸 · 금액 입력 · 빠른 금액 칩 · 결과는 출발 안내판 글자판(B 모양) · 아래 매매기준율 안내
+//   계산 기능은 그대로 (같은 입력 → 같은 값 · convert.ts) · 입력은 이 화면 상태에만 (보내지 않음 · 저장하지 않음) · 기준일 · 출처를 같이 (FX-01) · 송금 환율이 있으면 그 값도
+//   결과 글자판은 처음 한 번만 넘어가고 값이 바뀌면 다시 넘어가지 않고 바로 바뀜 (FlapBoard 규칙) · 넓은 화면은 스크롤해도 따라옴(sticky) · 휴대폰은 끔
+import { FlapBoard } from "@hav/ui/data/flap-board";
+import { UnitInput } from "@hav/ui/form/field";
 import { SectionTitle } from "@hav/ui/text/heading";
 import { SOURCE_NAME } from "@hav/shared/currency";
 import type { FxRate } from "@hav/shared/fx";
-import { UnitInput } from "@hav/ui/form/field";
 import { amountText, presets } from "../lib/convert";
 import { useConverter } from "../hooks/use-converter";
+
+/** 결과 글자판 칸 수 — 8칸 이상 · 긴 금액이면 늘림 */
+const MIN_COLS = 8;
 
 export function Converter({ code, rate }: { code: string; rate: FxRate }) {
   const { side, amount, result, remit, invalid, value, edit, pick } = useConverter(rate);
   const foreign = side === "foreign";
+  const shown = invalid || !foreign ? "—" : `${value("won")}원`;
   return (
-    <section data-testid="converter" aria-labelledby="converter-title" className="rounded-card bg-card p-6 sm:p-8">
-      <SectionTitle id="converter-title" className="text-city text-cheap">
-        실제로 바꿀 때
-      </SectionTitle>
-      <div className="mt-5 grid items-center gap-3 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
-        <label className="block">
+    <div className="rounded-[1.75rem] bg-card p-3 shadow-ticket lg:sticky lg:top-[calc(var(--hav-nav-h)+1rem)]">
+      <section data-testid="converter" data-surface="elevated" aria-labelledby="converter-title" className="rounded-[1.25rem] bg-surface p-5 text-fg sm:p-6">
+        <SectionTitle id="converter-title" className="text-city text-fg">
+          실제로 바꿀 때
+        </SectionTitle>
+        <label className="mt-5 block">
           <span className="sr-only">{code} 금액</span>
           <UnitInput unit={code} inputMode="decimal" autoComplete="off" value={value("foreign")} onChange={edit("foreign")} onFocus={(e) => e.target.select()} className="h-14 text-xl font-semibold" aria-describedby="converter-note" />
         </label>
-        <span aria-hidden className="text-center text-city font-semibold text-cheap">
-          =
-        </span>
-        <p aria-live="polite" className="flex h-14 items-center rounded-field bg-sun px-5 text-xl font-semibold tabular-nums text-pin-ink">
-          {invalid || !foreign ? "—" : `${value("won")}원`}
-        </p>
-      </div>
-      <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="빠른 금액">
-        {presets("foreign", rate).map((p) => (
-          <button
-            key={p}
-            type="button"
-            onClick={() => pick("foreign", p)}
-            className={`rounded-pill border-2 px-3 py-1 text-small transition-colors ${foreign && amount === p ? "border-cheap bg-cheap text-on-accent" : "border-cheap text-cheap hover:bg-surface-2"}`}
-          >
-            {amountText(p, "foreign", rate)} {code}
-          </button>
-        ))}
-      </div>
-      <p id="converter-note" className="mt-4 text-small text-fg-2">
+        <div data-testid="converter-board" aria-live="polite" className="mt-4 flex">
+          <FlapBoard rows={[{ text: shown, tone: "money" }]} cols={Math.max(MIN_COLS, Array.from(shown).length)} label={shown} />
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="빠른 금액">
+          {presets("foreign", rate).map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => pick("foreign", p)}
+              className={`rounded-pill border-2 px-3 py-1 text-small font-semibold transition-colors ${foreign && amount === p ? "border-sun bg-sun text-pin-ink" : "border-line text-fg hover:bg-card"}`}
+            >
+              {amountText(p, "foreign", rate)} {code}
+            </button>
+          ))}
+        </div>
+      </section>
+      <p id="converter-note" className="mx-3 mt-4 mb-2 border-t-2 border-dashed border-line pt-4 text-small text-fg-2">
         {invalid ? (
           <span className="text-expensive">0 이상의 숫자만 넣어 주세요.</span>
         ) : (
@@ -51,6 +54,6 @@ export function Converter({ code, rate }: { code: string; rate: FxRate }) {
           </>
         )}
       </p>
-    </section>
+    </div>
   );
 }

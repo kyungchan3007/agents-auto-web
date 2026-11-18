@@ -4,8 +4,10 @@
 //   최고 · 최저 글자는 SVG 밖 HTML 로 얹음 — SVG 안 글자는 그래프와 같이 줄어 휴대폰에서 6px 쯤으로 작아졌음 (작업 0109)
 //   위아래 py-6 = 글자 자리 · 없으면 "최고" 글자가 위 기간 단추에 붙었음 (작업 0108)
 import { numberText } from "@hav/shared/format";
-import { useRef } from "react";
+import { useReducedMotion } from "motion/react";
+import { useEffect, useRef } from "react";
 import { useElementWidth } from "../../hooks/use-element-width";
+import { useInViewOnce } from "../../hooks/use-in-view-once";
 import { chartOf } from "../../lib/chart";
 import { type Placed, placeExtremeLabels } from "../../lib/extreme-labels";
 
@@ -19,10 +21,22 @@ const TONE_FILL = { cheap: "var(--hav-cheap)", normal: "var(--hav-normal)", expe
 /** average: 기준 점선(평균) 위치 · lastTone: 오늘(마지막) 점을 판정 색으로 (작업 0170 · 둘 다 없으면 예전 모양) */
 /** compact: 시안 모양 — 낮은 그래프(높이 90) · 가로 기준선 3개 · 울트라마린 선 (작업 0170) */
 /** extremeText: 최고 · 최저 점 옆 금액 글 (작업 0175 · 글은 통화 화면이 만듦 — 카드와 같은 값) · 없으면 compact 는 라벨 없음 · 아니면 "최고 n" 기본 글 */
-export function YearChart({ rates, unitText, title = "1년 흐름", average, lastTone, compact = false, extremeText }: { rates: { date: string; baseRate: number }[]; unitText: string; title?: string; average?: number; lastTone?: "cheap" | "normal" | "expensive" | null; compact?: boolean; extremeText?: { max: string; min: string } }) {
-  const H = compact ? H_COMPACT : H_FULL;
+/** draw: 화면에 처음 들어올 때 한 번 선이 그려지며 나타남 (작업 0219 · 움직임 줄이기면 없음 · 서버 첫 그림은 다 그려진 상태 · 기간을 바꿔도 다시 그리지 않음) */
+export function YearChart({ rates, unitText, title = "1년 흐름", average, lastTone, compact = false, extremeText, draw = false, tall = false }: { rates: { date: string; baseRate: number }[]; unitText: string; title?: string; average?: number; lastTone?: "cheap" | "normal" | "expensive" | null; compact?: boolean; extremeText?: { max: string; min: string }; draw?: boolean; tall?: boolean }) {
+  const H = compact && !tall ? H_COMPACT : H_FULL; // tall: 시안처럼 높게 (작업 0219)
   const box = useRef<HTMLDivElement>(null);
   const pw = useElementWidth(box, W);
+  const { ref: rootRef, seen } = useInViewOnce<HTMLDivElement>();
+  const reduce = useReducedMotion();
+  const line = useRef<SVGPathElement>(null);
+  useEffect(() => {
+    const p = line.current;
+    const svg = p?.ownerSVGElement;
+    if (!draw || !seen || reduce || !p || !svg || typeof p.animate !== "function") return;
+    // 선 길이는 화면 픽셀(굵기 고정 vectorEffect 라 점선 단위가 화면 픽셀) — 끝나면 효과가 사라져 다 그려진 그대로
+    const len = p.getTotalLength() * (svg.getBoundingClientRect().width / W);
+    p.animate([{ strokeDasharray: `${len} ${len}`, strokeDashoffset: len }, { strokeDasharray: `${len} ${len}`, strokeDashoffset: 0 }], { duration: 1200, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "backwards" });
+  }, [draw, seen, reduce]);
   const c = chartOf(rates, W, H, 10);
   if (!c) return <p className="border-t-2 border-line py-6 text-sm text-fg-2">{title}을 그릴 기록이 모자랍니다</p>;
   // 평균 점선 위치 — chartOf 와 같은 눈금(최저 ~ 최고)으로
@@ -38,12 +52,12 @@ export function YearChart({ rates, unitText, title = "1년 흐름", average, las
     ? placeExtremeLabels({ max: { ...px(c.max), text: texts.max }, min: { ...px(c.min), text: texts.min }, today: px(c.last), bounds: { left: 0, top: -PAD_Y, right: pw, bottom: H * s + PAD_Y } })
     : null;
   return (
-    <div className="py-6">
+    <div ref={rootRef} className="py-6">
       <div ref={box} className="relative">
         <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label} className="block h-auto w-full overflow-visible">
           {compact && [0.1, 0.5, 0.9].map((r) => <line key={r} x1={0} x2={W} y1={H * r} y2={H * r} stroke="var(--hav-line)" strokeWidth={1} vectorEffect="non-scaling-stroke" />)}
           {avgY !== null && <line x1={0} x2={W} y1={avgY} y2={avgY} stroke="var(--hav-fg-2)" strokeWidth={1.5} strokeDasharray="6 5" vectorEffect="non-scaling-stroke" />}
-          <path d={c.path} fill="none" stroke={compact ? "var(--hav-cheap)" : "var(--hav-accent)"} strokeWidth={compact ? 2.5 : 2} strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+          <path ref={line} data-testid="year-line" d={c.path} fill="none" stroke={compact ? "var(--hav-cheap)" : "var(--hav-accent)"} strokeWidth={compact ? 2.5 : 2} strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
           {texts && <circle cx={c.max.x} cy={c.max.y} r={4} fill="var(--hav-expensive-shape)" />}
           {texts && <circle cx={c.min.x} cy={c.min.y} r={4} fill="var(--hav-cheap)" />}
           <circle cx={c.last.x} cy={c.last.y} r={6} fill={lastTone ? TONE_FILL[lastTone] : "var(--hav-accent)"} stroke="var(--hav-surface)" strokeWidth={2} />

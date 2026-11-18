@@ -1,11 +1,12 @@
-// 통화 둘러보기 — 왼쪽 `+ 통화` 목록 → 오른쪽 상세 (docs/design.md 페이지 패턴 "둘러보기")
-// 목록은 레이아웃이라 통화를 바꿔도 남고, 상세(children)만 바뀜 (작업 0168: 동전을 뺌)
+// 통화 둘러보기 — 새 디자인(작업 0219): 위쪽 검색 + 국기 칩 줄 → 상세(children) → 맨 아래 다른 통화 목록 (docs/design.md 페이지 패턴 "둘러보기")
+// 검색 · 칩 · 목록은 레이아웃이라 통화를 바꿔도 남고, 상세(children)만 바뀜 (작업 0168: 동전을 뺌)
 import type { Fetched } from "@/shared/api";
 import { SiteNav } from "@/shared/site-nav";
 import { SOURCE_NOTE } from "@hav/shared/currency";
 import type { FxChanges, FxLatest } from "@hav/shared/fx";
 import type { SignalList } from "@hav/shared/signal";
 import type { ReactNode } from "react";
+import { CurrencyChips } from "./currency-chips";
 import { CurrencyList } from "./currency-list";
 import { CurrencySearch } from "./currency-search";
 import { Eyebrow } from "@hav/ui/text/heading";
@@ -25,20 +26,23 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
       <SiteNav page="currencies" />
       <section data-surface="light" className="bg-surface px-4 pt-8 pb-24 text-fg sm:px-8 sm:pt-10">
         <div className="mx-auto max-w-page">
-          <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-10">
-            <div data-testid="currency-list" className="min-w-0 lg:sticky lg:top-(--hav-nav-h) lg:self-start">
-              <Eyebrow>둘러보기</Eyebrow>
-              <div className="mt-4">
-                <CurrencySearch codes={items.map((i) => i.currency)} />
-              </div>
-              <div className="mt-4">
-                <CurrencyList items={items} />
-              </div>
+          {/* 위쪽 — 통화 검색(자동완성) + 국기 칩 줄 (작업 0219) */}
+          <div data-testid="currency-jump" className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
+            <div className="lg:w-80 lg:shrink-0">
+              <CurrencySearch codes={items.map((i) => i.currency)} />
             </div>
-            {/* 본문 표시 — 코드 순서는 목록 먼저 그대로 (바꾸면 키보드 이동 순서가 화면과 어긋남 · 작업 0114) */}
-            <main id="main" tabIndex={-1} data-testid="currency-detail" className="min-w-0">
-              {children}
-            </main>
+            <CurrencyChips codes={items.map((i) => i.currency)} />
+          </div>
+          {/* 본문 표시 — 위쪽 검색 · 칩 다음에 두어 키보드 이동 순서가 화면과 같음 (작업 0114 · 0219) */}
+          <main id="main" tabIndex={-1} data-testid="currency-detail" className="mt-8 min-w-0">
+            {children}
+          </main>
+          {/* 맨 아래 — 다른 통화 목록 (지금 목록 부품 · 격자) */}
+          <div data-testid="currency-list" className="mt-16 min-w-0">
+            <Eyebrow>둘러보기</Eyebrow>
+            <div className="mt-4">
+              <CurrencyList items={items} variant="grid" />
+            </div>
           </div>
         </div>
       </section>

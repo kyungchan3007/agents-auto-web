@@ -13,23 +13,24 @@ import { useListFit } from "../hooks/use-list-fit";
 
 export type { ListItem };
 
-export function CurrencyList({ items }: { items: ListItem[] }) {
+/** variant: column(왼쪽 세로 목록 · 예전) · grid(맨 아래 가로 전체 카드 격자 · 새 디자인 작업 0219) */
+export function CurrencyList({ items, variant = "column" }: { items: ListItem[]; variant?: "column" | "grid" }) {
   const { current, shown } = useCurrencyList(items);
   const listRef = useListFit(shown.length);
 
   return (
     <nav aria-label="통화 목록" className="min-w-0">
-      <ul ref={listRef} className="flex gap-2 overflow-x-auto pb-2 lg:max-h-[calc(100svh-12rem)] lg:flex-col lg:gap-0 lg:overflow-x-visible lg:overflow-y-auto lg:pb-0">
+      <ul ref={variant === "grid" ? undefined : listRef} className={variant === "grid" ? "grid gap-3 sm:grid-cols-2 lg:grid-cols-3" : "flex gap-2 overflow-x-auto pb-2 lg:max-h-[calc(100svh-12rem)] lg:flex-col lg:gap-0 lg:overflow-x-visible lg:overflow-y-auto lg:pb-0"}>
         {shown.map((i) => {
           const on = i.currency === current;
           return (
-            <li key={i.currency} className="shrink-0 lg:border-b lg:border-fg">
+            <li key={i.currency} className={variant === "grid" ? "min-w-0" : "shrink-0 lg:border-b lg:border-fg"}>
               <Link
                 href={`/currencies/${i.currency}`}
                 aria-current={on ? "page" : undefined}
                 aria-label={`${currencyName(i.currency)} ${i.currency}`}
                 scroll={false}
-                className={`flex flex-col items-start gap-2 rounded-field border-2 px-3 py-3 transition-colors lg:flex-row lg:items-center lg:justify-between lg:gap-4 ${on ? "border-cheap bg-card lg:border-transparent" : "border-line bg-card hover:bg-surface-2 lg:border-transparent lg:bg-transparent"}`}
+                className={variant === "grid" ? `flex items-center justify-between gap-4 rounded-field border-2 bg-card px-4 py-3 transition-colors hover:bg-surface-2 ${on ? "border-pin-ink" : "border-line"}` : `flex flex-col items-start gap-2 rounded-field border-2 px-3 py-3 transition-colors lg:flex-row lg:items-center lg:justify-between lg:gap-4 ${on ? "border-cheap bg-card lg:border-transparent" : "border-line bg-card hover:bg-surface-2 lg:border-transparent lg:bg-transparent"}`}
               >
                 <span className="flex min-w-0 items-center gap-3">
                   <CurrencyFlag currency={i.currency} className="h-4 w-6 shrink-0" />
