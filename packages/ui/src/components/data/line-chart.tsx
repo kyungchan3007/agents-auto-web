@@ -105,6 +105,9 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
   });
   // 최고 · 최저 점이 나타나는 때 = 선 머리(왼쪽 → 오른쪽 · 가로 비율)가 그 자리를 지날 때
   const marksBySeries = shapes.map((sh) => marks.filter((m) => m.series === sh.s.id && sh.pts[m.index]));
+  // 날짜 눈금 — 글자끼리 겹치면 끝쪽부터 남기고 사이를 건너뜀 (처음 · 끝은 늘 남김)
+  const labelOf = (t: { label: string; short?: string }) => (phone && t.short ? t.short : t.label);
+  const xt = thinTicks(xTicks.map((t) => ({ ...t, w: textWidth(labelOf(t), phone ? 10.5 : 11.5) + 10 })), (v) => X(v));
   const sched = chartSchedule({
     series: shapes.map((sh, k) => ({ marks: marksBySeries[k].map((m) => (sh.pts[m.index].x - L) / PW), area: sh.s.area !== undefined })),
   });
@@ -169,7 +172,7 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
           {y.ticks.map((tk, i) => (
             <line key={tk.v} x1={L} x2={R} y1={Y(tk.v)} y2={Y(tk.v)} stroke={i === 0 ? GRID_BASE : GRID} strokeWidth={i === 0 ? 1.4 : 1} />
           ))}
-          {xTicks.map((t) => (
+          {xt.map((t) => (
             <g key={t.x}>
               <line x1={X(t.x)} x2={X(t.x)} y1={T - 4} y2={B} stroke={GRID} strokeDasharray="2 4" />
               <line x1={X(t.x)} x2={X(t.x)} y1={B} y2={B + 5} stroke={GRID_BASE} strokeWidth={1.2} />
@@ -193,13 +196,13 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
               </g>
             ) : null,
           )}
-          {xTicks.map((t, k) => {
+          {xt.map((t, k) => {
             const x = X(t.x);
             const first = k === 0 && x - L < 24;
-            const last = k === xTicks.length - 1 && R - x < 24;
+            const last = k === xt.length - 1 && R - x < 24;
             return (
               <text key={t.x} data-testid="chart-xtick" x={first ? x - 4 : last ? x + 4 : x} y={B + (phone ? 19 : 21)} textAnchor={first ? "start" : last ? "end" : "middle"} fontSize={phone ? 10.5 : 11.5} fontWeight={500} fill={MUTE} className="font-sans">
-                {phone && t.short ? t.short : t.label}
+                {labelOf(t)}
               </text>
             );
           })}
@@ -307,4 +310,19 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
       </svg>
     </div>
   );
+}
+
+/** 눈금 솎기 — 끝(오른쪽)에서부터 글자 칸이 이웃과 겹치지 않는 것만 남김 · 처음은 늘 남김(겹치면 바로 안쪽 것을 뺌) */
+function thinTicks<T extends { x: number; w: number }>(ticks: T[], px: (x: number) => number): T[] {
+  if (ticks.length <= 2) return ticks;
+  const sorted = [...ticks].sort((a, b) => a.x - b.x);
+  const first = sorted[0];
+  const kept: T[] = [sorted[sorted.length - 1]];
+  for (let i = sorted.length - 2; i >= 1; i--) {
+    const t = sorted[i];
+    const edge = kept[kept.length - 1];
+    if (px(edge.x) - px(t.x) >= (edge.w + t.w) / 2 && px(t.x) - px(first.x) >= (first.w + t.w) / 2) kept.push(t);
+  }
+  kept.push(first);
+  return kept.reverse();
 }
