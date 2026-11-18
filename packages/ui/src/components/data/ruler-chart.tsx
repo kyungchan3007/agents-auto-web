@@ -77,7 +77,7 @@ export function RulerChart({ pins, stops, ticks, korea, maxTier, lo, hi, aria, c
             {up && (
               <span className="text-[0.75rem] leading-tight font-bold whitespace-nowrap text-fg sm:text-[0.8125rem]">{p.name}</span>
             )}
-            <span data-testid="ruler-pin-value" data-final={String(p.value)} data-reveal={rv(count)} className="font-display text-[1.125rem] leading-none font-extrabold tabular-nums sm:text-[1.5rem]" style={{ color: col }}>
+            <span data-testid="ruler-pin-value" data-final={String(p.value)} data-reveal={rv(count)} className="font-display text-[1.125rem] leading-none font-extrabold whitespace-nowrap tabular-nums sm:text-[1.5rem]" style={{ color: col }}>
               {fmtNum(p.value * count, 0)}
             </span>
             {!up && <span className="mt-0.5 text-[0.75rem] leading-tight font-bold whitespace-nowrap text-fg sm:text-[0.8125rem]">{p.name}</span>}
@@ -89,7 +89,7 @@ export function RulerChart({ pins, stops, ticks, korea, maxTier, lo, hi, aria, c
           </span>
         );
         const stem = (
-          <span className="relative z-0 w-px bg-current opacity-75" style={{ color: col, height: `calc(1.25rem + ${p.tier} * 4.125rem)` }} />
+          <span className="relative z-0 h-5 w-px bg-current opacity-75 max-sm:h-[var(--line-h)]" style={{ color: col, "--line-h": `${1.25 + p.tier * 4.125}rem` } as CSSProperties} />
         );
         const dot = <span className="relative z-10 size-2.5 shrink-0 rounded-full border-2 bg-card" style={{ borderColor: col }} />;
         return (
