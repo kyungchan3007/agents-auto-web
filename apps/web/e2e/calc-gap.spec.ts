@@ -46,7 +46,9 @@ test.describe("직구 입력 안내 아래 빈칸 (작업 0208 추가)", () => {
     await page.goto("/calc");
     await page.waitForTimeout(300);
     const wide = (page.viewportSize()?.width ?? 0) >= 1024;
-    const min = wide ? 580.8 : 576; // 꼬리표(남색 결론 + 영수증 내역)가 나온 상태 높이 — 값이 바뀌어도 이 높이 아래로 줄지 않음
+    // 꼬리표(남색 결론 + 영수증 내역)가 나온 상태 높이 — 값이 바뀌어도 이 높이 아래로 줄지 않음 · 좁은 폭(427px 이하)은 내역 줄이 줄바꿈돼 폭 구간별 실측 높이(작업 0221 사용자 지적)
+    const w = page.viewportSize()?.width ?? 0;
+    const min = wide ? 580.8 : w <= 427 ? (w >= 400 ? 596 : w >= 361 ? 616 : w >= 330 ? 660 : 680) : 576;
     const h = (await box(tid(page, "calc-result"))).height;
     expect(h).toBeGreaterThanOrEqual(min - 0.5);
     expect(h).toBeLessThanOrEqual(min + 8);
