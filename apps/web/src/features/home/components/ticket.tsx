@@ -2,9 +2,10 @@
 
 // 새 홈 탑승권 카드 — 파랑 면과 하늘 면 경계에 걸침 · 위: 제목 + 글자판(0216 FlapBoard) · 절취선 · 아래: 판정 한 줄 + 막대 + 여행지 고르기 (작업 0217 · 시안 B)
 //   걸침: 카드가 둘로 나뉜 줄(grid 두 줄)이고 파랑 띠가 첫 줄 높이만큼만 깔림 — 카드 높이가 변해도 경계가 카드 안 절취선에 그대로 맞음 (그라데이션 · 음수 여백 없음)
+//   여행지 바꾸기는 카드 안 칩 · 검색(TripSwitcher · 버튼 · 시트 없음 · 작업 0217 사용자 지적)
 //   안내판 규칙은 지금 그대로 — 서버가 그린 지금 안내판(initial) · 인트로나 시트로 고른 나라가 있으면 같은 판이 그 나라로(고르면 바로 바뀜) · 처음 한 번만 넘어감
 import { FlapBoard } from "@hav/ui/data/flap-board";
-import { PickTrip } from "@hav/ui/form/pick-trip";
+import { TripSwitcher } from "@hav/ui/form/trip-switcher";
 import type { ReactNode } from "react";
 import { usePickedDestination } from "../hooks/use-picked-destination";
 import type { RateRow, SignalRow } from "../lib/destinations";
@@ -50,9 +51,9 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
               <FlapBoard key={picked && chosen ? `${picked.country}-${picked.city}` : "today"} rows={board.rows} cols={BOARD_COLS} label={board.label} />
             </div>
           </div>
-          <div className="relative flex flex-col gap-4 px-4 pt-5 pb-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-8 sm:pb-7">
+          <div className="relative flex flex-col gap-5 px-4 pt-5 pb-6 sm:px-8 sm:pb-7">
             <div aria-hidden className="absolute top-0 right-[22px] left-[22px] border-t-2 border-dashed border-line before:absolute before:-top-[15px] before:-left-[38px] before:size-7 before:rounded-full before:bg-pin-cheap before:content-[''] after:absolute after:-top-[15px] after:-right-[38px] after:size-7 after:rounded-full after:bg-pin-cheap after:content-['']" />
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0">
               <p data-testid="ticket-evidence" className="text-[1.0625rem] font-bold text-fg">
                 <Evidence text={board.evidence} />
               </p>
@@ -64,7 +65,8 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
               )}
               {notice}
             </div>
-            <PickTrip variant="solid" label="내 여행지 고르기" changeLabel="여행지 바꾸기" className="w-full sm:w-auto sm:shrink-0" />
+            {/* 여행지는 시트 · 버튼 없이 카드 안에서 바로 바꿈 — 칩을 누르면 판 · 판정 줄 · 막대가 바로 바뀜 (작업 0217 사용자 지적) */}
+            <TripSwitcher />
           </div>
         </div>
       </div>
