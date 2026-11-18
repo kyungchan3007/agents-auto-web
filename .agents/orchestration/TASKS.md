@@ -47,7 +47,7 @@
 | 0214 | 디자인 7 · /geo 시안 B(막대 · 카드 2열) · /log 시안 A(흰 카드) (#253) | builder | 머지됨 | task/0214-design-geo-log | apps/web/src/features/{geo,log}/** |
 | 0215 | 디자인 8 · 색 숫자를 토큰으로 (#254) | builder | 머지됨 | task/0215-design-tokens | packages/ui/src/tokens.css · apps/web/src/features/** |
 | 0216 | 새 디자인 공통 — 파랑 메뉴 띠 · B 로고 · 글자판 B 모양 · 카운트업 · 들어오기 부품 | builder | PR 대기 | task/0216-redesign-common | packages/ui/src/** · apps/web/src/shared/site-nav.tsx |
-| 0217 | 새 디자인 홈 — 시안 B + 환전 타이밍 A · 국기 · 카운트업 | builder | 진행 대기 | task/0217-redesign-home | apps/web/src/features/home/** |
+| 0217 | 새 디자인 홈 — 시안 B + 환전 타이밍 A · 국기 · 카운트업 | builder | PR 대기 | task/0217-redesign-home | apps/web/src/features/home/** |
 | 0218 | 새 디자인 여행 타이밍 — 시안 A · 머리 글자판 · 탑승권 들어오기 · 지수 카운트업 | builder | 진행 대기 | task/0218-redesign-flights | apps/web/src/features/travel-price/** (flights) |
 | 0219 | 새 디자인 통화 상세 — 시안 A · 카운트업 · 1년 흐름 그리기 · 통화 검색 · 국기 칩 | builder | 진행 대기 | task/0219-redesign-currency | apps/web/src/features/currencies/** |
 | 0220 | 새 디자인 여행 물가 — 시안 B · 숫자 카운트업 | builder | 진행 대기 | task/0220-redesign-prices | apps/web/src/features/travel-price/** (prices) |

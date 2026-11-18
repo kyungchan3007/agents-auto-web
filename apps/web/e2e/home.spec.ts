@@ -15,18 +15,17 @@ test("홈 구간 순서 — 여행 타이밍 → 오늘 환율(바다 띠) → �
   expect(today, "오늘 환율").toBeLessThan(dest);
 });
 
-test("여행 타이밍 — 지수가 없으면 '아직 받지 못했습니다' · 그래프 · 비행기 없음 / 있으면 'N월에 떠나세요' · 그래프 · 비행기", async ({ page }) => {
+test("여행 타이밍 — 지수가 없으면 '아직 받지 못했습니다' · 12달 막대 없음 / 있으면 'N월에 떠나세요' · 12달 막대 (3D 비행기는 홈에 없음 · 작업 0217)", async ({ page }) => {
   await page.goto("/");
   const none = page.getByText("국제항공료 지수를 아직 받지 못했습니다");
   const title = page.getByText(/^\d+월에 떠나세요$/);
   await expect(none.or(title)).toBeVisible(); // 둘 중 하나는 반드시
   if (await none.isVisible()) {
-    await expect(page.locator('[data-testid="travel-graph"]')).toHaveCount(0);
-    await expect(page.locator('[data-testid="plane-route"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="year-bars"]')).toHaveCount(0);
   } else {
-    await expect(page.locator('[data-testid="travel-graph"]')).toBeVisible();
-    await expect(page.locator('[data-testid="plane-route"]')).toHaveCount(1);
+    await expect(page.locator('[data-testid="year-bars"]')).toBeVisible();
   }
+  await expect(page.locator('[data-testid="plane-route"]')).toHaveCount(0);
 });
 
 test("오늘 환율 띠 — 이번 주 가장 싼 곳 문장 또는 '오늘 환율을 아직 받지 못했습니다' · 숫자를 지어내지 않음", async ({ page }) => {
@@ -64,8 +63,8 @@ test("바닥 띠 — 비행기 모델 출처(CC-BY 4.0)와 자료 출처", async
 });
 
 // 도착지 줄 — 작업 0170 추가 요청 (사용자 "시안이랑 다르다"): 데스크톱은 한 줄 세 칸 · 줄 높이 시안(90)의 절반쯤 아니라 시안 그대로 · 모바일은 눈금 없이 핀 오른쪽
-//   builder 가 다는 표시: data-testid="dest-row" · "dest-city" · "dest-rate" · "dest-scale" · "dest-pin" · "dest-mobile-meta" (packages/ui destination-row.test.ts 머리 주석)
-test("도착지 줄 — 넓은 화면은 한 줄 세 칸(도시 · 환율 · 눈금)이 같은 줄 높이 안 · 줄 높이는 시안 정도", async ({ page }) => {
+//   표시(작업 0217): data-testid="dest-row" · "dest-city" · "dest-rate" · "dest-scale" · "dest-status" · "dest-flag" · "dest-dot"
+test("도착지 줄 — 넓은 화면은 한 줄 세 칸(도시 · 눈금 · 금액)이 같은 줄 높이 안 · 줄 높이는 시안 정도 (작업 0217 · 시안 A 목록 순서)", async ({ page }) => {
   test.skip(test.info().project.name === "휴대폰", "넓은 화면 전용");
   await page.goto("/");
   const rows = page.locator('[data-testid="dest-row"]');
@@ -80,17 +79,17 @@ test("도착지 줄 — 넓은 화면은 한 줄 세 칸(도시 · 환율 · 눈
       expect(b.y + b.height, `${i + 1}번째 ${name} 아래`).toBeLessThanOrEqual(r.y + r.height + 1);
     }
     // 가로 순서: 도시 → 환율 → 눈금 (한 줄)
-    expect(city.x).toBeLessThan(rate.x);
-    expect(rate.x).toBeLessThan(scale.x);
+    expect(city.x).toBeLessThan(scale.x);
+    expect(scale.x).toBeLessThan(rate.x);
     // 세로로 쌓이지 않음 — 세 칸의 가운데 높이 차이가 줄 높이 안
     const mid = (b: { y: number; height: number }) => b.y + b.height / 2;
     expect(Math.abs(mid(city) - mid(scale)), `${i + 1}번째 도시 · 눈금 높이`).toBeLessThanOrEqual(r.height / 2);
   }
 });
 
-test("도착지 줄 — 판정 핀에 근거 숫자(하위 · 상위 N%) 또는 글자만", async ({ page }) => {
+test("도착지 줄 — 상태에 근거 숫자(하위 · 상위 N%) · 판정 글자 (작업 0217)", async ({ page }) => {
   await page.goto("/");
-  const pins = page.locator('[data-testid="dest-pin"]');
+  const pins = page.locator('[data-testid="dest-status"]');
   const n = await pins.count();
   expect(n).toBeGreaterThan(0);
   for (let i = 0; i < n; i++) {
@@ -99,15 +98,15 @@ test("도착지 줄 — 판정 핀에 근거 숫자(하위 · 상위 N%) 또는 
   }
 });
 
-test("도착지 줄 — 휴대폰은 눈금이 안 보이고 핀이 오른쪽 · 왼쪽에 '통화 · 환율'", async ({ page }) => {
+test("도착지 줄 — 휴대폰은 위에 국기 · 이름 · 금액(오른쪽), 아래에 막대 (작업 0217 · 시안 B 390)", async ({ page }) => {
   test.skip(test.info().project.name !== "휴대폰", "휴대폰 전용");
   await page.goto("/");
   const row = page.locator('[data-testid="dest-row"]').first();
-  await expect(row.locator('[data-testid="dest-scale"]')).toBeHidden();
-  await expect(row.locator('[data-testid="dest-mobile-meta"]')).toBeVisible();
-  const [city, pin] = await Promise.all([row.locator('[data-testid="dest-city"]').boundingBox(), row.locator('[data-testid="dest-pin"]:visible').first().boundingBox()]);
-  if (!city || !pin) throw new Error("도시 · 핀이 없음");
-  expect(pin.x, "핀은 도시보다 오른쪽").toBeGreaterThan(city.x + 40);
+  const [flag, city, rate, scale] = await Promise.all(["dest-flag", "dest-city", "dest-rate", "dest-scale"].map((id) => row.locator(`[data-testid="${id}"]`).boundingBox()));
+  if (!flag || !city || !rate || !scale) throw new Error("국기 · 도시 · 금액 · 막대가 없음");
+  expect(flag.x, "국기가 이름보다 왼쪽").toBeLessThan(city.x);
+  expect(rate.x, "금액은 이름보다 오른쪽").toBeGreaterThan(city.x + 40);
+  expect(scale.y, "막대는 아래 줄").toBeGreaterThanOrEqual(Math.max(city.y + city.height, rate.y + rate.height) - 1);
 });
 
 // 글꼴 — 작업 0173 · 0176: 맨 위 큰 제목 · 큰 숫자 · 로고는 Pretendard 800(자체 호스팅 · Gasoek One 은 없어짐) · 구간 제목 · 도시 이름은 IBM Plex Sans KR 굵게(700) · 실행은 lead

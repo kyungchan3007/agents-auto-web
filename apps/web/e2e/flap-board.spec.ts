@@ -3,7 +3,6 @@
 // 값은 날마다 · 자료 유무에 따라 달라서 두 경우(값 있음 · 없음 "----") 모두 맞게 봄
 import { expect, test } from "@playwright/test";
 
-const SEA = "rgb(36, 56, 168)"; // #2438A8 예전 울트라마린 띠(없어야 함)
 const INK = "rgb(22, 36, 110)"; // #16246E 판
 const CELL = "rgb(31, 49, 144)"; // #1f3190 칸 (작업 0216 · 시안 B)
 const SUN = "rgb(247, 197, 72)"; // #F7C548 두 줄 글자
@@ -16,30 +15,19 @@ for (const width of [375, 1440, 1920]) {
   test.describe(`${width}px`, () => {
     test.use({ viewport: { width, height: 900 } });
 
-    test("사진 구간 · 안내판 — 판은 사진 아래 하늘 종이 위(겹치지 않음) · 가로 넘침 없음", async ({ page }) => {
+    test("탑승권 카드 안의 안내판 — 판이 카드 안 · 화면 안 · 가로 넘침 없음 (작업 0217: 사진 구간 없음)", async ({ page }) => {
       await page.goto("/");
       await page.waitForLoadState("networkidle");
-      const photo = await page.locator('[data-testid="photo-header"]').first().boundingBox();
+      const card = await page.locator('[data-testid="ticket"]').boundingBox();
       const b = await board(page).boundingBox();
-      expect(photo && b, "사진 · 판").toBeTruthy();
-      if (!photo || !b) return;
-      expect(b.y, "판이 사진 아래").toBeGreaterThanOrEqual(photo.y + photo.height - 1);
+      expect(card && b, "카드 · 판").toBeTruthy();
+      if (!card || !b) return;
+      expect(b.x, "판이 카드 안 왼쪽").toBeGreaterThanOrEqual(card.x - 0.5);
+      expect(b.x + b.width, "판이 카드 안 오른쪽").toBeLessThanOrEqual(card.x + card.width + 0.5);
       expect(b.x, "판이 화면 안 왼쪽").toBeGreaterThanOrEqual(0);
       expect(b.x + b.width, "판이 화면 안 오른쪽").toBeLessThanOrEqual(width + 0.5);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), "가로 넘침").toBeLessThanOrEqual(0);
-    });
-
-    test("사진 아래 끝은 하늘 종이로 사라짐 (막이 있고 사진 아래 끝에 붙음) · 울트라마린 전체 띠 없음", async ({ page }) => {
-      await page.goto("/");
-      const photo = await page.locator('[data-testid="photo-header"]').first().boundingBox();
-      const fade = await page.locator('[data-testid="photo-fade-bottom"]').first().boundingBox();
-      expect(photo && fade, "사진 · 아래 막").toBeTruthy();
-      if (!photo || !fade) return;
-      expect(Math.abs(fade.y + fade.height - (photo.y + photo.height)), "막이 사진 아래 끝").toBeLessThanOrEqual(2);
-      expect(fade.height).toBeGreaterThanOrEqual(48);
-      const band = await page.locator("#today").boundingBox();
-      expect(band?.width ?? 0).toBeGreaterThan(0);
-      expect(await cs(page.locator("#today"), "background-color")).not.toBe(SEA);
+      await expect(page.locator('[data-testid="photo-header"]')).toHaveCount(0);
     });
 
     test("판 색 — 판 #16246E · 칸 #1f3190 · 두 줄 모두 햇빛 노랑 · 그림자 · 모서리 10px", async ({ page }) => {
@@ -94,19 +82,10 @@ for (const width of [375, 1440, 1920]) {
       }
     });
 
-    test("3D 지구 · 울트라마린 띠가 없음 — #today 에 canvas 없음 · 구간 어디에도 예전 울트라마린(#2438A8) 바탕 없음", async ({ page }) => {
+    test("3D 지구가 없음 — #today 에 canvas 없음 (파랑 띠는 새 홈의 탑승권 경계 · home-redesign.spec 이 검사 · 작업 0217)", async ({ page }) => {
       await page.goto("/");
       await page.waitForLoadState("networkidle");
       await expect(page.locator("#today canvas")).toHaveCount(0);
-      const bgs = await page.locator("#today").evaluate((root) => {
-        const out: string[] = [];
-        for (const el of [root, ...Array.from(root.querySelectorAll("*"))]) {
-          const bg = getComputedStyle(el).backgroundColor;
-          if (bg === "rgb(36, 56, 168)") out.push(`${el.tagName.toLowerCase()} ${bg}`);
-        }
-        return out;
-      });
-      expect(bgs).toEqual([]);
     });
   });
 }
