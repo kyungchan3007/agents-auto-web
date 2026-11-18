@@ -89,7 +89,8 @@ describe("글꼴 — next/font 로 IBM Plex Sans KR (R3 · 작업 0176: 큰 제�
     expect(layout).toMatch(/<html[\s\S]*?className=\{[\s\S]*?\.variable[\s\S]*?>/);
     expect(layout).toMatch(/<html[^>]*data-surface="light"/);
     expect(layout).not.toMatch(/data-surface="dark"/);
-    expect(layout.toLowerCase()).toContain("#eaf4f2");
+    expect(layout.toLowerCase()).toContain("#ffffff"); // 흰 바탕 (작업 0216 사용자 결정)
+    expect(layout.toLowerCase()).not.toContain("#eaf4f2");
     expect(layout).not.toMatch(/themeColor:\s*"#000000"/);
   });
 
@@ -145,7 +146,7 @@ describe("문서 — docs/design.md 결정 요약 (R10)", () => {
   it("새 결정(색 · 글꼴 · 3D 유지 · 고양이/동전 제거)이 적혀 있음", () => {
     expect(doc).toContain("Pretendard"); // 큰 제목 · 큰 숫자 (작업 0176 · 예전 Gasoek One 결정은 font-pretendard.test.ts 가 '예전 줄에만' 검사)
     expect(doc).toContain("IBM Plex Sans KR");
-    expect(doc.toLowerCase()).toContain("#eaf4f2");
+    expect(doc).toMatch(/흰 바탕/); // 작업 0216 사용자 결정 — 하늘 종이 대신 흰 바탕
     // 밤 포스터는 작업 0173 에서 없앰 — 문서 결정은 light-only.test.ts 가 검사
     expect(doc).toMatch(/고양이/);
     expect(doc).toMatch(/바뀐 결정/);
