@@ -92,4 +92,20 @@ test.describe("여행 물가 (작업 0212)", () => {
     const first = await tid(page, "currency-list").locator("nav ul li a span.rounded-pill").first().innerText();
     expect(first.trim()).not.toMatch(/^환율/);
   });
+
+  test("세 카드(싼 곳 · 비슷한 곳 · 비싼 곳)는 같은 틀 — 구분은 제목 색과 작은 점", async ({ page }) => {
+    await page.goto("/prices");
+    const cards = tid(page, "price-bands").locator("section");
+    await expect(cards).toHaveCount(3);
+    const frame = (i: number) => cards.nth(i).evaluate((el) => { const s = getComputedStyle(el); return [s.borderTopWidth, s.borderTopStyle, s.borderTopColor, s.borderRadius, s.backgroundColor, s.paddingLeft, s.paddingTop]; });
+    const f0 = await frame(0);
+    expect(await frame(1)).toEqual(f0);
+    expect(await frame(2)).toEqual(f0);
+    const title = (i: number) => cards.nth(i).locator("h2").evaluate((el) => getComputedStyle(el).color);
+    const colors = [await title(0), await title(2)];
+    expect(colors[0]).not.toBe(colors[1]); // 싼 곳 · 비싼 곳 제목 색은 다름
+    await expect(tid(page, "band-mark")).toHaveCount(3);
+    const marks = await tid(page, "band-mark").evaluateAll((els) => els.map((e) => getComputedStyle(e).backgroundColor));
+    expect(new Set(marks).size).toBe(3);
+  });
 });
