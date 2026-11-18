@@ -5,7 +5,7 @@ import type { IntroView } from "../hooks/use-intro";
 export function FlightHint({ s }: { s: IntroView }) {
   if (s.step !== 4) return null;
   return (
-    <div data-testid="intro-hint" className="fixed bottom-7 left-1/2 z-[3] w-[380px] -translate-x-1/2 rounded-2xl border border-line bg-card/95 px-[18px] py-3.5 shadow-[0_18px_40px_-18px_rgba(22,36,110,0.35)]">
+    <div data-testid="intro-hint" className="fixed bottom-7 left-1/2 z-[3] w-[380px] -translate-x-1/2 rounded-2xl border border-line bg-card/95 px-[18px] py-3.5 shadow-panel">
       <b className="flex items-center gap-2.5 text-lg font-black">
         <span aria-hidden className="relative inline-block h-6 w-4 rounded-[9px] border-2 border-fg">
           <span className="absolute top-1 left-1/2 -ml-px h-1.5 w-0.5 rounded-sm bg-accent" />

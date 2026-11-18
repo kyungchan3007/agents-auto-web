@@ -26,10 +26,10 @@ export function WindowTransition({ s }: { s: IntroView }) {
           initial={{ scale: 1.35, filter: "blur(4px)" }}
           animate={{ scale: phase >= 4 ? 6 : 1, filter: "blur(0px)", visibility: phase >= 6 ? "hidden" : "visible" }}
           transition={{ duration: d(phase >= 4 ? 1.1 : 0.8), ease: phase >= 4 ? [0.6, 0, 0.9, 0.4] : EASE }}
-          className="relative aspect-[0.7] rounded-[48%/34%] shadow-[inset_0_2px_0_#fff,0_0_0_1px_#D3DAE2,0_34px_60px_-26px_rgba(22,36,110,0.45)]"
+          className="relative aspect-[0.7] rounded-[48%/34%] shadow-window"
           style={{ width: "min(27vw, 360px)", background: "linear-gradient(160deg, #FFFFFF, #E4E9EE)" }}
         >
-          <div className="absolute inset-[9%] overflow-hidden rounded-[46%/33%] shadow-[0_0_0_7px_#EEF2F5,0_0_0_8px_#C9D2DB,inset_0_8px_18px_rgba(22,36,110,0.28)]" style={{ background: `center / cover url(${PHOTO})` }}>
+          <div className="absolute inset-[9%] overflow-hidden rounded-[46%/33%] shadow-glass" style={{ background: `center / cover url(${PHOTO})` }}>
             <motion.div
               initial={false}
               animate={{ y: phase >= 3 ? "-100%" : 0 }}

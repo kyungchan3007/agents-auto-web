@@ -26,12 +26,12 @@ export function PickedBoard({ rates, signals, windowDays, children }: { rates: R
         data-testid="picked-pass"
         aria-expanded={passOpen}
         onClick={togglePass}
-        className="fixed bottom-6 left-6 z-40 rounded-xl bg-pin-ink px-4 py-2.5 text-sm font-extrabold text-sun shadow-[0_14px_30px_-16px_rgba(22,36,110,0.7)]"
+        className="fixed bottom-6 left-6 z-40 rounded-xl bg-pin-ink px-4 py-2.5 text-sm font-extrabold text-sun shadow-chip"
       >
         {pickedChip(picked)}
       </button>
       {passOpen && (
-        <aside aria-label="탑승권" className="fixed bottom-20 left-6 z-40 w-[340px] rounded-2xl bg-pin-ink px-4 py-4 text-sm text-foam shadow-[0_18px_40px_-16px_rgba(22,36,110,0.6)]">
+        <aside aria-label="탑승권" className="fixed bottom-20 left-6 z-40 w-[340px] rounded-2xl bg-pin-ink px-4 py-4 text-sm text-foam shadow-pass">
           <p className="m-0 text-xs font-bold tracking-wider text-foam/70">BOARDING PASS · 탑승권</p>
           <dl className="m-0 mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
             {picked.budget > 0 && (
