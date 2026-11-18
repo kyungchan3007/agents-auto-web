@@ -30,7 +30,7 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
         {/* 첫 면 — 파랑 띠는 그리드 첫 줄 높이만큼만 깔리고 예산 카드는 그 경계에 걸침 (그라데이션 · 음수 여백 대신 칸 나눔 · 휴대폰은 카드를 위로 끌어올림) */}
         <div className="grid grid-cols-[minmax(1rem,1fr)_minmax(0,var(--container-page))_minmax(1rem,1fr)] sm:grid-cols-[minmax(2rem,1fr)_minmax(0,var(--container-page))_minmax(2rem,1fr)]">
           <div data-testid="prices-band" aria-hidden className="col-span-3 col-start-1 row-start-1 bg-pin-cheap" />
-          <div className="relative z-10 col-start-2 row-start-1 pt-10 pb-32 sm:pt-14 lg:pr-[calc(26rem+3rem)] lg:pb-16">
+          <div className="col-start-2 row-start-1 pt-10 pb-32 sm:pt-14 lg:pr-[calc(26rem+3rem)] lg:pb-16">
             <PricesHeader rows={rows.map((r) => ({ country: r.country, name: r.name, relative: r.relative, year: r.year }))} title={headline ? headline.title : "여행 물가 자료를 받지 못했습니다"} />
           </div>
           {data && data.bands.length > 0 && (
