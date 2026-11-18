@@ -84,11 +84,9 @@ test.describe("여행 타이밍 /flights (SR-TRV-01)", () => {
     await expect(title).toBeVisible();
     if ((await title.textContent())?.includes("준비 중")) {
       await expect(tid(page, "travel-graph")).toHaveCount(0);
-      await expect(tid(page, "plane-route")).toHaveCount(0);
       await expect(tid(page, "yoy-cards")).toHaveCount(0);
     } else {
       await expect(tid(page, "travel-graph")).toBeVisible();
-      await expect(tid(page, "plane-route")).toHaveCount(1);
       await expect(tid(page, "travel-legend")).toContainText("국제항공료");
     }
   });

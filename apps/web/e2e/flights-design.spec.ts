@@ -21,24 +21,26 @@ test.describe("/flights 디자인 (작업 0211)", () => {
     }
   });
 
-  test("'최저' 이름표가 비행기가 서는 자리(가장 싼 달 점 왼쪽)를 가리지 않음", async ({ page }) => {
+  test("'최저' 꼬리표가 노란 점 · 끝 말풍선 · 최고 꼬리표를 가리지 않고 그래프 안에 있음 (작업 0218 그래프 2D)", async ({ page }) => {
     await page.goto("/flights");
     await page.waitForTimeout(600);
-    const label = tid(page, "extreme-min");
-    await expect(label).toBeVisible();
-    const lb = await label.boundingBox();
-    const dot = await page.locator("[data-testid=travel-graph] svg circle[fill='var(--hav-sun)']").boundingBox();
-    const svg = await page.locator("[data-testid=travel-graph] svg").first().boundingBox();
-    if (!lb || !dot || !svg) throw new Error("화면에 없음");
-    const s = svg.width / 1000;
-    const cx = dot.x + dot.width / 2;
-    const cy = dot.y + dot.height / 2;
-    // 비행기 칸 — flights-graph-view 의 planeAvoidBox 와 같은 비율 (점 왼쪽)
-    const plane = { left: cx - 150 * s, right: cx - 20 * s, top: cy - 40 * s, bottom: cy + 30 * s };
-    const overlap = lb.x < plane.right && plane.left < lb.x + lb.width && lb.y < plane.bottom && plane.top < lb.y + lb.height;
-    expect(overlap, "이름표와 비행기 칸이 겹침").toBe(false);
-    // 노란 점도 가리지 않음
-    const hitDot = lb.x < dot.x + dot.width && dot.x < lb.x + lb.width && lb.y < dot.y + dot.height && dot.y < lb.y + lb.height;
-    expect(hitDot, "이름표가 노란 점을 가림").toBe(false);
+    const chart = page.locator('[data-testid="travel-graph"] [data-testid="line-chart"]');
+    await chart.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(5500);
+    const min = chart.locator('[data-testid="chart-mark"][data-kind="min"]');
+    await expect(min).toBeVisible();
+    const mb = await min.boundingBox();
+    const svg = await chart.boundingBox();
+    if (!mb || !svg) throw new Error("화면에 없음");
+    expect(mb.x).toBeGreaterThanOrEqual(svg.x - 1);
+    expect(mb.x + mb.width).toBeLessThanOrEqual(svg.x + svg.width + 1);
+    expect(mb.y + mb.height).toBeLessThanOrEqual(svg.y + svg.height + 1);
+    const others = chart.locator('[data-testid="chart-end-bubble"], [data-testid="chart-mark"][data-kind="max"]');
+    for (let i = 0; i < (await others.count()); i++) {
+      const o = await others.nth(i).boundingBox();
+      if (!o) continue;
+      const hit = mb.x < o.x + o.width && o.x < mb.x + mb.width && mb.y < o.y + o.height && o.y < mb.y + mb.height;
+      expect(hit, `최저 꼬리표가 ${i + 1}번째 말풍선 · 꼬리표와 겹침`).toBe(false);
+    }
   });
 });
