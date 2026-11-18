@@ -70,9 +70,10 @@ describe("여행 타이밍 /flights (P2 · SR-TRV-01)", () => {
     for (const s of ["국제항공료", "해외단체여행비", "원/달러 월평균"]) expect(T.flights, s).toContain(s);
   });
 
-  it("큰 문장 · 카드는 lib 의 순수 함수 + 판정 핀", () => {
-    for (const fn of ["flightsHeadline", "yoyCard", "cheapMonthsCard"]) expect(T.flights, fn).toMatch(new RegExp(`\\b${fn}\\b`));
-    expect(T.flights).toMatch(/\bSignalPin\b/);
+  it("큰 문장 · 카드는 lib 의 순수 함수 + 점 · 글(판정 핀 대신 · 작업 0218)", () => {
+    for (const fn of ["flightsHeadline", "yoyCard", "cheapMonthsCard", "flightsBoard", "stripStats"]) expect(T.flights, fn).toMatch(new RegExp(`\\b${fn}\\b`));
+    expect(T.flights).toMatch(/data-testid="yoy-dot"/);
+    expect(T.flights).not.toMatch(/\bSignalPin\b/);
   });
 });
 

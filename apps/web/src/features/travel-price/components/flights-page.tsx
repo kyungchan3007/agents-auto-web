@@ -1,17 +1,43 @@
 // 여행 타이밍 페이지 — 하늘 종이 바탕 · 큰 문장(가장 싼 달) → 두 선 + 환율 점선 + 3D 비행기 → 작년 대비 카드 (작업 0170 · Figma 03)
 // 큰 문장 · 카드는 지수로 계산 · 자료가 없으면 "준비 중" · 그래프 · 비행기 · 카드 없음 (숫자 · 달을 지어내지 않음)
+// 여행 타이밍 페이지 — 새 디자인(작업 0218 · 시안 A + 머리 글자판): 메뉴(파랑) 아래 흰 머리(제목 · 설명 + 글자판 세 줄) → 하늘 종이 위 탑승권 한 장(왼쪽 그래프 · 절취선 · 오른쪽 숫자) → 한 줄 띠(최고 · 최저 · 환율)
+// 큰 문장 · 글자판 · 숫자 · 띠는 지수로 계산 · 자료가 없으면 "준비 중" · 글자판 · 탑승권 · 띠 없음 (숫자 · 달을 지어내지 않음) · 사진 없음 (사진 파일 · 부품은 그대로 · 삭제는 0222)
 import { SiteNav } from "@/shared/site-nav";
 import { PLANE_CREDIT } from "@hav/shared/travel";
-import { SignalPin } from "@hav/ui/data/signal-pin";
+import { FlapBoard } from "@hav/ui/data/flap-board";
 import { PageFooter } from "@hav/ui/layout/page-footer";
-import { PhotoHeader } from "@hav/ui/layout/photo-header";
+import { CountUp } from "@hav/ui/motion/count-up";
+import { SlideIn } from "@hav/ui/motion/slide-in";
 import { EmphText } from "@hav/ui/text/emph";
 import { Eyebrow, Title } from "@hav/ui/text/heading";
 import { averageYears, cheapMonth, type IndexPoint } from "../lib/travel-index";
 import { cheapMonthsCard, flightsHeadline, yoyCard } from "../lib/flights-copy";
+import { flightsBoard, latestNumbers, stripStats } from "../lib/flights-view";
 import { FlightsGraph } from "./flights-graph";
 
 export type TravelItem = { key: string; name: string; points: IndexPoint[] | null };
+
+const DOT = { cheap: "bg-pin-cheap", normal: "bg-pin-line", expensive: "bg-pin-expensive" } as const;
+const NOTCH = "absolute z-10 size-7 rounded-full bg-surface";
+
+/** 탑승권 오른쪽 숫자 한 칸 — 이름 · 월 / 큰 지수(카운트업) / 점 + "작년보다 ±N.N%"(카운트업) */
+function YoyItem({ name, points }: { name: string; points: IndexPoint[] | null }) {
+  const card = yoyCard(name, points);
+  const n = latestNumbers(points);
+  if (!card || !n) return null;
+  return (
+    <div className="py-5 first:pt-0">
+      <p className="text-small text-fg-2">{card.label}</p>
+      <p className="mt-1 text-[2.25rem] leading-tight font-extrabold tracking-display text-fg tabular-nums">
+        <CountUp value={n.value} digits={1} />
+      </p>
+      <p className="mt-1 flex items-center gap-2 text-small font-semibold text-fg">
+        <span data-testid="yoy-dot" aria-hidden className={`size-2 shrink-0 rounded-full ${card.signal ? DOT[card.signal] : "bg-pin-line"}`} />
+        {n.yoy !== null ? <CountUp value={Math.abs(n.yoy)} digits={1} prefix={`작년보다 ${n.yoy >= 0 ? "+" : "-"}`} suffix="%" /> : card.pinText}
+      </p>
+    </div>
+  );
+}
 
 export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMonthly: IndexPoint[] }) {
   const air = travel.find((t) => t.key === "air-fare")?.points ?? null;
@@ -20,58 +46,100 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
   const tourCheap = tour ? cheapMonth(tour) : null;
   const headline = flightsHeadline(airCheap, tourCheap);
   const ready = !!air && air.length > 1;
-  const cards = [yoyCard("국제항공료", air), yoyCard("해외단체여행비", tour)].filter((c): c is NonNullable<typeof c> => c !== null);
   const cheaps = cheapMonthsCard(airCheap, tourCheap, Math.max(averageYears(air ?? []), averageYears(tour ?? [])));
+  const board = ready ? flightsBoard({ airCheap, tourCheap, air, tour }) : null;
+  const strip = ready ? stripStats(air, fxMonthly) : null;
   return (
     <>
       <SiteNav page="flights" />
       <main id="main" tabIndex={-1} className="bg-surface text-fg">
-        <PhotoHeader name="window-sunrise" alt="비행기 창밖으로 보이는 해돋이" veil="light" priority>
-          <Eyebrow>여행 타이밍</Eyebrow>
-          <Title as="h1" size="page" className="mt-3 text-cheap">
-            <EmphText text={headline} />
-          </Title>
-          {ready ? (
-            <p className="mt-6 max-w-[36em] text-body text-fg-2">통계청 소비자물가 중 국제항공료 · 해외단체여행비 지수(2020 = 100). 작년 같은 달과 비교하고, 원/달러 환율 월평균과 나란히 봅니다.</p>
-          ) : (
-            <p className="mt-6 max-w-[36em] text-body text-fg-2">준비 중 — 통계청 국제항공료 지수를 아직 받지 못했습니다. 받으면 이 자리 아래에 선 그래프 · 3D 비행기 · 작년 대비가 표시됩니다 (월 자료는 발표가 늦어 최근 몇 달을 매달 다시 받아 덮어씁니다).</p>
-          )}
-        </PhotoHeader>
-        <div className="px-4 pt-6 pb-10 sm:px-8">
-        <div className="mx-auto max-w-page">
-          {ready && (
-            <>
-              <div>
-                {/* 화면에는 안 보이는 섹션 제목 — 제목 구조(h1 → h2)를 채움 · 모양은 그대로 (작업 0213) */}
-                <h2 className="sr-only">국제항공료 · 해외단체여행비 지수와 환율 그래프</h2>
-                <FlightsGraph air={air} tour={tour} fx={fxMonthly} />
+        <section data-testid="flights-hero" aria-labelledby="flights-title" className="border-b border-line bg-card px-4 py-12 sm:px-8 sm:py-16">
+          <div className="mx-auto grid max-w-page items-center gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-14">
+            <div>
+              <Eyebrow>여행 타이밍</Eyebrow>
+              <Title as="h1" size="page" id="flights-title" className="mt-3 text-cheap">
+                <EmphText text={headline} />
+              </Title>
+              {ready ? (
+                <p className="mt-6 max-w-[36em] text-body text-fg-2">통계청 소비자물가 중 국제항공료 · 해외단체여행비 지수(2020 = 100). 작년 같은 달과 비교하고, 원/달러 환율 월평균과 나란히 봅니다.</p>
+              ) : (
+                <p className="mt-6 max-w-[36em] text-body text-fg-2">준비 중 — 통계청 국제항공료 지수를 아직 받지 못했습니다. 받으면 이 자리 아래에 선 그래프 · 3D 비행기 · 작년 대비가 표시됩니다 (월 자료는 발표가 늦어 최근 몇 달을 매달 다시 받아 덮어씁니다).</p>
+              )}
+            </div>
+            {board && (
+              <div data-testid="hero-board" className="min-w-0 lg:justify-self-end">
+                <FlapBoard rows={board.rows.map((r) => ({ ...r, tone: "dest" as const }))} cols={board.cols} label={board.label} />
               </div>
-              {(cards.length > 0 || cheaps) && (
-                <>
-                <h2 className="sr-only">작년 대비와 가장 싼 달</h2>
-                <div data-testid="yoy-cards" className="mt-6 grid gap-4 sm:grid-cols-3">
-                  {cards.map((c) => (
-                    <div key={c.label} className="rounded-card bg-card px-5 py-4">
-                      <p className="text-small text-fg-2">{c.label}</p>
-                      <p className="mt-1 text-city font-bold text-figure tabular-nums">{c.value}</p>
-                      <div className="mt-2">{c.signal ? <SignalPin signal={c.signal} text={c.pinText} /> : <span className="text-small text-fg-2">{c.pinText}</span>}</div>
-                    </div>
-                  ))}
-                  {cheaps && (
-                    <div className="rounded-card bg-card px-5 py-4">
-                      <p className="text-small text-fg-2">{cheaps.label}</p>
-                      <p className="mt-1 text-city font-bold text-figure tabular-nums">{cheaps.value}</p>
+            )}
+          </div>
+        </section>
+        <div className="px-4 pt-10 pb-10 sm:px-8 sm:pt-14">
+          <div className="mx-auto max-w-page">
+            {ready && (
+              <>
+                <SlideIn from="left">
+                  <div data-testid="flights-ticket" className="relative grid rounded-[1.75rem] bg-card shadow-ticket lg:grid-cols-[minmax(0,1fr)_21rem]">
+                    <div className="min-w-0 px-5 py-6 sm:px-8 sm:py-8">
+                      <h2 className="text-[1.25rem] font-bold text-fg">국제항공료 · 해외단체여행비 지수와 환율 그래프</h2>
                       <div className="mt-2">
-                        <SignalPin signal="normal" text={cheaps.note} />
+                        <FlightsGraph air={air} tour={tour} fx={fxMonthly} />
                       </div>
                     </div>
-                  )}
-                </div>
-                </>
-              )}
-            </>
-          )}
-        </div>
+                    <div className="relative border-t-2 border-dashed border-line px-5 py-6 sm:px-8 sm:py-8 lg:border-t-0 lg:border-l-2">
+                      <span aria-hidden className={`${NOTCH} -top-3.5 -left-3.5`} />
+                      <span aria-hidden className={`${NOTCH} -top-3.5 -right-3.5 lg:top-auto lg:right-auto lg:-bottom-3.5 lg:-left-3.5`} />
+                      <div data-testid="yoy-cards">
+                        <h2 className="text-small font-bold text-fg">작년 대비와 가장 싼 달</h2>
+                        <div className="mt-4 divide-y divide-line">
+                          <YoyItem name="국제항공료" points={air} />
+                          <YoyItem name="해외단체여행비" points={tour} />
+                        </div>
+                        {cheaps && (
+                          <div className="mt-2 border-t border-line pt-5">
+                            <p className="text-small text-fg-2">{cheaps.label}</p>
+                            <div data-testid="cheap-board" className="mt-3">
+                              <FlapBoard rows={[{ text: cheaps.value, tone: "dest" }]} cols={Math.max(3, Array.from(cheaps.value).length)} label={`가장 싼 달 ${cheaps.value}`} />
+                            </div>
+                            <p className="mt-3 flex items-center gap-2 text-small font-semibold text-fg">
+                              <span aria-hidden className="size-2 shrink-0 rounded-full bg-sun ring-1 ring-fg" />
+                              {cheaps.note}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </SlideIn>
+                {strip && (
+                  <div data-testid="flights-strip" className="mt-8 grid border-t border-line sm:grid-cols-3 sm:divide-x sm:divide-line">
+                    <div data-testid="strip-max" className="py-5 sm:pr-6">
+                      <p className="flex items-center gap-2 text-[1.125rem] font-bold text-fg">
+                        <span aria-hidden className="size-2.5 rounded-full bg-pin-expensive" />
+                        {strip.max.period} 최고
+                      </p>
+                      <p className="mt-1 text-small text-fg-2">국제항공료 지수 {strip.max.value.toFixed(1)}</p>
+                    </div>
+                    <div data-testid="strip-min" className="border-t border-line py-5 sm:border-t-0 sm:px-6">
+                      <p className="flex items-center gap-2 text-[1.125rem] font-bold text-fg">
+                        <span aria-hidden className="size-2.5 rounded-full bg-sun ring-1 ring-fg" />
+                        {strip.min.period} 최저
+                      </p>
+                      <p className="mt-1 text-small text-fg-2">국제항공료 지수 {strip.min.value.toFixed(1)}</p>
+                    </div>
+                    {strip.fx && (
+                      <div data-testid="strip-fx" className="border-t border-line py-5 sm:border-t-0 sm:pl-6">
+                        <p className="flex items-center gap-2 text-[1.125rem] font-bold text-fg">
+                          <span aria-hidden className="size-2.5 rounded-full bg-pin-line" />
+                          원/달러 {Math.round(strip.fx.value).toLocaleString("ko-KR")}원
+                        </p>
+                        <p className="mt-1 text-small text-fg-2">{strip.fx.period} 월평균 · 한국수출입은행</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </main>
       <PageFooter width="max-w-page" className="space-y-1">
