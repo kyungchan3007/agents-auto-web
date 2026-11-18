@@ -11,7 +11,7 @@ const read = (p: string) => code(readFileSync(join(INTRO, p), "utf8"));
 
 describe("끝 장면 순서 (use-intro)", () => {
   const hook = read("hooks/use-intro.ts");
-  const end = hook.slice(hook.indexOf("const endFade"));
+  const end = hook.slice(hook.indexOf("const endFade"), hook.indexOf("const begin4")); // 끝 장면 함수만
 
   it("파랑 면(1) → 3D 멈춤 · 층 숨김 → 로고 이동(2) → 층이 사라짐(3) → 닫힘 순서", () => {
     const p1 = end.indexOf("setPhase(1)");
