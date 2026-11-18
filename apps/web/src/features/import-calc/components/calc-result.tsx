@@ -22,7 +22,8 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
         </div>
       )}
       <p className={`font-display text-[clamp(2.25rem,6vw,3.5rem)] leading-tight font-extrabold tracking-display text-sun tabular-nums ${r?.ok ? "mt-2" : ""}`}>
-        {r?.ok ? `${numberText(r.priceKrw)}원` : "—원"}
+        {/* 긴 금액(열두 글자 넘음)은 휴대폰에서 글자를 줄여 한 줄 — 줄이 바뀌어 카드가 커지지 않게 (작업 0208 lead 리뷰) */}
+        {r?.ok ? <span className={`${numberText(r.priceKrw)}원`.length > 12 ? "whitespace-nowrap max-sm:text-[1.75rem]" : "whitespace-nowrap"}>{numberText(r.priceKrw)}원</span> : "—원"}
       </p>
       {!r && <p className="mt-4 text-small">물건 값을 넣으면 면세 한도 안인지 바로 보여 드립니다</p>}
       {r && !r.ok && <p className="mt-4 text-small font-semibold text-sun">{r.reason}</p>}
