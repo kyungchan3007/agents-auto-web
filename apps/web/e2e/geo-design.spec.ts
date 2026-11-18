@@ -68,14 +68,14 @@ test.describe("/geo 시안 B (작업 0214)", () => {
     expect(html).toContain('data-testid="day-bar"');
   });
 
-  test("넓은 화면 높이가 짧아짐(3,473px → 2,500px 이하) · 가로 넘침 없음 · 콘솔 오류 없음", async ({ page }) => {
+  test("넓은 화면에서 카드 격자가 짧음(예전 표 구간 약 2,800px → 1,700px 이하) · 가로 넘침 없음 · 콘솔 오류 없음", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
     page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
     await page.goto("/geo");
     await page.waitForTimeout(800);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
-    if (!isPhone(page)) expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(2500);
+    if (!isPhone(page)) expect((await box(tid(page, "geo-grid"))).height).toBeLessThanOrEqual(1700);
     expect(errors.filter((e) => !/Failed to load resource|favicon/.test(e))).toEqual([]);
   });
 });

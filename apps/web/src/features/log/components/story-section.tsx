@@ -16,10 +16,10 @@ export function StorySection() {
           <li key={step.id} data-testid="story-step" className={`rounded-card bg-card px-6 py-5 ${i === STORY_STEPS.length - 1 && STORY_STEPS.length % 2 === 1 ? "sm:col-span-2" : ""}`}>
             {/* 번호는 줄바꿈 없이 한 덩어리 · 긴 제목은 제목만 줄바꿈 */}
             <div className="flex items-baseline gap-3">
-              <span aria-hidden className="shrink-0 text-city font-bold whitespace-nowrap text-figure tabular-nums">
+              <span aria-hidden className="shrink-0 text-[1.375rem] leading-tight font-bold whitespace-nowrap text-figure tabular-nums">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <SectionTitle as="h3" className="min-w-0 text-city">{step.title}</SectionTitle>
+              <SectionTitle as="h3" className="min-w-0 text-[1.375rem] leading-tight">{step.title}</SectionTitle>
             </div>
             <ul className="mt-3 space-y-2 text-small text-fg sm:text-body">
               {step.bullets.map((b) => {
