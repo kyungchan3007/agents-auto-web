@@ -74,3 +74,4 @@
 
 - 0217 홈 고칠 것 1~3 merge(task/0217-redesign-home bd1b48a): 충돌 없음. hero-section · ticket · destination-table · hooks/use-stagger-reveal.ts(새) · e2e/home-fix-0217.spec.ts(새)는 그대로, packages/ui use-count-up.ts 는 `enabled` 옵션만 더함(기본 켜짐 → 0219 · 0220 동작 그대로).
 - 0217 lint 수정 merge(use-stagger-reveal.ts armed 를 useSyncExternalStore 로): 충돌 없음.
+- 그래프 2D merge(0216 7a64c21 · 0217 34914c1 · 0218 af7e2ff · 0219 9b46a81 · 0220 d5f5a86 · 0221 b8f3578): 충돌은 테스트 파일 둘뿐 — apps/web/src/shared/font-readability.test.ts(허용 목록: 0217 hero-section · 0216 line-chart · 0220 ruler-chart 세 줄을 모두 남김) · apps/web/src/shared/redesign-foundation.test.ts(그림자 · 그라데이션 검사: 0222 쪽 주석(사진 머리 없음)을 남기고 0216 의 GRAPH_PARTS 허용 상수만 더함). 나머지 파일(LineChart · MonthBars · RulerChart · 각 화면)은 충돌 없음. packages/ui use-count-up.ts 는 이번엔 변경 없음.
