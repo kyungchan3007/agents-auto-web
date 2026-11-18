@@ -3,6 +3,8 @@ import type { Signal } from "@hav/shared/signal";
 import type { IndexPoint } from "./travel-index";
 
 export function flightsHeadline(airCheap: number | null, tourCheap: number | null): string {
+  // 싼 달이 같으면 한 번만 (작업 0211)
+  if (airCheap !== null && airCheap === tourCheap) return `항공료 · 단체여행 모두 ${airCheap}월이 싼 편`;
   if (airCheap !== null && tourCheap !== null) return `항공료는 ${airCheap}월, 단체여행은 ${tourCheap}월이 싼 편`;
   if (airCheap !== null) return `항공료는 ${airCheap}월이 싼 편`;
   if (tourCheap !== null) return `단체여행은 ${tourCheap}월이 싼 편`;
@@ -26,7 +28,8 @@ export function yoyCard(name: string, points: IndexPoint[] | null | undefined): 
 
 /** years = 평균에 쓴 해 수(받은 자료 그대로 — 24개월이면 2년) · 0 이면 "같은 달 평균" 만 (몇 년인지 지어내지 않음) */
 export function cheapMonthsCard(airCheap: number | null, tourCheap: number | null, years = 0): { label: string; value: string; note: "같은 달 평균 기준" } | null {
-  const months = [airCheap, tourCheap].filter((m): m is number => m !== null).map((m) => `${m}월`);
+  // 같은 달이면 한 번만 (작업 0211)
+  const months = [...new Set([airCheap, tourCheap].filter((m): m is number => m !== null))].map((m) => `${m}월`);
   if (months.length === 0) return null;
   return { label: years > 0 ? `가장 싼 달 (최근 ${years}년 평균)` : "가장 싼 달 (같은 달 평균)", value: months.join(" · "), note: "같은 달 평균 기준" };
 }

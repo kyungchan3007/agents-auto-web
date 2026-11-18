@@ -14,6 +14,8 @@ type Args = {
   dotRadius?: number;
   todayRadius?: number;
   gap?: number;
+  /** 가리면 안 되는 칸들 (예: 3D 비행기가 서는 자리) — 라벨이 이 칸과 겹치면 다른 자리로 (작업 0211) */
+  avoid?: Box[];
 };
 
 const overlaps = (a: Box, b: Box) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
@@ -56,7 +58,7 @@ export function placeExtremeLabels(a: Args): { max: Placed; min: Placed } {
   const gap = a.gap ?? 8;
   const wMax = a.max.text.length * font.charWidth;
   const wMin = a.min.text.length * font.charWidth;
-  const free = (box: Box) => inside(box, a.bounds) && !hitsCircle(box, a.today, todayR) && !hitsCircle(box, a.max, dotR) && !hitsCircle(box, a.min, dotR);
+  const free = (box: Box) => inside(box, a.bounds) && !(a.avoid ?? []).some((v) => overlaps(box, v)) && !hitsCircle(box, a.today, todayR) && !hitsCircle(box, a.max, dotR) && !hitsCircle(box, a.min, dotR);
   const maxCands = candidates(a.max, "above", wMax, font.size, gap, a.bounds).filter((c) => free(c.box));
   const minCands = candidates(a.min, "below", wMin, font.size, gap, a.bounds).filter((c) => free(c.box));
   for (const m of maxCands) {
