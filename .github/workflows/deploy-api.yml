@@ -3,6 +3,7 @@ name: "배포 · API 배포 (검사 통과 뒤)"
 # 비밀값(CLOUDFLARE_API_TOKEN · CLOUDFLARE_ACCOUNT_ID)이 없으면 배포는 건너뛴다 (실패 아님)
 # API 와 상관없는 머지(화면 · 문서)는 배포하지 않음 — 배포마다 예약(cron)이 다시 걸리는데, 2026-10-30 12:00 KST 직전(02:56 UTC) 배포 뒤 예약 수집이 돌지 않았음 (작업 0094)
 # 단, 이 배포 파일 자체가 바뀐 머지는 배포함 — 배포 방식(인증키를 Worker secret 으로 넣는 단계 등)이 바뀐 것이므로 실제로 돌려 확인 (작업 0166)
+# 바뀌었는지는 "이번 push 직전의 main" 과 비교 — rebase 머지로 커밋 여러 개가 한꺼번에 들어오면 마지막 커밋만 봐서는 놓침 (2026-11-18 #245 · 작업 0207)
 on:
   workflow_run:
     workflows: ["검사 · 자동 검사 (PR · main)"]
@@ -18,6 +19,9 @@ jobs:
   deploy:
     if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read # 직전 main 을 검사 실행 기록에서 찾음 (작업 0207)
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -39,12 +43,26 @@ jobs:
         if: steps.secrets.outputs.ok == 'true'
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-          fetch-depth: 2
-      - name: API 가 바뀌었는지 (손으로 실행하면 항상 배포)
+          fetch-depth: 0
+      - name: API 가 바뀌었는지 (손으로 실행하면 항상 배포 · 직전 main 과 비교 · 작업 0207)
         id: changed
         if: steps.secrets.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || ! git diff --quiet HEAD~1 HEAD -- apps/api packages/shared package-lock.json .github/workflows/deploy-api.yml; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "go=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          # 검사 워크플로가 main push 로 돈 기록(새것부터)에서 이번 커밋 바로 앞의 커밋 = 이번 push 직전의 main
+          BASE=$(gh run list -R "$GITHUB_REPOSITORY" --workflow checks.yml --branch main --event push --limit 50 --json headSha --jq '.[].headSha' \
+            | awk -v h="$HEAD_SHA" 'found && $0 != h { print; exit } $0 == h { found = 1 }')
+          if [ -z "$BASE" ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            echo "직전 main 을 찾지 못함 — 안전하게 배포" >> "$GITHUB_STEP_SUMMARY"
+            echo "go=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          echo "비교 범위: ${BASE:0:7}..${HEAD_SHA:0:7} ($(git rev-list --count "$BASE..HEAD") 커밋)" >> "$GITHUB_STEP_SUMMARY"
+          if ! git diff --quiet "$BASE" HEAD -- apps/api packages/shared package-lock.json .github/workflows/deploy-api.yml; then
             echo "go=true" >> "$GITHUB_OUTPUT"
           else
             echo "API · 공용 패키지 변경 없음 — 배포 건너뜀" >> "$GITHUB_STEP_SUMMARY"
