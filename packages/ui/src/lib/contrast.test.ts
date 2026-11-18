@@ -37,8 +37,9 @@ describe("tokens.css — 세 배경 (하늘 종이 light · 바다 띠 dark · e
     expect(Object.keys(base).sort()).toEqual(["dark", "elevated", "light"]);
   });
 
-  it("R1 · R2 정해진 값 — 하늘 종이 바탕 #EAF4F2 · 글자 #16246E · 보조 #4A5A8C · 쌈 = 울트라마린 #2438A8", () => {
-    expect(lc(base.light.surface)).toBe("#eaf4f2");
+  it("R1 · R2 정해진 값 — 흰 바탕 #FFFFFF(작업 0216 사용자 결정 · 예전 하늘 종이 #EAF4F2) · 글자 #16246E · 보조 #4A5A8C · 쌈 = 울트라마린 #2438A8", () => {
+    expect(lc(base.light.surface)).toBe("#ffffff");
+    expect(lc(base.light["surface-2"])).not.toBe("#ffffff"); // 흰 카드 · 칸 구분용 옅은 면은 흰색이 아님
     expect(lc(base.light.fg)).toBe("#16246e");
     expect(lc(base.light["fg-2"])).toBe("#4a5a8c");
     expect(lc(base.light.cheap)).toBe("#2438a8");
