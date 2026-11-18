@@ -23,6 +23,3 @@ export function todayBoard(a: { found: Found; hasRates: boolean; windowDays: num
   if (!a.hasRates) return { title: BOARD_TITLE, rows: empty, label: NO_RATE_COPY, evidence: a.problem ?? "환율이 아직 수집되지 않았습니다" };
   return { title: BOARD_TITLE, rows: empty, label: "이번 주 가장 싼 곳을 판단할 신호가 아직 없습니다", evidence: `최근 ${a.windowDays}일 자료가 모자라 도착지 신호를 내지 못했습니다` };
 }
-
-/** 안내판 도착지의 나라(ISO alpha-3) — 안 고른 상태의 머리 사진이 이 나라 사진 (작업 0209) · 도착지가 없거나 나라 코드가 없으면 null (지금 사진) */
-export const boardCountry = (found: Found): string | null => found?.destination.country ?? null;

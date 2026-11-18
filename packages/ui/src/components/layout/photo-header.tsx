@@ -3,7 +3,7 @@
 //   막(veil): light = 하늘 종이색 그라데이션 (데스크톱 왼쪽 → 오른쪽 · 모바일 아래 → 위)로 글자가 읽히게 · ultramarine = 울트라마린 막 + 흰 글자
 //   이 부품만 그라데이션을 씀 (장식이 아니라 글자를 읽히게 하는 막)
 import type { ReactNode } from "react";
-import { PHOTO_SIZES, type PhotoName, countryPhoto, headerPhoto, photoSrc, photoSrcSet } from "../../lib/photo";
+import { PHOTO_SIZES, type PhotoName, countryPhoto, photoSrc, photoSrcSet } from "../../lib/photo";
 
 // 나라 사진 이름 · 주소를 화면(기능 폴더)이 쓰도록 다시 내보냄 — @hav/ui 의 공개 경로는 components 아래뿐 (작업 0201)
 export { countryPhoto, photoSrc };
@@ -34,7 +34,7 @@ const CLEAR_TOP = "bg-gradient-to-t from-surface/95 from-0% via-surface/90 via-6
 const TEXT = { light: "", ultramarine: "text-foam" } as const;
 
 export function PhotoHeader({ name, country, alt, veil, priority = false, position = "center", fadeBottom = false, clearTop = false, children }: Props) {
-  const shown: PhotoName = headerPhoto(name, country);
+  const shown: PhotoName = (country ? countryPhoto(country) : null) ?? name;
   return (
     <section data-testid="photo-header" data-veil={veil} className={`group/photo relative isolate flex min-h-[22rem] items-end overflow-hidden bg-surface sm:min-h-[26rem] ${TEXT[veil]}`}>
       <img

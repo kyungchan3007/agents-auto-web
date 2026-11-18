@@ -75,15 +75,3 @@ describe("todayBoard — 값이 없을 때 (지어내지 않음 · 빈 칸 '----
     expect(b.evidence).toBe("최근 90일 자료가 모자라 도착지 신호를 내지 못했습니다");
   });
 });
-
-// 작업 0209 — 안 고른 상태의 머리 사진은 안내판 기본 도착지 나라 (서버 HTML 에서 바로)
-import { boardCountry } from "./today-board";
-
-describe("boardCountry — 안내판 도착지의 나라 (작업 0209)", () => {
-  it("안내판에 도착지가 있으면 그 나라 코드 · 없으면 null (지금 사진)", () => {
-    const found = cheapestDestination([{ currency: "EUR", signal: "cheap", percentile: 0.1 } as never], RATES, DEST);
-    expect(boardCountry(found)).toBe(found?.destination.country ?? null);
-    expect(boardCountry(null)).toBeNull();
-    expect(boardCountry({ destination: { id: "x", name: "어딘가" }, rate: RATES[0], percentile: 0.1 } as never)).toBeNull();
-  });
-});

@@ -18,10 +18,9 @@ test.describe("여행지 고르기 시트 · 나라 사진 (작업 0201)", () =>
   test("안 고른 첫 화면 — 지금 사진 · 지금 물가 문장 · 버튼이 보임", async ({ page }) => {
     await page.goto("/");
     await expect(open(page)).toBeVisible();
-    // 작업 0209: 안 고른 상태의 사진은 큰 문장 속 나라 사진(없으면 지금 사진) — 정확한 나라는 hero-photo.spec.ts
-    expect(await heroSrc(page)).toMatch(/window-fjord|country-[a-z]{3}/);
+    expect(await heroSrc(page)).toContain("window-fjord");
     await page.goto("/prices");
-    expect(await heroSrc(page)).toMatch(/swiss-traveler|country-[a-z]{3}/);
+    expect(await heroSrc(page)).toContain("swiss-traveler");
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/한국보다 물가가 \d+% 낮습니다/);
   });
 
@@ -101,8 +100,8 @@ test.describe("여행지 고르기 시트 · 나라 사진 (작업 0201)", () =>
   test("망가진 저장 값 · 모르는 나라는 무시 — 지금 화면", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem("flapfx:picked", '{"v":1,"country":"XXX","city":"없음","budget":0}'));
     await page.goto("/");
-    expect(await heroSrc(page)).toMatch(/window-fjord|country-[a-z]{3}/);
+    expect(await heroSrc(page)).toContain("window-fjord");
     await page.goto("/prices");
-    expect(await heroSrc(page)).toMatch(/swiss-traveler|country-[a-z]{3}/);
+    expect(await heroSrc(page)).toContain("swiss-traveler");
   });
 });

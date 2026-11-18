@@ -1,43 +1,7 @@
-// 작업 0209 (#248) — 머리 사진 = 큰 문장 속 나라 (안 고른 상태 · 서버 HTML) · 휴대폰 홈 덮개 · 노란 표시줄 폭
+// 작업 0209 (#248) — 휴대폰 홈 머리 사진 덮개 · 노란 표시줄 폭 (안 고른 사람 사진 항목은 정정으로 뺌 — 사진은 고른 나라에만)
 import { type Page, expect, test } from "@playwright/test";
 
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 640;
-
-/** 서버가 만든 HTML(자바스크립트 실행 전)의 머리 사진 주소 */
-async function serverHero(page: Page, path: string): Promise<string> {
-  const html = await (await page.request.get(path)).text();
-  const tag = html.match(/<img[^>]*data-testid="photo-header-img"[^>]*>/)?.[0] ?? "";
-  return tag.match(/\ssrc="([^"]+)"/)?.[1] ?? "";
-}
-
-const CITY_PHOTO: Record<string, string> = { 도쿄: "country-jpn", 뉴욕: "country-usa", 파리: "country-eur", 방콕: "country-tha" };
-const NAME_PHOTO: Record<string, string> = {
-  일본: "country-jpn", 대만: "country-twn", 홍콩: "country-hkg", 중국: "country-chn", 태국: "country-tha", 베트남: "country-vnm", 캄보디아: "country-khm", 필리핀: "country-phl",
-  싱가포르: "country-sgp", 인도: "country-ind", 영국: "country-gbr", 스위스: "country-che", 스웨덴: "country-swe", 튀르키예: "country-tur", 미국: "country-usa", 캐나다: "country-can",
-  멕시코: "country-mex", 호주: "country-aus", 뉴질랜드: "country-nzl", 프랑스: "country-eur", 독일: "country-eur", 이탈리아: "country-eur", 스페인: "country-eur", 포르투갈: "country-eur",
-  네덜란드: "country-eur", 오스트리아: "country-eur", 그리스: "country-eur", 핀란드: "country-eur",
-};
-
-test.describe("머리 사진 = 큰 문장 속 나라 (작업 0209)", () => {
-  test("홈 — 안 고른 상태 서버 HTML 머리 사진은 안내판 도착지 나라 (안내판에 도착지가 없으면 지금 사진)", async ({ page }) => {
-    const html = await (await page.request.get("/")).text();
-    const label = html.match(/data-testid="flap-board"[^>]*aria-label="([^"]*)"/)?.[1] ?? "";
-    const city = Object.keys(CITY_PHOTO).find((c) => label.includes(c));
-    const src = await serverHero(page, "/");
-    expect(src).toContain(city ? CITY_PHOTO[city] : "window-fjord");
-    // 화면에서도 같은 사진 (고른 값이 없으면 마운트 뒤에도 그대로)
-    await page.goto("/");
-    await expect(page.getByTestId("photo-header-img").first()).toHaveAttribute("src", src);
-  });
-
-  test("여행 물가 — 안 고른 상태 서버 HTML 머리 사진은 큰 문장의 나라 (사진 없는 나라 · 문장 없으면 지금 사진)", async ({ page }) => {
-    const html = await (await page.request.get("/prices")).text();
-    const h1 = (html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1] ?? "").replace(/<[^>]+>/g, "");
-    const name = h1.match(/^(.+?)[은는] 한국보다 물가가 \d+% 낮습니다/)?.[1];
-    const src = await serverHero(page, "/prices");
-    expect(src).toContain(name && NAME_PHOTO[name] ? NAME_PHOTO[name] : "swiss-traveler");
-  });
-});
 
 /** 글자를 숨기고 그 자리의 배경 픽셀을 읽어 글자색과의 대비(하위 1% 가장 나쁜 값)를 구함 */
 async function worstContrast(page: Page, target: string): Promise<number> {

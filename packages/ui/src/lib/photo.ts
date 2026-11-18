@@ -27,6 +27,3 @@ export const photoSrcSet = (name: PhotoName): string => PHOTO_WIDTHS.map((w) => 
 
 /** 맨 위 구간은 화면 폭 가득 */
 export const PHOTO_SIZES = "100vw";
-
-/** 머리 사진 고르는 규칙 하나 (작업 0209) — 나라(고른 나라 · 큰 문장 속 기본 나라)의 사진이 있으면 그것 · 없으면 화면 기본 사진 */
-export const headerPhoto = (fallback: PhotoName, country: string | null | undefined): PhotoName => countryPhoto(country) ?? fallback;
