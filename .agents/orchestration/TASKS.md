@@ -37,4 +37,4 @@
 | 0200 | 직구 계산 배치 — 시안 B (입력 두 줄 · 칸 고정 · 예시 값 · 수입물가 가로 전체 → 과세환율) (#235) | builder | 머지됨 (#237) | task/0200-calc-layout | apps/web/src/features/import-calc/** |
 | 0201 | 고른 나라 사진 · 휴대폰 여행지 고르기 · 고른 나라 물가 (#233 · Full) | builder | 머지됨 (#238) | task/0201-country-photos | apps/web/public/images/photos/country-* · packages/ui/src/lib/photo.ts · features/{home,intro,travel-price}/** |
 | 0204 | 2026-11-18 AI 답변 세션 측정 (질문 3판 첫 측정) · #157 조사 | geo | PR 대기 | task/0204-geo-answers-1118 | apps/api/data/geo-answers/2026-11-18.json |
-| 0205 | 이름 바꾼 날(11-17) 전후 비교 — /geo 맨 위 (#243 · Full) | builder | 진행 중 | task/0205-rename-compare | packages/shared/src/contracts/geo.ts · apps/api/src/features/geo/** · apps/web/src/features/geo/** |
+| 0205 | 이름 바꾼 날(11-17) 전후 비교 — /geo 맨 위 (#243 · Full) | builder | PR 대기 | task/0205-rename-compare | packages/shared/src/contracts/geo.ts · apps/api/src/features/geo/** · apps/web/src/features/geo/** |

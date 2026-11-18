@@ -24,6 +24,7 @@
 - .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- apps/web/src/shared/old-name.test.ts — 새 파일 4개(비교 화면 · 계산 · 계산 테스트 · geo 계약)가 "Tripfx → Flapfx" · Tripfx 시기를 이름 그대로 적어 옛 이름 검사에 걸림 · 파일마다 이유와 함께 예외 목록에 더함
 
 ## 위험
 - 응답 크기 증가 → 날짜별 행만 · 경로(path)는 빼서 줄임.
@@ -36,3 +37,8 @@
 - e2e · 미리보기
 
 ## 계획과 달라진 점
+- 훅 파일 `apps/web/src/features/geo/hooks/use-rename-compare.ts` 를 더함 — 화면(.tsx)은 훅을 직접 못 쓰는 구조 검사 때문. "오늘" 은 useSyncExternalStore 로 브라우저 한국 날짜 · 서버 화면은 빈 값이라 날짜가 달라도 어긋나지 않음.
+- `answerDays` 의 `question` 은 질문 글자(번호 아님) — 화면이 글자가 필요하고 번호와 글자는 1:1 이라 글자끼리 이어 비교.
+- 판 번호는 questions.ts 의 `editionOfQuestion` (질문을 처음 쓴 판).
+- 일반 질문 비교는 "가장 최근 측정일에 있던 질문"(지금 묻는 16개)만 보임 — 지난 판에서만 쓴 질문은 뺌.
+- 막대는 단순 SVG (새 의존성 없음) · 휴대폰에서 날짜별 막대가 표 밖으로 밀려 봇 이름 아래로 옮김.

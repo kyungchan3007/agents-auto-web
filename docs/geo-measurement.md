@@ -21,6 +21,13 @@
 - Cloudflare Web Analytics 도 켬 (사람 방문 · 유입)
 - AI Crawl Control: 계정 메뉴에 없음 · 도메인(zone) 기능으로 보이며 tripfx.pages.dev 는 zone 이 아님
 
+## 이름 바꾼 날 전후 비교 (작업 0205 · #243)
+- 기준일 `RENAME_DAY = 2026-11-17`(Tripfx → Flapfx · tripfx.pages.dev → flapfx.com)은 `@hav/shared` 의 geo 계약(`packages/shared/src/contracts/geo.ts`) 한 곳에만 둔다. `/geo` 맨 위 구간이 그 앞뒤를 비교한다.
+- `/geo` 응답에 선택 필드를 더했다: `daily`(날짜 · 종류 · 이름별 방문 횟수 · 경로 없음 · 운영 확인 방문 제외) · `answerDays`(날짜별 질문 결과 · 질문을 처음 쓴 판 번호). 새 D1 쿼리 없이 이미 읽은 행으로 만든다. 지난 기록은 고치지 않는다.
+- 하루 평균 = 기간 합계 ÷ 그 기간의 달력 날짜 수 (방문 없는 날 포함). 전: 첫 기록일 ~ 11-16 · 후: 11-17 ~ 오늘(한국). 화면에 날짜 수를 적고, 후 기간이 7일보다 짧으면 "참고용" 으로 알린다.
+- AI 답변: 일반 질문은 가장 최근 측정일에 있던 질문끼리 전 · 후(찾음 · 인용 횟수 / 응답 받은 측정 횟수). 브랜드 질문은 이름이 달라 이어 비교하지 않고 Tripfx 시기(1 · 2판) · Flapfx 시기(3판)로 따로 요약한다.
+- 검색 노출: 새 속성(flapfx.com)은 Search Console 등록(#214) 뒤부터라 지금은 "아직 없음".
+
 ## 구글 검색 자료
 - 2026-11-18 부터 Search Console 속성은 **도메인 속성 `sc-domain:flapfx.com`** (사용자 등록 · 서비스 계정 `tripfx-gsc` 제한적 권한 · 작업 0206). 옛 속성 `https://tripfx.pages.dev/` 의 마지막 값은 11-03 ~ 11-14 노출 3 · 클릭 0 · 평균 순위 2.7 (#157 기록) — 동기화가 표를 새로 채우므로 D1 에서는 사라짐
 - `gsc-sync.yml` 이 매일 Search Console 노출 · 클릭 · 순위 · 상위 검색어 · 페이지를 가져옴 (작업 0130) · 서비스 계정 `tripfx-gsc` (제한적 권한) · 키는 GitHub 비밀값 `GSC_SERVICE_ACCOUNT_JSON`
