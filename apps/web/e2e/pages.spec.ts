@@ -214,8 +214,8 @@ test.describe("직구 계산 /calc (SR-CALC-01)", () => {
       expect(Math.abs(imports.x - input.x)).toBeLessThan(2);
       expect(Math.abs(imports.x + imports.width - (result.x + result.width))).toBeLessThan(2);
       expect(customs.x).toBeGreaterThan(imports.x + 200); // 오른쪽 칸 (왼쪽 숫자 카드 옆)
-      // 입력 묶음과 결과 칸은 같은 높이
-      expect(Math.abs(input.height - result.height)).toBeLessThan(2);
+      // 작업 0221: 입력 묶음은 자연 높이 · 결과(세관 꼬리표)가 더 길어 같은 높이로 늘이지 않음 (시안 A)
+      expect(result.height).toBeGreaterThanOrEqual(input.height - 2);
     }
   });
 });

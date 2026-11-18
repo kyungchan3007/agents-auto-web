@@ -30,7 +30,7 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
           <div className="mx-auto max-w-page">
             <Eyebrow>직구 계산</Eyebrow>
             {/* 큰 문장은 입력에 따라 2~3줄 — 세 줄 높이를 미리 잡아 값을 바꿔도 아래 칸이 밀리지 않게 (작업 0200) */}
-            <Title as="h1" size="page" id="calc-title" className="mt-3 text-cheap sm:min-h-[3lh]">
+            <Title as="h1" size="page" id="calc-title" className="mt-3 min-h-[3lh] text-cheap sm:min-h-[1lh]">
               <EmphText text={hasRates ? calcHeadline(form.result, form.input) : "환율을 받지 못했습니다"} />
             </Title>
             <p className="mt-6 max-w-[36em] text-body text-fg-2">물건 값을 넣으면 면세 한도 안인지 바로 알려 드립니다.</p>

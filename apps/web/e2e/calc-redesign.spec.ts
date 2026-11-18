@@ -62,7 +62,7 @@ test.describe("새 /calc — 머리 · 꼬리표 (작업 0221)", () => {
     await expect(bottom).toContainText("예상 금액입니다. 실제 세금은 통관 때 정해집니다.");
     expect(await tid(page, "calc-result").locator("dl > div").count()).toBe(6);
     // 도장은 기울기 그대로
-    expect(await top.getByRole("status").first().evaluate((el) => getComputedStyle(el).transform)).not.toBe("none");
+    expect(await top.getByRole("status").first().evaluate((el) => getComputedStyle(el).rotate)).not.toBe("none"); // Tailwind 의 -rotate-3 은 rotate 속성
   });
 
   test("한도 막대 — 채움 = 물건 값 / 한도 (180 → 0.9 · 넘으면 가득) · 값을 바꿔도 카드 높이 같음", async ({ page }) => {
