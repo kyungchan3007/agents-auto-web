@@ -42,8 +42,8 @@ function DayBars({ name, daily, dayMark }: { name: string; daily: DayHits[]; day
   );
 }
 
-export function RenameCompare({ report }: { report: GeoReport }) {
-  const c = useRenameCompare(report);
+export function RenameCompare({ report, asOf }: { report: GeoReport; asOf: string }) {
+  const c = useRenameCompare(report, asOf);
   const before = `바꾸기 전 ${c.beforeDays}일`;
   const after = `바꾼 뒤 ${c.afterDays}일`;
   return (
@@ -54,6 +54,14 @@ export function RenameCompare({ report }: { report: GeoReport }) {
       <p data-testid="rename-day" className="mt-1 text-body text-fg-2">
         이름 바꾼 날 {c.day} (Tripfx → Flapfx · tripfx.pages.dev → flapfx.com) · 하루 평균은 방문 없는 날을 포함한 달력 날짜 수로 나눕니다 ({before} · {after}).
       </p>
+      <p data-testid="rename-asof" className="mt-1 text-small text-fg-2">
+        자료 기준일 {c.asOf} · 바꾸기 전 = {c.beforeRange ?? "기록 없음"} (응답에 남은 첫 기록일부터) · 바꾼 뒤 = {c.day} ~ {c.asOf}
+      </p>
+      {c.beforeShort && (
+        <p data-testid="rename-before-short" className="mt-1 text-small text-fg-2">
+          전 기간이 {c.beforeDays}일로 짧아 비교는 참고용입니다.
+        </p>
+      )}
       {c.short && (
         <p data-testid="rename-short" className="mt-1 text-small text-fg-2">
           후 기간이 {c.afterDays}일로 짧아 비교는 참고용입니다.

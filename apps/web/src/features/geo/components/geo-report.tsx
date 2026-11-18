@@ -9,13 +9,13 @@ import { useGeoReport } from "../hooks/use-geo-report";
 import { GeoDetail } from "./geo-detail";
 import { RenameCompare } from "./rename-compare";
 
-export function GeoReport({ build }: { build: Fetched<Report> }) {
+export function GeoReport({ build, asOf }: { build: Fetched<Report>; asOf: string }) {
   const report = useGeoReport(build);
   if (!report.ok) return <EmptyState>측정 자료를 받지 못했습니다 ({report.reason})</EmptyState>;
   const r = report.data;
   return (
     <>
-      <RenameCompare report={r} />
+      <RenameCompare report={r} asOf={asOf} />
 
       <dl data-testid="geo-cards" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {geoCards(r).map((c) => (

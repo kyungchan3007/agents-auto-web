@@ -9,7 +9,7 @@ import { SiteNav } from "../../../shared/site-nav";
 import { GEO_LIMITS, GEO_UNLINKED, methodLinkText } from "../lib/geo-view";
 import { GeoReport } from "./geo-report";
 
-export function GeoPage({ build }: { build: Fetched<Report> }) {
+export function GeoPage({ build, asOf }: { build: Fetched<Report>; asOf: string }) {
   return (
     <>
       <SiteNav page="geo" />
@@ -19,7 +19,7 @@ export function GeoPage({ build }: { build: Fetched<Report> }) {
           <Title as="h1" size="page" className="mt-3.5 mb-[22px] text-cheap">
             AI 검색에서 이 사이트가 어떻게 쓰이는지 잽니다
           </Title>
-          <GeoReport build={build} />
+          <GeoReport build={build} asOf={asOf} />
 
           <section data-testid="geo-method" className="mt-6 rounded-card bg-foam px-6 pt-[22px] pb-[25px]">
             <h2 className="text-lg font-semibold">측정 방법</h2>

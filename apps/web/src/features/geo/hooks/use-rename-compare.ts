@@ -1,14 +1,8 @@
 "use client";
 
-// 이름 바꾼 날 전후 비교 자료 (작업 0205) — "오늘" 은 브라우저에서 한국 날짜로 · 서버가 만든 화면에서는 빈 값(응답의 마지막 기록일까지만 셈)이라 날짜가 달라도 어긋나지 않음
-import { kstDate } from "@hav/shared/date";
+// 이름 바꾼 날 전후 비교 자료 (작업 0205) — 끝 날짜 asOf 는 자료를 받은 날(빌드 때 한국 날짜) · 브라우저 날짜는 쓰지 않음
 import type { GeoReport } from "@hav/shared/geo";
-import { useMemo, useSyncExternalStore } from "react";
+import { useMemo } from "react";
 import { renameCompare } from "../lib/rename-compare";
 
-const noSubscribe = () => () => {};
-
-export function useRenameCompare(report: GeoReport) {
-  const today = useSyncExternalStore(noSubscribe, () => kstDate(new Date()), () => "");
-  return useMemo(() => renameCompare(report, today), [report, today]);
-}
+export const useRenameCompare = (report: GeoReport, asOf: string) => useMemo(() => renameCompare(report, asOf), [report, asOf]);

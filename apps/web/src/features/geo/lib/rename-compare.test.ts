@@ -51,8 +51,18 @@ describe("이름 바꾼 날 전후 비교 — 봇 (작업 0205)", () => {
     expect(renameCompare(report({ firstDay: "2026-11-17", daily: [d("2026-11-17", "A", 1)] }), "2026-11-18").bots?.[0].before).toBeNull();
     expect(renameCompare(report({ daily: [d("2026-11-10", "A", 1)] }), "2026-11-16").bots?.[0].after).toBeNull();
   });
-  it("기록이 오늘보다 뒤 날짜면 그 날까지 늘림 (시계 차이)", () => {
-    expect(renameCompare(report({ daily: [d("2026-11-19", "A", 2)] }), "2026-11-18").bots?.[0].after?.days).toBe(3);
+  it("자료 기준일(asOf)보다 뒤 날짜는 분모에도 합계에도 안 들어감 (브라우저 날짜를 쓰지 않음)", () => {
+    const x = renameCompare(report({ daily: [d("2026-11-17", "A", 2), d("2026-11-19", "A", 50)] }), "2026-11-18").bots?.[0];
+    expect(x?.after).toEqual({ days: 2, total: 2, perDay: 1 });
+    expect(x?.daily.at(-1)?.day).toBe("2026-11-18");
+  });
+  it("전 기간 날짜 범위를 알려 줌 — 응답에 남은 첫 기록일 ~ 11-16 · 전 기간이 7일보다 짧으면 beforeShort", () => {
+    const c1 = renameCompare(report({ firstDay: "2026-11-05", daily: [d("2026-11-05", "A", 1)] }), "2026-11-18");
+    expect(c1.beforeRange).toBe("2026-11-05 ~ 2026-11-16");
+    expect(c1.beforeShort).toBe(false);
+    const c2 = renameCompare(report({ firstDay: "2026-11-12", daily: [d("2026-11-12", "A", 1)] }), "2026-11-18");
+    expect([c2.beforeRange, c2.beforeDays, c2.beforeShort]).toEqual(["2026-11-12 ~ 2026-11-16", 5, true]);
+    expect(renameCompare(report({ firstDay: "2026-11-17" }), "2026-11-18").beforeRange).toBeNull();
   });
 });
 
