@@ -125,6 +125,7 @@ test.describe("새 홈 — 표 가장자리 홈은 파인 홈 (작업 0217 사�
 
 test.describe("새 홈 — 12달 막대 (작업 0217)", () => {
   test("12개 · 가장 비싼 달 빨강 · 가장 싼 달 노랑 · 나머지 연한 파랑 · 막대 위 글 · 자세히 링크", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" }); // 막대가 자라는 중이면 높이가 달라 보임 (그래프 2D) — 움직임 줄이기는 처음부터 최종 모양
     await page.goto("/");
     const bars = tid(page, "year-bar");
     await expect(bars).toHaveCount(12);
@@ -136,9 +137,8 @@ test.describe("새 홈 — 12달 막대 (작업 0217)", () => {
     const heights = await bars.evaluateAll((els) => els.map((e) => e.getBoundingClientRect().height));
     expect(heights[hiI]).toBe(Math.max(...heights));
     expect(heights[loI]).toBe(Math.min(...heights));
-    const color = (i: number) => bars.nth(i).evaluate((e) => getComputedStyle(e).backgroundColor);
-    expect(await color(loI)).toBe(SUN);
-    expect(await color(hiI)).toBe("rgb(193, 58, 34)");
+    // 그래프 2D(시안 F): 막대는 SVG 그라데이션(위 진하고 아래로 옅어짐) — 색은 fill 이 url(#…) 이고 톤(data-tone)으로 구분 (색 값은 홈 12달 막대 spec 에서)
+    for (const i of [hiI, loI]) expect(await bars.nth(i).evaluate((e) => (e.getAttribute("fill") ?? "").startsWith("url(#") || !!e.querySelector('[fill^="url(#"]')), `${i + 1}월 막대 그라데이션`).toBe(true);
     await expect(tid(page, "year-bars")).toHaveAttribute("role", "img");
     await expect(tid(page, "year-bars")).toContainText(`${hiI + 1}월 가장 비쌈`);
     await expect(tid(page, "year-bars")).toContainText(`${loI + 1}월 가장 쌈`);
