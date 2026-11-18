@@ -42,6 +42,9 @@ export type DestinationRowData = {
   flagLabel: string;
   currencyLabel: string;
   rateText: string | null;
+  /** 금액 카운트업 숫자 (작업 0217) — formatCount(rateValue, rateDigits) + "원" 이 rateText 와 같음 · 환율이 없으면 null · 0 */
+  rateValue: number | null;
+  rateDigits: 0 | 1;
   signal: Signal | null;
   position: number | null;
   /** 90일 백분위(0~1) — position 과 같은 값 · 핀 글의 근거 숫자 (없으면 null) */
@@ -67,6 +70,8 @@ export function destinationRows(signals: SignalRow[], rates: RateRow[], destinat
       flagLabel: `${(d.country ? TRAVEL_COUNTRIES[d.country]?.name : undefined) ?? d.name} 국기`,
       currencyLabel: rate && rate.unit > 1 ? `${name} ${rate.unit}` : name,
       rateText: rate ? wonText(rate.baseRate) : null,
+      rateValue: rate ? rate.baseRate : null,
+      rateDigits: rate && rate.baseRate < 100 ? 1 : 0,
       signal: hasSignal ? (s?.signal ?? null) : null,
       position: hasSignal ? (s?.percentile ?? null) : null,
       percentile: hasSignal ? (s?.percentile ?? null) : null,

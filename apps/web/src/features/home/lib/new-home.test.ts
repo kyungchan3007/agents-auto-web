@@ -17,7 +17,7 @@ import { todayBoard } from "./today-board";
 import { heroParts, travelTiming } from "./travel-timing";
 import { yearBars } from "./year-bars";
 
-const pts = (vals: Record<number, number>) => Object.entries(vals).map(([m, v]) => ({ date: `2025-${String(m).padStart(2, "0")}-01`, value: v }));
+const pts = (vals: Record<number, number>) => Object.entries(vals).map(([m, v]) => ({ period: `2025-${String(m).padStart(2, "0")}`, value: v }));
 const FULL = pts({ 1: 120, 2: 100, 3: 98, 4: 130, 5: 160, 6: 150, 7: 150, 8: 149, 9: 140, 10: 141, 11: 90, 12: 100 });
 
 describe("yearBars — 12달 막대", () => {
