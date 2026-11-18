@@ -21,7 +21,8 @@ test.describe("직구 수입물가 그래프 — 풍성한 2D (작업 0221 · �
     await scrollTo(page, chart);
     await page.waitForTimeout(5500);
     await expectLineChartFinal(page, chart, { series: ["price", "fx"], areas: ["price", "fx"] });
-    await expect(chart.locator('[data-testid="chart-ref"]')).toHaveText(/\d{4}-\d{2} = 100/);
+    await expect(chart.locator('[data-testid="chart-ref"]')).toHaveCount(1); // 기준선
+    await expect(chart.locator('[data-testid="chart-ref-label"]')).toHaveText(/\d{4}-\d{2} = 100/); // 기준선 꼬리표 글
     await expect(chart.locator('[data-testid="chart-end"][data-series="price"]')).toContainText("수입물가");
     await expect(chart.locator('[data-testid="chart-end"][data-series="fx"]')).toContainText("원/달러");
     // 최고/최저 점은 이 그래프에 없음 · 날짜 눈금은 있음
@@ -44,7 +45,7 @@ test.describe("직구 수입물가 그래프 — 풍성한 2D (작업 0221 · �
     await page.waitForTimeout(5500);
     await expectInsideViewport(page, chart, "그래프");
     await expectTextsInside(chart);
-    const bubbles = chart.locator('[data-testid="chart-end-bubble"]');
+    const bubbles = chart.locator('[data-testid="chart-end-bubble"] rect'); // 상자만(이어주는 줄 제외)
     const a = (await bubbles.nth(0).boundingBox())!;
     const b = (await bubbles.nth(1).boundingBox())!;
     expect(a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height, "말풍선 겹침").toBe(false);
