@@ -82,6 +82,22 @@ test.describe("새 /flights — 탑승권 · 한 줄 띠 (작업 0218)", () => {
     await expect(tid(page, "yoy-cards")).toContainText("같은 달 평균 기준");
   });
 
+  test("넓은 화면 — 탑승권 두 칸 아래 끝이 비슷함 (그래프 칸 내용 아래 끝 ~ 카드 아래 끝 ≤ 카드 안쪽 여백 + 40px · 0218 리뷰)", async ({ page }) => {
+    test.skip(isPhone(page), "넓은 화면 전용");
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/flights");
+    test.skip(!(await ready(page)), "자료 없음");
+    await page.waitForTimeout(600);
+    const card = await box(page, "flights-ticket");
+    const legend = await box(page, "travel-legend"); // 왼쪽 칸 맨 아래 내용
+    const padding = await tid(page, "flights-ticket").locator("> div").first().evaluate((el) => parseFloat(getComputedStyle(el).paddingBottom));
+    const gap = card.y + card.height - (legend.y + legend.height);
+    expect(gap, `그래프 칸 아래 빈칸 ${Math.round(gap)}px`).toBeLessThanOrEqual(padding + 40);
+    // 오른쪽 숫자 칸 안의 가장 싼 달 작은 글자판은 시안처럼 작음 (칸 높이 약 44px)
+    const mini = await box(page, "cheap-board");
+    expect(mini.height, "작은 글자판 높이").toBeLessThanOrEqual(64);
+  });
+
   test("작년 대비는 알약 배지가 아니라 점 + 글 — '작년보다 ±N.N%'", async ({ page }) => {
     await page.goto("/flights");
     test.skip(!(await ready(page)), "자료 없음");
