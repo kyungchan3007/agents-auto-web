@@ -9,7 +9,8 @@ import { useReducedMotion } from "motion/react";
 import { useFlapOnce } from "../../hooks/use-flap-once";
 import { type FlipStep, flipDurationMs, flipPlan, toCells } from "../../lib/flap";
 
-type Row = { text: string | null; tone: "dest" | "money" | "white" };
+/** whiteUntil: 줄 앞 N칸은 흰 글자(나머지는 줄 색) — 이름은 흰 글자 · 값은 노랑으로 나눌 때 (작업 0218) */
+type Row = { text: string | null; tone: "dest" | "money" | "white"; whiteUntil?: number };
 
 // 줄 종류별 글자 색 — 기본은 햇빛 노랑 (작업 0177: 도착지 줄도 노랑) · white = 흰 글자 줄 (작업 0216 · 시안 B 의 .w)
 const TONE = { dest: "text-sun", money: "text-sun", white: "text-foam" } as const;
@@ -34,7 +35,7 @@ export function FlapBoard({ rows, cols, label, className = "" }: { rows: Row[]; 
         <div key={r} data-testid="flap-row" data-tone={rows[r].tone} className={`flex gap-[3px] sm:gap-1 ${TONE[rows[r].tone]}`}>
           {cells.map((cell, c) => (
             <span key={c} data-testid="flap-cell" aria-hidden className="relative flex h-9 w-[1.55rem] min-w-0 shrink items-center justify-center rounded-[3px] bg-flap-cell font-display text-[1.2rem] font-extrabold tracking-display tabular-nums sm:h-14 sm:w-10 sm:text-[1.9rem] lg:h-16 lg:w-12 lg:text-[2.2rem]">
-              {glyphAt(plans[r][c], cell, elapsed)}
+              <span className={c < (rows[r].whiteUntil ?? 0) ? "text-foam" : undefined}>{glyphAt(plans[r][c], cell, elapsed)}</span>
               <span data-testid="flap-seam" aria-hidden className="absolute inset-x-0 top-1/2 h-px bg-on-band" />
             </span>
           ))}
