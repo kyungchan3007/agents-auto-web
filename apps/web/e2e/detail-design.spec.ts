@@ -56,4 +56,26 @@ test.describe("통화 상세 (작업 0212)", () => {
     const b = await box(links.nth(1));
     expect(a.x + a.width).toBeLessThanOrEqual(b.x + 0.5);
   });
+
+  test("넓은 화면 — 왼쪽 목록 맨 아래 줄이 중간에서 잘리지 않음 (줄 경계에서 끝남 · 여러 높이)", async ({ page }) => {
+    test.skip(isPhone(page), "넓은 화면 전용");
+    for (const height of [700, 800, 900]) {
+      await page.setViewportSize({ width: 1280, height });
+      await page.goto("/currencies/USD");
+      await page.waitForTimeout(300);
+      const ul = tid(page, "currency-list").locator("nav ul");
+      const ub = await box(ul);
+      const items = tid(page, "currency-list").locator("nav ul li");
+      const n = await items.count();
+      let partial = 0;
+      for (let i = 0; i < n; i++) {
+        const b = await box(items.nth(i));
+        const inside = b.y + b.height <= ub.y + ub.height + 1;
+        const outside = b.y >= ub.y + ub.height - 1;
+        if (!inside && !outside) partial++;
+      }
+      expect(partial, `높이 ${height}`).toBe(0);
+      expect(await ul.evaluate((el) => el.scrollHeight > el.clientHeight), "목록은 계속 스크롤 가능").toBe(true);
+    }
+  });
 });

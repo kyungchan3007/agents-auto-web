@@ -9,15 +9,17 @@ import Link from "next/link";
 import { currencyListLabel } from "../lib/detail-view";
 import type { ListItem } from "../lib/list";
 import { useCurrencyList } from "../hooks/use-currency-list";
+import { useListFit } from "../hooks/use-list-fit";
 
 export type { ListItem };
 
 export function CurrencyList({ items }: { items: ListItem[] }) {
   const { current, shown } = useCurrencyList(items);
+  const listRef = useListFit(shown.length);
 
   return (
     <nav aria-label="통화 목록" className="min-w-0">
-      <ul className="flex gap-2 overflow-x-auto pb-2 lg:max-h-[calc(100svh-12rem)] lg:flex-col lg:gap-0 lg:overflow-x-visible lg:overflow-y-auto lg:pb-0">
+      <ul ref={listRef} className="flex gap-2 overflow-x-auto pb-2 lg:max-h-[calc(100svh-12rem)] lg:flex-col lg:gap-0 lg:overflow-x-visible lg:overflow-y-auto lg:pb-0">
         {shown.map((i) => {
           const on = i.currency === current;
           return (
