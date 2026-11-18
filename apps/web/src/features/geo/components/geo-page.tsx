@@ -13,7 +13,7 @@ export function GeoPage({ build, asOf }: { build: Fetched<Report>; asOf: string 
   return (
     <>
       <SiteNav page="geo" />
-      <main className="bg-surface px-4 pt-14 pb-10 text-fg sm:px-8 sm:pt-[3.3rem]">
+      <main id="main" tabIndex={-1} className="bg-surface px-4 pt-14 pb-10 text-fg sm:px-8 sm:pt-[3.3rem]">
         <div className="mx-auto max-w-page">
           <Eyebrow>GEO 측정</Eyebrow>
           <Title as="h1" size="page" className="mt-3.5 mb-[22px] text-cheap">

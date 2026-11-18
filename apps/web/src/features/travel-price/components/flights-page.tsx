@@ -25,7 +25,7 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
   return (
     <>
       <SiteNav page="flights" />
-      <main className="bg-surface text-fg">
+      <main id="main" tabIndex={-1} className="bg-surface text-fg">
         <PhotoHeader name="window-sunrise" alt="비행기 창밖으로 보이는 해돋이" veil="light" priority>
           <Eyebrow>여행 타이밍</Eyebrow>
           <Title as="h1" size="page" className="mt-3 text-cheap">

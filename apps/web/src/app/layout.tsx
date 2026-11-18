@@ -31,6 +31,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ko" data-surface="light" className={sans.variable}>
       <body className="bg-surface text-fg">
+        {/* 본문 바로가기 — 평소엔 숨김 · 첫 Tab 에서 보이고 누르면 main 으로 (작업 0213) */}
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-pill focus:border-2 focus:border-cheap focus:bg-card focus:px-5 focus:py-2.5 focus:text-body focus:font-semibold focus:text-cheap"
+        >
+          본문 바로가기
+        </a>
         {/* 장애 안내 — 모든 페이지 맨 위 (빌드 때 끝난 시각이면 안 넣음) */}
         <OutageNotice show={outageActive()} />
         {children}

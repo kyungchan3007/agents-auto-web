@@ -31,3 +31,23 @@ test.describe("제목 구조 (작업 0213)", () => {
     });
   }
 });
+
+test.describe("본문 바로가기 (작업 0213)", () => {
+  for (const path of [...PAGES, "/nonexistent-page-0213"]) {
+    test(`${path} — 평소엔 숨김 · 첫 Tab 에서 보임 · Enter 로 main 에 초점`, async ({ page }) => {
+      await page.goto(path);
+      await page.waitForTimeout(300);
+      const skip = page.getByRole("link", { name: "본문 바로가기" });
+      const hidden = await skip.boundingBox();
+      expect((hidden?.width ?? 0) <= 1 && (hidden?.height ?? 0) <= 1, "평소 숨김").toBe(true);
+      await page.keyboard.press("Tab");
+      await expect(skip).toBeFocused();
+      const shown = await skip.boundingBox();
+      expect((shown?.width ?? 0) > 40 && (shown?.height ?? 0) > 20, "초점에서 보임").toBe(true);
+      await page.keyboard.press("Enter");
+      const active = await page.evaluate(() => ({ tag: document.activeElement?.tagName, id: document.activeElement?.id }));
+      expect(active).toEqual({ tag: "MAIN", id: "main" });
+      expect(await page.locator("main").count(), "main 은 하나").toBe(1);
+    });
+  }
+});
