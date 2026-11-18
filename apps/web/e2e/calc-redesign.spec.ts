@@ -113,11 +113,12 @@ test.describe("새 /calc — 시안 A 와 다르던 곳 (작업 0221 사용자 �
   test("보내는 곳을 바꿔도 결과 카드 · 아래 구간 높이는 그대로 (0208 크기 고정)", async ({ page }) => {
     await page.goto("/calc");
     const group = page.getByRole("radiogroup", { name: "보내는 곳" });
+    const absY = async (id: string) => (await box(page, id)).y + (await page.evaluate(() => window.scrollY)); // 문서 위에서의 위치 (선택하며 스크롤이 움직여도 같은 값)
     const r0 = (await box(page, "calc-result")).height;
-    const below0 = (await box(page, "import-price-section")).y;
+    const below0 = await absY("import-price-section");
     await group.getByRole("radio").nth(1).check();
     expect(Math.abs((await box(page, "calc-result")).height - r0)).toBeLessThan(1);
-    expect(Math.abs((await box(page, "import-price-section")).y - below0)).toBeLessThanOrEqual(1);
+    expect(Math.abs((await absY("import-price-section")) - below0)).toBeLessThanOrEqual(1);
   });
 
   test("입력 칸 모양 — 옅은 선 · 큰 높이 · 둥근 모서리 · 포커스일 때만 파랑 테두리와 분명한 표시", async ({ page }) => {
@@ -131,6 +132,7 @@ test.describe("새 /calc — 시안 A 와 다르던 곳 (작업 0221 사용자 �
     expect(st.h).toBeGreaterThanOrEqual(52);
     expect(st.radius).toBeGreaterThanOrEqual(12);
     await price.focus();
+    await page.waitForTimeout(350); // 테두리 색 바뀜(transition)이 끝난 뒤
     const f = await price.evaluate((el) => {
       const s = getComputedStyle(el);
       return { color: s.borderTopColor, outline: parseFloat(s.outlineWidth), outlineStyle: s.outlineStyle, shadow: s.boxShadow };

@@ -42,16 +42,16 @@ function Kpis({ rows }: { rows: { period: string; fx: number | null; price: numb
     { key: "fx", label: "원/달러 월평균", k: k.fx, digits: () => 0, suffix: "원", delta: (n) => `${signed(n, 0)}원` },
   ];
   return (
-    <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+    <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-1">
       {items.map((i) => {
         if (!i.k) return null;
         const tone = deltaTone(i.k.delta);
         return (
-          <div key={i.key} data-testid="import-kpi" className="min-w-0 rounded-[1.25rem] border border-line bg-card px-5 py-4">
+          <div key={i.key} data-testid="import-kpi" className="min-w-0 rounded-[1.25rem] border border-line bg-card px-4 py-4 sm:px-5">
             <p className="text-small text-fg-2">
               {i.label} ({i.k.period})
             </p>
-            <p className="mt-1 text-[2rem] leading-tight font-extrabold tracking-display text-fg tabular-nums">
+            <p className="mt-1 text-[1.625rem] leading-tight font-extrabold tracking-display text-fg tabular-nums sm:text-[2rem]">
               <CountUp value={i.k.value} digits={i.digits(i.k.value)} suffix={i.suffix} />
             </p>
             {i.k.delta !== null && tone && (

@@ -32,15 +32,28 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
         <Field label="물건 값" hint="현지 세금 · 현지 배송비까지 넣은 값" htmlFor="price" error={err("price")} badge={example}>
           <UnitInput unit={input.currency} id="price" inputMode="decimal" autoComplete="off" value={input.price} onChange={set("price")} placeholder="180" />
         </Field>
-        <Field label="보내는 곳" htmlFor="route" wide>
-          <Select id="route" value={input.route} onChange={set("route")}>
-            {(Object.keys(ROUTE_LABEL) as Route[]).map((k) => (
-              <option key={k} value={k}>
-                {ROUTE_LABEL[k]} · {DUTY_FREE_USD[k]}달러
-              </option>
-            ))}
-          </Select>
-        </Field>
+        {/* 보내는 곳 — 드롭다운 대신 두 줄 선택지 (시안 A · 작업 0221) — 한도 차이(200 · 150달러)가 바로 보임 · 화살표 키 · radiogroup · 고른 쪽은 짙은 테두리 + 오른쪽 동그라미 */}
+        <div className="sm:col-span-2">
+          <span id="route-label" aria-hidden className="text-small text-fg-2">
+            보내는 곳
+          </span>
+          <div role="radiogroup" aria-label="보내는 곳" className="mt-1.5 grid gap-2">
+            {(Object.keys(ROUTE_LABEL) as Route[]).map((k) => {
+              const on = input.route === k;
+              return (
+                <label key={k} className={`relative flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-[0.875rem] border-2 bg-card px-4 text-base text-fg transition-colors focus-within:outline-3 focus-within:outline-cheap/25 ${on ? "border-fg font-semibold" : "border-field-line hover:border-cheap/60"}`}>
+                  <input type="radio" name="route" value={k} checked={on} onChange={set("route")} className="absolute inset-0 size-full cursor-pointer opacity-0" />
+                  <span>
+                    {ROUTE_LABEL[k]} · {DUTY_FREE_USD[k]}달러
+                  </span>
+                  <span aria-hidden className={`grid size-5 shrink-0 place-items-center rounded-full border-2 ${on ? "border-cheap" : "border-field-line"}`}>
+                    {on && <span data-testid="route-dot" className="size-2.5 rounded-full bg-cheap" />}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
         <Field label="국제 배송비" hint="한도를 넘을 때만 세금에 더함 · 모르면 비워 두기" htmlFor="shipping" error={err("shipping")}>
           <Input id="shipping" inputMode="decimal" autoComplete="off" value={input.shipping} onChange={set("shipping")} placeholder="0" />
         </Field>

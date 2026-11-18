@@ -1,9 +1,9 @@
 // 입력 칸 · 선택 상자 — 통화 둘러보기 찾기 · 직구 계산기가 같이 씀 (작업 0067)
-// 테두리는 칸 안쪽 border (ring 은 칸 밖에 그려져 스크롤 영역에서 잘렸음) · 시안: 흰 바탕(카드색) + 2px 남색 테두리 (작업 0170) · 모서리는 radius-field · 높이 48px 로 통일
+// 테두리는 칸 안쪽 border (ring 은 칸 밖에 그려져 스크롤 영역에서 잘렸음) · 시안(작업 0221): 흰 바탕 + 옅은 선(field-line · 도형 대비 3 이상) · 더 둥근 모서리 · 높이 56px · 포커스일 때만 파랑 테두리 + 옅은 파랑 윤곽 (예전 작업 0170 은 2px 남색 테두리 · 48px)
 import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from "react";
 
 export const fieldClass =
-  "h-12 w-full rounded-field border-2 border-fg bg-card px-4 text-base text-fg placeholder:text-fg-2 transition-colors hover:border-cheap focus:border-accent focus:outline-none";
+  "h-14 w-full rounded-[0.875rem] border-2 border-field-line bg-card px-4 text-base text-fg placeholder:text-fg-2 transition-colors hover:border-cheap/60 focus:border-cheap focus:outline-3 focus:outline-cheap/25";
 
 export function Input({ className = "", ...rest }: InputHTMLAttributes<HTMLInputElement>) {
   return <input className={`${fieldClass} ${className}`} {...rest} />;
