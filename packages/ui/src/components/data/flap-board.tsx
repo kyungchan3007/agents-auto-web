@@ -29,7 +29,7 @@ export function FlapBoard({ rows, cols, label, className = "" }: { rows: Row[]; 
   const reduce = useReducedMotion();
   const { elapsed, played } = useFlapOnce(Math.max(0, ...plans.map((p) => flipDurationMs(p))), !!reduce);
   return (
-    <div data-testid="flap-board" role="img" aria-label={label} data-played={played ? "true" : "false"} className={`inline-flex max-w-full flex-col gap-2 rounded-[10px] bg-pin-ink shadow-board p-3 sm:gap-3 sm:p-5 ${className}`}>
+    <div data-testid="flap-board" role="img" aria-label={label} data-played={played ? "true" : "false"} className={`inline-flex max-w-full min-w-0 flex-col gap-2 rounded-[10px] bg-pin-ink shadow-board p-3 sm:gap-3 sm:p-5 ${className}`}>
       {cellRows.map((cells, r) => (
         <div key={r} data-testid="flap-row" data-tone={rows[r].tone} className={`flex gap-[3px] sm:gap-1 ${TONE[rows[r].tone]}`}>
           {cells.map((cell, c) => (
