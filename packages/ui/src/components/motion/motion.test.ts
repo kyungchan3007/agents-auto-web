@@ -4,7 +4,7 @@
 //   packages/ui/src/hooks/use-in-view-once.ts   export function useInViewOnce<T extends Element>(): { ref: RefObject<T | null>; seen: boolean }   // 화면에 처음 들어올 때 한 번 true · 다시 false 가 되지 않음
 //   packages/ui/src/hooks/use-count-up.ts       export function useCountUp(final: number, opts?: { digits?: number; durationMs?: number }): { ref: RefObject<HTMLElement | null>; value: number; progress: number }
 //        // 서버 첫 그림 · 움직임 줄이기 = progress 1 · value = final / 화면에 들어올 때 한 번 progress 0 → 1 (끝나면 정확히 final)
-//   packages/ui/src/components/motion/count-up.tsx   export function CountUp({ value, digits, prefix, suffix, className }) — 화면 읽기는 최종 값(sr-only) · 움직이는 숫자는 aria-hidden · tabular-nums
+//   packages/ui/src/components/motion/count-up.tsx   export function CountUp({ value, digits, prefix, suffix, className }) — 숫자 글은 한 번만(보이는 값 하나 · 복사본 없음) · tabular-nums
 //   packages/ui/src/components/motion/slide-in.tsx   export function SlideIn({ from = "left", children, className }) — 들어올 때 한 번 · ease-out 약 0.7초 · 움직임 줄이기면 바로 제자리 · 서버 첫 그림은 제자리(자바스크립트 없이도 보임)
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
@@ -20,9 +20,9 @@ describe("CountUp 부품", () => {
     expect(s()).toMatch(/useCountUp(<[^>]*>)?\(/);
     expect(s()).toMatch(/formatCount\(/);
   });
-  it("화면 읽기는 최종 값 · 움직이는 숫자는 aria-hidden · 글자 폭 고정", () => {
-    expect(s()).toMatch(/sr-only/);
-    expect(s()).toMatch(/aria-hidden/);
+  it("숫자 글은 한 번만 — sr-only 복사본 · aria-hidden 없음 · 글자 폭 고정(tabular-nums)", () => {
+    expect(s()).not.toMatch(/sr-only/);
+    expect(s()).not.toMatch(/aria-hidden/);
     expect(s()).toMatch(/tabular-nums/);
   });
   it("e2e 표시 — data-testid=count-up · data-final", () => {
