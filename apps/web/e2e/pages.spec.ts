@@ -242,14 +242,12 @@ test.describe("직구 계산 — 예시 값 · 고정 크기 (작업 0200)", () 
   test("값을 바꿔도(결과 · 한도 넘음 · 빈 값 · 오류) 입력 · 결과 칸 높이와 아래 칸 위치가 그대로", async ({ page }) => {
     await page.goto("/calc");
     await page.waitForTimeout(300);
-    const phone = (page.viewportSize()?.width ?? 0) < 640;
     const before = await sizes(page);
     // 결과 카드 최소 높이(408px)와 한도 안 내용(409px)이 1px 다를 수 있어 1px 안쪽은 같은 것으로 봄 (작업 0208 추가)
     const near = (a: Awaited<ReturnType<typeof sizes>>) => a.inputH === before.inputH && Math.abs(a.resultH - before.resultH) <= 1 && Math.abs(a.importGap - before.importGap) <= 1;
     const price = input(page).getByLabel(/물건 값/);
-    // 휴대폰은 아주 큰 금액(99999999 → 열다섯 글자 원화)이 줄을 바꿔 카드가 커지므로 9999 까지만
-    const big = phone ? "9999" : "99999999";
-    for (const v of ["250", "abc", "", big, "180"]) {
+    // 아주 큰 금액(99999999 → 열다섯 글자 원화)도 휴대폰에서 한 줄 — 긴 금액은 글자를 줄임 (작업 0208 lead 리뷰)
+    for (const v of ["250", "abc", "", "99999999", "180"]) {
       await price.fill(v);
       await input(page).getByLabel(/관세율/).fill(v === "250" ? "8" : "");
       const now = await sizes(page);
