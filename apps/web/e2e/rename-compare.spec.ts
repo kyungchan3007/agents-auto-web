@@ -1,5 +1,5 @@
 // 작업 0205 (#243) — /geo 맨 위 "이름 바꾼 날 전후 비교": 기준일 표시 · 하루 평균(달력 날짜 분모) · 새 필드가 없을 때 "아직 없음" · 두 폭에서 겹침 · 가로 넘침 없음
-//   브라우저가 받는 /bff/geo 를 가짜 응답으로 바꾸고 · 오늘을 2026-11-18(한국)로 고정해 숫자가 날마다 달라지지 않게 함
+//   브라우저가 받는 /bff/geo 를 가짜 응답으로 바꿈 · 후 기간 끝은 화면의 "자료 기준일"(빌드 때 한국 날짜)이라 기대값을 그 날짜에서 계산
 import { type Page, expect, test } from "@playwright/test";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
@@ -22,7 +22,7 @@ const WITH_DAILY = {
 };
 
 async function open(page: Page, body: object) {
-  await page.clock.setFixedTime(new Date("2026-11-18T12:00:00+09:00"));
+  // 브라우저 날짜는 쓰지 않음 — 끝 날짜는 빌드 때 한국 날짜(자료 기준일)라 시계를 고정해도 영향 없음 (작업 0205)
   await page.route("**/bff/geo*", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(body) }));
   await page.goto("/geo");
 }
@@ -39,13 +39,22 @@ test.describe("이름 바꾼 날 전후 비교 (작업 0205)", () => {
     expect(a && b && a.y + a.height <= b.y + 1).toBe(true);
   });
 
-  test("하루 평균 — 달력 날짜 수로 나눔 (전 12일 합계 10 → 0.8 · 후 2일 합계 4 → 2) · 후 기간 짧음 표시", async ({ page }) => {
+  test("하루 평균 — 달력 날짜 수로 나눔 · 끝 날짜는 화면의 자료 기준일(브라우저 날짜 아님) · 전 기간 날짜 표시", async ({ page }) => {
+    await page.clock.setFixedTime(new Date("2027-03-01T12:00:00+09:00")); // 브라우저 날짜가 한참 뒤여도 후 기간 분모가 늘지 않아야 함
     await open(page, WITH_DAILY);
-    await expect(tid(page, "rename-day")).toContainText("바꾸기 전 12일 · 바꾼 뒤 2일");
+    const text = (await tid(page, "rename-asof").innerText()).replace(/\s+/g, " ");
+    const asOf = text.match(/자료 기준일 (\d{4}-\d{2}-\d{2})/)?.[1];
+    expect(asOf).toBeTruthy();
+    expect(asOf && asOf >= "2026-11-18" && asOf < "2027-03-01").toBe(true);
+    expect(text).toContain("바꾸기 전 = 2026-11-05 ~ 2026-11-16");
+    const days = Math.round((Date.parse(`${asOf}T00:00:00Z`) - Date.parse("2026-11-17T00:00:00Z")) / 86400_000) + 1;
+    const per = Math.round((4 / days) * 10) / 10;
+    await expect(tid(page, "rename-day")).toContainText(`바꾸기 전 12일 · 바꾼 뒤 ${days}일`);
     const row = tid(page, "rename-compare").getByRole("row", { name: /GPTBot/ });
     await expect(row).toContainText("하루 0.8회 (합계 10회)");
-    await expect(row).toContainText("하루 2회 (합계 4회)");
-    await expect(tid(page, "rename-short")).toContainText("후 기간이 2일로 짧아 비교는 참고용입니다");
+    await expect(row).toContainText(`하루 ${per}회 (합계 4회)`);
+    await expect(tid(page, "rename-short")).toHaveCount(days < 7 ? 1 : 0);
+    await expect(tid(page, "rename-before-short")).toHaveCount(0);
   });
 
   test("막대 — 같은 숫자를 글로도 · 기준일 표시", async ({ page }) => {

@@ -1,3 +1,4 @@
+import { kstDate } from "@hav/shared/date";
 import type { Metadata } from "next";
 import { GeoPage } from "@/features/geo/components/geo-page";
 import { api } from "@/shared/api";
@@ -10,5 +11,7 @@ export const metadata: Metadata = {
 
 // 빌드 때 한 번 · 브라우저가 /bff/geo 에서 한 번 더 (API 는 1시간 구간 캐시)
 export default async function Page() {
-  return <GeoPage build={await api.geo()} />;
+  const build = await api.geo();
+  // 자료를 받은 날(빌드 때 한국 날짜) — 이름 바꾼 날 전후 비교의 끝 날짜 (작업 0205 · 브라우저에서 여는 날이 아님)
+  return <GeoPage build={build} asOf={kstDate(new Date())} />;
 }

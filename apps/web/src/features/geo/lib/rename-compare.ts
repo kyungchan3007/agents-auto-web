@@ -4,7 +4,7 @@
 import { RENAME_DAY } from "@hav/shared/geo";
 import type { GeoReport } from "@hav/shared/geo";
 
-/** 후 기간이 이 날짜 수보다 짧으면 "참고용" 으로 알림 */
+/** 전 · 후 기간이 이 날짜 수보다 짧으면 "참고용" 으로 알림 */
 export const SHORT_AFTER_DAYS = 7;
 
 export type Period = { days: number; total: number; perDay: number };
@@ -35,10 +35,10 @@ const group = <T>(list: T[], key: (x: T) => string) => {
   return m;
 };
 
-export function renameCompare(r: GeoReport, today: string) {
+/** asOf = 자료를 받은 날(빌드 때 한국 날짜) — 후 기간의 끝 · 그보다 뒤 날짜는 세지 않음 (브라우저에서 여는 날과 무관) */
+export function renameCompare(r: GeoReport, asOf: string) {
   const dailyRows = r.daily ?? null;
-  const lastDaily = dailyRows?.reduce((m, x) => (x.day > m ? x.day : m), "") ?? "";
-  const end = lastDaily > today ? lastDaily : today;
+  const end = asOf;
   const beforeDays = r.firstDay && r.firstDay < RENAME_DAY ? dayRange(r.firstDay, shift(RENAME_DAY, -1)) : [];
   const afterDays = end >= RENAME_DAY ? dayRange(RENAME_DAY, end) : [];
   const chartDays = r.firstDay ? dayRange(r.firstDay, end) : [];
@@ -67,8 +67,11 @@ export function renameCompare(r: GeoReport, today: string) {
 
   return {
     day: RENAME_DAY,
-    today: end,
+    asOf,
     beforeDays: beforeDays.length,
+    /** 전 기간 = 응답에 남은 첫 기록일 ~ 기준일 전날 (API 가 지난 30일만 읽어 첫 기록일이 밀림) */
+    beforeRange: beforeDays.length > 0 ? `${beforeDays[0]} ~ ${beforeDays.at(-1)}` : null,
+    beforeShort: beforeDays.length > 0 && beforeDays.length < SHORT_AFTER_DAYS,
     afterDays: afterDays.length,
     short: afterDays.length < SHORT_AFTER_DAYS,
     bots,
