@@ -28,12 +28,21 @@
 - .agents/orchestration/TASKS.md · .agents/specs/0220-redesign-prices/**
 
 ## 계획 밖 변경 이유
+- apps/web/src/features/travel-price/components/price-ruler.tsx · lib/ruler.ts · lib/ruler.test.ts — 새 파일(계획의 components · lib 안): 한국 = 100 물가 자 · 계산
+- apps/web/src/shared/{font-readability · number-emphasis · pages-redesign · photos}.test.ts — 옛 /prices(사진 머리 · 흰 카드)를 전제한 소스 검사를 새 디자인에 맞게 (큰 글씨 허용 목록에 prices-header 추가 · 큰 문장 EmphText 가 bg="sea" · 파랑 면 예외 · 사진 머리 없음)
+- apps/web/e2e/{country-photos · detail-design · emphasis · photos}.spec.ts — 같은 이유로 옛 /prices 기대(사진 · 흰 카드 틀 · 형광펜 띠)를 고침
+- 흰 바탕 결정: 0216 의 네 커밋(a4ee96e · cd82273 · 79b3ae1 · 94b795f)을 cherry-pick (lead 지시) · 예산 카드에 옅은 선
 
 ## 완료 기준
-- [ ] 1280 · 768 · 390 가로 넘침 없음 · 콘솔 오류 없음 · 사진 요청 0
-- [ ] 예산 카드가 첫 화면 경계에 걸침 · 계산 결과가 지금과 같음(e2e: 같은 입력 → 같은 금액)
-- [ ] 자의 점 위치가 물가 숫자 비율과 맞음(단위) · 카운트업 끝 값 = 실제 값 · 움직임 줄이기
-- [ ] bash .agents/checks.sh PASS · 빌드 한 번
+- [x] 1280 · 768 · 390 가로 넘침 없음 · 콘솔 오류 없음 · 사진 요청 0
+- [x] 예산 카드가 첫 화면 경계에 걸침 · 계산 결과가 지금과 같음(e2e: 같은 입력 → 같은 금액)
+- [x] 자의 점 위치가 물가 숫자 비율과 맞음(단위) · 카운트업 끝 값 = 실제 값 · 움직임 줄이기
+- [x] bash .agents/checks.sh PASS · 빌드 한 번
 
 ## 허점
--
+- 웹킷(사파리) 확인 못 함.
+- e2e 는 `next dev` 가 이 환경에서 하이드레이션이 안 돼 못 쓰고, **가짜 API 로 만든 빌드**(운영 D1 읽기 0 · 물가 22개 나라 · 통화 10개)로 돌렸음. 그래서 '유로 거르기'(핀란드 등) · 직구 e2e 는 가짜 자료의 한계로 실패 — 실제 자료 미리보기에서 확인 필요.
+- 자의 점은 지금 세 칸 표의 맨 위 두 나라씩(6곳) — 값이 비슷한 나라끼리 위 · 아래로 번갈아 놓아 이름표가 겹치지 않게 했지만 같은 쪽 가까운 값(예: 3곳이 몇 숫자 안에 몰림)이면 겹칠 수 있음.
+- 휴대폰 예산 카드는 위로 6rem 끌어올려 파랑 면에 걸침(첫 면 아래쪽 여백을 늘려 '다른 나라 보기' 버튼을 가리지 않음).
+- 큰 제목이 길면(나라 이름이 긴 경우) 3~4줄까지 늘어날 수 있음.
+- 시안의 영문 라벨(PRICE LEVEL · DAILY BUDGET · SCALE)은 넣지 않음. 새로 들어간 글: 자 위 작은 제목 "한국 = 100"(지금 설명의 낱말) · 자 제목 "한국보다 싼 곳 · 비슷한 곳 · 비싼 곳"(구간 이름 합침) — 사용자 확인 필요.
