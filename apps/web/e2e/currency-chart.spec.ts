@@ -1,6 +1,6 @@
 // 작업 0219 그래프 2D(시안 F) — 통화 상세 '1년 흐름' 그래프 e2e · 테스트 먼저
 //   기준 캡처: .tmp/redesign-1118/F/shots/currency-1280.png · currency-390.png
-//   그래프 DOM 계약은 e2e/chart-helpers.ts 맨 위 주석(0216 공통 부품) + 기준선: [data-testid="chart-ref"] (점선 · 글 "1년 평균 1,447.1원" — 기간 이름 + 평균)
+//   그래프 DOM 계약은 e2e/chart-helpers.ts 맨 위 주석(0216 공통 부품) + 기준선: [data-testid="chart-ref"](점선 line) + [data-testid="chart-ref-label"](꼬리표 글 "1년 평균 1,447.1원" — 기간 이름 + 평균)
 //   선 하나: rate(매매기준율 · 면 있음 · 최고(빨강) · 최저(남색) 점) · 끝 "오늘" 큰 말풍선 = 마지막 날 실제 값 · 평균 점선 꼬리표
 //   배치는 그대로: 왼쪽 큰 제목 · 오른쪽 기간 알약 묶음 · 가로 전체 그래프 (year-flow > period-chart)
 import { type Page, expect, test } from "@playwright/test";
@@ -27,7 +27,8 @@ test.describe("통화 상세 1년 흐름 — 풍성한 2D (작업 0219 · 시안
     await expectLineChartFinal(page, chart, { series: ["rate"], areas: ["rate"], marks: true, ends: { rate: await lastValue(chart) } });
     await expect(chart.locator('[data-testid="chart-mark"][data-kind="max"]')).toHaveText(/^최고 [\d,]+(\.\d+)?원$/);
     await expect(chart.locator('[data-testid="chart-mark"][data-kind="min"]')).toHaveText(/^최저 [\d,]+(\.\d+)?원$/);
-    await expect(chart.locator('[data-testid="chart-ref"]')).toHaveText(/평균 [\d,]+(\.\d+)?원/);
+    await expect(chart.locator('[data-testid="chart-ref"]')).toHaveCount(1); // 점선
+    await expect(chart.locator('[data-testid="chart-ref-label"]')).toHaveText(/평균 [\d,]+(\.\d+)?원/); // 점선 꼬리표 글
     await expect(chart.locator('[data-testid="chart-end"][data-series="rate"]')).toContainText("오늘");
     await expect(chart.locator('[data-testid="chart-axis"]')).toContainText(/20\d\d-\d\d/); // 날짜 눈금
     await expect(chart.locator('[data-testid="chart-axis"]')).toContainText(/1,\d{3}/); // 값 눈금(원)
@@ -45,7 +46,7 @@ test.describe("통화 상세 1년 흐름 — 풍성한 2D (작업 0219 · 시안
     };
     const max = chart.locator('[data-testid="chart-mark"][data-kind="max"]');
     const min = chart.locator('[data-testid="chart-mark"][data-kind="min"]');
-    const ref = chart.locator('[data-testid="chart-ref"]');
+    const ref = chart.locator('[data-testid="chart-ref-label"]');
     const [ym, yn, yr] = [await y(max), await y(min), await y(ref)];
     expect(ym, "최고 꼬리표가 최저보다 위").toBeLessThan(yn);
     expect(yr, "평균 점선이 최고보다 아래").toBeGreaterThan(ym);
@@ -167,7 +168,7 @@ test.describe("통화 상세 1년 흐름 — 풍성한 2D (작업 0219 · 시안
       await group.getByRole("button", { name: label }).click();
       await expect(group.getByRole("button", { name: label })).toHaveAttribute("aria-pressed", "true");
       await expect(page.getByRole("img", { name: new RegExp(`^${label} 흐름 — `) })).toBeVisible();
-      await expect(chart.locator('[data-testid="chart-ref"]')).toContainText(`${label} 평균`);
+      await expect(chart.locator('[data-testid="chart-ref-label"]')).toContainText(`${label} 평균`);
       await expect(chart).toHaveAttribute("data-state", "done");
       expect(await lastValue(chart), `${label}: 마지막 값`).toBe(today);
       expect((await endValue(chart).textContent())?.trim(), `${label}: 끝 숫자`).toBe(today);
