@@ -21,7 +21,7 @@ function Block({ title, children }: { title: string; children: ReactNode }) {
 }
 
 const periodText = (p: Period | null) => (p ? `하루 ${perDayText(p.perDay)}회 (합계 ${numberText(p.total)}회)` : "기록 없음");
-const answerText = (c: AnswerCount) => (c.measured === 0 ? "측정 전" : `찾음 ${c.found} · 인용 ${c.cited} / ${c.measured}회`);
+const answerText = (c: AnswerCount) => (c.measured === 0 ? "측정 기록 없음" : `찾음 ${c.found} · 인용 ${c.cited} / ${c.measured}회`);
 
 /** 날짜별 작은 막대 — 기준일 위치에 세로선 · 같은 숫자를 aria-label 글로 */
 function DayBars({ name, daily, dayMark }: { name: string; daily: DayHits[]; dayMark: string }) {
@@ -109,8 +109,8 @@ export function RenameCompare({ report, asOf }: { report: GeoReport; asOf: strin
           <p className="text-small text-fg-2">{NONE}</p>
         )}
         <ul data-testid="rename-brand" className="mt-3 list-disc space-y-1 pl-5 text-small text-fg-2">
-          <li>Tripfx 시기(1 · 2판): {brandText(c.answers?.brand.tripfx ?? null)}</li>
-          <li>Flapfx 시기(3판): {brandText(c.answers?.brand.flapfx ?? null)}</li>
+          <li>Tripfx 시기(1 · 2판): {c.answers ? brandText(c.answers.brand.tripfx) : "아직 없음"}</li>
+          <li>Flapfx 시기(3판): {c.answers ? brandText(c.answers.brand.flapfx) : "아직 없음"}</li>
           <li>브랜드 질문은 이름이 달라 이어 비교하지 않고 시기별로 따로 봅니다.</li>
         </ul>
       </Block>
@@ -126,6 +126,7 @@ export function RenameCompare({ report, asOf }: { report: GeoReport; asOf: strin
 }
 
 function brandText(b: BrandSummary | null): string {
-  if (!b) return "측정 전";
+  // 날짜별 결과는 받았는데 그 시기 기록이 없을 때만 — 자료를 아직 못 받았으면 위에서 "아직 없음" (작업 0205 lead 리뷰: "측정 전"은 측정이 없었다는 뜻이라 틀림)
+  if (!b) return "측정 기록 없음";
   return `${b.days}일 측정 (${b.first} ~ ${b.last}) · ${answerText(b)}`;
 }
