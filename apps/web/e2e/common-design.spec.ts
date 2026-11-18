@@ -35,8 +35,10 @@ test.describe("메뉴 띠 · 로고 (작업 0216)", () => {
     expect(await css(current, "color")).toBe(BLUE);
     const other = nav.getByRole("link", { name: "여행 물가", exact: true });
     const color = await css(other, "color");
-    const [r, g, b] = color.match(/\d+/g)!.map(Number);
-    expect(Math.min(r, g, b)).toBeGreaterThan(190); // 흰색에 가까움
+    // 반투명 흰색은 브라우저가 oklab(밝기 … / 투명도) 로 돌려줌 — 밝기 0.9 이상 · rgb 면 가장 어두운 값 190 이상
+    const nums = color.match(/[\d.]+/g)!.map(Number);
+    if (color.startsWith("oklab(")) expect(nums[0], color).toBeGreaterThan(0.9);
+    else expect(Math.min(nums[0], nums[1], nums[2]), color).toBeGreaterThan(190);
     const list = nav.locator("ul");
     const bg = await css(list, "background-color");
     expect([BLUE, "rgba(0, 0, 0, 0)"]).toContain(bg); // 넓은 화면은 띠 바탕 그대로 · 휴대폰은 파랑 면
