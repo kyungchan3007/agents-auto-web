@@ -43,7 +43,7 @@ export function RulerChart({ pins, stops, ticks, korea, maxTier, lo, hi, aria, c
       role="img"
       aria-label={aria}
       className="relative mx-4 mt-6 h-[var(--ruler-h)] sm:mx-6 sm:h-80"
-      style={{ "--ruler-h": `${16 + maxTier * 4.4}rem` } as CSSProperties}
+      style={{ "--ruler-h": `${16.75 + maxTier * 4.4}rem` } as CSSProperties}
     >
       {/* 자 막대 — 왼쪽에서 오른쪽으로 뻗음 · 아래 그림자는 같이 자람 */}
       <div aria-hidden className="absolute top-1/2 left-0 h-[18px] -translate-y-1/2 rounded-pill shadow-ticket sm:h-6" style={{ width: `${bar * 100}%` }} />
