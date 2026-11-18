@@ -31,7 +31,7 @@ export function Intro({ data }: { data: IntroData }) {
       className={`fixed inset-0 z-[100] overflow-hidden text-fg ${s.phase === 0 ? "bg-surface" : ""}`}
     >
       {/* 3D 장면 — 장면을 못 불러와도 흐름은 계속 */}
-      <div data-intro-stage aria-hidden className="absolute inset-0 z-[2]" style={{ ...(s.lite ? { background: "linear-gradient(#AFD4E6, #D3E9EE 45%, #EAF4F2)" } : null), visibility: s.stageOff ? "hidden" : "visible" }} />
+      <div data-intro-stage aria-hidden className="absolute inset-0 z-[2]" style={{ ...(s.lite ? { background: "linear-gradient(var(--hav-sky-top), var(--hav-sky-mid) 45%, var(--hav-surface))" } : null), visibility: s.stageOff ? "hidden" : "visible" }} />
       {/* 로딩 화면 — 출발 안내판 · 열리면 1단계 (작업 0194) · 아래 위 띠(건너뛰기)가 이 층 위에 있어 로딩 중에도 건너뛸 수 있음 */}
       <IntroLoading s={s} />
 
@@ -67,7 +67,7 @@ export function Intro({ data }: { data: IntroData }) {
       <FlightHint s={s} />
       <WindowTransition s={s} />
 
-      <p className={`fixed right-4 bottom-2 z-[3] m-0 text-[11px] text-fg-2 transition-opacity duration-300 [text-shadow:0_0_6px_#fff] ${s.phase === 0 ? "opacity-100" : "opacity-0"}`}>
+      <p className={`fixed right-4 bottom-2 z-[3] m-0 text-[11px] text-fg-2 transition-opacity duration-300 [text-shadow:0_0_6px_var(--hav-card)] ${s.phase === 0 ? "opacity-100" : "opacity-0"}`}>
         환율 한국수출입은행 · 물가 세계은행 · 항공료 통계청 · {PLANE_CREDIT.text.replace("3D 비행기: ", "비행기 ")} · 차 · 사람 · 도시 Kenney (CC0)
       </p>
     </motion.div>
