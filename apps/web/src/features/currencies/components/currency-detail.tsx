@@ -13,14 +13,9 @@ import { FreshnessNote } from "@hav/ui/feedback/freshness-note";
 import { Eyebrow } from "@hav/ui/text/heading";
 import { Converter } from "./converter";
 import { PeriodChart } from "./period-chart";
-import { currencyListName, detailLine, yearStats } from "../lib/detail-view";
+import { cardRateText, currencyListName, detailLine, yearStats } from "../lib/detail-view";
 
 export type DetailData = { code: string; rate: FxRate | null; signal: Fetched<CurrencySignal>; history: Fetched<FxHistory>; problem: string | null };
-
-const won = (baseRate: number, unit: number) => {
-  const t = rateText({ baseRate, unit });
-  return `${t.value}${t.unit === "원" ? "원" : ` ${t.unit}`}`;
-};
 
 export function CurrencyDetail({ code, rate, signal, history, problem }: DetailData) {
   const name = currencyName(code);
@@ -67,7 +62,7 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
       {/* 1년 최저 · 최고 · 평균 — 받은 값으로만 (빈 날은 채우지 않음) */}
       <dl className="mt-8 grid gap-4 sm:grid-cols-3">
         {cards.map(([label, v]) => (
-          <StatTile key={label} label={label} value={v === undefined ? "—" : won(v, rate.unit)} className="rounded-card bg-card px-5 py-4" valueClassName="text-[1.75rem] leading-tight" />
+          <StatTile key={label} label={label} value={v === undefined ? "—" : cardRateText(v, rate)} className="rounded-card bg-card px-5 py-4" valueClassName="text-[1.75rem] leading-tight" />
         ))}
       </dl>
 
