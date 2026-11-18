@@ -12,14 +12,16 @@ const won = (v: number | null) => (v == null ? "—" : `${numberText(v)}원`);
 export function CalcResult({ result: r, rate, source, dutyRate }: { result: Result | null; rate: FxRate | undefined; source?: RateSource; dutyRate: string }) {
   const rateText = source ? source.label : rate ? `${rate.date} 기준 · ${SOURCE_NAME[rate.source]}` : "환율을 받지 못했습니다";
   return (
-    // 크기 고정 — 휴대폰은 정해진 높이 · 넓은 화면은 입력 묶음과 같은 높이 (바깥은 늘어나는 칸 · 안쪽을 겹쳐 넘치는 글은 칸 안에서 스크롤 · 작업 0200)
-    <div data-testid="calc-result" className="relative h-[30rem] rounded-card bg-pin-cheap text-foam lg:h-auto" aria-live="polite">
-      <div className="h-full overflow-y-auto px-6 py-6 lg:absolute lg:inset-0">
-      {r?.ok && !r.over && (
-        <Stamp>면세 한도 안 (${r.limitUsd})</Stamp>
+    // 넓은 화면은 입력 묶음과 같은 높이 (바깥은 늘어나는 칸 · 안쪽을 겹쳐 넘치는 글은 칸 안에서 스크롤 · 작업 0200) · 휴대폰은 글만큼만 — 아래 빈칸 없음 (작업 0208)
+    <div data-testid="calc-result" className="relative rounded-card bg-pin-cheap text-foam lg:h-auto" aria-live="polite">
+      <div className="px-6 py-6 lg:absolute lg:inset-0 lg:h-full lg:overflow-y-auto">
+      {/* 도장 · 넘음 글은 같은 높이 칸에 — 한도 안 · 밖이 바뀌어도 아래 줄이 같은 자리 (작업 0208) */}
+      {r?.ok && (
+        <div className="flex h-14 items-center">
+          {r.over ? <p className="text-[1.125rem] font-semibold text-sun">면세 한도 ${r.limitUsd} 넘음 · 세금 붙음</p> : <Stamp>면세 한도 안 (${r.limitUsd})</Stamp>}
+        </div>
       )}
-      {r?.ok && r.over && <p className="text-[1.125rem] font-semibold text-sun">면세 한도 ${r.limitUsd} 넘음 · 세금 붙음</p>}
-      <p className={`font-display text-[clamp(2.25rem,6vw,3.5rem)] leading-tight font-extrabold tracking-display text-sun tabular-nums ${r?.ok ? "mt-6" : ""}`}>
+      <p className={`font-display text-[clamp(2.25rem,6vw,3.5rem)] leading-tight font-extrabold tracking-display text-sun tabular-nums ${r?.ok ? "mt-2" : ""}`}>
         {r?.ok ? `${numberText(r.priceKrw)}원` : "—원"}
       </p>
       {!r && <p className="mt-4 text-small">물건 값을 넣으면 면세 한도 안인지 바로 보여 드립니다</p>}
@@ -30,7 +32,7 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
           <Row k="과세 가격 (물건 값 + 국제 배송비)" v={r.tax ? won(r.tax.taxableKrw) : "— 한도 안이라 계산 안 함"} />
           <Row k={`관세${r.tax && dutyRate ? ` (${dutyRate}%)` : ""}`} v={r.tax ? won(r.tax.duty) : "0원"} />
           <Row k="부가세 10% ((과세 가격 + 관세) × 10%)" v={r.tax ? won(r.tax.vat) : "0원"} />
-          {r.tax && <Row k="모두 합쳐 예상" v={won(r.tax.total)} />}
+          <Row k="모두 합쳐 예상" v={r.tax ? (r.tax.total === null ? "— 관세율을 넣으면 계산" : won(r.tax.total)) : won(r.priceKrw)} />
           <Row k="적용 환율" v={rateText} />
         </dl>
       )}

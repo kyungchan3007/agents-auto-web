@@ -3,7 +3,7 @@ import { SectionTitle } from "@hav/ui/text/heading";
 import { numberText } from "@hav/shared/format";
 import type { FxRate } from "@hav/shared/fx";
 import { YearChart } from "@hav/ui/data/year-chart";
-import { type Point, customsView } from "../lib/customs-rate";
+import { type Point, canChart, customsView } from "../lib/customs-rate";
 
 const won = (n: number) => `${numberText(n, { maximumFractionDigits: 2 })}원`;
 
@@ -22,7 +22,13 @@ export function CustomsSection({ points, bank }: { points: Point[] | null; bank:
             관세청 {won(v.latest.value)}
             {v.gap && ` · 은행 ${won(v.gap.bank)} (차이 ${v.gap.gapKrw > 0 ? "+" : ""}${numberText(v.gap.gapKrw, { maximumFractionDigits: 0 })}원)`}
           </p>
-          <YearChart compact rates={v.trend.map((p) => ({ date: p.period, baseRate: p.value }))} unitText="원 (1달러당)" title="주별 과세환율 흐름" />
+          {canChart(points) ? (
+            <YearChart compact rates={v.trend.map((p) => ({ date: p.period, baseRate: p.value }))} unitText="원 (1달러당)" title="주별 과세환율 흐름" />
+          ) : (
+            <p data-testid="customs-short-note" className="mt-1 text-small text-fg-2">
+              기록이 2주 미만이라 주별 흐름 그래프는 아직 없습니다
+            </p>
+          )}
         </>
       )}
     </section>

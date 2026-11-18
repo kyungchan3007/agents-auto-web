@@ -32,3 +32,6 @@ export function customsView(points: Point[] | null | undefined, bank: Rate | nul
   const latest = trend[trend.length - 1];
   return { kind: "ready", latest, trend, gap: bank ? customsGap({ perUnit: latest.value, weekStart: latest.period }, bank) : null };
 }
+
+/** 주별 흐름 그래프는 기록이 2주 이상일 때만 — 모자라면 한 줄 + 작은 안내로 짧게 (작업 0208) */
+export const canChart = (points: Point[] | null | undefined) => (points?.length ?? 0) >= 2;

@@ -19,3 +19,13 @@ export function calcHeadline(result: CalcResult | null, input: Pick<CalcInput, "
   if (duty !== null && vat !== null) return `관세 · 부가세 약 ${numberText(duty + vat)}원이 붙습니다`;
   return "면세 한도를 넘었습니다 · 관세율을 넣으면 세금을 계산합니다";
 }
+
+/** 휴대폰 폼 위 결과 요약 한 줄 (작업 0208) — 금액 · 판정 · 숫자는 계산 결과만 (관세율이 없으면 세금을 지어내지 않고 안내) */
+export function summaryLine(result: CalcResult | null): string {
+  if (!result) return "물건 값을 넣으면 여기에 결과가 보입니다";
+  if (!result.ok) return result.reason;
+  const won = `${numberText(result.priceKrw)}원`;
+  if (!result.over) return `${won} · 면세 한도 안`;
+  const { duty, vat } = result.tax ?? { duty: null, vat: null };
+  return duty !== null && vat !== null ? `${won} · 한도 넘음 · 세금 약 ${numberText(duty + vat)}원` : `${won} · 한도 넘음 · 관세율을 넣으면 세금 계산`;
+}

@@ -81,8 +81,9 @@ function Chart({ rows }: { rows: { period: string; fx: number | null; price: num
         <span className="inline-flex items-center gap-2"><i className="inline-block h-1 w-5 rounded-pill" style={{ background: "var(--hav-band)" }} />수입물가지수</span>
         <span>· {rows.find((r) => r.fx !== null && r.price !== null)?.period} = 100 으로 맞춤</span>
       </p>
-      <div className="relative mt-3">
-        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`원/달러 월평균과 수입물가지수 — ${rows[0].period}부터 ${last.period}까지, 처음 같은 달을 100으로 맞춤`} className="block h-auto w-full overflow-visible">
+      {/* 그래프 높이 고정 — 넓은 화면 352px(340 ~ 380) · 휴대폰 224px · 글자는 HTML 이라 늘어나지 않음 (작업 0208) */}
+      <div data-testid="import-chart" className="relative mt-3 h-56 sm:h-[22rem]">
+        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`원/달러 월평균과 수입물가지수 — ${rows[0].period}부터 ${last.period}까지, 처음 같은 달을 100으로 맞춤`} preserveAspectRatio="none" className="block h-full w-full overflow-visible">
           <path d={path("fx")} fill="none" stroke="var(--hav-cheap)" strokeWidth={2.5} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
           <path d={path("price")} fill="none" stroke="var(--hav-band)" strokeWidth={2.5} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
         </svg>
