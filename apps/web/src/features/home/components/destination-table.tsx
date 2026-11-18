@@ -75,7 +75,7 @@ function Row({ row }: { row: DestinationRowData }) {
 
 export function DestinationTable({ rows }: { rows: DestinationRowData[] }) {
   return (
-    <div data-testid="dest-list" className="mt-8 divide-y divide-line rounded-[1.5rem] bg-card px-5 py-2 sm:px-8">
+    <div data-testid="dest-list" className="mt-8 divide-y divide-line rounded-[1.5rem] border-2 border-line bg-card px-5 py-2 sm:px-8">
       {rows.map((row) => (
         <Row key={row.id} row={row} />
       ))}

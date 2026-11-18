@@ -42,7 +42,7 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
     <section id="today" aria-labelledby="today-title" className="text-fg">
       <div className="grid grid-cols-[minmax(1rem,1fr)_minmax(0,45rem)_minmax(1rem,1fr)] sm:grid-cols-[minmax(2rem,1fr)_minmax(0,45rem)_minmax(2rem,1fr)]">
         <div data-testid="ticket-band" aria-hidden className="col-span-3 col-start-1 row-start-1 bg-pin-cheap" />
-        <div data-testid="ticket" className="relative z-10 col-start-2 row-span-2 row-start-1 grid grid-cols-[minmax(0,1fr)] grid-rows-subgrid rounded-[1.75rem] bg-card shadow-ticket">
+        <div data-testid="ticket" className="relative z-10 col-start-2 row-span-2 row-start-1 grid grid-cols-[minmax(0,1fr)] grid-rows-subgrid rounded-[1.75rem] border border-line bg-card shadow-ticket">
           <div className="px-4 pt-6 pb-5 sm:px-8 sm:pt-7 sm:pb-6">
             <h2 id="today-title" className="text-[0.9375rem] font-bold text-fg">
               {board.title}
@@ -58,7 +58,7 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
                 <Evidence text={board.evidence} />
               </p>
               {pct !== null && (
-                <div data-testid="ticket-bar" aria-hidden className="relative mt-3 h-2 rounded-full bg-surface">
+                <div data-testid="ticket-bar" aria-hidden className="relative mt-3 h-2 rounded-full bg-surface-2">
                   <div className="absolute inset-y-0 left-0 rounded-full bg-pin-cheap" style={{ width: `${Math.max(2, Math.round(pct * 100))}%` }} />
                   <div className="absolute -inset-y-1 left-1/2 w-0.5 bg-fg-2" />
                 </div>

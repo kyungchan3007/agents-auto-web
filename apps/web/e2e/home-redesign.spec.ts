@@ -197,6 +197,7 @@ test.describe("새 홈 — 카드 안 여행지 바꾸기 (작업 0217 지적)",
 
   test("버튼 · 시트 없음 — 카드 안에 자주 가는 곳 칩 줄 + 검색 칸이 바로 보임 (칩마다 국기 · 이름)", async ({ page }) => {
     await page.goto("/");
+    await page.waitForLoadState("networkidle"); // 하이드레이션이 끝난 뒤에 누름 (칩 · 입력은 브라우저에서 동작)
     await expect(page.getByTestId("pick-trip-open")).toHaveCount(0);
     await expect(page.getByRole("dialog")).toHaveCount(0);
     const chips = switcher(page).getByTestId("pick-chip");
@@ -211,11 +212,12 @@ test.describe("새 홈 — 카드 안 여행지 바꾸기 (작업 0217 지적)",
 
   test("칩을 누르면 안내판 글 · 판정 줄 · 막대가 그 나라로 바로 바뀌고 눌린 칩 표시(aria-pressed) · 새로고침해도 유지", async ({ page }) => {
     await page.goto("/");
+    await page.waitForLoadState("networkidle"); // 하이드레이션이 끝난 뒤에 누름 (칩 · 입력은 브라우저에서 동작)
     await switcher(page).getByTestId("pick-chip").filter({ hasText: "도쿄" }).click();
     await expect(board(page)).toHaveAttribute("aria-label", /도쿄/, { timeout: 1500 });
     await expect(switcher(page).getByTestId("pick-chip").filter({ hasText: "도쿄" })).toHaveAttribute("aria-pressed", "true");
     await expect(tid(page, "ticket")).toContainText(/내가 고른 여행지/);
-    await expect(tid(page, "ticket-evidence")).toContainText("최근 90일");
+    await expect(tid(page, "ticket-evidence")).toContainText(/최근 90일|고시 환율에 없어|환율이 아직/); // 자료가 있을 때 · 없을 때(빌드 자료 없음) 모두
     await switcher(page).getByTestId("pick-chip").filter({ hasText: "방콕" }).click();
     await expect(board(page)).toHaveAttribute("aria-label", /방콕/, { timeout: 1500 });
     await expect(switcher(page).getByTestId("pick-chip").filter({ hasText: "도쿄" })).toHaveAttribute("aria-pressed", "false");
@@ -226,6 +228,7 @@ test.describe("새 홈 — 카드 안 여행지 바꾸기 (작업 0217 지적)",
 
   test("목록에 없는 나라는 같은 줄 검색 칸으로 — 입력 → 후보(listbox · option) → 키보드 · 마우스로 고르기", async ({ page }) => {
     await page.goto("/");
+    await page.waitForLoadState("networkidle"); // 하이드레이션이 끝난 뒤에 누름 (칩 · 입력은 브라우저에서 동작)
     const input = switcher(page).getByRole("combobox", { name: "여행지 검색" });
     await input.fill("두바이");
     await expect(switcher(page).getByRole("listbox")).toBeVisible();
@@ -242,6 +245,7 @@ test.describe("새 홈 — 카드 안 여행지 바꾸기 (작업 0217 지적)",
   test("휴대폰 — 칩 줄은 가로 스크롤 없이 줄바꿈 · 가로 넘침 없음", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
+    await page.waitForLoadState("networkidle"); // 하이드레이션이 끝난 뒤에 누름 (칩 · 입력은 브라우저에서 동작)
     const list = switcher(page).locator("ul").first();
     expect(await list.evaluate((el) => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
     const ys = await list.locator("li").evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top)));
