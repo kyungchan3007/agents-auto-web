@@ -13,7 +13,7 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
   const rateText = source ? source.label : rate ? `${rate.date} 기준 · ${SOURCE_NAME[rate.source]}` : "환율을 받지 못했습니다";
   return (
     // 넓은 화면은 입력 묶음과 같은 높이 (바깥은 늘어나는 칸 · 안쪽을 겹쳐 넘치는 글은 칸 안에서 스크롤 · 작업 0200) · 휴대폰은 결과가 나온 상태 높이(약 409px)를 최소로 — 빈칸 없이 · 빈 값 · 오류 · 한도 넘음에도 아래 칸이 움직이지 않게 (작업 0208 · lead 미리보기 리뷰)
-    <div data-testid="calc-result" className="relative min-h-[25.5rem] rounded-card bg-pin-cheap text-foam lg:h-auto lg:min-h-0" aria-live="polite">
+    <div data-testid="calc-result" className="relative min-h-[25.5rem] rounded-card bg-pin-cheap text-foam lg:h-auto" aria-live="polite">
       <div className="px-6 py-6 lg:absolute lg:inset-0 lg:h-full lg:overflow-y-auto">
       {/* 도장 · 넘음 글은 같은 높이 칸에 — 한도 안 · 밖이 바뀌어도 아래 줄이 같은 자리 (작업 0208) */}
       {r?.ok && (

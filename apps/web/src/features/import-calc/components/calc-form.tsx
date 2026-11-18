@@ -55,7 +55,7 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
   );
 }
 
-// 힌트 · 오류는 같은 자리(최소 두 줄 높이) — 오류가 떠도 칸이 커지지 않음 (작업 0200) · 보내는 곳은 두 칸 폭
+// 힌트 · 오류는 같은 자리(한 줄 높이 · 안내가 접히는 좁은 폭에서만 두 줄) — 오류 글도 한 줄 길이라 오류가 떠도 칸이 커지지 않음 (작업 0200 · 0208 에서 두 줄 자리를 줄여 아래 빈칸을 없앰) · 보내는 곳은 두 칸 폭
 function Field({ label, hint, htmlFor, error, wide, badge, children }: { label: string; hint?: string; htmlFor: string; error?: string | null; wide?: boolean; badge?: boolean; children: ReactNode }) {
   return (
     <div className={wide ? "sm:col-span-2" : ""}>
@@ -71,7 +71,7 @@ function Field({ label, hint, htmlFor, error, wide, badge, children }: { label: 
       </div>
       <div className="mt-1.5">{children}</div>
       {(hint || error) && (
-        <p className={`mt-1.5 min-h-[2.75rem] overflow-hidden text-small ${error ? "text-expensive" : "text-fg-2"}`}>{error ?? hint}</p>
+        <p className={`mt-1.5 min-h-5 text-small ${error ? "text-expensive" : "text-fg-2"}`}>{error ?? hint}</p>
       )}
     </div>
   );
