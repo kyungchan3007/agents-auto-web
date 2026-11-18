@@ -79,10 +79,9 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
               <>
                 <SlideIn from="left">
                   <div data-testid="flights-ticket" className="relative grid rounded-[1.75rem] bg-card shadow-ticket lg:grid-cols-[minmax(0,1fr)_21rem]">
-                    {/* 넓은 화면: 오른쪽 숫자 칸이 더 길면 그래프를 남은 높이 가운데에 (아래만 비어 보이지 않게 · 작업 0218 lead 리뷰) */}
-                    <div className="min-w-0 px-5 py-6 sm:px-8 sm:py-8 lg:flex lg:flex-col">
+                    <div className="min-w-0 px-5 py-6 sm:px-8 sm:py-8">
                       <h2 className="text-[1.25rem] font-bold text-fg">국제항공료 · 해외단체여행비 지수와 환율 그래프</h2>
-                      <div className="mt-2 lg:flex lg:flex-1 lg:flex-col lg:justify-center">
+                      <div className="mt-2">
                         <FlightsGraph air={air} tour={tour} fx={fxMonthly} />
                       </div>
                     </div>
