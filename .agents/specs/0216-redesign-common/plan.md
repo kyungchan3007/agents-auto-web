@@ -34,6 +34,8 @@
 - apps/web/src/shared/font-pretendard.test.ts — 큰 글자 자간 검사가 모든 font-display 에 -0.03em 을 요구해, 로고(nav-bar)만 시안 B 대로 -0.05em 을 허용하도록 고침
 - apps/web/src/shared/redesign-foundation.test.ts — 메뉴 띠 바탕이 하늘 종이(light)에서 파랑 면(dark)으로 바뀌어 기대값을 고침
 
+- (그래프 2D · 시안 F · 작업 0216 에 합침) 새 파일: packages/ui/src/lib/line-chart.ts(곡선 · 값 위치 · 최고/최저 · 말풍선 쌓기 · 시간표 · 진행 · 글자 폭 어림 — 순수 함수) · packages/ui/src/hooks/use-chart-timeline.ts(화면에 들어오면 한 번 도는 시계 · data-state) · packages/ui/src/components/data/line-chart.tsx(LineChart — SVG 그림 · 외부 라이브러리 없음) / 시안 F/chart.js 를 사이트 부품으로 옮김 · 글자 폭은 서버에서 못 재서 글자 종류별 비율로 어림(휴대폰에서 시안과 몇 px 어긋날 수 있음) / 큰 숫자(끝 말풍선)는 font-display(Pretendard 800)라 font-readability 허용 목록에 line-chart.tsx 추가가 필요함(test 에 요청 · 테스트 파일은 builder 가 고치지 않음)
+
 ## 완료 기준
 - [x] 모든 페이지 메뉴 띠가 파랑 · 메뉴 글자 흰색 · 지금 페이지 표시가 보임 · 로고 'flap' 흰 + 'fx' 노랑 (1280 · 390, 휴대폰 펼친 메뉴 포함)
 - [x] 글자 대비: 파랑 위 흰 글자 · 노랑 글자 대비 검사 통과 (contrast 함수 · 4.5 이상, 노랑이 못 넘으면 이유와 함께 크기 기준 3 이상)
