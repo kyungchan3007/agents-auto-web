@@ -29,8 +29,8 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
         <section aria-labelledby="calc-title" className="px-4 pt-10 sm:px-8 sm:pt-14">
           <div className="mx-auto max-w-page">
             <Eyebrow>직구 계산</Eyebrow>
-            {/* 큰 문장은 입력에 따라 2~3줄 — 제목 + 설명 덩어리의 높이를 미리 잡아(휴대폰은 제목 세 줄 + 설명 두 줄 · 넓은 화면은 제목 두 줄(세금이 붙는 가장 긴 문장도 두 줄 · lead 리뷰: 세 줄은 시안보다 빈칸이 큼) + 설명 한 줄 — 제목 글자 크기와 같은 clamp 로 계산) 값을 바꿔도 아래 칸이 밀리지 않게 · 남는 자리는 설명 아래로 (제목 ~ 설명 사이는 바짝 · 작업 0200 → 0221) */}
-            <div className="min-h-[calc(4.02*clamp(2.25rem,4.5vw,3.5rem)+5rem)] sm:min-h-[calc(2.68*clamp(2.25rem,4.5vw,3.5rem)+3.4rem)]">
+            {/* 큰 문장은 입력에 따라 2~3줄 — 제목 + 설명 덩어리의 높이를 미리 잡아(휴대폰은 제목 세 줄 + 설명 두 줄 · 넓은 화면도 제목 세 줄(세금이 붙는 긴 문장) + 설명 한 줄 — 제목 글자 크기와 같은 clamp 로 계산) 값을 바꿔도 아래 칸이 밀리지 않게 · 남는 자리는 설명 아래로 (제목 ~ 설명 사이는 바짝 · 작업 0200 → 0221) */}
+            <div className="min-h-[calc(4.02*clamp(2.25rem,4.5vw,3.5rem)+5rem)] sm:min-h-[calc(4.02*clamp(2.25rem,4.5vw,3.5rem)+3.4rem)]">
               <Title as="h1" size="page" id="calc-title" className="mt-3 text-cheap">
                 <EmphText text={hasRates ? calcHeadline(form.result, form.input) : "환율을 받지 못했습니다"} />
               </Title>
