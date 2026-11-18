@@ -22,7 +22,7 @@ test.describe("여행지 고르기 시트 · 나라 사진 (작업 0201)", () =>
     await expect(page.getByTestId("pick-trip-open")).toHaveCount(0);
     await expect(page.getByTestId("photo-header-img")).toHaveCount(0);
     await page.goto("/prices");
-    expect(await heroSrc(page)).toContain("swiss-traveler");
+    await expect(page.getByTestId("photo-header-img")).toHaveCount(0); // 작업 0220: /prices 사진 머리 없음
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/한국보다 물가가 \d+% 낮습니다/);
   });
 
@@ -82,20 +82,20 @@ test.describe("여행지 고르기 시트 · 나라 사진 (작업 0201)", () =>
     await page.goto("/");
     await choose(page, "도쿄", "도쿄");
     await page.goto("/prices");
-    await expect.poll(() => heroSrc(page)).toContain("country-jpn");
+    await expect(page.getByTestId("photo-header-img")).toHaveCount(0); // 작업 0220: 사진 없이 문장만 그 나라로
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/^일본은 한국보다 물가가 \d+% (높|낮)습니다$/);
     await page.getByTestId("pick-trip-other").click();
     await dialog(page).getByRole("combobox", { name: "여행지 검색" }).fill("방콕");
     await dialog(page).getByRole("option", { name: /방콕/ }).first().click();
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/^태국은 한국보다 물가가 \d+% (높|낮)습니다$/);
-    await expect.poll(() => heroSrc(page)).toContain("country-tha");
+    await expect(page.getByTestId("photo-header-img")).toHaveCount(0);
   });
 
   test("여행 물가 — 두바이처럼 자료 · 사진이 없으면 지금 문장 · 지금 사진", async ({ page }) => {
     await page.goto("/");
     await choose(page, "두바이", "두바이");
     await page.goto("/prices");
-    expect(await heroSrc(page)).toContain("swiss-traveler");
+    await expect(page.getByTestId("photo-header-img")).toHaveCount(0); // 작업 0220: /prices 사진 머리 없음
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/한국보다 물가가/);
   });
 
@@ -104,6 +104,6 @@ test.describe("여행지 고르기 시트 · 나라 사진 (작업 0201)", () =>
     await page.goto("/");
     await expect(page.locator("#today")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
     await page.goto("/prices");
-    expect(await heroSrc(page)).toContain("swiss-traveler");
+    await expect(page.getByTestId("photo-header-img")).toHaveCount(0); // 작업 0220: /prices 사진 머리 없음
   });
 });

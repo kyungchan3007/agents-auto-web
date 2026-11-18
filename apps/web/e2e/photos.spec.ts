@@ -6,7 +6,7 @@ import { expect, test } from "@playwright/test";
 const WITH_PHOTO: [string, string, RegExp][] = [
   // 홈은 작업 0217 새 디자인에서 사진 없음 (아래 "홈 — 사진 없음")
   // /flights 는 작업 0218 새 디자인에서 사진 없음 (머리는 글자판 · 아래 "사진 없음" 목록)
-  ["/prices", "swiss-traveler", /./],
+  // /prices 는 작업 0220 새 디자인(파랑 첫 면)에서 사진 없음 — 아래 "사진 없음" 목록
   ["/calc", "plane-below", /./],
   ["/about", "plane-sunset", /./],
 ];
@@ -64,6 +64,13 @@ test("공유 미리보기 이미지 — /opengraph-image 가 1200×630 PNG", asy
 // 작업 0218 — /flights 는 새 디자인에서 사진 없음 (머리는 글자판) · 사진 파일 · 부품 삭제는 0222
 test("/flights — 사진 없음 (머리는 글자판)", async ({ page }) => {
   await page.goto("/flights");
+  await expect(page.locator('[data-testid="photo-header"]')).toHaveCount(0);
+  await expect(page.locator('img[src*="/images/photos/"], img[srcset*="/images/photos/"]')).toHaveCount(0);
+});
+
+// 작업 0220 — /prices 는 새 디자인에서 사진 없음 (파랑 첫 면) · 사진 파일 · 부품 삭제는 0222
+test("/prices — 사진 없음 (파랑 첫 면)", async ({ page }) => {
+  await page.goto("/prices");
   await expect(page.locator('[data-testid="photo-header"]')).toHaveCount(0);
   await expect(page.locator('img[src*="/images/photos/"], img[srcset*="/images/photos/"]')).toHaveCount(0);
 });

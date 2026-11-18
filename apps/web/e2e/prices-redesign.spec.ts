@@ -41,8 +41,8 @@ test.describe("새 /prices — 첫 화면 (작업 0220)", () => {
     const h1 = page.getByRole("heading", { level: 1 });
     await expect(h1).toHaveText(/는? 한국보다 물가가 \d+% (낮|높)습니다$|^.+은 한국보다 물가가 \d+% (낮|높)습니다$|한국과 물가가 비슷합니다|물가 자료를 받지 못했습니다/);
     if (/\d+%/.test((await h1.textContent()) ?? "")) expect(await h1.locator('[data-testid="emph"]').first().evaluate((el) => getComputedStyle(el).color)).toBe(SUN);
-    await expect(tid(page, "prices-band")).toContainText("여행 물가");
-    await expect(tid(page, "prices-band")).toContainText("세계은행 나라별 물가 수준(한국 = 100)");
+    await expect(h1.locator("xpath=..")).toContainText("여행 물가"); // 제목 위 작은 라벨 유지
+    await expect(h1.locator("xpath=..")).toContainText("세계은행 나라별 물가 수준(한국 = 100)");
     for (const en of ["PRICE LEVEL", "DAILY BUDGET", "SCALE"]) await expect(page.locator("main")).not.toContainText(en);
   });
 
