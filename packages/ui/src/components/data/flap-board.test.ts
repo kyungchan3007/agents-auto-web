@@ -94,7 +94,7 @@ describe("모양 — 판 · 칸 · 이음선 · 글자 색 (B3)", () => {
 
   it("벽에 걸린 물건처럼 — 부드러운 그림자 한 가지(0 10px 24px) · 그라데이션 없음", () => {
     const s = src();
-    expect(tag(s, "flap-board")).toMatch(/shadow-\[0_10px_24px_rgba\(22,36,110,0\.25\)\]/);
+    expect(tag(s, "flap-board")).toMatch(/\bshadow-board\b/);
     expect(s).not.toMatch(/gradient/);
   });
 });

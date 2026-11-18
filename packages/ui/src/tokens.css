@@ -162,6 +162,15 @@
   --radius-pill: 999px; /* 판정 핀 (둥근 알약) */
 
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* 그림자 — 짙은 남색 잉크(rgb 22 36 110) 한 계열 · 화면 코드는 값을 직접 쓰지 않고 shadow-board 처럼 이름으로 부름 (작업 0215) */
+  --shadow-board: 0 10px 24px rgba(22, 36, 110, 0.25); /* 출발 안내판 */
+  --shadow-chip: 0 14px 30px -16px rgba(22, 36, 110, 0.7); /* 탑승권 단추 */
+  --shadow-pass: 0 18px 40px -16px rgba(22, 36, 110, 0.6); /* 탑승권 · 인트로 안내판 */
+  --shadow-panel: 0 18px 40px -18px rgba(22, 36, 110, 0.35); /* 인트로 입력 카드 · 힌트 */
+  --shadow-ticket: 0 20px 40px -22px rgba(22, 36, 110, 0.5); /* 탑승권 아래 칸 */
+  --shadow-window: inset 0 2px 0 var(--hav-card), 0 0 0 1px #d3dae2, 0 34px 60px -26px rgba(22, 36, 110, 0.45); /* 인트로 기내 창문 틀 */
+  --shadow-glass: 0 0 0 7px #eef2f5, 0 0 0 8px #c9d2db, inset 0 8px 18px rgba(22, 36, 110, 0.28); /* 창문 유리 */
 }
 
 /* 고정 상단 메뉴의 실제 높이 — nav-bar.tsx 와 같은 값 (고정 · 앵커 위치가 메뉴에 가려지지 않게 쓰는 곳은 이 변수만 봄)
