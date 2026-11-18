@@ -59,10 +59,10 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
       </div>
       <FreshnessNote date={rate.date} className="mt-2" />
 
-      {/* 1년 최저 · 최고 · 평균 — 받은 값으로만 (빈 날은 채우지 않음) */}
-      <dl className="mt-8 grid gap-4 sm:grid-cols-3">
+      {/* 1년 최저 · 최고 · 평균 — 받은 값으로만 (빈 날은 채우지 않음) · 휴대폰도 한 줄 세 칸 (작업 0212) */}
+      <dl className="mt-8 grid grid-cols-3 gap-2 sm:gap-4">
         {cards.map(([label, v]) => (
-          <StatTile key={label} label={label} value={v === undefined ? "—" : cardRateText(v, rate)} className="rounded-card bg-card px-5 py-4" valueClassName="text-[1.75rem] leading-tight" />
+          <StatTile key={label} label={label} value={v === undefined ? "—" : cardRateText(v, rate)} className="min-w-0 rounded-card bg-card px-3 py-3 sm:px-5 sm:py-4" valueClassName="text-[1rem] leading-tight break-words sm:text-[1.75rem]" />
         ))}
       </dl>
 
