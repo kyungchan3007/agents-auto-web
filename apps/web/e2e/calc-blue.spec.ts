@@ -27,11 +27,11 @@ test.describe("/calc 파랑 머리 (작업 0221 사용자 결정)", () => {
     expect(await page.locator("header").first().evaluate((e) => getComputedStyle(e).backgroundColor)).toBe(BLUE);
   });
 
-  test("제목은 흰 글자 · 금액은 노랑(#F7C548) · 설명 · 라벨은 파랑 면 위 4.5 이상", async ({ page }) => {
+  test("제목은 흰 글자(종이색 #F4F9F8) · 금액은 노랑(#F7C548) · 설명 · 라벨은 파랑 면 위 4.5 이상", async ({ page }) => {
     await settle(page);
     const h1 = page.getByRole("heading", { level: 1 });
     const h1Color = await h1.evaluate((e) => getComputedStyle(e).color);
-    expect(h1Color).toBe("rgb(255, 255, 255)");
+    expect(h1Color).toBe("rgb(244, 249, 248)");
     expect(await h1.locator("span").first().evaluate((e) => getComputedStyle(e).color)).toBe("rgb(247, 197, 72)");
     const desc = page.getByText("물건 값을 넣으면 면세 한도 안인지");
     const label = page.getByText("직구 계산", { exact: true }).first();

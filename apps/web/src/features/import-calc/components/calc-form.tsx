@@ -15,11 +15,11 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
   return (
     <>
       {/* 휴대폰 — 결과가 두 번째 화면이라 폼 위에 요약 한 줄 · 높이 고정(글만 바뀜) (작업 0208) */}
-      <p data-testid="calc-summary" className="mb-4 flex h-14 items-center overflow-hidden rounded-card bg-pin-ink px-5 text-small leading-snug font-semibold text-sun sm:hidden">
+      <p data-testid="calc-summary" className="mb-4 flex h-14 items-center overflow-hidden rounded-card bg-pin-ink px-5 ring-1 ring-card/40 text-small leading-snug font-semibold text-sun sm:hidden">
         {summaryLine(result)}
       </p>
       <div className="grid gap-4 lg:grid-cols-2 lg:items-start">
-      <form data-testid="calc-input" className="grid content-start gap-4 rounded-[1.75rem] border border-line bg-card px-6 py-6 sm:grid-cols-2" onSubmit={(e) => e.preventDefault()} aria-label="직구 계산 입력">
+      <form data-testid="calc-input" className="grid content-start gap-4 rounded-[1.75rem] border border-line bg-card px-6 py-6 shadow-ticket sm:grid-cols-2" onSubmit={(e) => e.preventDefault()} aria-label="직구 계산 입력">
         <Field label="통화" htmlFor="currency">
           <Select id="currency" value={input.currency} onChange={set("currency")}>
             {codes.map((c) => (
