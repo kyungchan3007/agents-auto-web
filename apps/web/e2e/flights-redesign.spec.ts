@@ -84,24 +84,20 @@ test.describe("새 /flights — 탑승권 · 한 줄 띠 (작업 0218)", () => {
 
   // 작업 0218 사용자 지적 "시안처럼 해줘 표디자인처럼" — 표 뒤 구간은 옅은 면(surface-2 #F2F5F9) · 가장자리 홈 색 = 뒤 구간 색(파인 홈) · "가장 싼 달" 은 작은 칸 셋(1 · 1 · 월)만 단독으로
   //   표시: data-testid="flights-back"(표 뒤 구간) · "flights-ticket-hole"(홈 · 둘)
-  test("표 뒤 구간은 옅은 면 · 홈 색 = 뒤 구간 색 · 홈 가운데가 카드 가장자리(파인 홈)", async ({ page }) => {
+  test("표 뒤 구간은 옅은 면 · 절취선 끝 동그라미(홈)는 없고 점선만 남음 (작업 0218 사용자 지적 \"동그라미가 없어야 하는거 아냐?\")", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/flights");
     test.skip(!(await ready(page)), "자료 없음");
     await page.waitForTimeout(500);
-    const back = await tid(page, "flights-back").evaluate((el) => getComputedStyle(el).backgroundColor);
-    expect(back).toBe("rgb(242, 245, 249)");
+    expect(await tid(page, "flights-back").evaluate((el) => getComputedStyle(el).backgroundColor)).toBe("rgb(242, 245, 249)");
     expect(await tid(page, "flights-ticket").evaluate((el) => getComputedStyle(el).backgroundColor)).toBe("rgb(255, 255, 255)");
-    const holes = await page.locator('[data-testid="flights-ticket-hole"]').evaluateAll((els) => els.map((e) => ({ bg: getComputedStyle(e).backgroundColor, r: e.getBoundingClientRect() })));
-    expect(holes.length, "홈 둘").toBe(2);
-    const card = await box(page, "flights-ticket");
-    for (const h of holes) {
-      expect(h.bg, "홈 색 = 뒤 구간 색").toBe(back);
-      const cx = h.r.x + h.r.width / 2;
-      const cy = h.r.y + h.r.height / 2;
-      const onEdge = [Math.abs(cy - card.y), Math.abs(cy - (card.y + card.height)), Math.abs(cx - card.x), Math.abs(cx - (card.x + card.width))];
-      expect(Math.min(...onEdge), "홈 가운데가 카드 가장자리 위").toBeLessThanOrEqual(2);
-    }
+    await expect(page.locator('[data-testid="flights-ticket-hole"]')).toHaveCount(0);
+    // 카드 안에 절취선 동그라미(둥근 모서리 28px 상자)가 하나도 없음 — 점 · 막대 같은 작은 것(≤ 20px)만
+    const circles = await tid(page, "flights-ticket").evaluate((card) => [...card.querySelectorAll("*")].filter((e) => { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); return r.width >= 24 && Math.abs(r.width - r.height) < 2 && parseFloat(cs.borderTopLeftRadius) >= r.width / 2 - 1 && cs.backgroundColor !== "rgba(0, 0, 0, 0)"; }).length);
+    expect(circles, "큰 동그라미").toBe(0);
+    // 절취선(점선)은 그대로
+    const dashed = await tid(page, "yoy-cards").evaluate((el) => { const p = el.parentElement as HTMLElement; const cs = getComputedStyle(p); return [cs.borderTopStyle, cs.borderLeftStyle]; });
+    expect(dashed.includes("dashed"), "점선 절취선").toBe(true);
   });
 
   test("가장 싼 달 글자판 — 큰 판 틀 없이 작은 칸 셋(1 · 1 · 월)만 단독으로 · 칸은 남색 + 노랑 글자 · 높이 약 44px", async ({ page }) => {
