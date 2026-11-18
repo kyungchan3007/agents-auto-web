@@ -243,13 +243,19 @@ test.describe("직구 계산 — 예시 값 · 고정 크기 (작업 0200)", () 
     await page.goto("/calc");
     const before = await sizes(page);
     const price = input(page).getByLabel(/물건 값/);
+    // 작업 0208: 휴대폰은 결과 카드가 글만큼만(아래 빈칸 없음) — 결과가 나온 상태끼리만 같고 · 빈 값 · 오류 글은 더 짧아도 됨. 입력 칸 높이는 늘 같음
+    const phone = (page.viewportSize()?.width ?? 0) < 640;
     for (const v of ["250", "abc", "", "99999999", "180"]) {
       await price.fill(v);
       await input(page).getByLabel(/관세율/).fill(v === "250" ? "8" : "");
-      expect(await sizes(page)).toEqual(before);
+      const now = await sizes(page);
+      if (phone && ["abc", "", "99999999"].includes(v)) expect(now.inputH).toBe(before.inputH);
+      else expect(now).toEqual(before);
     }
     await input(page).getByLabel(/국제 배송비/).fill("xyz");
-    expect(await sizes(page)).toEqual(before);
+    const last = await sizes(page);
+    if (phone) expect(last.inputH).toBe(before.inputH);
+    else expect(last).toEqual(before);
   });
 
   test("다른 통화로 들어오면(?currency=JPY) 예시 없이 빈 칸", async ({ page }) => {
