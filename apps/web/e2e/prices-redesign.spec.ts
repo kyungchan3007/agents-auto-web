@@ -218,14 +218,14 @@ test.describe("새 /prices — 예산 · 자 · 표 (작업 0220)", () => {
     for (let i = 0; i < n; i++) {
       expect(info[i].x).toBeCloseTo(((info[i].v - lo) / (hi - lo)) * 100, 1);
       const b = (await pins.nth(i).boundingBox())!;
-      const axis = (await tid(page, "ruler-axis").boundingBox())!;
+      const axis = (await tid(page, "ruler-bar").boundingBox())!;
       expect(Math.abs(b.x + b.width / 2 - (axis.x + (axis.width * info[i].x) / 100))).toBeLessThanOrEqual(Math.max(2, b.width / 2 + 1)); // 점 · 이름표 가운데가 자 위 위치 근처
       if (i > 0) expect(info[i].side).not.toBe(info[i - 1].side);
     }
-    const kr = tid(page, "ruler-korea");
+    const kr = tid(page, "ruler-korea-tag");
     await expect(kr).toContainText("한국 100");
     const kb = (await kr.boundingBox())!;
-    const axis = (await tid(page, "ruler-axis").boundingBox())!;
+    const axis = (await tid(page, "ruler-bar").boundingBox())!;
     expect(Math.abs(kb.x + kb.width / 2 - (axis.x + (axis.width * (100 - lo)) / (hi - lo)))).toBeLessThanOrEqual(Math.max(2, kb.width / 2 + 1));
     expect(rb.width).toBeGreaterThan(200);
     // 자의 나라들 = 표 구간마다 맨 위 두 줄의 물가 숫자
@@ -324,14 +324,14 @@ test.describe("새 /prices — 휴대폰 한국 = 100 자 라벨이 겹치지 �
     });
   }
 
-  test("넓은 화면은 지금 모양 그대로 — 한국 100 글자가 자 아래 · 점 라벨은 위 · 아래 번갈아", async ({ page }) => {
+  test("넓은 화면 — 한국 100 노랑 꼬리표가 자 위 · 점 라벨은 위 · 아래 번갈아 (시안 F)", async ({ page }) => {
     test.skip(isPhone(page), "넓은 화면 전용");
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/prices");
     test.skip(!(await ready(page)), "자료 없음");
     const axis = await box(page, "ruler-axis");
-    const kl = await tid(page, "ruler-korea-label").boundingBox();
-    expect(kl?.y ?? 0, "한국 100 이 자 아래").toBeGreaterThan(axis.y + axis.height);
+    const kl = await tid(page, "ruler-korea-tag").boundingBox();
+    expect(kl?.y ?? 0, "한국 100 꼬리표가 자 위(시안 F: 노랑 꼬리표가 자 위쪽)").toBeLessThan(axis.y);
   });
 });

@@ -38,6 +38,7 @@ const ALLOWED = [
   "packages/ui/src/components/data/flap-board.tsx", // 작업 0177 출발 안내판 칸 글자 (옛 today-band 자리)
   "packages/ui/src/components/data/line-chart.tsx", // 작업 0216 그래프 2D 끝 말풍선 큰 숫자
   "apps/web/src/features/home/components/hero-section.tsx", // 작업 0217 새 홈 첫 면 큰 제목 "N월에 떠나세요" (Pretendard 800 · 시안 B)
+  "packages/ui/src/components/data/ruler-chart.tsx", // 작업 0220 그래프 2D 여행 물가 자의 큰 숫자
   "apps/web/src/features/currencies/components/currency-detail.tsx",
   "apps/web/src/features/currencies/components/result-board.tsx", // 작업 0219 지적: 계산 결과 글자판 칸 글자 (FlapBoard 와 같은 Pretendard 800)
   "apps/web/src/features/import-calc/components/calc-result.tsx",
