@@ -12,13 +12,13 @@ import { useInViewOnce } from "./use-in-view-once";
 /** 쉼표 · 소수 자리 글 — 웹 쪽 화면이 lib 를 직접 가져오지 못해(exports) 훅 파일로 같이 내보냄 */
 export { formatCount } from "../lib/count-up";
 
-export function useCountUp<T extends Element = HTMLElement>(final: number, opts: { digits?: number; durationMs?: number } = {}): { ref: RefObject<T | null>; value: number; progress: number } {
-  const { digits = 0, durationMs = COUNT_UP_MS } = opts;
+export function useCountUp<T extends Element = HTMLElement>(final: number, opts: { digits?: number; durationMs?: number; enabled?: boolean } = {}): { ref: RefObject<T | null>; value: number; progress: number } {
+  const { digits = 0, durationMs = COUNT_UP_MS, enabled = true } = opts; // enabled=false 인 동안은 시작하지 않음(최종 값) — 카드가 차례로 나타나는 순간에 맞춰 시작할 때
   const reduce = useReducedMotion();
   const { ref, seen } = useInViewOnce<T>();
   const [t, setT] = useState(1); // 시간 비율 (곡선 적용 전)
   useEffect(() => {
-    if (!seen || reduce) return;
+    if (!seen || reduce || !enabled) return;
     const t0 = performance.now();
     let raf = 0;
     const loop = (now: number) => {
@@ -28,7 +28,7 @@ export function useCountUp<T extends Element = HTMLElement>(final: number, opts:
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [seen, reduce, durationMs]);
+  }, [seen, reduce, durationMs, enabled]);
   const time = reduce ? 1 : t;
   return { ref, value: countUpValue(final, time, digits), progress: easeOut(time) };
 }
