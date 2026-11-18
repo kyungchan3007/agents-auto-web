@@ -26,6 +26,7 @@
 - packages/ui/src/components/data/year-chart.tsx — 계획 안(그리기 움직임 · 높은 그래프): draw · tall 속성 추가 · 선에 data-testid="year-line"
 - apps/web/src/shared/pages-redesign.test.ts — "통화 화면에 data-surface elevated 없음" 검사에 계산 탑승권(converter.tsx)을 예외로 둠 (바다 띠가 아니라 탑승권 안 한 칸)
 - apps/web/e2e/{detail-design · pages · features · a11y}.spec.ts — 옛 통화 상세(왼쪽 목록 · 통계 카드 3개 · 노란 결과칸)를 전제한 기대를 새 모양에 맞게 고침
+- (그래프 2D · 시안 F) apps/web/src/features/currencies/components/period-chart.tsx — 1년 흐름 그림을 공통 부품 LineChart(0216)로 교체(그라데이션 면 · 값 · 날짜 눈금 · 최고(빨강) · 최저(남색) 점 · 평균 점선 · 끝 "오늘" 말풍선 · 순서 움직임) · 기간 알약 · 제목 · 기간 탭 기능은 그대로 / apps/web/src/features/currencies/lib/chart-axes.ts — 새 파일(세로 보기 좋은 눈금 · 가로 달 첫날 눈금 · 순수 함수) / packages/ui year-chart.tsx 는 직구 관세 구간(customs-section)이 아직 쓰므로 그대로 둠(draw · tall 옵션은 이 화면에서 더 안 씀) / 판정 색(lastTone)은 시안 F 의 끝 말풍선이 울트라마린 하나라 그래프에서는 쓰지 않음(위 카드가 판정을 보임)
 
 ## 위험
 - 통화 페이지가 많아(정적 생성) 빌드 시간 · D1 읽기 — 받는 자료를 늘리지 않음(새 API 호출 금지)
