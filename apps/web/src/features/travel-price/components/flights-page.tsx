@@ -3,7 +3,6 @@
 // 여행 타이밍 페이지 — 새 디자인(작업 0218 · 시안 A + 머리 글자판): 메뉴(파랑) 아래 흰 머리(제목 · 설명 + 글자판 세 줄) → 하늘 종이 위 탑승권 한 장(왼쪽 그래프 · 절취선 · 오른쪽 숫자) → 한 줄 띠(최고 · 최저 · 환율)
 // 큰 문장 · 글자판 · 숫자 · 띠는 지수로 계산 · 자료가 없으면 "준비 중" · 글자판 · 탑승권 · 띠 없음 (숫자 · 달을 지어내지 않음) · 사진 없음 (사진 파일 · 부품은 그대로 · 삭제는 0222)
 import { SiteNav } from "@/shared/site-nav";
-import { PLANE_CREDIT } from "@hav/shared/travel";
 import { FlapBoard } from "@hav/ui/data/flap-board";
 import { PageFooter } from "@hav/ui/layout/page-footer";
 import { CountUp } from "@hav/ui/motion/count-up";
@@ -143,16 +142,6 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
       </main>
       <PageFooter width="max-w-page" className="space-y-1">
         <p>자료: 통계청 KOSIS 소비자물가지수(국제항공료 · 해외단체여행비, 매달 최근 24개월) · 한국수출입은행</p>
-        <p>
-          {PLANE_CREDIT.text} ·{" "}
-          <a href={PLANE_CREDIT.sourceUrl} target="_blank" rel="noreferrer">
-            원본
-          </a>{" "}
-          ·{" "}
-          <a href={PLANE_CREDIT.licenseUrl} target="_blank" rel="noreferrer">
-            라이선스
-          </a>
-        </p>
       </PageFooter>
     </>
   );
