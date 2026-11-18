@@ -23,8 +23,11 @@ test.describe("직구 수입물가 그래프 — 풍성한 2D (작업 0221 · �
     await expectLineChartFinal(page, chart, { series: ["price", "fx"], areas: ["price", "fx"] });
     await expect(chart.locator('[data-testid="chart-ref"]')).toHaveCount(1); // 기준선
     await expect(chart.locator('[data-testid="chart-ref-label"]')).toHaveText(isPhone(page) ? /= 100/ : /\d{4}-\d{2} = 100/); // 기준선 꼬리표 글 (휴대폰은 짧은 글 '= 100' — 시안 휴대폰)
-    await expect(chart.locator('[data-testid="chart-end"][data-series="price"]')).toContainText("수입물가");
-    await expect(chart.locator('[data-testid="chart-end"][data-series="fx"]')).toContainText("원/달러");
+    if (!isPhone(page)) {
+      // 휴대폰 말풍선은 숫자만(시안 휴대폰) — 이름은 넓은 화면에서만
+      await expect(chart.locator('[data-testid="chart-end"][data-series="price"]')).toContainText("수입물가");
+      await expect(chart.locator('[data-testid="chart-end"][data-series="fx"]')).toContainText("원/달러");
+    }
     // 최고/최저 점은 이 그래프에 없음 · 날짜 눈금은 있음
     await expect(chart.locator('[data-testid="chart-mark"]')).toHaveCount(0);
     await expect(chart.locator('[data-testid="chart-axis"]')).toContainText(isPhone(page) ? /\d\d\.\d\d/ : /20\d\d-\d\d/);
