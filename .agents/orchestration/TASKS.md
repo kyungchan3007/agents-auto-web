@@ -40,4 +40,4 @@
 | 0205 | 이름 바꾼 날(11-17) 전후 비교 — /geo 맨 위 (#243 · Full) | builder | PR 대기 | task/0205-rename-compare | packages/shared/src/contracts/geo.ts · apps/api/src/features/geo/** · apps/web/src/features/geo/** |
 | 0208 | 디자인 1 · 직구 계산 — 휴대폰 결과 위치 · 빈칸 · 한도 넘을 때 줄 · 과세환율 칸 · 그래프 높이 (#247) | builder | PR 대기 | task/0208-design-calc | apps/web/src/features/import-calc/** |
 | 0209 | 디자인 2 · 휴대폰 홈 사진 덮개 · 노란 표시줄 (#248 · 기본 나라 사진은 정정으로 뺌) | builder | PR 대기 | task/0209-design-hero | apps/web/src/features/home/** · packages/ui photo-header · emph |
-| 0210 | 디자인 3 · 홈 첫 화면 — 고르기 버튼 · 이번 주 제목 · 간격 · 대비 (#249) | builder | 진행 중 | task/0210-design-home | apps/web/src/features/home/** |
+| 0210 | 디자인 3 · 홈 첫 화면 — 고르기 버튼 · 이번 주 제목 · 간격 · 대비 (#249) | builder | PR 대기 | task/0210-design-home | apps/web/src/features/home/** |
