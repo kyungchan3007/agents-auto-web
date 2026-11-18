@@ -42,9 +42,13 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
           {ready && (
             <>
               <div>
+                {/* 화면에는 안 보이는 섹션 제목 — 제목 구조(h1 → h2)를 채움 · 모양은 그대로 (작업 0213) */}
+                <h2 className="sr-only">국제항공료 · 해외단체여행비 지수와 환율 그래프</h2>
                 <FlightsGraph air={air} tour={tour} fx={fxMonthly} />
               </div>
               {(cards.length > 0 || cheaps) && (
+                <>
+                <h2 className="sr-only">작년 대비와 가장 싼 달</h2>
                 <div data-testid="yoy-cards" className="mt-6 grid gap-4 sm:grid-cols-3">
                   {cards.map((c) => (
                     <div key={c.label} className="rounded-card bg-card px-5 py-4">
@@ -63,6 +67,7 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
                     </div>
                   )}
                 </div>
+                </>
               )}
             </>
           )}
