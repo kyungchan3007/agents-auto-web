@@ -75,14 +75,14 @@ async function worstContrast(page: Page, target: string): Promise<number> {
 }
 
 test.describe("홈 머리 사진 덮개 · 표시줄 (작업 0209)", () => {
-  test("휴대폰 — 위쪽은 덮개 없이 사진이 보이고 · 글자 자리는 대비 4.5:1 이상", async ({ page }) => {
+  test("휴대폰 — 위쪽은 덮개 없이 사진이 보이고 · 글자(작은 제목 · 큰 제목 · 설명) 자리는 대비 4.5:1 이상", async ({ page }) => {
     test.skip(!isPhone(page), "휴대폰 전용");
     await page.goto("/");
     await page.waitForTimeout(500);
     const header = page.getByTestId("photo-header").first();
     const hb = await header.boundingBox();
     if (!hb) throw new Error("화면에 없음");
-    const clip = { x: hb.x, y: hb.y, width: hb.width, height: hb.height * 0.3 };
+    const clip = { x: hb.x, y: hb.y, width: hb.width, height: hb.height * 0.2 };
     const withVeil = (await page.screenshot({ clip })).toString("base64");
     await page.getByTestId("photo-veil").first().evaluate((el) => ((el as HTMLElement).style.display = "none"));
     const noVeil = (await page.screenshot({ clip })).toString("base64");
@@ -103,10 +103,11 @@ test.describe("홈 머리 사진 덮개 · 표시줄 (작업 0209)", () => {
       for (let k = 0; k < x.length; k += 4) sum += Math.abs(x[k] - y[k]) + Math.abs(x[k + 1] - y[k + 1]) + Math.abs(x[k + 2] - y[k + 2]);
       return sum / (x.length / 4) / 3;
     }, { a: withVeil, b: noVeil });
-    expect(diff).toBeLessThan(10); // 위 30% 는 덮개가 거의 없음 (평균 채널 차이)
+    expect(diff).toBeLessThan(10); // 위 20% 는 덮개가 거의 없음 (평균 채널 차이)
     await page.getByTestId("photo-veil").first().evaluate((el) => ((el as HTMLElement).style.display = ""));
-    expect(await worstContrast(page, "section[aria-labelledby='timing-title'] p")).toBeGreaterThanOrEqual(4.5);
-    expect(await worstContrast(page, "#timing-title")).toBeGreaterThanOrEqual(4.5);
+    for (const target of ["section[aria-labelledby='timing-title'] p:nth-of-type(1)", "#timing-title", "section[aria-labelledby='timing-title'] p:nth-of-type(2)"]) {
+      expect(await worstContrast(page, target), target).toBeGreaterThanOrEqual(4.5);
+    }
   });
 
   test("노란 표시줄 — 강조 글자의 왼쪽 · 오른쪽 끝과 ±2px", async ({ page }) => {

@@ -8,7 +8,8 @@ import { numberTone, splitNumbers } from "../../lib/emphasis";
 type Bg = "light" | "sea";
 type Tone = "neutral" | "expensive";
 
-const LIGHT_NEUTRAL = "box-decoration-clone bg-[linear-gradient(transparent_55%,var(--hav-sun)_55%)] group-data-[veil=ultramarine]/photo:bg-none group-data-[veil=ultramarine]/photo:text-sun";
+// 띠는 글자 폭보다 양쪽 0.05em 안쪽 — 글자 옆 여백(자간)만큼 넓어 보이지 않게 글자 끝과 맞춤 (작업 0209)
+const LIGHT_NEUTRAL = "box-decoration-clone bg-[linear-gradient(transparent_55%,var(--hav-sun)_55%)] bg-size-[calc(100%-0.1em)_100%] bg-center bg-no-repeat group-data-[veil=ultramarine]/photo:bg-none group-data-[veil=ultramarine]/photo:text-sun";
 const LIGHT_EXPENSIVE = "text-expensive group-data-[veil=ultramarine]/photo:text-sun";
 const SEA = "text-figure";
 
