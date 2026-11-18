@@ -7,6 +7,8 @@ import { Section } from "@hav/ui/layout/section";
 import { DestinationRow } from "@hav/ui/data/destination-row";
 import { SignalPin } from "@hav/ui/data/signal-pin";
 import { FlapBoard } from "@hav/ui/data/flap-board";
+import { CountUp } from "@hav/ui/motion/count-up";
+import { SlideIn } from "@hav/ui/motion/slide-in";
 import { Stamp } from "@hav/ui/data/stamp";
 import { StatTile } from "@hav/ui/data/stat-tile";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
@@ -29,6 +31,7 @@ export default function DesignPage() {
           { href: "#rows", label: "도착지 줄" },
           { href: "#stamp", label: "도장" },
           { href: "#tabs", label: "탭" },
+          { href: "#motion", label: "움직임" },
         ]}
       />
 
@@ -65,9 +68,10 @@ export default function DesignPage() {
           rows={[
             { text: "ICN → 도쿄", tone: "dest" },
             { text: "912원 / 100엔", tone: "money" },
+            { text: "가장 싼 달 11월", tone: "white" },
           ]}
           cols={12}
-          label="예시 — 인천에서 도쿄, 100엔에 912원"
+          label="예시 — 인천에서 도쿄, 100엔에 912원, 가장 싼 달 11월"
         />
       </Section>
 
@@ -103,6 +107,18 @@ export default function DesignPage() {
           <Tooltip content="최근 90일 안에서 오늘 값의 위치 (예측 아님)">
             <Button variant="ghost">신호는 어떻게 계산하나요?</Button>
           </Tooltip>
+        </div>
+      </Section>
+
+      <Section id="motion" eyebrow="움직임" title="화면에 들어올 때 한 번.">
+        <div data-testid="motion-sample-count" className="font-display text-number font-extrabold">
+          예시 · <CountUp value={1338.8} digits={1} suffix="원" />
+        </div>
+        <p className="mt-2 text-small text-fg-2">최종 값 근처에서 시작해 약 1초 · 움직임 줄이기를 켜면 바로 최종 값입니다.</p>
+        <div data-testid="motion-sample-slide" className="mt-10 max-w-xl">
+          <SlideIn from="left">
+            <Card title="탑승권 예시">왼쪽에서 제자리로 0.7초 동안 들어옵니다.</Card>
+          </SlideIn>
         </div>
       </Section>
 
