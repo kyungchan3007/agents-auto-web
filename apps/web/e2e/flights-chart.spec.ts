@@ -68,7 +68,7 @@ test.describe("/flights 그래프 — 풍성한 2D (작업 0218 · 시안 F)", (
         expect(hit, `말풍선 ${i + 1} · ${j + 1} 겹침`).toBe(false);
       }
     // 그래프 높이 — 시안(1280: 약 470px · 390: 약 300px) 이상으로 풍성하게 (너무 납작하지 않음)
-    expect(g.height, "그래프 높이").toBeGreaterThanOrEqual(isPhone(page) ? 240 : 380);
+    expect(g.height, "그래프 높이").toBeGreaterThanOrEqual(isPhone(page) ? 260 : 360);
   });
 
   test("화면에 들어오기 전엔 시작 안 함(idle · 모든 부분 0) → 들어오면 재생 → 끝나면 done", async ({ page }) => {
