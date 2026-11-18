@@ -21,6 +21,7 @@
 - .agents/orchestration/TASKS.md · .agents/specs/0219-redesign-currency/**
 
 ## 계획 밖 변경 이유
+- packages/ui/src/hooks/use-count-tween.ts · lib/count-up.ts(countTo · COUNT_TO_MS) — 새 훅 · 보간 함수(사용자 지적 · 결과 카운트업) · apps/web/src/features/currencies/components/result-board.tsx 새 파일 · font-readability.test 허용 목록에 그 파일 추가
 - packages/ui/src/hooks/use-count-up.ts — 웹 쪽 화면이 ui 의 lib 를 직접 가져올 수 없어(package.json exports 가 보호 파일) 훅 파일에서 formatCount 를 같이 내보냄 (0217 과 같은 줄)
 - packages/ui/src/components/data/year-chart.tsx — 계획 안(그리기 움직임 · 높은 그래프): draw · tall 속성 추가 · 선에 data-testid="year-line"
 - apps/web/src/shared/pages-redesign.test.ts — "통화 화면에 data-surface elevated 없음" 검사에 계산 탑승권(converter.tsx)을 예외로 둠 (바다 띠가 아니라 탑승권 안 한 칸)
@@ -36,7 +37,8 @@
 - lead: 미리보기 USD · JPY · 자료 적은 통화 하나 · 1280 · 390 · 사파리
 
 ## 계획과 달라진 점
-- 계산기 결과 금액: 글자판(FlapBoard · 처음 한 번 넘어간 뒤 값이 바뀌면 바로 바뀜)으로 보이고, 금액 카운트업은 하지 않음 — 글자판의 처음 넘어가는 움직임이 그 자리를 대신함 (글자판 + 카운트업을 겹치면 글자가 이중으로 움직임). prd 의 "결과 금액 카운트업" 은 미적용 — 사용자 확인 필요.
+- 계산기 결과 금액(사용자 지적 · 결정 원문 "실제로 바꿀때 나오는 값 … 카운트 업 되는 형식"): 처음 안은 글자판(처음 한 번 넘김)이었으나 카운트업이 없어 결정과 달랐음 → 글자판 모양(ResultBoard · 칸 이음선 · 노랑 글자)이되 칸 글자가 카운트업 값을 그대로 보임(무작위 넘김 없음 · 이중 움직임 없음). 화면에 처음 들어올 때 최종 값 85% → 약 1초 · 금액을 바꾸면 이전 값 → 새 값 약 0.6초(바뀌는 도중 다시 바뀌면 그때 보이던 값에서 이어감) · 움직임 줄이기 · 서버 첫 그림 · 아직 안 보임 = 바로 최종 값 · 화면 읽기는 최종 값 한 문장(label). 새 훅 useCountTween(packages/ui) · 계산 countTo(lib).
+- 흰 바탕 결정: 흰 바탕 위 흰 카드(계산 탑승권 · 경로 카드)에 옅은 선 · 그림자 (0216 cherry-pick 은 lead 가 해 둠)
 - 오늘 위치 비행기 점은 가만히 둠 (최저 · 최고 숫자만 카운트업).
 - 그래프 그리기: 선 길이를 화면 픽셀로 재서 dasharray · dashoffset 를 웹 애니메이션(el.animate)으로 — 끝나면 효과가 사라져 서버 첫 그림과 같은 상태 (기간을 바꿔도 다시 안 그림)
 - 검색 · 칩 · 아래 목록은 페이지가 아니라 둘러보기 틀(browse-layout)에 둠 — /currencies 와 /currencies/CODE 가 같은 틀을 쓰고 통화를 바꿔도 남아서

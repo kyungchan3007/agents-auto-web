@@ -160,8 +160,7 @@ test.describe("새 통화 상세 — 계산 결과 글자판 카운트업 (작�
     }
     await tid(page, "converter").getByRole("textbox").first().fill("200");
     await expect.poll(() => shown(page)).toBe((await board.getAttribute("aria-label")) ?? "");
-    const rec = await seen(page).catch(() => []);
-    expect(rec).toBeDefined();
+    expect(Number(((await board.getAttribute("aria-label")) ?? "").replace(/[^\d]/g, ""))).toBeGreaterThan(first.length > 0 ? Number(first.replace(/[^\d]/g, "")) * 1.9 : 0);
   });
 
   test("처음 화면에 들어올 때 — 칸 글자가 중간 값을 거쳐 최종 값 (글자판 넘김이 아니라 값이 올라가며 맞춰짐)", async ({ page }) => {
@@ -178,12 +177,16 @@ test.describe("새 통화 상세 — 계산 결과 글자판 카운트업 (작�
     const finalN = Number(final.replace(/[^\d]/g, ""));
     expect(Math.min(...nums)).toBeLessThan(finalN); // 시작은 최종보다 작음
     expect(Math.max(...nums)).toBeLessThanOrEqual(finalN); // 넘지 않음
-    for (let i = 1; i < nums.length; i++) expect(nums[i]).toBeGreaterThanOrEqual(nums[i - 1]); // 올라가기만 함
+    // 서버 첫 그림(최종 값)이 한 프레임 보인 뒤 시작 값으로 내려가 올라감 — 가장 낮은 값부터는 올라가기만 함
+    const rise = nums.slice(nums.indexOf(Math.min(...nums)));
+    for (let i = 1; i < rise.length; i++) expect(rise[i]).toBeGreaterThanOrEqual(rise[i - 1]);
     expect(rec.filter((t) => /[^\d,원]/.test(t)).length, "무작위 글자(넘김)가 끼지 않음").toBe(0);
   });
 
   test("금액을 바꾸면 이전 값에서 새 값으로 (중간 값을 거침) · 끝 값 = 계산 값 · 같은 입력 → 같은 값", async ({ page }) => {
     await page.goto("/currencies/USD");
+    await tid(page, "converter-board").scrollIntoViewIfNeeded(); // 화면에 들어와야 움직임 (휴대폰은 판이 첫 화면 아래)
+    await page.evaluate(() => document.querySelector('[data-testid="converter-board"]')?.scrollIntoView({ block: "center" }));
     await page.waitForTimeout(1800); // 처음 움직임이 끝난 뒤
     const board = tid(page, "converter-board").getByTestId("flap-board");
     const before = Number(((await board.getAttribute("aria-label")) ?? "").replace(/[^\d]/g, ""));
