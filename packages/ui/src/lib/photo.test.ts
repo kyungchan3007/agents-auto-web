@@ -66,3 +66,18 @@ describe("countryPhoto", () => {
     for (const n of COUNTRY_PHOTO_NAMES) expect(photoSrcSet(n)).toBe(`/images/photos/${n}-640.webp 640w, /images/photos/${n}-1024.webp 1024w, /images/photos/${n}-1672.webp 1672w`);
   });
 });
+
+// 작업 0209 — 머리 사진 고르는 규칙 하나: 나라 사진이 있으면 그것 · 없으면 화면 기본 사진
+import { headerPhoto } from "./photo";
+
+describe("headerPhoto (작업 0209)", () => {
+  it("나라 사진이 있으면 나라 사진 · 파리(FRA)는 유럽 · 인도는 인도", () => {
+    expect(headerPhoto("window-fjord", "FRA")).toBe("country-eur");
+    expect(headerPhoto("swiss-traveler", "IND")).toBe("country-ind");
+  });
+  it("사진 없는 나라 · 나라 없음 → 화면 기본 사진", () => {
+    expect(headerPhoto("window-fjord", "ARE")).toBe("window-fjord");
+    expect(headerPhoto("swiss-traveler", null)).toBe("swiss-traveler");
+    expect(headerPhoto("plane-below", undefined)).toBe("plane-below");
+  });
+});
