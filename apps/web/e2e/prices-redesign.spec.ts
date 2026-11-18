@@ -293,3 +293,45 @@ test.describe("새 /prices — 예산 · 자 · 표 (작업 0220)", () => {
     await ctx.close();
   });
 });
+
+test.describe("새 /prices — 휴대폰 한국 = 100 자 라벨이 겹치지 않음 (작업 0220 lead 지시)", () => {
+  //   표시: data-testid="ruler-pin-text"(점마다 이름 · 숫자 묶음) · "ruler-korea-label"(한국 100 글자)
+  for (const w of [390, 360, 320]) {
+    test(`${w}px — 라벨 상자끼리 겹침 0 · 화면 안 · 자 상자 안`, async ({ page }) => {
+      await page.setViewportSize({ width: w, height: 844 });
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await page.goto("/prices");
+      test.skip(!(await ready(page)), "자료 없음");
+      await tid(page, "ruler").scrollIntoViewIfNeeded();
+      await page.waitForTimeout(500);
+      const boxes = await page.evaluate(() => [...document.querySelectorAll('[data-testid="ruler-pin-text"], [data-testid="ruler-korea-label"]')].map((e) => { const r = e.getBoundingClientRect(); return { t: (e.textContent ?? "").trim(), x: r.left, y: r.top, r: r.right, b: r.bottom }; }));
+      expect(boxes.length, "점 + 한국 100").toBeGreaterThanOrEqual(3);
+      for (const a of boxes) {
+        expect(a.x, `${a.t} 왼쪽이 화면 안`).toBeGreaterThanOrEqual(-0.5);
+        expect(a.r, `${a.t} 오른쪽이 화면 안`).toBeLessThanOrEqual(w + 0.5);
+      }
+      for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i];
+        const b = boxes[j];
+        const overlap = Math.min(a.r, b.r) - Math.max(a.x, b.x) > 1 && Math.min(a.b, b.b) - Math.max(a.y, b.y) > 1;
+        expect(overlap, `${a.t} ~ ${b.t} 겹침`).toBe(false);
+      }
+      const ruler = await box(page, "ruler");
+      for (const a of boxes) {
+        expect(a.y, `${a.t} 위가 자 상자 안`).toBeGreaterThanOrEqual(ruler.y - 1);
+        expect(a.b, `${a.t} 아래가 자 상자 안`).toBeLessThanOrEqual(ruler.y + ruler.height + 1);
+      }
+    });
+  }
+
+  test("넓은 화면은 지금 모양 그대로 — 한국 100 글자가 자 아래 · 점 라벨은 위 · 아래 번갈아", async ({ page }) => {
+    test.skip(isPhone(page), "넓은 화면 전용");
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/prices");
+    test.skip(!(await ready(page)), "자료 없음");
+    const axis = await box(page, "ruler-axis");
+    const kl = await tid(page, "ruler-korea-label").boundingBox();
+    expect(kl?.y ?? 0, "한국 100 이 자 아래").toBeGreaterThan(axis.y + axis.height);
+  });
+});
