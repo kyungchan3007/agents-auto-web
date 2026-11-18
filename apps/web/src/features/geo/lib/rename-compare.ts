@@ -104,3 +104,6 @@ function answerCompare(rows: AnswerDay[]) {
   };
   return { general: lines, brand: { tripfx: summary(brand.filter((x) => x.edition < 3)), flapfx: summary(brand.filter((x) => x.edition === 3)) } };
 }
+
+/** 하루 평균 글자 — 소수 첫째 자리까지 */
+export const perDayText = (n: number) => `${Math.round(n * 10) / 10}`;

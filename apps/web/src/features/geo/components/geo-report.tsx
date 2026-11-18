@@ -1,12 +1,13 @@
 "use client";
 
-// GEO 수치 — 측정 수치 카드 4개 · 읽는 법 · 자세한 기록(작업 0180: 0170 에서 뺀 표를 흰 카드로 되살림 — GeoDetail)
+// GEO 수치 — 이름 바꾼 날 전후 비교(작업 0205) · 측정 수치 카드 4개 · 읽는 법 · 자세한 기록(작업 0180: 0170 에서 뺀 표를 흰 카드로 되살림 — GeoDetail)
 import type { GeoReport as Report } from "@hav/shared/geo";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
 import type { Fetched } from "../../../shared/api";
 import { geoCards, geoReading } from "../lib/geo-view";
 import { useGeoReport } from "../hooks/use-geo-report";
 import { GeoDetail } from "./geo-detail";
+import { RenameCompare } from "./rename-compare";
 
 export function GeoReport({ build }: { build: Fetched<Report> }) {
   const report = useGeoReport(build);
@@ -14,6 +15,8 @@ export function GeoReport({ build }: { build: Fetched<Report> }) {
   const r = report.data;
   return (
     <>
+      <RenameCompare report={r} />
+
       <dl data-testid="geo-cards" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {geoCards(r).map((c) => (
           <div key={c.label} className="rounded-card bg-foam px-[18px] py-[18px]">
