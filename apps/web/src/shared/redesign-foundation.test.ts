@@ -3,7 +3,7 @@
 // builder 가 할 것
 //   shared/site-nav.tsx — 메뉴 순서 · 주소 (R4 · figma-spec 라우트 맵):
 //     여행 타이밍 /flights · 오늘 환율 /#today · 통화 /currencies · 여행 물가 /prices · 직구 계산 /calc · 작업실 /log · GEO 측정 /geo — 소개(/about)는 메뉴에 없음
-//   packages/ui/src/components/layout/nav-bar.tsx — 데스크톱: 하늘 종이(data-surface="light") 위 로고 + 메뉴 한 줄 · 모바일: 로고 + 메뉴 아이콘 버튼
+//   packages/ui/src/components/layout/nav-bar.tsx — 데스크톱: 파랑 띠(data-surface="dark" · 작업 0216) 위 로고 + 메뉴 한 줄 · 모바일: 로고 + 메뉴 아이콘 버튼
 //     버튼: <button> · 접근 이름에 "메뉴" · aria-expanded(열림/닫힘) · aria-controls · Esc 로 닫기 · 누르면 메뉴 7칸이 펼쳐짐 · 로고는 "/" 로 가는 링크
 //     0164 의 휴대폰 두 줄 감싸기(max-[389px]:h-14 · 6.5rem)는 없어짐
 //   apps/web/src/app/layout.tsx — next/font/google 으로 Gasoek_One(400) · IBM_Plex_Sans_KR(400 · 600) · 각각 variable 옵션(CSS 변수) · <html> 에 변수 클래스 · data-surface="light" · viewport.themeColor 하늘 종이 #EAF4F2 (밤 포스터면 울트라마린 — 배열 · media 가능)
@@ -68,8 +68,8 @@ describe("메뉴 바 — 모바일 메뉴 버튼 (aria-expanded)", () => {
     expect(src).toMatch(/useState/);
   });
 
-  it("하늘 종이 바탕(data-surface=\"light\") · 로고는 / 로 · 예전 휴대폰 두 줄 감싸기가 없음", () => {
-    expect(src).toMatch(/data-surface="light"/);
+  it("파랑 띠 바탕(data-surface=\"dark\") · 로고는 / 로 · 예전 휴대폰 두 줄 감싸기가 없음", () => {
+    expect(src).toMatch(/data-surface="dark"/); // 메뉴 띠는 파랑 (작업 0216)
     expect(src).toMatch(/href="\/"/);
     expect(src).not.toMatch(/max-\[389px\]/);
   });
