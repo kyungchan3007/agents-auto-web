@@ -22,12 +22,12 @@ test.describe("직구 수입물가 그래프 — 풍성한 2D (작업 0221 · �
     await page.waitForTimeout(5500);
     await expectLineChartFinal(page, chart, { series: ["price", "fx"], areas: ["price", "fx"] });
     await expect(chart.locator('[data-testid="chart-ref"]')).toHaveCount(1); // 기준선
-    await expect(chart.locator('[data-testid="chart-ref-label"]')).toHaveText(/\d{4}-\d{2} = 100/); // 기준선 꼬리표 글
+    await expect(chart.locator('[data-testid="chart-ref-label"]')).toHaveText(isPhone(page) ? /= 100/ : /\d{4}-\d{2} = 100/); // 기준선 꼬리표 글 (휴대폰은 짧은 글 '= 100' — 시안 휴대폰)
     await expect(chart.locator('[data-testid="chart-end"][data-series="price"]')).toContainText("수입물가");
     await expect(chart.locator('[data-testid="chart-end"][data-series="fx"]')).toContainText("원/달러");
     // 최고/최저 점은 이 그래프에 없음 · 날짜 눈금은 있음
     await expect(chart.locator('[data-testid="chart-mark"]')).toHaveCount(0);
-    await expect(chart.locator('[data-testid="chart-axis"]')).toContainText(/20\d\d-\d\d/);
+    await expect(chart.locator('[data-testid="chart-axis"]')).toContainText(isPhone(page) ? /\d\d\.\d\d/ : /20\d\d-\d\d/);
     // 말풍선 숫자 = 왼쪽 숫자 카드(import-kpi · count-up data-final)의 값 — 모양만 비교하는 그래프지만 끝 숫자는 실제 값
     const kpiNums = (await tid(page, "import-kpi").locator('[data-testid="count-up"]').evaluateAll((els) => els.map((e) => e.getAttribute("data-final")))).map(num);
     expect(kpiNums.length).toBe(2);
