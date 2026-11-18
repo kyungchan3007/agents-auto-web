@@ -24,10 +24,12 @@ export function Home({ latest, signals, airFare }: HomeData) {
   return (
     <>
       <SiteNav page="home" />
+      <main id="main" tabIndex={-1}>
       <TravelTimingSection timing={timing} />
       <TodayBoard rates={rates} signals={signalRows} windowDays={windowDays} problem={!latest.ok ? latest.reason : null} />
       <TravelTimingGraph timing={timing} />
       <DestinationsSection rows={destinationRows(signalRows, rates, DESTINATIONS as Destination[])} windowDays={windowDays} moreCount={moreCurrenciesCount(rates, DESTINATIONS)} />
+      </main>
       <HomeFooter />
     </>
   );

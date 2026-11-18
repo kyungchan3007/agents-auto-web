@@ -30,6 +30,11 @@ body > main {
   flex: 1 0 auto;
 }
 
+/* 본문 바로가기로 초점이 옮겨 온 main 은 둘레 선을 그리지 않음 (작업 0213) */
+main:focus {
+  outline: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

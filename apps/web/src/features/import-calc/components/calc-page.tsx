@@ -26,7 +26,7 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
   return (
     <>
       <SiteNav page="calc" />
-      <main className="bg-surface text-fg">
+      <main id="main" tabIndex={-1} className="bg-surface text-fg">
         <PhotoHeader name="plane-below" alt="올려다본 하늘 위의 비행기" veil="ultramarine" priority position="center 40%">
           <Eyebrow className="text-sun">직구 계산</Eyebrow>
           {/* 큰 문장은 입력에 따라 2~3줄 — 세 줄 높이를 미리 잡아 값을 바꿔도 아래 칸이 밀리지 않게 (작업 0200) */}

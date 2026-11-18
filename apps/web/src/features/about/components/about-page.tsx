@@ -15,7 +15,7 @@ export function AboutPage(_props: { signals: Fetched<SignalList>; duty: DutyRule
   return (
     <>
       <SiteNav page="about" />
-      <main className="bg-surface text-fg">
+      <main id="main" tabIndex={-1} className="bg-surface text-fg">
         <PhotoHeader name="plane-sunset" alt="노을 속을 나는 비행기" veil="light" priority position="70% center">
           <Eyebrow>소개</Eyebrow>
           <Title as="h1" size="page" aria-label="어떤 자료를, 어떤 기준으로 보여 주나요" className="mt-6 text-cheap">

@@ -25,7 +25,7 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
   return (
     <>
       <SiteNav page="prices" />
-      <main className="bg-surface text-fg">
+      <main id="main" tabIndex={-1} className="bg-surface text-fg">
         <PricesHeader rows={rows.map((r) => ({ country: r.country, name: r.name, relative: r.relative, year: r.year }))} title={headline ? headline.title : "여행 물가 자료를 받지 못했습니다"} />
         <div className="px-4 pt-6 pb-10 sm:px-8">
         <div className="mx-auto max-w-page">
