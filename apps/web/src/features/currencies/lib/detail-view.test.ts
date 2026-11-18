@@ -123,3 +123,20 @@ describe("extremeLabelText — 그래프 라벨 글 (작업 0175)", () => {
     expect(extremeLabelText("min", { baseRate: 39.84, unit: 1 })).toBe("최저 39.84원");
   });
 });
+
+// 작업 0212 — 1년 최저 · 최고 · 평균 카드는 같은 자릿수 (표시만 · 계산 값은 그대로)
+import { cardRateText } from "./detail-view";
+
+describe("cardRateText — 세 카드 같은 자릿수 (작업 0212)", () => {
+  it("100원 이상 통화는 소수 첫째 자리 · 평균도 최저 · 최고와 같게", () => {
+    const rate = { baseRate: 1335, unit: 1 };
+    expect([1322.6, 1554.4, 1447.63].map((v) => cardRateText(v, rate))).toEqual(["1,322.6원", "1,554.4원", "1,447.6원"]);
+  });
+  it("100원 미만 통화는 소수 둘째 자리 · 단위가 있으면 '원 / 100'", () => {
+    expect([39.6, 41, 40.123].map((v) => cardRateText(v, { baseRate: 40, unit: 1 }))).toEqual(["39.60원", "41.00원", "40.12원"]);
+    expect(cardRateText(912.34, { baseRate: 890, unit: 100 })).toBe("912.3원 / 100");
+  });
+  it("계산 값은 바꾸지 않음 — yearStats 평균은 반올림 안 된 그대로", () => {
+    expect(yearStats([{ baseRate: 1000 }, { baseRate: 1001.25 }])?.avg).toBe(1000.625);
+  });
+});
