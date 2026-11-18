@@ -61,7 +61,11 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
       </div>
       {more > 0 && (
         // 펼친 상태에서는 화면 아래에 붙어 따라옴 (sticky) — 긴 목록 중간에서도 접기를 바로 누름 (작업 0198 · #231)
-        <div className={`z-10 mt-4 flex justify-center ${open ? "sticky bottom-4" : ""}`}>
+        //   뒤에 하늘 종이 색 띠를 깔아, 지나가는 나라 줄 글자가 버튼과 겹쳐 보이지 않고 띠 아래로 흐려지며 들어감 (작업 0203)
+        <div
+          data-testid="fold-bar"
+          className={`z-10 flex justify-center ${open ? "sticky bottom-0 -mx-4 mt-0 bg-gradient-to-t from-surface from-60% to-surface/0 px-4 pt-8 pb-4 sm:-mx-8 sm:px-8" : "mt-4"}`}
+        >
           <button
             type="button"
             onClick={toggle}
