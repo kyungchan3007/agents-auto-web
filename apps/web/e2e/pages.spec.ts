@@ -271,7 +271,8 @@ test.describe("직구 계산 — 예시 값 · 고정 크기 (작업 0200)", () 
     await page.goto("/calc");
     const sec = tid(page, "import-price-section");
     await expect(sec.locator('[data-testid="import-kpi"]')).toHaveCount(2);
-    await expect(sec.locator('[data-testid="import-end-label"]')).toHaveCount(2);
+    // 작업 0221 그래프 2D — 선 끝 금액은 공통 선 그래프의 끝 말풍선 두 개
+    await expect(sec.locator('[data-testid="chart-end"]')).toHaveCount(2);
   });
 });
 
