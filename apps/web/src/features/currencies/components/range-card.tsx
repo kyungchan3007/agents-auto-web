@@ -11,7 +11,7 @@ export function RangeCard({ stats, rate, unitText }: { stats: Stats; rate: { bas
   const avgPos = stats ? routePosition(stats.avg, stats.min, stats.max) : null;
   const d = cardDigits(rate);
   return (
-    <section data-testid="route-card" aria-label="1년 최저 · 최고 · 평균" className="rounded-[1.5rem] bg-card p-6 sm:p-8">
+    <section data-testid="route-card" aria-label="1년 최저 · 최고 · 평균" className="rounded-[1.5rem] border-2 border-line bg-card p-6 sm:p-8">
       <div className="flex items-start justify-between gap-4">
         <div data-testid="route-min">
           <p className="text-small text-fg-2">1년 최저</p>

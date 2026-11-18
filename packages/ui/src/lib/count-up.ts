@@ -4,6 +4,9 @@
 /** 움직이는 시간 (ms) */
 export const COUNT_UP_MS = 1000;
 
+/** 값을 바꿀 때 이전 값 → 새 값 시간 (ms · 계산기 결과 · 작업 0219) */
+export const COUNT_TO_MS = 600;
+
 const START_RATIO = 0.85;
 
 const clamp01 = (t: number) => (Number.isFinite(t) ? Math.min(1, Math.max(0, t)) : 0);
@@ -35,4 +38,11 @@ export function countUpValue(final: number, progress: number, digits = 0): numbe
 /** 쉼표 · 소수 자리 고정 — 1338.8 · 1 → "1,338.8" */
 export function formatCount(value: number, digits = 0): string {
   return value.toLocaleString("ko-KR", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+}
+
+/** 값을 바꿀 때 — 이전 값(from)에서 새 값(to)으로 · progress 0 이면 from · 1 이면 정확히 to · 끝에서 느려짐 · 소수 자리에 맞춰 반올림 */
+export function countTo(from: number, to: number, progress: number, digits = 0): number {
+  const p = clamp01(progress);
+  if (p >= 1 || !Number.isFinite(from) || !Number.isFinite(to)) return to;
+  return roundTo(from + (to - from) * easeOut(p), digits);
 }
