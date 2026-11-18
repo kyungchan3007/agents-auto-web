@@ -135,3 +135,15 @@ describe("customsView — 자료가 없으면 '준비 중' (숫자 없음)", () 
     expect(v).toMatchObject({ kind: "ready", gap: null });
   });
 });
+
+// 작업 0208 — 기록이 2주 미만이면 흐름 그래프 없이 한 줄 + 작은 안내
+import { canChart } from "./customs-rate";
+
+describe("canChart — 주별 기록이 2주 이상일 때만 그래프 (작업 0208)", () => {
+  it("0 · 1주는 그래프 없음 · 2주부터 있음", () => {
+    expect(canChart(null)).toBe(false);
+    expect(canChart([])).toBe(false);
+    expect(canChart([{ period: "2026-11-15", value: 1345.2 }])).toBe(false);
+    expect(canChart([{ period: "2026-11-08", value: 1340 }, { period: "2026-11-15", value: 1345.2 }])).toBe(true);
+  });
+});
