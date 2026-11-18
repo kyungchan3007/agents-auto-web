@@ -66,3 +66,45 @@ describe("rulerPins — 표의 맨 위 나라들", () => {
     for (const x of p.map((q) => q.x)) expect(x).toBeGreaterThanOrEqual(0), expect(x).toBeLessThanOrEqual(100);
   });
 });
+
+// 작업 0220 lead 지시(휴대폰 '한국 = 100' 자 라벨 겹침) — 라벨이 겹치면 한 줄(tier) 더 떨어뜨림 (테스트 먼저 · 구현 전에는 FAIL 이 정상)
+//   rulerTiers(pins: { country: string; name: string; x: number; side: "up" | "down" }[], widthPx = 296): Record<string, number>
+//     같은 쪽(side)에서 x 순서대로 — 앞 라벨들과 겹치지 않는 가장 가까운 tier(0 = 자에 가장 가까움)에 놓음 · 라벨 폭 추정 = max(이름 글자 수 × 14.5, 36) + 8 · 겹침 = |Δx(px)| < (폭1 + 폭2) / 2
+//   rulerMaxTier(tiers): number   // 가장 큰 tier (자 높이를 정함)
+import { rulerMaxTier, rulerTiers } from "./ruler";
+
+describe("rulerTiers — 겹치는 라벨은 한 줄 더 떨어뜨림", () => {
+  const pin = (country: string, name: string, x: number, side: "up" | "down") => ({ country, name, x, side });
+  it("멀리 떨어진 라벨은 모두 tier 0", () => {
+    const t = rulerTiers([pin("A", "인도", 5, "up"), pin("B", "베트남", 40, "down"), pin("C", "스페인", 90, "up")]);
+    expect(t).toEqual({ A: 0, B: 0, C: 0 });
+    expect(rulerMaxTier(t)).toBe(0);
+  });
+  it("같은 쪽에서 가까운 라벨은 다른 tier", () => {
+    const t = rulerTiers([pin("A", "헝가리", 71, "down"), pin("B", "아랍에미리트", 90, "down")], 296);
+    expect(t.A).toBe(0);
+    expect(t.B).toBe(1); // 296px 에서 19% = 56px < (46 + 95) / 2
+  });
+  it("다른 쪽(위 · 아래)끼리는 겹침으로 안 봄", () => {
+    const t = rulerTiers([pin("A", "헝가리", 71, "up"), pin("B", "아랍에미리트", 72, "down")]);
+    expect(t).toEqual({ A: 0, B: 0 });
+  });
+  it("같은 자리에 셋이면 tier 0 · 1 · 2", () => {
+    const t = rulerTiers([pin("A", "일본", 50, "up"), pin("B", "대만", 50, "up"), pin("C", "태국", 50, "up")]);
+    expect(Object.values(t).sort()).toEqual([0, 1, 2]);
+    expect(rulerMaxTier(t)).toBe(2);
+  });
+  it("같은 tier 안의 라벨끼리는 추정 폭으로 겹치지 않음 (실제 자료 모양의 여섯 점)", () => {
+    const pins = [pin("IND", "인도", 7.8, "up"), pin("VNM", "베트남", 17.8, "down"), pin("PRT", "포르투갈", 70, "up"), pin("HUN", "헝가리", 71.1, "down"), pin("ESP", "스페인", 90, "up"), pin("ARE", "아랍에미리트", 90, "down")];
+    const t = rulerTiers(pins, 296);
+    const w = (n: string) => Math.max(n.length * 14.5, 36) + 8;
+    for (const a of pins) for (const b of pins) {
+      if (a.country >= b.country || a.side !== b.side || t[a.country] !== t[b.country]) continue;
+      expect(Math.abs(a.x - b.x) * 2.96, `${a.name} ~ ${b.name}`).toBeGreaterThanOrEqual((w(a.name) + w(b.name)) / 2);
+    }
+  });
+  it("값이 같아도 항상 같은 결과", () => {
+    const pins = [pin("A", "헝가리", 71, "down"), pin("B", "아랍에미리트", 90, "down")];
+    expect(rulerTiers(pins)).toEqual(rulerTiers(pins));
+  });
+});
