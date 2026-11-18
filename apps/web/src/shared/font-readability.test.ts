@@ -36,6 +36,7 @@ const ALLOWED = [
   "apps/web/src/features/import-calc/components/customs-board.tsx", // 작업 0221 과세환율 작은 글자판 칸 글자 (FlapBoard 와 같은 Pretendard 800)
   "packages/ui/src/components/layout/nav-bar.tsx",
   "apps/web/src/features/travel-price/components/prices-header.tsx", // 작업 0220 새 /prices 파랑 첫 면 큰 제목 (Pretendard 800 · 시안 B)
+  "apps/web/src/features/intro/components/window-transition.tsx", // 작업 0223 인트로 끝 장면의 로고(홈 메뉴 로고와 같은 Pretendard 800)
   "packages/ui/src/components/data/flap-board.tsx", // 작업 0177 출발 안내판 칸 글자 (옛 today-band 자리)
   "packages/ui/src/components/data/line-chart.tsx", // 작업 0216 그래프 2D 끝 말풍선 큰 숫자
   "apps/web/src/features/home/components/hero-section.tsx", // 작업 0217 새 홈 첫 면 큰 제목 "N월에 떠나세요" (Pretendard 800 · 시안 B)

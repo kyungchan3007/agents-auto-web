@@ -18,9 +18,9 @@ describe("끝 장면 순서 (use-intro)", () => {
     const hide = end.indexOf("scene.current.hidden = true");
     const off = end.indexOf("setStageOff(true)");
     const p2 = end.indexOf("setPhase(2)");
-    const persist = end.indexOf("persist()");
+    const persist = end.lastIndexOf("persist()"); // 움직임 줄이기 갈래(앞)가 아니라 끝 장면 갈래(뒤)
     const p3 = end.indexOf("setPhase(3)");
-    const closed = end.indexOf("setClosed(true)");
+    const closed = end.lastIndexOf("setClosed(true)");
     expect(p1).toBeGreaterThan(-1);
     expect(hide).toBeGreaterThan(p1);
     expect(off).toBeGreaterThan(hide);

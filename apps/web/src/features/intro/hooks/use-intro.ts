@@ -4,7 +4,6 @@
 // 화면(components)은 이 훅이 돌려주는 값을 그리기만 함 · 3D 장면과는 sceneState(공유 객체)로 주고받음 (장면은 use-intro-scene 이 동적으로 붙임)
 // 값은 빌드 때 받은 것 — 없으면 "없음" (지어내지 않음) · 고른 나라 · 예산은 브라우저 저장소에만
 import { kstDate } from "@hav/shared/date";
-import { countryPhoto, photoSrc } from "@hav/ui/layout/photo-header";
 import { PICK_EVENT, type PickedTrip, writePicked } from "@hav/shared/travel";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FLIGHT_START, keyDelta, meter, nudge, scrollDelta, tickFlight } from "../lib/flight";
@@ -44,8 +43,10 @@ export type IntroData = {
 };
 
 export type Rect = { left: number; top: number; width: number; height: number };
-/** 창문 전환 단계 — 0 없음 · 1 카메라가 비행기로 다가감 · 2 기내 창문 · 3 덧문이 올라감 · 4 창으로 다가감 · 5 창밖 사진 · 6 사진이 홈 사진 자리로 · 7 걷힘 */
-export type WindowPhase = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+/** 끝 장면 단계(작업 0223) — 0 없음 · 1 파랑 면이 덮음(약 1.1초) · 2 로고가 홈 메뉴 로고 자리로(약 1초) · 3 인트로 층이 사라짐(약 0.4초) */
+export type WindowPhase = 0 | 1 | 2 | 3;
+/** 로고가 옮겨 가는 길 — 출발 = 인트로 로고의 자리 · 도착 = 홈 메뉴 로고의 실제 자리 · 글 모양은 도착 쪽(글자 크기 · 자간 · 굵기)을 그대로 */
+export type LogoMove = { from: Rect; to: Rect; fontSize: number; letterSpacing: number; fontWeight: string };
 export type Printing = "off" | "out" | "fold";
 
 /** 인트로 화면의 DOM 조각 — 화면이 data-intro-이름 으로 표시함 (ref 를 화면에 넘기지 않음) */
@@ -81,7 +82,7 @@ export function useIntro(data: IntroData) {
   const [budget, setBudget] = useState(1_000_000);
   const [printing, setPrinting] = useState<Printing>("off");
   const [phase, setPhase] = useState<WindowPhase>(0);
-  const [target, setTarget] = useState<Rect | null>(null);
+  const [logo, setLogo] = useState<LogoMove | null>(null);
   const [lifting, setLifting] = useState(false);
   const [closed, setClosed] = useState(false);
 
@@ -128,31 +129,35 @@ export function useIntro(data: IntroData) {
     setClosed(true);
   };
 
-  const windowTransition = async () => {
+  // 끝 장면(작업 0223) — 막 뜬 비행기가 날아 나가는 동안 화면이 파랑 면(메뉴 띠와 같은 값)으로 → 로고가 홈 메뉴 로고 자리로 → 인트로 층이 사라지며 새 홈 (약 2.5초 · 움직임 줄이기는 바로)
+  const endFade = async () => {
     if (live.current.windowing) return;
     live.current.windowing = true;
-    scene.current.zoomIn = true;
+    if (still) {
+      // 끝 장면 없이 바로 새 홈
+      scene.current.hidden = true;
+      persist();
+      setClosed(true);
+      return;
+    }
     setPhase(1);
-    if (!(await sleep(1300))) return;
-    setPhase(2);
-    if (!(await sleep(800))) return;
+    if (!(await sleep(1100))) return;
+    // 파랑 면이 덮은 뒤에 3D 를 멈추고 층을 숨김 (마지막 프레임이 다시 보이지 않게)
     scene.current.hidden = true;
     setStageOff(true);
-    if (!(await sleep(350))) return;
-    setPhase(3);
-    if (!(await sleep(1900))) return;
-    setPhase(4);
-    if (!(await sleep(550))) return;
-    setPhase(5);
-    if (!(await sleep(450))) return;
-    // 창밖 사진이 홈 첫 화면 사진의 실제 자리로 줄어들어 들어감
-    const img = document.querySelector('[data-testid="photo-header-img"]')?.getBoundingClientRect();
-    setTarget(img ? { left: img.left, top: img.top, width: img.width, height: img.height } : { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight * 0.5 });
-    setPhase(6);
-    if (!(await sleep(1100))) return;
+    // 로고가 갈 자리 — 홈 메뉴 로고의 실제 자리(getBoundingClientRect) · 출발은 인트로 로고의 자리
+    const from = part("logo")?.getBoundingClientRect();
+    const homeLogo = document.querySelector<HTMLElement>('header a[href="/"] span');
+    const to = homeLogo?.getBoundingClientRect();
+    if (from && to && homeLogo) {
+      const cs = getComputedStyle(homeLogo);
+      setLogo({ from: { left: from.left, top: from.top, width: from.width, height: from.height }, to: { left: to.left, top: to.top, width: to.width, height: to.height }, fontSize: parseFloat(cs.fontSize), letterSpacing: parseFloat(cs.letterSpacing) || 0, fontWeight: cs.fontWeight });
+    }
+    setPhase(2);
+    if (!(await sleep(1000))) return;
     persist();
-    setPhase(7);
-    if (!(await sleep(700))) return;
+    setPhase(3);
+    if (!(await sleep(450))) return;
     setClosed(true);
   };
 
@@ -228,7 +233,7 @@ export function useIntro(data: IntroData) {
       setStep(5);
     },
     end: () => {
-      void windowTransition();
+      void endFade();
     },
     frame: ({ flight, staff }) => {
       const b = part("bubble");
@@ -417,12 +422,10 @@ export function useIntro(data: IntroData) {
           }
         : null,
     phase,
-    target,
+    logo,
     back,
     skip: () => void skip(),
     pickedCity: pick?.city ?? "",
-    /** 창문 전환 사진 — 고른 나라 사진(없으면 지금 사진 · 작업 0201) */
-    photo: photoSrc(countryPhoto(pick?.iso) ?? "window-fjord", 1672),
   };
   return { view };
 }
