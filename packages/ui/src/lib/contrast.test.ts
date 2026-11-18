@@ -197,3 +197,20 @@ describe("출발 안내판 글자 대비", () => {
     expect(contrastRatio("#1f3190", "#0e1648")).toBeGreaterThanOrEqual(1.4);
   });
 });
+
+// 작업 0221 사용자 지적 — 입력 칸은 시안처럼 옅은 선 · 포커스일 때만 파랑 (공용 Field) · 옅은 선도 도형 대비 3 이상, 포커스 표시는 분명
+describe("입력 칸 선 — 옅은 선(--hav-field-line) · 포커스 파랑", () => {
+  const css = readFileSync(new URL("../tokens.css", import.meta.url), "utf8");
+  const light = readSurfaces(css).light;
+  it("옅은 선이 흰 칸(카드) 위에서 도형 대비 3 이상 · 글자색(fg)보다는 옅음", () => {
+    const line = /--hav-field-line:\s*(#[0-9a-f]{6})/i.exec(css)?.[1];
+    expect(line, "--hav-field-line 토큰").toBeTruthy();
+    expect(contrastRatio(line as string, light.card)).toBeGreaterThanOrEqual(3);
+    expect(contrastRatio(line as string, light.card)).toBeLessThan(contrastRatio(light.fg, light.card));
+  });
+  it("포커스 테두리(cheap)가 흰 칸 위에서 도형 대비 3 이상 · 옅은 선과 구분됨", () => {
+    const line = /--hav-field-line:\s*(#[0-9a-f]{6})/i.exec(css)?.[1] as string;
+    expect(contrastRatio(light.cheap, light.card)).toBeGreaterThanOrEqual(3);
+    expect(contrastRatio(light.cheap, line)).toBeGreaterThanOrEqual(1.5);
+  });
+});
