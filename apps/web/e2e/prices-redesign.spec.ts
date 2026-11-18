@@ -58,6 +58,59 @@ test.describe("새 /prices — 첫 화면 (작업 0220)", () => {
   });
 });
 
+test.describe("새 /prices — 머리 제목 세 줄 (작업 0220 사용자 지적 · 시안 B/shots/prices-1280.png)", () => {
+  // 시안: 왼쪽 칼럼에 세 줄 "인도는 한국보다 / 물가가 63% / 낮습니다" · 오른쪽에 예산 카드 — 넓게 두 줄로 놓지 않음 · 줄 나눔은 고른 나라 문장도 같은 규칙 · 휴대폰은 위아래 그대로
+  const lines = (page: Page) =>
+    page.getByRole("heading", { level: 1 }).evaluate((h) => {
+      const r = document.createRange();
+      r.selectNodeContents(h);
+      const tops = [...r.getClientRects()].filter((x) => x.width > 2).map((x) => Math.round(x.top / 8));
+      return new Set(tops).size;
+    });
+
+  test("넓은 화면 — 제목이 세 줄(기본 문장) · 폭이 왼쪽 칼럼에 묶여 예산 카드와 겹치지 않음", async ({ page }) => {
+    test.skip(isPhone(page), "넓은 화면 전용");
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/prices");
+    test.skip(!(await ready(page)), "자료 없음");
+    await page.waitForTimeout(400);
+    const h1 = page.getByRole("heading", { level: 1 });
+    const text = ((await h1.textContent()) ?? "").trim();
+    const n = await lines(page);
+    expect(n, `제목 줄 수 · ${text}`).toBeGreaterThanOrEqual(3);
+    expect(n).toBeLessThanOrEqual(4);
+    const hb = await h1.boundingBox();
+    const card = await box(page, "budget");
+    expect((hb?.x ?? 0) + (hb?.width ?? 0), "제목 오른쪽 끝이 예산 카드 왼쪽 끝보다 왼쪽").toBeLessThanOrEqual(card.x);
+    // 제목 칼럼은 시안처럼 좁음 — 글자 크기의 8배 이하(약 한 줄에 두 단어)
+    const fs = await h1.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+    expect(hb?.width ?? 9999, "제목 칼럼 폭").toBeLessThanOrEqual(fs * 8);
+  });
+
+  test("넓은 화면 — 고른 나라(일본) 문장도 세 줄 \"일본은 한국보다 / 물가가 N% / 높습니다\"", async ({ page }) => {
+    test.skip(isPhone(page), "넓은 화면 전용");
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.addInitScript(() => localStorage.setItem("flapfx:picked", JSON.stringify({ v: 1, country: "JPN", city: "도쿄", budget: 0 })));
+    await page.goto("/prices");
+    test.skip(!(await ready(page)), "자료 없음");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("일본은 한국보다");
+    await page.waitForTimeout(400);
+    expect(await lines(page), "고른 나라 문장 줄 수").toBe(3);
+  });
+
+  test("휴대폰 — 지금처럼 제목 아래에 예산 카드(위아래) · 가로 넘침 없음", async ({ page }) => {
+    test.skip(!isPhone(page), "휴대폰 전용");
+    await page.goto("/prices");
+    test.skip(!(await ready(page)), "자료 없음");
+    const hb = await page.getByRole("heading", { level: 1 }).boundingBox();
+    const card = await box(page, "budget");
+    expect(card.y, "카드가 제목 아래").toBeGreaterThan((hb?.y ?? 0) + (hb?.height ?? 0) - 1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+  });
+});
+
 test.describe("새 /prices — 예산 · 자 · 표 (작업 0220)", () => {
   test("예산 계산 — 같은 입력 → 같은 금액 · 하루 × 일수 = 전체 · 틀린 입력은 이유", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
