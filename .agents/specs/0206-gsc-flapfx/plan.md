@@ -20,8 +20,8 @@
 ## 계획 밖 변경 이유
 
 ## 완료 기준
-- [ ] bash .agents/checks.sh PASS
-- [ ] 테스트: flapfx.com · www.flapfx.com 페이지는 경로로 · 옛 주소 · 다른 사이트는 버림
+- [x] bash .agents/checks.sh PASS
+- [x] 테스트: flapfx.com · www.flapfx.com 페이지는 경로로 · 옛 주소 · 다른 사이트는 버림
 - [ ] 머지 뒤 gsc-sync 를 손으로 한 번 돌려 HTTP 200 (권한이 맞는지)
 
 ## 허점
