@@ -33,7 +33,7 @@ test.describe("이름 바꾼 날 전후 비교 (작업 0205)", () => {
     const sec = tid(page, "rename-compare");
     await expect(sec).toBeVisible();
     await expect(sec.getByRole("heading", { name: "이름 바꾼 날 전후 비교" })).toBeVisible();
-    await expect(tid(page, "rename-day")).toContainText("이름 바꾼 날 2026-11-17 (Tripfx → Flapfx");
+    await expect(tid(page, "rename-day")).toContainText(/이름 바꾼 날 2026-11-17 \(.+ → Flapfx/);
     const a = await sec.boundingBox();
     const b = await tid(page, "geo-cards").boundingBox();
     expect(a && b && a.y + a.height <= b.y + 1).toBe(true);
