@@ -34,3 +34,36 @@ export function rulerPins(bands: { rows: { country: string; name: string; relati
   const scale = rulerScale(picked.map((p) => p.value));
   return picked.map((p, i) => ({ ...p, x: rulerX(p.value, scale), side: i % 2 === 0 ? "up" : "down" }));
 }
+
+/** 라벨 폭 추정(px) — 이름 글자 수 × 14.5 · 숫자 줄 최소 36 · 양옆 여유 8 (휴대폰 글자 크기 기준) */
+function labelWidth(name: string): number {
+  return Math.max(name.length * 14.5, 36) + 8;
+}
+
+/**
+ * 휴대폰 라벨 겹침 풀기 (작업 0220 lead 지시) — 같은 쪽(위 · 아래)에서 x 순서대로, 앞 라벨들과 겹치지 않는 가장 가까운 줄(tier · 0 = 자에 가장 가까움)에 놓음.
+ * 겹침 = |Δx(px)| < (폭1 + 폭2) / 2 · widthPx = 자 상자의 폭 추정(휴대폰 약 296px) · 넓은 화면은 tier 를 쓰지 않음(화면이 넓어 겹치지 않음)
+ */
+export function rulerTiers(pins: { country: string; name: string; x: number; side: "up" | "down" }[], widthPx = 296): Record<string, number> {
+  const out: Record<string, number> = {};
+  const placed: Record<string, { px: number; w: number }[][]> = { up: [], down: [] };
+  for (const p of [...pins].sort((a, b) => a.x - b.x)) {
+    const px = (p.x / 100) * widthPx;
+    const w = labelWidth(p.name);
+    let tier = 0;
+    for (;;) {
+      const row = (placed[p.side][tier] ??= []);
+      if (row.every((o) => Math.abs(o.px - px) >= (o.w + w) / 2)) {
+        row.push({ px, w });
+        break;
+      }
+      tier += 1;
+    }
+    out[p.country] = tier;
+  }
+  return out;
+}
+
+export function rulerMaxTier(tiers: Record<string, number>): number {
+  return Math.max(0, ...Object.values(tiers));
+}
