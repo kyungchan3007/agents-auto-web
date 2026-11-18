@@ -83,6 +83,81 @@ test.describe("새 /calc — 머리 · 꼬리표 (작업 0221)", () => {
   });
 });
 
+test.describe("새 /calc — 시안 A 와 다르던 곳 (작업 0221 사용자 지적)", () => {
+  test("보내는 곳 — 두 줄 선택지(라디오 카드 둘) · 고른 쪽은 짙은 테두리 + 오른쪽 동그라미 · 화살표 키로 바뀜 · radiogroup", async ({ page }) => {
+    await page.goto("/calc");
+    const group = page.getByRole("radiogroup", { name: "보내는 곳" });
+    await expect(group).toBeVisible();
+    const radios = group.getByRole("radio");
+    await expect(radios).toHaveCount(2);
+    await expect(group).toContainText("미국 · 목록통관 · 200달러");
+    await expect(group).toContainText("그 밖 나라 · 일반통관 · 150달러");
+    await expect(radios.nth(0)).toBeChecked(); // 달러 → 미국 목록통관
+    const cards = group.locator("label");
+    const [a, b] = [(await cards.nth(0).boundingBox())!, (await cards.nth(1).boundingBox())!];
+    expect(b.y).toBeGreaterThanOrEqual(a.y + a.height - 1); // 두 줄(위아래)
+    const border = (i: number) => cards.nth(i).evaluate((el) => getComputedStyle(el).borderTopColor);
+    expect(await border(0)).toBe("rgb(22, 36, 110)"); // 고른 쪽 짙은 테두리
+    expect(await border(1)).not.toBe("rgb(22, 36, 110)");
+    await expect(cards.nth(0).locator('[data-testid="route-dot"]')).toBeVisible(); // 오른쪽 동그라미
+    expect(await cards.nth(0).locator('[data-testid="route-dot"]').evaluate((el) => el.getBoundingClientRect().x)).toBeGreaterThan(a.x + a.width * 0.8);
+    // 키보드(화살표) · 값이 바뀌면 결과의 한도가 바뀜 (미국 200 → 그 밖 150)
+    await radios.nth(0).focus();
+    await page.keyboard.press("ArrowDown");
+    await expect(radios.nth(1)).toBeChecked();
+    await expect(tid(page, "calc-limit-bar")).toContainText("한도 $150");
+    await radios.nth(0).check();
+    await expect(tid(page, "calc-limit-bar")).toContainText("한도 $200");
+  });
+
+  test("보내는 곳을 바꿔도 결과 카드 · 아래 구간 높이는 그대로 (0208 크기 고정)", async ({ page }) => {
+    await page.goto("/calc");
+    const group = page.getByRole("radiogroup", { name: "보내는 곳" });
+    const r0 = (await box(page, "calc-result")).height;
+    const below0 = (await box(page, "import-price-section")).y;
+    await group.getByRole("radio").nth(1).check();
+    expect(Math.abs((await box(page, "calc-result")).height - r0)).toBeLessThan(1);
+    expect(Math.abs((await box(page, "import-price-section")).y - below0)).toBeLessThanOrEqual(1);
+  });
+
+  test("입력 칸 모양 — 옅은 선 · 큰 높이 · 둥근 모서리 · 포커스일 때만 파랑 테두리와 분명한 표시", async ({ page }) => {
+    await page.goto("/calc");
+    const price = page.locator("#price");
+    const st = await price.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { color: s.borderTopColor, width: parseFloat(s.borderTopWidth), radius: parseFloat(s.borderTopLeftRadius), h: el.getBoundingClientRect().height };
+    });
+    expect(st.color).not.toBe("rgb(22, 36, 110)"); // 짙은 남색(예전 border-fg)이 아님
+    expect(st.h).toBeGreaterThanOrEqual(52);
+    expect(st.radius).toBeGreaterThanOrEqual(12);
+    await price.focus();
+    const f = await price.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { color: s.borderTopColor, outline: parseFloat(s.outlineWidth), outlineStyle: s.outlineStyle, shadow: s.boxShadow };
+    });
+    expect(f.color).toBe("rgb(36, 56, 168)"); // 파랑(cheap)
+    expect(f.outlineStyle !== "none" && f.outline > 0 || f.shadow !== "none", "포커스 표시").toBe(true);
+  });
+
+  test("휴대폰 — 제목과 설명 사이 빈칸이 작음(약 16px) · 수입물가 숫자 카드 두 장이 나란히 두 칸", async ({ page }) => {
+    test.skip(!isPhone(page), "휴대폰 전용");
+    await page.goto("/calc");
+    const h1 = (await page.getByRole("heading", { level: 1 }).boundingBox())!;
+    const lede = (await page.locator("main section p").first().boundingBox())!;
+    expect(lede.y - (h1.y + h1.height), "제목 ~ 설명 사이").toBeLessThanOrEqual(24);
+    // 값을 바꿔 제목이 길어져도 설명이 같은 자리 (크기 고정)
+    const y0 = (await page.locator("main section p").first().boundingBox())!.y;
+    await setPrice(page, "250");
+    expect(Math.abs((await page.locator("main section p").first().boundingBox())!.y - y0)).toBeLessThanOrEqual(1);
+    const kpis = tid(page, "import-kpi");
+    if ((await kpis.count()) === 2) {
+      const [k0, k1] = [(await kpis.nth(0).boundingBox())!, (await kpis.nth(1).boundingBox())!];
+      expect(Math.abs(k0.y - k1.y)).toBeLessThan(2);
+      expect(k1.x).toBeGreaterThan(k0.x + k0.width - 1);
+    }
+  });
+});
+
 test.describe("새 /calc — 수입물가와 환율 · 과세환율 (작업 0221)", () => {
   test("왼쪽 숫자 카드 두 장(카운트업 · 끝 값 = 실제 값 · 점 + 전달보다) · 오른쪽 그래프 + 이번 주 과세환율", async ({ page }) => {
     await page.goto("/calc");
