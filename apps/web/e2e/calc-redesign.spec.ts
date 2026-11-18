@@ -34,13 +34,13 @@ test.describe("새 /calc — 머리 · 꼬리표 (작업 0221)", () => {
     await expect(page.locator('[data-testid="photo-header"]')).toHaveCount(0);
   });
 
-  test("머리 — 사진 배너 없음 · 라벨 · 큰 문장(금액에 노란 밑줄 · 입력으로 바뀜) · 지금 설명 · 영문 라벨 없음", async ({ page }) => {
+  test("머리 — 사진 배너 없음 · 라벨 · 큰 문장(금액은 파랑 면 위 노랑 글자 · 입력으로 바뀜) · 지금 설명 · 영문 라벨 없음", async ({ page }) => {
     await page.goto("/calc");
     const h1 = page.getByRole("heading", { level: 1 });
     await expect(h1).toContainText("세금 없이 받습니다");
     const emph = h1.locator('[data-testid="emph"]').first();
     await expect(emph).toHaveText(/180/);
-    await expect(emph).toHaveAttribute("data-bg", "light");
+    await expect(emph).toHaveAttribute("data-bg", "sea"); // 작업 0221 사용자 결정: 파랑 면 머리
     await setPrice(page, "250");
     await expect(h1).not.toContainText("세금 없이 받습니다");
     await expect(page.locator("main")).toContainText("물건 값을 넣으면 면세 한도 안인지 바로 알려 드립니다");

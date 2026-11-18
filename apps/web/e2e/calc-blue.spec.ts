@@ -34,7 +34,7 @@ test.describe("/calc 파랑 머리 (작업 0221 사용자 결정)", () => {
     expect(h1Color).toBe("rgb(244, 249, 248)");
     expect(await h1.locator("span").first().evaluate((e) => getComputedStyle(e).color)).toBe("rgb(247, 197, 72)");
     const desc = page.getByText("물건 값을 넣으면 면세 한도 안인지");
-    const label = page.getByText("직구 계산", { exact: true }).first();
+    const label = page.locator("section[aria-labelledby=calc-title] p").first();
     for (const [name, loc] of [["설명", desc], ["라벨", label]] as const) {
       const c = await loc.evaluate((e) => getComputedStyle(e).color);
       expect(contrast(c, BLUE), name).toBeGreaterThanOrEqual(4.5);
@@ -44,6 +44,7 @@ test.describe("/calc 파랑 머리 (작업 0221 사용자 결정)", () => {
   test("세금이 붙는 문장에서도 제목 글자(흰 · 노랑)가 파랑 면 위에서 읽힘", async ({ page }) => {
     await settle(page);
     await page.locator("#price").fill("350");
+    await page.locator("#duty").fill("8");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("붙습니다");
     const h1 = page.getByRole("heading", { level: 1 });
     expect(contrast(await h1.evaluate((e) => getComputedStyle(e).color), BLUE)).toBeGreaterThanOrEqual(4.5);
@@ -76,13 +77,15 @@ test.describe("/calc 파랑 머리 (작업 0221 사용자 결정)", () => {
 
   test("값이 바뀌어도(세 줄 문장) 카드 · 아래 구간 위치 고정 — 파랑 면 안 제목 자리가 세 줄 몫", async ({ page }) => {
     await settle(page);
-    const y0 = (await tid(page, "calc-input").boundingBox())?.y ?? 0;
+    const absY = async (id: string) => page.evaluate((i) => (document.querySelector(`[data-testid="${i}"]`) as HTMLElement).getBoundingClientRect().top + scrollY, id);
+    const y0 = await absY("calc-input");
     const below0 = await page.evaluate(() => (document.querySelector('[data-testid="import-price-section"]') as HTMLElement).getBoundingClientRect().top + scrollY);
     await page.getByRole("radiogroup", { name: "보내는 곳" }).getByRole("radio").nth(1).check();
     await page.waitForTimeout(300);
     await page.locator("#price").fill("350");
+    await page.locator("#duty").fill("8");
     await page.waitForTimeout(300);
-    expect(Math.abs(((await tid(page, "calc-input").boundingBox())?.y ?? 0) - y0)).toBeLessThanOrEqual(1);
+    expect(Math.abs((await absY("calc-input")) - y0)).toBeLessThanOrEqual(1);
     const below1 = await page.evaluate(() => (document.querySelector('[data-testid="import-price-section"]') as HTMLElement).getBoundingClientRect().top + scrollY);
     expect(Math.abs(below1 - below0)).toBeLessThanOrEqual(1);
   });
