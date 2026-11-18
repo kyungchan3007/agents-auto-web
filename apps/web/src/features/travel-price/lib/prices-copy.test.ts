@@ -37,22 +37,3 @@ describe("pricesHeadline", () => {
     expect(pricesHeadline([])).toBeNull();
   });
 });
-
-// 작업 0209 — 안 고른 상태의 머리 사진은 큰 문장의 나라(가장 싼 나라)
-import { lowestCountry } from "./prices-copy";
-
-describe("lowestCountry — 큰 문장 속 나라 (작업 0209)", () => {
-  const rows = [
-    { country: "JPN", name: "일본", relative: 1.1, year: 2024 },
-    { country: "IND", name: "인도", relative: 0.4, year: 2024 },
-    { country: "THA", name: "태국", relative: 0.6, year: 2024 },
-  ];
-  it("pricesHeadline 과 같은 나라 — 한국(1)보다 낮은 가장 싼 나라", () => {
-    expect(lowestCountry(rows)).toBe("IND");
-    expect(pricesHeadline(rows)?.title).toContain("인도");
-  });
-  it("자료가 없거나 한국보다 낮은 나라가 없으면 null (지금 사진)", () => {
-    expect(lowestCountry([])).toBeNull();
-    expect(lowestCountry([{ country: "JPN", name: "일본", relative: 1.1, year: 2024 }])).toBeNull();
-  });
-});

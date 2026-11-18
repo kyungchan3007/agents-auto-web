@@ -9,10 +9,9 @@ import { DestinationsSection } from "./destinations-section";
 import { HomeFooter } from "./home-footer";
 import { TodayBoard } from "./today-board";
 import { TravelTimingGraph, TravelTimingSection } from "./travel-timing-section";
-import { type Destination, cheapestDestination, destinationRows } from "../lib/destinations";
+import { type Destination, destinationRows } from "../lib/destinations";
 import { moreCurrenciesCount } from "../lib/more-currencies";
 import { DESTINATIONS } from "../lib/places";
-import { boardCountry } from "../lib/today-board";
 import { travelTiming } from "../lib/travel-timing";
 
 export type HomeData = { latest: Fetched<FxLatest>; signals: Fetched<SignalList>; airFare: Fetched<IndicatorSeries> };
@@ -21,13 +20,11 @@ export function Home({ latest, signals, airFare }: HomeData) {
   const rates = latest.ok ? latest.data.rates : [];
   const signalRows = signals.ok ? signals.data.signals : [];
   const windowDays = signals.ok ? signals.data.rule.windowDays : 90;
-  // 안 고른 상태의 머리 사진 = 안내판 기본 도착지 나라 (같은 계산 · 서버 HTML 에서 바로 · 작업 0209)
-  const boardPlace = boardCountry(cheapestDestination(signalRows, rates, DESTINATIONS as Destination[]));
   const timing = travelTiming(airFare.ok ? airFare.data.points : null);
   return (
     <>
       <SiteNav page="home" />
-      <TravelTimingSection timing={timing} country={boardPlace} />
+      <TravelTimingSection timing={timing} />
       <TodayBoard rates={rates} signals={signalRows} windowDays={windowDays} problem={!latest.ok ? latest.reason : null} />
       <TravelTimingGraph timing={timing} />
       <DestinationsSection rows={destinationRows(signalRows, rates, DESTINATIONS as Destination[])} windowDays={windowDays} moreCount={moreCurrenciesCount(rates, DESTINATIONS)} />

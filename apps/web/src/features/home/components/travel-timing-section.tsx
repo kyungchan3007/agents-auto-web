@@ -29,11 +29,11 @@ function linePath(pts: { month: number; x: number; y: number }[]): string {
   return pts.map((p, i) => `${i > 0 && pts[i - 1].month === p.month - 1 ? "L" : "M"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
 }
 
-export function TravelTimingSection({ timing, country = null }: { timing: TravelTiming; /** 안내판 기본 도착지의 나라 — 안 골랐을 때 머리 사진 (작업 0209) */ country?: string | null }) {
+export function TravelTimingSection({ timing }: { timing: TravelTiming }) {
   const copy = travelTimingCopy(timing);
   return (
     <section aria-labelledby="timing-title" className="bg-surface text-fg">
-      <PickedPhotoHeader name="window-fjord" defaultCountry={country} alt="비행기 창밖으로 보이는 피오르" veil="light" priority fadeBottom clearTop>
+      <PickedPhotoHeader name="window-fjord" alt="비행기 창밖으로 보이는 피오르" veil="light" priority fadeBottom clearTop>
         <Eyebrow>여행 타이밍</Eyebrow>
         {timing.kind === "ready" ? (
           <>
