@@ -330,7 +330,7 @@ test.describe("새 /prices — 휴대폰 한국 = 100 자 라벨이 겹치지 �
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/prices");
     test.skip(!(await ready(page)), "자료 없음");
-    const axis = await box(page, "ruler-axis");
+    const axis = await box(page, "ruler-bar");
     const kl = await tid(page, "ruler-korea-tag").boundingBox();
     expect(kl?.y ?? 0, "한국 100 꼬리표가 자 위(시안 F: 노랑 꼬리표가 자 위쪽)").toBeLessThan(axis.y);
   });
