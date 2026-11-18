@@ -203,7 +203,9 @@ test.describe("직구 계산 /calc (SR-CALC-01)", () => {
     const [input, result, imports, customs] = [await box(tid(page, "calc-input")), await box(tid(page, "calc-result")), await box(tid(page, "import-price-section")), await box(tid(page, "customs-section"))];
     expect(input.y + input.height).toBeLessThanOrEqual(imports.y + 1);
     expect(result.y + result.height).toBeLessThanOrEqual(imports.y + 1);
-    expect(imports.y + imports.height).toBeLessThanOrEqual(customs.y + 1);
+    // 작업 0221: 과세환율은 수입물가 구간 안 오른쪽 칸(그래프 아래) — 구간 안에 있음
+    expect(customs.y).toBeGreaterThanOrEqual(imports.y - 1);
+    expect(customs.y + customs.height).toBeLessThanOrEqual(imports.y + imports.height + 1);
     if (isPhone()) {
       expect(input.y).toBeLessThan(result.y);
     } else {
@@ -211,7 +213,7 @@ test.describe("직구 계산 /calc (SR-CALC-01)", () => {
       // 수입물가 · 과세환율은 가로 전체 (위 입력 + 결과 묶음과 같은 폭)
       expect(Math.abs(imports.x - input.x)).toBeLessThan(2);
       expect(Math.abs(imports.x + imports.width - (result.x + result.width))).toBeLessThan(2);
-      expect(Math.abs(customs.width - imports.width)).toBeLessThan(2);
+      expect(customs.x).toBeGreaterThan(imports.x + 200); // 오른쪽 칸 (왼쪽 숫자 카드 옆)
       // 입력 묶음과 결과 칸은 같은 높이
       expect(Math.abs(input.height - result.height)).toBeLessThan(2);
     }

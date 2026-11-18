@@ -131,7 +131,7 @@ describe("다섯 화면에만 — 맨 위 구간", () => {
     // 홈 사진 머리는 작업 0217 새 디자인에서 뺌 (사진 파일 삭제는 0222) — 아래 "홈에 사진 없음"
     // /flights 사진 머리는 작업 0218 새 디자인에서 뺌 (머리는 글자판) — 사진 파일 삭제는 0222
     // /prices 사진 머리는 작업 0220 새 디자인에서 뺌 (파랑 첫 면) — 사진 파일 · 부품 삭제는 0222
-    ["apps/web/src/features/import-calc/components/calc-page.tsx", "/calc", "plane-below", "ultramarine"],
+    // /calc 사진 머리는 작업 0221 새 디자인에서 뺌 (사진 파일 · 부품 삭제는 0222)
     ["apps/web/src/features/about/components/about-page.tsx", "/about", "plane-sunset", "light"],
   ];
 
