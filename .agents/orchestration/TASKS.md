@@ -43,4 +43,4 @@
 | 0210 | 디자인 3 · 홈 첫 화면 — 고르기 버튼 · 이번 주 제목 · 간격 · 대비 (#249) | builder | PR 대기 | task/0210-design-home | apps/web/src/features/home/** |
 | 0211 | 디자인 4 · /flights 비행기가 이름표 가림 · 같은 달 반복 문장 (#250) | builder | PR 대기 | task/0211-design-flights | apps/web/src/features/travel-price/** |
 | 0212 | 디자인 5 · 통화 상세 · 여행 물가 다듬기 (#251) | builder | PR 대기 | task/0212-design-detail | apps/web/src/features/{currencies,travel-price}/** |
-| 0213 | 디자인 6 · 접근성 · 기본기 묶음 (#252) | builder | 진행 중 | task/0213-design-a11y | packages/ui/src/** · apps/web/src/shared/** · globals.css |
+| 0213 | 디자인 6 · 접근성 · 기본기 묶음 (#252) | builder | PR 대기 | task/0213-design-a11y | packages/ui/src/** · apps/web/src/shared/** · globals.css |
