@@ -52,4 +52,4 @@
 | 0219 | 새 디자인 통화 상세 — 시안 A · 카운트업 · 1년 흐름 그리기 · 통화 검색 · 국기 칩 | builder | PR 대기 | task/0219-redesign-currency | apps/web/src/features/currencies/** |
 | 0220 | 새 디자인 여행 물가 — 시안 B · 숫자 카운트업 | builder | PR 대기 | task/0220-redesign-prices | apps/web/src/features/travel-price/** (prices) |
 | 0221 | 새 디자인 직구 계산 — 시안 A · 세관 꼬리표 결과 · 과세환율 글자판 | builder | PR 대기 | task/0221-redesign-calc | apps/web/src/features/import-calc/** |
-| 0223 | 인트로 끝 '그냥 사라지기' — 비행기가 날아 나가며 파랑 면 · 로고가 메뉴 자리로 · 새 홈 | builder | 진행 대기 | task/0223-intro-end-fade | apps/web/src/features/intro/** |
+| 0223 | 인트로 끝 '그냥 사라지기' — 비행기가 날아 나가며 파랑 면 · 로고가 메뉴 자리로 · 새 홈 | builder | PR 대기 | task/0223-intro-end-fade | apps/web/src/features/intro/** |
