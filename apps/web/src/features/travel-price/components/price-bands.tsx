@@ -1,6 +1,6 @@
 "use client";
 
-// 물가 구간 3칸 — 시안(작업 0170 · Figma 04): 흰 카드 3개(싼 곳 울트라마린 테두리 · 비슷한 곳 테두리 없음 · 비싼 곳 주홍 테두리) · 칸마다 나라 2곳 · 나라 이름 + "물가 48 (한국 100)" · 판정 핀은 같은 줄 오른쪽
+// 물가 구간 3칸 — 시안(작업 0170 · Figma 04): 흰 카드 3개 · 작업 0212 에서 세 카드 틀을 하나로(같은 테두리) · 구분은 제목 색 + 작은 점 · 칸마다 나라 2곳 · 나라 이름 + "물가 48 (한국 100)" · 판정 핀은 같은 줄 오른쪽
 // 나머지 나라는 "나라 더 보기" 로 펼침 · 핀은 사이트 신호 규칙(최근 90일 백분위) · 신호 · 환율이 없으면 글자 ("신호 없음" · "환율 없음") — 지역 칩 · 막대 · 국기는 시안에 없어 뺌
 import { SectionTitle } from "@hav/ui/text/heading";
 import type { Signal } from "@hav/shared/signal";
@@ -13,7 +13,8 @@ import { usePriceBands } from "../hooks/use-price-bands";
 import { type PriceBand, rateBadgeText } from "../lib/bands";
 
 const BAND_TITLE: Record<Band, string> = { cheap: "한국보다 싼 곳", similar: "비슷한 곳", pricey: "한국보다 비싼 곳" };
-const BAND_CARD: Record<Band, string> = { cheap: "border-2 border-cheap", similar: "", pricey: "border-2 border-expensive-shape" };
+// 세 카드는 같은 틀(흰 바탕 · 같은 테두리) — 구분은 제목 색 + 제목 앞 작은 점 (작업 0212)
+const BAND_MARK: Record<Band, string> = { cheap: "bg-cheap", similar: "bg-fg-2", pricey: "bg-expensive-shape" };
 const BAND_TEXT: Record<Band, string> = { cheap: "text-cheap", similar: "text-cheap", pricey: "text-expensive" };
 const FOLDED = 2;
 
@@ -27,8 +28,9 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
     <div id="price-bands" data-testid="price-bands" className="scroll-mt-24">
       <div className="grid items-start gap-4 lg:grid-cols-3">
         {bands.map((b) => (
-          <section key={b.id} aria-labelledby={`band-${b.id}`} className={`min-w-0 rounded-card bg-card px-6 py-5 ${BAND_CARD[b.id]}`}>
-            <SectionTitle id={`band-${b.id}`} className={`text-[1.625rem] leading-tight ${BAND_TEXT[b.id]}`}>
+          <section key={b.id} aria-labelledby={`band-${b.id}`} className="min-w-0 rounded-card border-2 border-line bg-card px-6 py-5">
+            <SectionTitle id={`band-${b.id}`} className={`flex items-center gap-3 text-[1.625rem] leading-tight ${BAND_TEXT[b.id]}`}>
+              <span data-testid="band-mark" aria-hidden className={`size-3 shrink-0 rounded-pill ${BAND_MARK[b.id]}`} />
               {BAND_TITLE[b.id]}
             </SectionTitle>
             <ul className="mt-3 space-y-3">
