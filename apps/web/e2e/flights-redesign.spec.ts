@@ -67,6 +67,8 @@ test.describe("새 /flights — 머리 (작업 0218)", () => {
 
 test.describe("새 /flights — 탑승권 · 한 줄 띠 (작업 0218)", () => {
   test("탑승권 한 장 — 왼쪽 그래프(그대로) · 절취선 · 오른쪽 숫자 · 작은 글자판", async ({ page }) => {
+    // 탑승권이 왼쪽에서 들어오는 움직임(slide-in)이 도는 동안 재면 카드 · 그래프 · 숫자 칸의 위치가 서로 다른 시각 값이라 1~6px 어긋남(느린 CI · 패치 #266) — 움직임 줄이기로 처음부터 제자리에서 잼
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/flights");
     test.skip(!(await ready(page)), "자료 없음");
     const card = await box(page, "flights-ticket");
