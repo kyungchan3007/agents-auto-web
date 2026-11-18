@@ -29,7 +29,7 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
         {/* 첫 면 — 메뉴와 이어지는 파랑 면(작업 0221 사용자 결정 · 0220 /prices 와 같은 방식): 파랑 띠는 그리드 첫 줄 높이만큼만 깔리고 입력 카드 · 결과 꼬리표는 그 경계에 걸침 (그라데이션 · 음수 여백 대신 칸 나눔 · 카드 줄만 위로 끌어올림) */}
         <div className="grid grid-cols-[minmax(1rem,1fr)_minmax(0,var(--container-page))_minmax(1rem,1fr)] sm:grid-cols-[minmax(2rem,1fr)_minmax(0,var(--container-page))_minmax(2rem,1fr)]">
           <div data-testid="calc-band" aria-hidden className="col-span-3 col-start-1 row-start-1 bg-pin-cheap" />
-          <section aria-labelledby="calc-title" data-surface="dark" className="col-start-2 row-start-1 pt-10 pb-40 sm:pt-14 sm:pb-[12.25rem]">
+          <section aria-labelledby="calc-title" data-surface="dark" className="col-start-2 row-start-1 pt-10 pb-56 sm:pt-14 sm:pb-[12.25rem]">
             <Eyebrow className="text-fg!">직구 계산</Eyebrow>
             {/* 큰 문장은 입력에 따라 2~3줄 — 제목 + 설명 덩어리의 높이를 미리 잡아(휴대폰은 제목 세 줄 + 설명 두 줄 · 넓은 화면도 제목 세 줄(세금이 붙는 긴 문장) + 설명 한 줄 — 제목 글자 크기와 같은 clamp 로 계산) 값을 바꿔도 아래 칸이 밀리지 않게 · 남는 자리는 파랑 면 안 설명 아래로 (제목 ~ 설명 사이는 바짝) */}
             <div className="min-h-[calc(4.02*clamp(2.25rem,4.5vw,3.5rem)+5rem)] sm:min-h-[calc(4.02*clamp(2.25rem,4.5vw,3.5rem)+3.4rem)]">
@@ -39,7 +39,7 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
               <p className="mt-4 max-w-[36em] text-body text-fg-2">물건 값을 넣으면 면세 한도 안인지 바로 알려 드립니다.</p>
             </div>
           </section>
-          <div className="relative z-10 col-start-2 row-start-2 -mt-28 sm:-mt-[9.5rem]">
+          <div className="relative z-10 col-start-2 row-start-2 -mt-44 sm:-mt-[9.5rem]">
             {hasRates ? (
               <CalcForm form={form} />
             ) : (
