@@ -53,4 +53,4 @@
 | 0220 | 새 디자인 여행 물가 — 시안 B · 숫자 카운트업 | builder | PR 대기 | task/0220-redesign-prices | apps/web/src/features/travel-price/** (prices) |
 | 0221 | 새 디자인 직구 계산 — 시안 A · 세관 꼬리표 결과 · 과세환율 글자판 | builder | PR 대기 | task/0221-redesign-calc | apps/web/src/features/import-calc/** |
 | 0223 | 인트로 끝 '그냥 사라지기' — 비행기가 날아 나가며 파랑 면 · 로고가 메뉴 자리로 · 새 홈 | builder | PR 대기 | task/0223-intro-end-fade | apps/web/src/features/intro/** |
-| 0222 | 사진 지우기 — 새 디자인 브랜치 합치기 → 사진 · 사진 부품 · 테스트 · 스크립트 삭제 · /about 사진 없는 머리 | builder | 진행 중 | task/0222-remove-photos | apps/web/public/images/photos/** · packages/ui photo 부품 · apps/web/src/features/about/** |
+| 0222 | 사진 지우기 — 새 디자인 브랜치 합치기 → 사진 · 사진 부품 · 테스트 · 스크립트 삭제 · /about 사진 없는 머리 | builder | PR 대기 | task/0222-remove-photos | apps/web/public/images/photos/** · packages/ui photo 부품 · apps/web/src/features/about/** |
