@@ -107,6 +107,8 @@ test.describe("새 홈 — 도착지별 환전 타이밍 (작업 0217)", () => {
     await page.goto("/");
     const list = tid(page, "dest-list");
     expect(await bg(page, "dest-list")).toBe("rgb(255, 255, 255)");
+    // 흰 바탕 위 흰 판은 옅은 선으로 구분 (작업 0216 흰 바탕 결정)
+    expect(await tid(page, "dest-list").evaluate((el) => parseFloat(getComputedStyle(el).borderTopWidth))).toBeGreaterThanOrEqual(1);
     const n = await tid(page, "dest-row").count();
     expect(n).toBeGreaterThanOrEqual(4);
     expect(await list.locator('[data-testid="dest-row"]').count()).toBe(n);
