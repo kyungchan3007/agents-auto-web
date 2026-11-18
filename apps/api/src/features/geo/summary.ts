@@ -1,14 +1,27 @@
 // 방문 집계 행 → 공개 응답 (순수 함수) — 운영 확인 방문(test)은 수치에 넣지 않음
 import type { GeoReport } from "@hav/shared/geo";
+import { editionOfQuestion } from "./questions";
 
 export type GeoRow = { day: string; kind: "training" | "search" | "user" | "engine" | "referral" | "test"; name: string; path: string; hits: number };
 
-export function geoReport(rows: GeoRow[], since: string, search: GeoReport["search"] = null, answers: GeoReport["answers"] = null): GeoReport {
+export function geoReport(
+  rows: GeoRow[],
+  since: string,
+  search: GeoReport["search"] = null,
+  answers: GeoReport["answers"] = null,
+  answerDayList: NonNullable<GeoReport["answerDays"]> = [],
+): GeoReport {
   const real = rows.filter((r) => r.kind !== "test");
   const bots = new Map<string, GeoReport["bots"][number]>();
   const referrals = new Map<string, GeoReport["referrals"][number]>();
   const pages = new Map<string, number>();
+  const daily = new Map<string, NonNullable<GeoReport["daily"]>[number]>();
   for (const r of real) {
+    // 날짜별 집계 (작업 0205) — 이미 읽은 행을 일 · 종류 · 이름으로 합침 (경로는 뺌)
+    const dk = `${r.day}|${r.kind}|${r.name}`;
+    const d = daily.get(dk);
+    if (d) d.hits += r.hits;
+    else daily.set(dk, { day: r.day, kind: r.kind as NonNullable<GeoReport["daily"]>[number]["kind"], name: r.name, hits: r.hits });
     if (r.kind === "referral") {
       const x = referrals.get(r.name);
       referrals.set(r.name, { name: r.name, hits: (x?.hits ?? 0) + r.hits, lastDay: x && x.lastDay > r.day ? x.lastDay : r.day });
@@ -30,6 +43,8 @@ export function geoReport(rows: GeoRow[], since: string, search: GeoReport["sear
     verifiedDay: tests.at(-1) ?? null,
     search,
     answers,
+    daily: [...daily.values()].sort((a, b) => a.day.localeCompare(b.day) || a.name.localeCompare(b.name)),
+    answerDays: answerDayList,
   };
 }
 
@@ -107,4 +122,17 @@ export function answersSummary(rows: AnswerInput[], questionOf: (id: string) => 
   }
   const order = (e: string) => ENGINE_ORDER.indexOf(e as (typeof ENGINE_ORDER)[number]);
   return { engines, history: [...history.values()].sort((a, b) => a.day.localeCompare(b.day) || order(a.engine) - order(b.engine)) };
+}
+
+/** 날짜별 질문 결과 (작업 0205) — 저장된 모든 날 행을 그대로 · 날짜 오름차순 · 질문 목록에 없는 번호는 뺌 · 실패한 질문은 found · cited 를 false 로 */
+export function answerDays(rows: AnswerInput[], questionOf: (id: string) => { text: string; group: "brand" | "general"; order: number } | null): NonNullable<GeoReport["answerDays"]> {
+  return rows
+    .flatMap((r) => {
+      const q = questionOf(r.question);
+      if (!q) return [];
+      const ok = r.status === "ok";
+      return [{ order: q.order, day: r.day, edition: editionOfQuestion(r.question), engine: r.engine, question: q.text, group: q.group, status: r.status, found: ok && r.found === 1, cited: ok && r.cited === 1 }];
+    })
+    .sort((a, b) => a.day.localeCompare(b.day) || ENGINE_ORDER.indexOf(a.engine) - ENGINE_ORDER.indexOf(b.engine) || a.order - b.order)
+    .map(({ order: _order, ...rest }) => rest);
 }
