@@ -40,3 +40,9 @@ export function travelTimingCopy(t: TravelTiming): { title: string | null; messa
     message: `통계청 국제항공료 지수로 보면 ${t.cheapest}월이 ${span} 가장 낮고, ${t.priciest}월이 가장 높습니다.`,
   };
 }
+
+/** 큰 제목 "11월에 떠나세요" 를 월(노랑으로 칠함)과 나머지로 — travelTimingCopy 의 title 과 같은 글 · 자료가 없으면 null (작업 0217) */
+export function heroParts(t: TravelTiming): { month: string; rest: string } | null {
+  if (t.kind !== "ready") return null;
+  return { month: `${t.cheapest}월`, rest: "에 떠나세요" };
+}

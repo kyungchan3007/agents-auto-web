@@ -8,7 +8,7 @@ export const ORIGIN_CODE = "ICN";
 export type BoardRow = { text: string | null; tone: "dest" | "money" };
 type Found = ReturnType<typeof cheapestDestination>;
 
-export function todayBoard(a: { found: Found; hasRates: boolean; windowDays: number; problem?: string | null }): { title: string; rows: [BoardRow, BoardRow]; label: string; evidence: string } {
+export function todayBoard(a: { found: Found; hasRates: boolean; windowDays: number; problem?: string | null }): { title: string; rows: [BoardRow, BoardRow]; label: string; evidence: string; percentile: number | null } {
   const empty: [BoardRow, BoardRow] = [{ text: null, tone: "dest" }, { text: null, tone: "money" }];
   if (a.found) {
     const copy = cheapestCopy(a.found, a.windowDays);
@@ -18,8 +18,9 @@ export function todayBoard(a: { found: Found; hasRates: boolean; windowDays: num
       rows: [{ text: `${ORIGIN_CODE} → ${a.found.destination.name}`, tone: "dest" }, { text: money, tone: "money" }],
       label: `${copy.headline}. ${money}`,
       evidence: copy.evidence,
+      percentile: a.found.percentile,
     };
   }
-  if (!a.hasRates) return { title: BOARD_TITLE, rows: empty, label: NO_RATE_COPY, evidence: a.problem ?? "환율이 아직 수집되지 않았습니다" };
-  return { title: BOARD_TITLE, rows: empty, label: "이번 주 가장 싼 곳을 판단할 신호가 아직 없습니다", evidence: `최근 ${a.windowDays}일 자료가 모자라 도착지 신호를 내지 못했습니다` };
+  if (!a.hasRates) return { title: BOARD_TITLE, rows: empty, label: NO_RATE_COPY, evidence: a.problem ?? "환율이 아직 수집되지 않았습니다", percentile: null };
+  return { title: BOARD_TITLE, rows: empty, label: "이번 주 가장 싼 곳을 판단할 신호가 아직 없습니다", evidence: `최근 ${a.windowDays}일 자료가 모자라 도착지 신호를 내지 못했습니다`, percentile: null };
 }

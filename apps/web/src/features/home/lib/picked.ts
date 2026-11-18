@@ -10,7 +10,7 @@ export const PICKED_TITLE = "내가 고른 여행지 · 오늘 환율";
 
 const SIGNAL_TEXT = { cheap: "낮은 편", normal: "보통", expensive: "높은 편" } as const;
 
-export function pickedBoard(a: { picked: PickedTrip | null; rates: RateRow[]; signals: SignalRow[]; windowDays: number }): { title: string; rows: [BoardRow, BoardRow]; label: string; evidence: string } | null {
+export function pickedBoard(a: { picked: PickedTrip | null; rates: RateRow[]; signals: SignalRow[]; windowDays: number }): { title: string; rows: [BoardRow, BoardRow]; label: string; evidence: string; percentile: number | null } | null {
   const p = a.picked;
   if (!p || !Object.hasOwn(TRAVEL_COUNTRIES, p.country)) return null;
   const country = TRAVEL_COUNTRIES[p.country];
@@ -27,6 +27,7 @@ export function pickedBoard(a: { picked: PickedTrip | null; rates: RateRow[]; si
     rows: [{ text: `${ORIGIN_CODE} → ${p.city}`, tone: "dest" }, { text: money, tone: "money" }],
     label: `내가 고른 여행지는 ${p.city}입니다. ${money}`,
     evidence,
+    percentile: currency && rate ? (a.signals.find((s) => s.currency === currency)?.percentile ?? null) : null,
   };
 }
 
