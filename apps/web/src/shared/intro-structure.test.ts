@@ -153,7 +153,7 @@ describe("건너뛰기 · 이전 · 움직임", () => {
 
   it("끝 장면(작업 0223) — 로고가 홈 메뉴 로고의 실제 자리(getBoundingClientRect)로 옮겨 감 · 창밖 사진 자리는 쓰지 않음", () => {
     const code = SRC(INTRO).map(read).join("\n");
-    expect(code).not.toMatch(/photo-header-img/);
+    expect(code).not.toMatch(/images\/photos/);
     expect(code).toMatch(/getBoundingClientRect\(/);
   });
 });

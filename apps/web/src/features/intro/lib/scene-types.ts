@@ -13,9 +13,7 @@ export type SceneState = {
   flightGoal: number;
   /** 바퀴가 뜬 뒤 자동 진행 */
   auto: boolean;
-  /** 창문 전환 첫 단계 — 카메라가 비행기로 다가감 */
-  zoomIn: boolean;
-  /** 장면을 그리지 않음 (창문 전환 뒤 · 건너뛰기) */
+  /** 장면을 그리지 않음 (끝 장면 파랑 면이 덮은 뒤 · 건너뛰기) */
   hidden: boolean;
 };
 

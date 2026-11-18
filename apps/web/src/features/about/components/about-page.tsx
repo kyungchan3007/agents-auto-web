@@ -1,9 +1,8 @@
-// 소개 · 판단 기준 (작업 0115 · 이슈 #117) — 작업 0170 Figma 08: 큰 제목 + 기준 카드 6개 (2열 × 3줄) · 규칙 숫자는 원본(API rule · rules.ts)에서 읽어 카드 아래에 따로 적음
+// 소개 · 판단 기준 (작업 0115 · 이슈 #117) — 작업 0170 Figma 08: 큰 제목 + 기준 카드 6개 · 작업 0222: 사진 머리 → 사진 없는 머리(메뉴 아래 흰 면 · 라벨 · 큰 제목 · 새 디자인 시안 A 페이지 머리 모양) (2열 × 3줄) · 규칙 숫자는 원본(API rule · rules.ts)에서 읽어 카드 아래에 따로 적음
 import type { Fetched } from "@/shared/api";
 import { SiteNav } from "@/shared/site-nav";
 import type { SignalList } from "@hav/shared/signal";
 import { PageFooter } from "@hav/ui/layout/page-footer";
-import { PhotoHeader } from "@hav/ui/layout/photo-header";
 import { Eyebrow, SectionTitle, Title } from "@hav/ui/text/heading";
 import { ABOUT_CARDS } from "../lib/criteria";
 
@@ -16,13 +15,15 @@ export function AboutPage(_props: { signals: Fetched<SignalList>; duty: DutyRule
     <>
       <SiteNav page="about" />
       <main id="main" tabIndex={-1} className="bg-surface text-fg">
-        <PhotoHeader name="plane-sunset" alt="노을 속을 나는 비행기" veil="light" priority position="70% center">
-          <Eyebrow>소개</Eyebrow>
-          <Title as="h1" size="page" aria-label="어떤 자료를, 어떤 기준으로 보여 주나요" className="mt-6 text-cheap">
-            <span aria-hidden className="block">어떤 자료를,</span> <span aria-hidden className="block">어떤 기준으로 보여 주나요</span>
-          </Title>
-        </PhotoHeader>
-        <div className="px-4 pt-6 pb-10 sm:px-8">
+        <section aria-label="소개 머리" data-testid="about-head" className="px-4 pt-10 sm:px-8 sm:pt-14">
+          <div className="mx-auto max-w-page">
+            <Eyebrow>소개</Eyebrow>
+            <Title as="h1" size="page" aria-label="어떤 자료를, 어떤 기준으로 보여 주나요" className="mt-3 text-cheap">
+              <span aria-hidden className="block">어떤 자료를,</span> <span aria-hidden className="block">어떤 기준으로 보여 주나요</span>
+            </Title>
+          </div>
+        </section>
+        <div className="px-4 pt-8 pb-10 sm:px-8">
         <div className="mx-auto max-w-page">
           <ul className="grid gap-4 sm:grid-cols-2">
             {ABOUT_CARDS.map((c) => (

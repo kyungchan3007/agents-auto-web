@@ -42,7 +42,7 @@ describe("끝 장면 순서 (use-intro)", () => {
   it("창문 · 창밖 사진 · 홈 사진 자리를 더는 쓰지 않음", () => {
     for (const f of ["hooks/use-intro.ts", "components/intro.tsx", "components/window-transition.tsx"]) {
       const s = read(f);
-      expect(s, f).not.toMatch(/photo-header-img|photoSrc|countryPhoto|window-fjord|shadow-window|shadow-glass|windowTransition/);
+      expect(s, f).not.toMatch(/shadow-window|shadow-glass|windowTransition|zoomIn/);
     }
   });
 });

@@ -1,8 +1,7 @@
-// 작업 0201 (#233) — 여행지 고르기 시트 · 나라 사진 · 여행 물가 머리 (휴대폰 + 넓은 화면)
+// 작업 0201 (#233) — 여행지 고르기 시트 · 여행 물가 머리 (휴대폰 + 넓은 화면) · 작업 0222: 사진이 없어져 파일 이름을 country-pick 으로, 사진 줄은 지움
 // 인트로는 config 의 storageState 로 꺼져 있음 — 시트로 고른 값은 localStorage("flapfx:picked") 에 저장되어 새로고침해도 유지
 import { type Page, expect, test } from "@playwright/test";
 
-const heroSrc = async (page: Page) => (await page.getByTestId("photo-header-img").first().getAttribute("src")) ?? "";
 // 작업 0217 지적: 홈은 버튼 · 시트 없이 카드 안 칩 · 검색으로 바로 바꿈 — 시트(dialog)는 여행 물가 "다른 나라 보기"(pick-trip-other)에만 남음
 const open = (page: Page) => page.getByTestId("pick-trip-other").first();
 const switcher = (page: Page) => page.getByTestId("trip-switcher");
@@ -15,14 +14,12 @@ const choose = async (page: Page, query: string, _optionText?: string) => {
   await switcher(page).getByRole("option").first().click();
 };
 
-test.describe("여행지 고르기 시트 · 나라 사진 (작업 0201)", () => {
-  test("안 고른 첫 화면 — 홈에 사진 없음(작업 0217) · 여행 물가는 지금 사진 · 지금 물가 문장 · 버튼이 보임", async ({ page }) => {
+test.describe("여행지 고르기 시트 (작업 0201)", () => {
+  test("안 고른 첫 화면 — 지금 물가 문장 · 버튼이 보임", async ({ page }) => {
     await page.goto("/");
     await expect(switcher(page)).toBeVisible();
     await expect(page.getByTestId("pick-trip-open")).toHaveCount(0);
-    await expect(page.getByTestId("photo-header-img")).toHaveCount(0);
     await page.goto("/prices");
-    await expect(page.getByTestId("photo-header-img")).toHaveCount(0); // 작업 0220: /prices 사진 머리 없음
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/한국보다 물가가 \d+% 낮습니다/);
   });
 
@@ -55,13 +52,12 @@ test.describe("여행지 고르기 시트 · 나라 사진 (작업 0201)", () =>
     }
   });
 
-  test("도쿄 고르기 → 안내판이 바뀜 · 새로고침해도 유지 (홈에는 사진 없음 · 작업 0217)", async ({ page }) => {
+  test("도쿄 고르기 → 안내판이 바뀜 · 새로고침해도 유지", async ({ page }) => {
     await page.goto("/");
     await choose(page, "도쿄", "도쿄");
     await expect(page.locator("#today")).toContainText(/도쿄/);
     await page.reload();
     await expect(page.locator("#today")).toContainText(/도쿄/);
-    await expect(page.getByTestId("photo-header-img")).toHaveCount(0);
   });
 
   test("칩으로 고르기 — 방콕", async ({ page }) => {
@@ -78,32 +74,28 @@ test.describe("여행지 고르기 시트 · 나라 사진 (작업 0201)", () =>
     await expect(page.locator("#today")).toContainText(/두바이/);
   });
 
-  test("여행 물가 — 고른 나라 문장 + 그 나라 사진 · '다른 나라 보기' 로 바꿈", async ({ page }) => {
+  test("여행 물가 — 고른 나라 문장 · '다른 나라 보기' 로 바꿈", async ({ page }) => {
     await page.goto("/");
     await choose(page, "도쿄", "도쿄");
     await page.goto("/prices");
-    await expect(page.getByTestId("photo-header-img")).toHaveCount(0); // 작업 0220: 사진 없이 문장만 그 나라로
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/^일본은 한국보다 물가가 \d+% (높|낮)습니다$/);
     await page.getByTestId("pick-trip-other").click();
     await dialog(page).getByRole("combobox", { name: "여행지 검색" }).fill("방콕");
     await dialog(page).getByRole("option", { name: /방콕/ }).first().click();
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/^태국은 한국보다 물가가 \d+% (높|낮)습니다$/);
-    await expect(page.getByTestId("photo-header-img")).toHaveCount(0);
   });
 
-  test("여행 물가 — 두바이처럼 자료 · 사진이 없으면 지금 문장 · 지금 사진", async ({ page }) => {
+  test("여행 물가 — 두바이처럼 자료가 없으면 지금 문장", async ({ page }) => {
     await page.goto("/");
     await choose(page, "두바이", "두바이");
     await page.goto("/prices");
-    await expect(page.getByTestId("photo-header-img")).toHaveCount(0); // 작업 0220: /prices 사진 머리 없음
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/한국보다 물가가/);
   });
 
-  test("망가진 저장 값 · 모르는 나라는 무시 — 지금 안내판 · 지금 사진(여행 물가)", async ({ page }) => {
+  test("망가진 저장 값 · 모르는 나라는 무시 — 지금 안내판(여행 물가)", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem("flapfx:picked", '{"v":1,"country":"XXX","city":"없음","budget":0}'));
     await page.goto("/");
     await expect(page.locator("#today")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
     await page.goto("/prices");
-    await expect(page.getByTestId("photo-header-img")).toHaveCount(0); // 작업 0220: /prices 사진 머리 없음
   });
 });

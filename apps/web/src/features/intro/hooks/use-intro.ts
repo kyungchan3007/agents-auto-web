@@ -1,6 +1,6 @@
 "use client";
 
-// 인트로 흐름 — 단계 · 입력 · 탑승권 · 스크롤(휠 · 방향키) · 창문 전환 순서 · 저장 (작업 0185 · 확정 시안 intro3.src.html 의 흐름)
+// 인트로 흐름 — 단계 · 입력 · 탑승권 · 스크롤(휠 · 방향키) · 끝 장면 순서 · 저장 (작업 0185 · 확정 시안 intro3.src.html 의 흐름)
 // 화면(components)은 이 훅이 돌려주는 값을 그리기만 함 · 3D 장면과는 sceneState(공유 객체)로 주고받음 (장면은 use-intro-scene 이 동적으로 붙임)
 // 값은 빌드 때 받은 것 — 없으면 "없음" (지어내지 않음) · 고른 나라 · 예산은 브라우저 저장소에만
 import { kstDate } from "@hav/shared/date";
@@ -73,7 +73,7 @@ export function useIntro(data: IntroData) {
   const revealed = loading.stage === "open" || loading.stage === "done";
   // 그래픽 가속이 없으면 3D 없이 가벼운 배경 · 이륙은 이 훅이 굴림
   const [lite, setLite] = useState(false);
-  // 창문이 화면을 덮은 뒤 3D 층을 숨김 (시안: stage.style.visibility = hidden) — 숨기지 않으면 마지막 프레임(확대된 비행기)이 사진 둘레에 다시 보임
+  // 파랑 면이 화면을 덮은 뒤 3D 층을 숨김 (stage.style.visibility = hidden) — 숨기지 않으면 마지막 프레임이 인트로 사라질 때 다시 보임
   const [stageOff, setStageOff] = useState(false);
   const [step, setStepState] = useState<IntroStep>(1);
   const [query, setQuery] = useState("");
@@ -87,7 +87,7 @@ export function useIntro(data: IntroData) {
   const [closed, setClosed] = useState(false);
 
   // 장면과 공유하는 값 · 최신 값 상자 — 변경 가능해서 ref 로 두고, 렌더 중에는 읽지 않음 (콜백 · 효과에서만)
-  const scene = useRef<SceneState>({ step: 1, flight: -1, flightGoal: FLIGHT_START, auto: false, zoomIn: false, hidden: false });
+  const scene = useRef<SceneState>({ step: 1, flight: -1, flightGoal: FLIGHT_START, auto: false, hidden: false });
   // 최신 값을 콜백(장면 · 타이머 · 이벤트)이 읽도록 — 렌더마다 갱신
   const live = useRef({ step: 1 as IntroStep, pick: null as { iso: string; city: string } | null, budget: 1_000_000, printing: "off" as Printing, windowing: false, closed: false });
   const run = useRef(0);
@@ -209,7 +209,7 @@ export function useIntro(data: IntroData) {
     setStep(prevStep(s) as IntroStep);
   };
   const skip = async () => {
-    run.current += 1; // 이어 하던 순서(탑승권 · 창문 전환)를 멈춤
+    run.current += 1; // 이어 하던 순서(탑승권 · 끝 장면)를 멈춤
     persist();
     setLifting(true);
     await new Promise((r) => setTimeout(r, still ? 0 : 800));
@@ -276,7 +276,7 @@ export function useIntro(data: IntroData) {
   });
   useIntroScene(() => part("stage"), makeApi);
 
-  // 3D 없이(가벼운 모드) 이륙 — 장면이 하던 진행 계산을 훅이 매 프레임 굴림 (진행 막대 · 바퀴가 뜸 · 창문 시점)
+  // 3D 없이(가벼운 모드) 이륙 — 장면이 하던 진행 계산을 훅이 매 프레임 굴림 (진행 막대 · 바퀴가 뜸)
   useEffect(() => {
     if (!lite) return;
     let raf = 0;

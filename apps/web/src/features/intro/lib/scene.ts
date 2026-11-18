@@ -563,8 +563,6 @@ export function mountIntroScene(el: HTMLElement, api: SceneApi): () => void {
   let lastFlight = -1;
   let liftFired = false;
   let endFired = false;
-  let zoomT0: number | null = null;
-  let zoomFrom: Cam | null = null;
   const look = new THREE.Vector3();
   const placeCamera = (c: Cam) => {
     const az = ((45 + c.yaw) * Math.PI) / 180;
@@ -613,8 +611,6 @@ export function mountIntroScene(el: HTMLElement, api: SceneApi): () => void {
     if (state.flight < 0 && lastFlight >= 0) {
       liftFired = false;
       endFired = false;
-      zoomT0 = null;
-      zoomFrom = null;
     }
     lastFlight = state.flight;
 
@@ -657,18 +653,6 @@ export function mountIntroScene(el: HTMLElement, api: SceneApi): () => void {
     const pl = planeAt(p);
     hero.position.set(...pl.pos);
     hero.rotation.set(0, pl.heading, pl.pitch);
-    if (state.zoomIn) {
-      // 창문 전환 첫 단계 — 카메라가 비행기를 따라가며 다가감
-      if (zoomT0 === null) {
-        zoomT0 = t;
-        zoomFrom = { ...cam, target: [...cam.target] };
-      }
-      if (zoomFrom) {
-        const s = clamp01((t - zoomT0) / 1.6);
-        const e = s * s * (3 - 2 * s);
-        cam = { target: mix3(zoomFrom.target, pl.pos, Math.min(1, e * 1.4)), zoom: mix(zoomFrom.zoom, 11, e * e), yaw: mix(zoomFrom.yaw, zoomFrom.yaw + 20, e) };
-      }
-    }
     placeCamera(cam);
     composer.render();
 

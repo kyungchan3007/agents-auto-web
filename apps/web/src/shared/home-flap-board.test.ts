@@ -5,7 +5,7 @@
 //   features/home/components/today-board.tsx — export function TodayBoard({ rates, signals, windowDays, problem }) (today-band.tsx 는 지움)
 //     <section id="today" aria-labelledby="today-title"> (data-surface · bg-surface 없음) 안에: 작은 제목(h2 id="today-title" · BOARD_TITLE) · <FlapBoard rows cols label/> · 판정 한 줄(evidence) · <GlobeLazy …지금과 같은 props/>
 //     자료는 lib/today-board.ts 의 todayBoard({ found: cheapestDestination(…), hasRates, windowDays, problem }) 가 만든 값 그대로 (today-board.test.ts)
-//     사진에 걸치기: 판 묶음에 음수 위 여백(-mt-…) · travel-timing-section 의 PhotoHeader 에 fadeBottom(사진 아래 끝이 하늘 종이로 사라짐 — photo-header.tsx 가 data-testid="photo-fade-bottom" 막을 그림)
+//     (옛 설명 — 사진에 걸치기 · 사진 아래 끝 막은 작업 0217 · 0222 에서 사진 머리와 함께 없어짐)
 //     지구: 판 오른쪽(lg 이상 두 칸 격자 · 판이 먼저) · 모바일은 판 아래 작게(≤ 280px) · 지구 뒤에 배경 · 띠 · data-surface 없음
 //   features/home/components/home.tsx — TodayBand 대신 TodayBoard
 //   packages/ui three/objects/*.tsx · three/scene/*.tsx — 건드리지 않음 (지구 · 비행기 생김새 그대로)
@@ -88,24 +88,12 @@ describe("구성 — 작은 제목 · 판 · 판정 한 줄 · 지구 (B3 · B4 
   });
 });
 
-describe("사진 아래 하늘 종이 위에 놓음 (B2 · 작업 0177 수정: 걸치기 취소)", () => {
+describe("안내판을 하늘 종이 위에 놓음 (B2 · 작업 0177 수정: 걸치기 취소)", () => {
   it("판 묶음에 음수 위 여백(-mt-)이 없음 — 사진에 겹치지 않고 사진 아래 하늘 종이 위", () => {
     expect(board()).not.toMatch(/-mt-\d+|-mt-\[[^\]]+\]/);
   });
 
-  it("PhotoHeader 가 fadeBottom 을 받아 아래 끝에 하늘 종이로 사라지는 막(data-testid=photo-fade-bottom)을 그림 — 기본은 막 없음", () => {
-    const ph = read(join(UI_SRC, "components/layout/photo-header.tsx"));
-    expect(ph).toMatch(/\bfadeBottom\b/);
-    const m = /<[^>]*data-testid="photo-fade-bottom"[^>]*>/.exec(ph)?.[0] ?? "";
-    expect(m, "아래 끝 막").not.toBe("");
-    expect(m).toMatch(/aria-hidden/);
-    expect(m).toMatch(/bottom-0/);
-    expect(m).toMatch(/to-surface|from-transparent|via-surface/); // 하늘 종이색으로 끝남
-    expect(ph).toMatch(/fadeBottom\s*&&|fadeBottom\s*\?/); // 켰을 때만
-  });
-
-  it("홈 맨 위 사진 구간(travel-timing-section)이 fadeBottom 을 켬 · 다른 화면의 PhotoHeader 는 그대로", () => {
-    // 작업 0217: 새 홈은 사진 머리가 없음 (사진 파일 · PhotoHeader 부품은 다른 화면용으로 남음)
+  it("홈에 사진 머리 · 사진 부품이 없음 (작업 0217 · 0222 — 부품 파일을 지움)", () => {
     for (const f of HOME_COMPONENTS) expect(read(f), f).not.toMatch(/\bPhotoHeader\b|\bPickedPhotoHeader\b/);
   });
 });

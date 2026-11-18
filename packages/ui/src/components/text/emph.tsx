@@ -1,6 +1,6 @@
 // 제목 속 숫자 · 금액 강조 — 큰 제목 · 구간 제목 안의 숫자를 공통 부품 하나로 (작업 0175 · 화면마다 따로 칠하지 않음)
 //   하늘 종이 위: 글자색 그대로 + 해 노랑(--hav-sun) 형광펜 띠(글자 아래 40~50%) · 비싼 쪽을 뜻하면 주홍 글자 · 노란 글자는 하늘 종이 위 대비가 부족해 쓰지 않음
-//   바다 띠(울트라마린) 위: 해 노랑 글자 · 사진 울트라마린 막(PhotoHeader veil="ultramarine") 안에서도 같음 (막이 group/photo 로 알려 줌)
+//   바다 띠(울트라마린) 위: 해 노랑 글자
 //   이 부품만 그라데이션을 씀 (장식이 아니라 형광펜 띠)
 import type { ReactNode } from "react";
 import { numberTone, splitNumbers } from "../../lib/emphasis";
@@ -9,8 +9,8 @@ type Bg = "light" | "sea";
 type Tone = "neutral" | "expensive";
 
 // 띠는 글자 폭보다 양쪽 0.05em 안쪽 — 글자 옆 여백(자간)만큼 넓어 보이지 않게 글자 끝과 맞춤 (작업 0209)
-const LIGHT_NEUTRAL = "box-decoration-clone bg-[linear-gradient(transparent_55%,var(--hav-sun)_55%)] bg-size-[calc(100%-0.1em)_100%] bg-center bg-no-repeat group-data-[veil=ultramarine]/photo:bg-none group-data-[veil=ultramarine]/photo:text-sun";
-const LIGHT_EXPENSIVE = "text-expensive group-data-[veil=ultramarine]/photo:text-sun";
+const LIGHT_NEUTRAL = "box-decoration-clone bg-[linear-gradient(transparent_55%,var(--hav-sun)_55%)] bg-size-[calc(100%-0.1em)_100%] bg-center bg-no-repeat";
+const LIGHT_EXPENSIVE = "text-expensive";
 const SEA = "text-figure";
 
 export function Emph({ children, bg = "light", tone = "neutral" }: { children: ReactNode; bg?: Bg; tone?: Tone }) {
