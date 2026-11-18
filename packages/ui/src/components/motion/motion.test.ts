@@ -17,7 +17,7 @@ describe("CountUp 부품", () => {
   it("export · props(value · digits · prefix · suffix) · 훅 · 계산 함수를 씀", () => {
     expect(s()).toMatch(/export function CountUp\(/);
     for (const p of ["value", "digits", "prefix", "suffix"]) expect(s(), p).toMatch(new RegExp(`\\b${p}\\b`));
-    expect(s()).toMatch(/useCountUp\(/);
+    expect(s()).toMatch(/useCountUp(<[^>]*>)?\(/);
     expect(s()).toMatch(/formatCount\(/);
   });
   it("화면 읽기는 최종 값 · 움직이는 숫자는 aria-hidden · 글자 폭 고정", () => {
