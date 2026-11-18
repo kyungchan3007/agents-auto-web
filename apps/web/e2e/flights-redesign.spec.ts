@@ -82,6 +82,49 @@ test.describe("새 /flights — 탑승권 · 한 줄 띠 (작업 0218)", () => {
     await expect(tid(page, "yoy-cards")).toContainText("같은 달 평균 기준");
   });
 
+  // 작업 0218 사용자 지적 "시안처럼 해줘 표디자인처럼" — 표 뒤 구간은 옅은 면(surface-2 #F2F5F9) · 가장자리 홈 색 = 뒤 구간 색(파인 홈) · "가장 싼 달" 은 작은 칸 셋(1 · 1 · 월)만 단독으로
+  //   표시: data-testid="flights-back"(표 뒤 구간) · "flights-ticket-hole"(홈 · 둘)
+  test("표 뒤 구간은 옅은 면 · 홈 색 = 뒤 구간 색 · 홈 가운데가 카드 가장자리(파인 홈)", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/flights");
+    test.skip(!(await ready(page)), "자료 없음");
+    await page.waitForTimeout(500);
+    const back = await tid(page, "flights-back").evaluate((el) => getComputedStyle(el).backgroundColor);
+    expect(back).toBe("rgb(242, 245, 249)");
+    expect(await tid(page, "flights-ticket").evaluate((el) => getComputedStyle(el).backgroundColor)).toBe("rgb(255, 255, 255)");
+    const holes = await page.locator('[data-testid="flights-ticket-hole"]').evaluateAll((els) => els.map((e) => ({ bg: getComputedStyle(e).backgroundColor, r: e.getBoundingClientRect() })));
+    expect(holes.length, "홈 둘").toBe(2);
+    const card = await box(page, "flights-ticket");
+    for (const h of holes) {
+      expect(h.bg, "홈 색 = 뒤 구간 색").toBe(back);
+      const cx = h.r.x + h.r.width / 2;
+      const cy = h.r.y + h.r.height / 2;
+      const onEdge = [Math.abs(cy - card.y), Math.abs(cy - (card.y + card.height)), Math.abs(cx - card.x), Math.abs(cx - (card.x + card.width))];
+      expect(Math.min(...onEdge), "홈 가운데가 카드 가장자리 위").toBeLessThanOrEqual(2);
+    }
+  });
+
+  test("가장 싼 달 글자판 — 큰 판 틀 없이 작은 칸 셋(1 · 1 · 월)만 단독으로 · 칸은 남색 + 노랑 글자 · 높이 약 44px", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/flights");
+    test.skip(!(await ready(page)), "자료 없음");
+    const board = tid(page, "cheap-board").getByTestId("flap-board");
+    const frame = await board.evaluate((el) => ({ bg: getComputedStyle(el).backgroundColor, pad: getComputedStyle(el).padding, radius: getComputedStyle(el).borderRadius }));
+    expect(frame.bg, "판 틀 배경 없음").toBe("rgba(0, 0, 0, 0)");
+    expect(frame.pad, "판 틀 안쪽 여백 없음").toBe("0px");
+    const cells = board.locator("> span");
+    const n = await cells.count();
+    const label = (await board.getAttribute("aria-label")) ?? "";
+    const month = /(\d+월)/.exec(label)?.[1] ?? "";
+    expect(n, "칸 수 = 글자 수").toBe(month.length);
+    for (let i = 0; i < n; i++) {
+      const c = await cells.nth(i).evaluate((el) => ({ bg: getComputedStyle(el).backgroundColor, color: getComputedStyle(el).color, h: el.getBoundingClientRect().height }));
+      expect(c.bg).toBe("rgb(31, 49, 144)");
+      expect(c.color).toBe("rgb(247, 197, 72)");
+      expect(Math.abs(c.h - 44)).toBeLessThanOrEqual(2);
+    }
+  });
+
   test("넓은 화면 — 탑승권 두 칸 아래 끝이 비슷함 (그래프 칸 내용 아래 끝 ~ 카드 아래 끝 ≤ 카드 안쪽 여백 + 40px · 0218 리뷰)", async ({ page }) => {
     test.skip(isPhone(page), "넓은 화면 전용");
     await page.setViewportSize({ width: 1280, height: 800 });
