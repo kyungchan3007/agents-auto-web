@@ -5,12 +5,12 @@ import { cached } from "../../db/cache";
 import type { Env } from "../../env";
 import { questionOf } from "./questions";
 import { answerRows, geoRows, gscRows } from "./store";
-import { answersSummary, geoReport, searchSummary } from "./summary";
+import { answerDays, answersSummary, geoReport, searchSummary } from "./summary";
 
 const DAYS = 30;
 
 export const geoRoutes = new Hono<{ Bindings: Env }>().get("/", cached({ bucketMs: 3600_000 }), async (c) => {
   const since = kstDate(new Date(Date.now() - DAYS * 86400_000));
   const [rows, gsc, answers] = await Promise.all([geoRows(c.env.DB, since), gscRows(c.env.DB), answerRows(c.env.DB, since)]);
-  return c.json(geoReport(rows, since, searchSummary(gsc), answersSummary(answers, questionOf)));
+  return c.json(geoReport(rows, since, searchSummary(gsc), answersSummary(answers, questionOf), answerDays(answers, questionOf)));
 });

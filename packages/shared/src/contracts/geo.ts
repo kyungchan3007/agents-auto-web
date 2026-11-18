@@ -44,6 +44,24 @@ const GeoAnswers = z.object({
   ),
 });
 
+/** 사이트 이름 · 주소를 Tripfx(tripfx.pages.dev) → Flapfx(flapfx.com)로 바꾼 날 — 전후 비교의 기준일 한 곳 (작업 0205 · #243) */
+export const RENAME_DAY = "2026-11-17";
+
+/** 날짜별 봇 · 유입 집계 한 줄 — 경로(path)는 뺌 · 운영 확인 방문(test)은 넣지 않음 */
+const GeoDaily = z.object({ day: IsoDate, kind: z.enum(["training", "search", "user", "engine", "referral"]), name: z.string(), hits: z.number().int().nonnegative() });
+
+/** 날짜별 질문 결과 한 줄 — edition: 그 질문을 처음 쓴 판(1 · 2 · 3) */
+const GeoAnswerDay = z.object({
+  day: IsoDate,
+  edition: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+  engine: GeoEngine,
+  question: z.string(),
+  group: z.enum(["brand", "general"]),
+  status: z.enum(["ok", "error"]),
+  found: z.boolean(),
+  cited: z.boolean(),
+});
+
 export const GeoReport = z.object({
   /** 집계 기간 시작일 */
   since: IsoDate,
@@ -57,5 +75,8 @@ export const GeoReport = z.object({
   verifiedDay: IsoDate.nullable().default(null),
   search: GeoSearch.nullable().default(null),
   answers: GeoAnswers.nullable().default(null),
+  /** 이름 바꾼 날 전후 비교용 날짜별 자료 (작업 0205) — 선택 필드: 옛 응답에는 없음 */
+  daily: z.array(GeoDaily).optional(),
+  answerDays: z.array(GeoAnswerDay).optional(),
 });
 export type GeoReport = z.infer<typeof GeoReport>;

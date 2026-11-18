@@ -71,3 +71,10 @@ export function questionOf(id: string): (Question & { order: number }) | null {
   const order = ALL.findIndex((q) => q.id === id);
   return order < 0 ? null : { ...ALL[order], order };
 }
+
+/** 그 질문을 처음 쓴 판 — 1판: b1 ~ b8 · g1 ~ g16 · 2판: b9 ~ b13 · g17 ~ g29 · 3판: b14 ~ b21 (위 머리말 · 질문 번호는 저장 키라 바뀌지 않음 · 작업 0205) */
+export function editionOfQuestion(id: string): 1 | 2 | 3 {
+  const n = Number(id.slice(1));
+  if (id.startsWith("b")) return n >= 14 ? 3 : n >= 9 ? 2 : 1;
+  return n >= 17 ? 2 : 1;
+}
