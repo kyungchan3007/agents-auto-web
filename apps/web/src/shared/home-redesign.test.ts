@@ -58,7 +58,8 @@ describe("홈 구성 — 순서 · 구간", () => {
 
   it("여행 타이밍 라벨 · 12달 막대 · 안내판 · 도착지 목록 컴포넌트를 씀 (지구 · 3D 비행 경로는 없앰 · 작업 0217)", () => {
     expect(HOME_UI).toContain("여행 타이밍");
-    expect(HOME_UI).toMatch(/data-testid="year-bars"/);
+    expect(HOME_UI).toMatch(/\bMonthBars\b/); // 그래프 2D(시안 F): 12달 막대는 공통 부품 MonthBars — 표시 data-testid="year-bars" 는 그 부품 안
+    expect(readFileSync(join(__dirname, "../../../../packages/ui/src/components/data/month-bars.tsx"), "utf8")).toMatch(/data-testid="year-bars"/);
     expect(HOME_UI).not.toMatch(/data-testid="plane-route"|data-testid="travel-graph"/);
     expect(HOME_UI).not.toMatch(/\bGlobeLazy\b/); // 작업 0177 수정: 3D 지구를 없앰
     expect(HOME_UI).toMatch(/\bFlapBoard\b/); // 작업 0177 출발 안내판
@@ -100,9 +101,9 @@ describe("바닥 띠 — 자료 출처 · 비행기 모델 출처 (H9)", () => {
     for (const name of ["한국수출입은행", "통계청", "관세청", "한국은행", "세계은행"]) expect(HOME_UI, name).toContain(name);
   });
 
-  it("비행기 모델 출처(Airplane · Poly by Google · CC-BY 4.0)와 링크를 표시", () => {
-    expect(HOME_UI).toMatch(/PLANE_CREDIT|Poly by Google/);
-    expect(HOME_ALL).toMatch(/PLANE_CREDIT|CC-BY 4\.0/);
+  it("홈에는 3D 비행기가 없으므로 비행기 모델 출처 줄도 없음 (그래프 2D · lead 지시) — 인트로(intro.tsx)는 비행기를 쓰므로 거기서 그대로 보임", () => {
+    expect(HOME_UI).not.toMatch(/PLANE_CREDIT|Poly by Google/);
+    expect(HOME_ALL).not.toMatch(/PLANE_CREDIT|Poly by Google|CC-BY 4\.0/);
   });
 });
 

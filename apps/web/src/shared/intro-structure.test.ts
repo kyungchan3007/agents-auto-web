@@ -203,7 +203,7 @@ describe("출처 표시 · 홈 문구", () => {
     expect(f).toMatch(/Kenney/);
     expect(f).toMatch(/CC0/);
     expect(f).toMatch(/한국수출입은행/);
-    expect(f).toMatch(/PLANE_CREDIT|Poly by Google/);
+    expect(f).not.toMatch(/PLANE_CREDIT|Poly by Google/); // 홈은 3D 비행기를 뺌(그래프 2D) — 출처 줄도 뺌 · 인트로 화면(intro.tsx)에는 그대로
   });
 
   it("홈 첫 화면 설명(travel-timing.ts)에 '같은 달 평균으로 비교했습니다' 가 없음", () => {
