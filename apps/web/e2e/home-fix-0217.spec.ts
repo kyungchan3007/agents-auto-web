@@ -16,7 +16,7 @@ const SAMPLE_GAP = { 1280: 50, 390: 40 } as const;
 
 test.describe("홈 여백 — 설명 문장 ↔ 탑승권 카드 (시안 B 실측값)", () => {
   for (const [width, height] of [
-    [1280, 1000], // 높이 규칙(2)이 걸리지 않을 만큼 큰 높이 — 순수 폭 기준 값
+    [1280, 1300], // 높이 규칙(2)이 걸리지 않을 만큼 큰 높이(구현의 가장 큰 구간 1180px 위) — 순수 폭 기준 값
     [390, 844],
   ] as const) {
     test(`${width}px — 설명 문장 아래 끝 ~ 카드 위 끝 = ${SAMPLE_GAP[width]}px (±4)`, async ({ page }) => {
