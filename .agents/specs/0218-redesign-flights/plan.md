@@ -30,6 +30,7 @@
 - .agents/orchestration/TASKS.md · .agents/specs/0218-redesign-flights/**
 
 ## 계획 밖 변경 이유
+- apps/web/src/features/travel-price/components/mini-board.tsx · apps/web/src/shared/font-readability.test.ts — 작은 글자판(리뷰 수정) 새 파일 · 큰 글씨 허용 목록에 그 파일 추가
 - packages/ui/src/components/data/flap-board.tsx · flap-board.test.ts — 줄 안에서 이름(흰 글자) · 값(노랑)을 나누려고 Row 에 whiteUntil 추가 · 375px 에서 칸이 줄어들 수 있게 min-w-0 shrink (0217 과 같은 줄을 같은 모양으로 고침 — 합칠 때 충돌 없게)
 - apps/web/src/features/travel-price/lib/flights-view.ts · flights-view.test.ts — 새 파일(계획의 lib/** 안): 머리 글자판 · 최신 숫자 · 한 줄 띠 계산
 - apps/web/src/features/travel-price/components/flights-graph.tsx — 그래프가 탑승권 왼쪽 칸에 들어가 좁아져 '최저' 이름표가 노란 점 테두리를 가려, 피할 칸을 2px 넓힘 (그래프 모양은 그대로)
@@ -42,6 +43,7 @@
 - [x] bash .agents/checks.sh PASS · 빌드 한 번
 
 ## 허점
+- (리뷰 수정) 넓은 화면 탑승권 그래프 칸 아래 빈칸: 오른쪽 숫자 칸 간격을 줄이고 "가장 싼 달" 글자판을 칸 높이 44px 의 작은 판(mini-board.tsx · 움직임 없음)으로 바꿔 두 칸 아래 끝 차이 50px(기준: 카드 안쪽 여백 32 + 40 = 72 이하). dev 서버에서 측정(카드 450px · 작은 판 60px) · 빌드 안 함.
 - 웹킷(사파리) 확인 못 함(playwright webkit 없음).
 - 글자판 아래 "가장 싼 달은 최근 2년 같은 달 평균 기준입니다" 문장은 넣지 않음 — 같은 뜻이 탑승권 오른쪽 "가장 싼 달 (최근 N년 평균)" · "같은 달 평균 기준" 으로 이미 있어서. 문장으로 넣으려면 사용자 확인 필요.
 - 한 줄 띠의 최고 · 최저는 항공료 최근 36개월(그래프 범위와 같은 규칙)이고 그래프는 세 선 합친 범위라 드물게 한 달 차이가 날 수 있음.
