@@ -38,6 +38,7 @@
 - apps/web/src/shared/{font-readability · photos}.test.ts — 큰 글씨 허용 목록에 customs-board 추가 · /calc 사진 머리 검사 뺌
 - apps/web/e2e/{emphasis · photos}.spec.ts — 직구 큰 문장이 흰 면 위 노란 밑줄이 됨 · /calc 사진 없음
 - 흰 바탕 결정(0216 의 네 커밋)은 lead 가 이미 cherry-pick 해 둠 · 흰 바탕 위 흰 카드에 옅은 선(border-line)
+- (그래프 2D · 시안 F) apps/web/src/features/import-calc/components/import-price-section.tsx — 수입물가 그래프 그림을 공통 부품 LineChart(0216)로 교체: 두 선(수입물가 청록 · 원/달러 남색) 모두 그라데이션 면 · 가로 눈금선(값 글 없음 · 두 값의 단위가 달라) · 날짜 눈금 5개 · "처음 같은 달 = 100" 기준선 꼬리표 · 끝 큰 숫자 말풍선(실제 값 · 수입물가 소수 2자리 · 원/달러 원) · 순서 움직임. 제목 · 숫자 카드 · 범례 글 · 그래프 높이 고정(352 · 224px) · 오른쪽 칸 배치는 그대로. 옛 import-end-label(HTML 끝 글자)는 말풍선 chart-end-* 로 바뀜(테스트가 고쳐야 함)
 
 ## 완료 기준
 - [x] 1280 · 768 · 390 가로 넘침 없음 · 콘솔 오류 없음 · 사진 요청 0
