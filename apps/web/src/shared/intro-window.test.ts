@@ -15,7 +15,7 @@ describe("끝 장면 순서 (use-intro)", () => {
 
   it("파랑 면(1) → 3D 멈춤 · 층 숨김 → 로고 이동(2) → 층이 사라짐(3) → 닫힘 순서", () => {
     const p1 = end.indexOf("setPhase(1)");
-    const hide = end.indexOf("scene.current.hidden = true");
+    const hide = end.lastIndexOf("scene.current.hidden = true");
     const off = end.indexOf("setStageOff(true)");
     const p2 = end.indexOf("setPhase(2)");
     const persist = end.lastIndexOf("persist()"); // 움직임 줄이기 갈래(앞)가 아니라 끝 장면 갈래(뒤)
