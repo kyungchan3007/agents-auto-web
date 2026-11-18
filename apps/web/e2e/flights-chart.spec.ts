@@ -42,7 +42,7 @@ test.describe("/flights 그래프 — 풍성한 2D (작업 0218 · 시안 F)", (
     await expect(max).toContainText(/\d{2,3}\.\d/);
     await expect(min).toContainText(/\d{2,3}\.\d/);
     // 눈금 값 · 날짜(YYYY-MM)가 글로 있음
-    await expect(chart.locator('[data-testid="chart-axis"]')).toContainText(/20\d\d-\d\d/);
+    await expect(chart.locator('[data-testid="chart-axis"]')).toContainText(isPhone(page) ? /\d\d\.\d\d/ : /20\d\d-\d\d/); // 날짜 눈금 (휴대폰은 '24.07' 짧은 글)
   });
 
   test("그래프는 탑승권 안 · 화면 안 · 글이 svg 밖으로 안 나감 · 가로 넘침 0 · 말풍선끼리 안 겹침", async ({ page }) => {
