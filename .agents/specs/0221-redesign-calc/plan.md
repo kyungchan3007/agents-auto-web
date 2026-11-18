@@ -28,6 +28,9 @@
 - .agents/orchestration/TASKS.md · .agents/specs/0221-redesign-calc/**
 
 ## 계획 밖 변경 이유
+- (사용자 결정 · 직구 계산 머리 파랑) apps/web/src/features/import-calc/components/{calc-page · calc-form · calc-result}.tsx — 머리를 메뉴와 이어지는 파랑 면으로 · 카드가 경계에 걸침 · 그림자 · 휴대폰 요약 줄 ring
+- apps/web/src/shared/{pages-redesign · number-emphasis}.test.ts — 파랑 면(data-surface=dark)을 /calc 머리(calc-page.tsx)에만 예외로 허용 · 직구 큰 문장 강조를 sea(노랑 글자)로
+- apps/web/e2e/{calc-redesign · emphasis}.spec.ts — 머리가 파랑 면이라 금액이 노란 글자(밑줄 형광펜 없음) · 새 파일 e2e/calc-blue.spec.ts · shared/calc-blue.test.ts
 - packages/ui/src/tokens.css · components/form/field.tsx · lib/contrast.test.ts — 사용자 지적: 입력 칸을 시안처럼 옅은 선으로(공용 Field · 새 토큰 field-line · 대비 검사)
 - apps/web/e2e/calc-gap.spec.ts — 보내는 곳이 라디오 그룹이 되어 이름표 위치를 #route-label 로
 - apps/web/src/features/import-calc/components/customs-board.tsx · lib/kpi.test.ts — 새 파일(계획의 import-calc/** 안): 과세환율 작은 글자판 · 숫자 카드 계산 테스트
@@ -50,4 +53,8 @@
 - 결과 카드(세관 꼬리표)는 예전(408px)보다 길어져(휴대폰 576px · 넓은 화면 581px) 최소 높이를 올렸고, 입력 카드는 늘이지 않고 자연 높이로 둠(시안 A) — 0208 의 "값이 바뀌어도 크기 고정"은 412px 폭 이상에서 그대로 통과(360px 같은 아주 좁은 폭은 줄바꿈으로 높이가 조금 달라질 수 있음).
 - 결과 금액은 입력에 따라 바뀌어 카운트업하지 않음(계획대로) · 수입물가 숫자 카드만 카운트업.
 - 과세환율 작은 글자판은 움직임 없음(처음 한 번 넘어가는 큰 글자판 FlapBoard 와 달리) — 칸이 작은 판이라 지금 180px 높이 검사(0208)를 지키려고.
-- 시안의 영문 라벨(CUSTOMS · ITEM · CUSTOMS TAG · IMPORT PRICES)은 넣지 않음. 보내는 곳은 시안의 두 줄 선택지가 아니라 지금 선택 칸 그대로(계획: 지금 칸 그대로).
+- 시안의 영문 라벨(CUSTOMS · ITEM · CUSTOMS TAG · IMPORT PRICES)은 넣지 않음(사용자 확인 전).
+- (사용자 결정 · 파랑 머리) 시안과 남은 차이: 제목 글자는 시안(약 64px)보다 조금 작은 56px(제목 세 줄 자리 계산식이 이 글자 크기에 묶여 있음) · 좌우 여백은 다른 화면과 같은 40px(시안은 80px) · 값이 한 줄 문장일 때 제목 아래 파랑 면에 약 200px 빈칸이 생김(세 줄 자리 유지는 lead 결정 — 0208 크기 고정) · 영문 라벨 없음.
+- (파랑 머리) 휴대폰은 요약 줄(#247)이 카드 위 파랑 면에 걸려 있어 카드가 파랑 면 안으로 들어간 깊이가 시안(약 110px)보다 얕음(요약 줄 72px 만큼 · 약 104px 로 맞춤 — e2e 는 40px 이상 걸침을 확인).
+- (파랑 머리) 0222 에 merge 하면 pages-redesign.test.ts 의 파랑 면 예외 한 줄이 0219 · 0220 예외와 같은 곳이라 충돌 — 세 파일 예외를 한 식에 모아 풀 것.
+
