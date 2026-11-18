@@ -9,6 +9,9 @@ import { type RefObject, useEffect, useState } from "react";
 import { COUNT_UP_MS, countUpValue, easeOut } from "../lib/count-up";
 import { useInViewOnce } from "./use-in-view-once";
 
+/** 쉼표 · 소수 자리 글 — 웹 쪽 화면이 lib 를 직접 가져오지 못해(exports) 훅 파일로 같이 내보냄 */
+export { formatCount } from "../lib/count-up";
+
 export function useCountUp<T extends Element = HTMLElement>(final: number, opts: { digits?: number; durationMs?: number } = {}): { ref: RefObject<T | null>; value: number; progress: number } {
   const { digits = 0, durationMs = COUNT_UP_MS } = opts;
   const reduce = useReducedMotion();

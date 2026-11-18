@@ -8,7 +8,7 @@
 //   dest-motion.ts    export function dotPosition(final: number, progress: number): number   // 막대 위 동그라미 위치 0~1 — 카운트업과 같은 시작 비율(최종의 85%)에서 최종 위치로 progress(0~1)만큼 · progress 1 이면 정확히 final · 범위 밖 progress 는 자름
 //   destinations.ts   DestinationRowData 에 rateValue: number | null (baseRate 그대로) · rateDigits: 0 | 1 (baseRate ≥ 100 이면 0 · 아니면 1) — formatCount(rateValue, rateDigits) + "원" 이 rateText 와 같음 · 환율이 없으면 null · 0
 //   today-board.ts · picked.ts   반환값에 percentile: number | null (판 아래 막대 길이 · 백분위 0~1) — 가장 싼 곳은 found.percentile · 없으면 null / 고른 나라는 그 통화 신호의 percentile · 없으면 null
-import { formatCount } from "@hav/ui/lib/count-up";
+import { formatCount } from "@hav/ui/hooks/use-count-up";
 import { describe, expect, it } from "vitest";
 import { dotPosition } from "./dest-motion";
 import { type SignalRow, cheapestDestination, destinationRows } from "./destinations";
