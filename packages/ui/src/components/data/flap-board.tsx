@@ -35,7 +35,7 @@ export function FlapBoard({ rows, cols, label, className = "" }: { rows: Row[]; 
         <div key={r} data-testid="flap-row" data-tone={rows[r].tone} className={`flex gap-[3px] sm:gap-1 ${TONE[rows[r].tone]}`}>
           {cells.map((cell, c) => (
             <span key={c} data-testid="flap-cell" aria-hidden className="relative flex h-9 w-[1.55rem] min-w-0 shrink items-center justify-center rounded-[3px] bg-flap-cell font-display text-[1.2rem] font-extrabold tracking-display tabular-nums sm:h-14 sm:w-10 sm:text-[1.9rem] lg:h-16 lg:w-12 lg:text-[2.2rem]">
-              <span className={c < (rows[r].whiteUntil ?? 0) ? "text-foam" : undefined}>{glyphAt(plans[r][c], cell, elapsed)}</span>
+              <span className={c < (rows[r].whiteUntil ?? 0) ? TONE.white : undefined}>{glyphAt(plans[r][c], cell, elapsed)}</span>
               <span data-testid="flap-seam" aria-hidden className="absolute inset-x-0 top-1/2 h-px bg-on-band" />
             </span>
           ))}
