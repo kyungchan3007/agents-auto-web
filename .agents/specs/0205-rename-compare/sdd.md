@@ -1,0 +1,38 @@
+# SDD — 어떻게
+
+> 요구사항: [prd.md](prd.md)
+
+## 접근
+- **계약** `packages/shared/src/contracts/geo.ts`: `RENAME_DAY = "2026-11-17"` · `GeoReport` 에 선택 필드 `daily?: { day; kind; name; hits }[]`(봇 · 유입 · test 제외) 와 `answerDays?: { day; edition; engine; question; group; found; cited; status }[]` 를 더함(선택 필드라 옛 응답도 통과).
+- **API** `apps/api/src/features/geo/summary.ts`: 이미 읽는 geo_hits 행(날짜별)으로 `daily` 를 만듦 — 새 쿼리를 늘리지 않음(D1 읽기 한도). 답변은 `answersSummary` 가 받는 모든 날짜 행에서 `answerDays` 를 만듦(판 번호는 questions.ts 의 질문 판 정보로).
+- **비교 계산** 순수 함수 `apps/web/src/features/geo/lib/rename-compare.ts`: `renameCompare(report, today)` → { bots: [{ name, before: { days, total, perDay }, after: {...}, daily: [...] }], referrals, answers: { general: [{ question, before: {measured, found, cited}, after }], brand: { tripfx, flapfx } }, search: { old, new: null } } · 자료가 없으면 null → 화면 "아직 없음".
+- **화면** `apps/web/src/features/geo/components/rename-compare.tsx`(새) · geo-page 맨 위에 넣음. 막대는 기존 차트 부품(@hav/ui)이 있으면 쓰고 없으면 단순 SVG(새 의존성 없음).
+- **빌드 시점**: /geo 는 빌드 때 API 를 읽는 정적 페이지 — 새 필드가 없으면(미리보기 · API 배포 전) 비교 구간은 "아직 없음".
+
+## 대안 · 트레이드오프
+- 기간 합계만 API 에서 계산해 보내기 → 기준일을 바꾸거나 날짜별 막대를 그릴 수 없어 날짜별 행을 보냄(행 수 적음: 날짜 × 봇 약 수십~수백 줄).
+- 새 D1 쿼리 → 읽기 한도 위험이라 기존 쿼리 결과 재사용.
+
+## 파일 계획
+- packages/shared/src/contracts/geo.ts
+- packages/shared/src/contracts/*.test.ts
+- apps/api/src/features/geo/**
+- apps/web/src/features/geo/**
+- apps/web/e2e/**
+- docs/geo-measurement.md
+- .agents/specs/0205-rename-compare/**
+- .agents/orchestration/TASKS.md
+
+## 계획 밖 변경 이유
+
+## 위험
+- 응답 크기 증가 → 날짜별 행만 · 경로(path)는 빼서 줄임.
+- 하루 평균 분모 착오 → 단위 테스트로 고정 · 화면에 날짜 수 표시.
+- 빌드 반복 금지(D1) — Full 빌드 한 번 · 결과는 파일로.
+
+## 검증 계획
+- 단위: prd 완료 기준
+- API 단위: daily · answerDays 모양 · test 방문 제외 · 기존 필드 그대로
+- e2e · 미리보기
+
+## 계획과 달라진 점
