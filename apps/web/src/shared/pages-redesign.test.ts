@@ -58,14 +58,13 @@ describe("통화 (P1 · SR-CUR-01)", () => {
 });
 
 describe("여행 타이밍 /flights (P2 · SR-TRV-01)", () => {
-  it("비행기는 0169 의 선 따라가기 부품(PlaneRouteLazy) · 옛 PlaneLazy 는 안 씀", () => {
-    expect(T.flights).toMatch(/\bPlaneRouteLazy\b/);
-    expect(T.flights).not.toMatch(/\bPlaneLazy\b/);
-    expect(T.flights).toMatch(/\bpoints=/);
+  it("그래프 2D(시안 F): 3D 비행기를 쓰지 않음 · 옛 PlaneLazy 도 안 씀", () => {
+    expect(T.flights).not.toMatch(/\bPlaneRouteLazy\b|\bPlaneLazy\b/);
   });
 
-  it("그래프 · 비행기 · 범례 · 카드 표시 · 준비 중 문구", () => {
-    for (const id of ["travel-graph", "plane-route", "travel-legend", "yoy-cards"]) expect(T.flights, id).toMatch(new RegExp(`data-testid="${id}"`));
+  it("그래프 · 범례 · 카드 표시 · 준비 중 문구 (비행기 없음)", () => {
+    for (const id of ["travel-graph", "travel-legend", "yoy-cards"]) expect(T.flights, id).toMatch(new RegExp(`data-testid="${id}"`));
+    expect(T.flights).not.toMatch(/data-testid="plane-route"/); // 비행기 없음
     expect(T.flights).toContain("준비 중");
     for (const s of ["국제항공료", "해외단체여행비", "원/달러 월평균"]) expect(T.flights, s).toContain(s);
   });

@@ -1,4 +1,4 @@
-// 작업 0181 — /flights 그래프 화면 소스 검사: 값과 무관한 가로 눈금선 없음 · 범례는 누르는 칩(aria-pressed) · 값 없는 선은 라벨을 만들지 않음 · 안내 글 · 비행기 그대로
+// 작업 0181 → 0218 그래프 2D — /flights 그래프 화면 소스 검사: 공통 LineChart · 범례는 누르는 칩(aria-pressed) · 값 없는 선은 라벨을 만들지 않음 · 안내 글 · 비행기 없음
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
@@ -20,25 +20,28 @@ describe("FlightsGraph 소스", () => {
     expect(src).toMatch(/legendText\(/);
   });
 
-  it("선 굵기 · 불투명도는 lineStyle 로(주인공 3 · 나머지 2 · 옅게) · 값이 없는 선은 목록에 넣지 않아 그리지도 라벨도 만들지도 않음", () => {
-    expect(src).toMatch(/lineStyle\(focus,/);
+  it("그래프 2D(시안 F): 공통 LineChart 로 그림 · 칩 강조는 focus 를 넘김 · 값이 없는 선은 목록에 넣지 않아 그리지도 라벨도 만들지도 않음", () => {
+    expect(src).toMatch(/<LineChart/);
+    expect(src).toMatch(/focus=\{focus\}/);
     expect(src).toMatch(/tourVals\.length > 0/);
     expect(src).toMatch(/fxVals\.length > 0/);
   });
 
-  it("최저 · 최고 라벨 글은 seriesStats · extremeTexts(받은 값)에서 · 선 끝 이름 + 최근 값은 endLabelText · 가로축은 axisTicks", () => {
-    for (const f of ["seriesStats(", "extremeTexts(", "endLabelText(", "axisTicks(", "spreadLabels("]) expect(src, f).toContain(f);
+  it("최저 · 최고 꼬리표 글은 seriesStats · extremeTexts(받은 값)에서 · 끝 말풍선은 이름 + 최근 값(END_NAME · lastOf) · 가로축 눈금은 monthTicks", () => {
+    for (const f of ["seriesStats(", "extremeTexts(", "monthTicks(", "END_NAME", "lastOf("]) expect(src, f).toContain(f);
+    expect(src).toMatch(/marks=\{marks\}/);
   });
 
-  it("가로축 눈금 — axisTicks(처음 · 끝은 늘 보임) · 줄바꿈 금지(whitespace-nowrap) · 끝 눈금은 안쪽으로 붙임(-100%)", () => {
-    expect(src).toContain("axisTicks(");
-    expect(src).toMatch(/data-testid="month-tick" className="absolute whitespace-nowrap"/);
-    expect(src).toMatch(/"-100%"/);
+  it("가로축 눈금은 LineChart 의 xTicks(날짜 글) · 겹치면 부품이 솎음 — 화면 코드는 줄바꿈 · 위치 계산을 하지 않음", () => {
+    expect(src).toMatch(/xTicks=\{/);
+    expect(src).not.toMatch(/data-testid="month-tick"/);
   });
 
-  it("3D 비행기 · 노란 점은 그대로 — PlaneRouteLazy 가 항공료 선 점들을 따라감 · 노란 점(--hav-sun)", () => {
-    expect(src).toMatch(/PlaneRouteLazy/);
-    expect(src).toMatch(/var\(--hav-sun\)/);
-    expect(src).toMatch(/data-testid="plane-route"/);
+  it("3D 비행기는 없음 · 최고(빨강) · 최저(노랑) 점은 항공료 선 위 꼬리표", () => {
+    expect(src).not.toMatch(/PlaneRouteLazy|data-testid="plane-route"/);
+    expect(src).toMatch(/kind: "max"/);
+    expect(src).toMatch(/kind: "min"/);
+    expect(src).toMatch(/tone: "red"/);
+    expect(src).toMatch(/tone: "sun"/);
   });
 });
