@@ -31,7 +31,7 @@ export function LogPage({ tasks, status, builtAt }: { tasks: Fetched<TasksSummar
           <StatusBoard build={status} builtAt={builtAt} />
           <TeamDesks />
           <WorkFlow />
-          <div className="mt-6">
+          <div className="mt-4">
             <RecordCard buildTasks={tasks} />
           </div>
         </div>

@@ -12,7 +12,7 @@ import { useStatus } from "../hooks/use-status";
 export function StatusBoard({ build, builtAt }: { build: Fetched<SiteStatus>; builtAt: string }) {
   const f = useStatus(build);
   return (
-    <section data-testid="status-board" aria-labelledby="status-title" className="mt-10">
+    <section data-testid="status-board" aria-labelledby="status-title" className="mt-4">
       <h2 id="status-title" className="sr-only">
         사이트 상태
       </h2>
@@ -36,7 +36,7 @@ function Body({ s, builtAt }: { s: SiteStatus; builtAt: string }) {
 
 function Card({ label, value, sub, href, tone = "text-fg" }: { label: string; value: string; sub?: string; href?: string; tone?: string }) {
   return (
-    <div className="rounded-card bg-card px-5 py-4">
+    <div className="rounded-card bg-card px-6 py-5">
       <dt className="text-small text-fg-2">{label}</dt>
       <dd className={`mt-1 text-[1.125rem] leading-snug font-semibold ${tone}`}>
         {href ? (

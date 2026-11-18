@@ -48,11 +48,12 @@ describe("작업실 — 맨 위 요약 구간", () => {
     expect(board, "상태판").toBeGreaterThan(story);
   });
 
-  it("새 디자인 그대로 — 바다 띠 · 테두리 상자 · 그림자 없음", () => {
+  it("새 디자인 그대로 — 바다 띠 · 테두리 · 그림자 없음 (작업 0214: 단계는 흰 카드 rounded-card 하나)", () => {
     const story = LOG.filter((f) => /story/i.test(f)).map((f) => codeOf(read(f))).join("\n");
     expect(story.length, "요약 구간 컴포넌트 파일").toBeGreaterThan(0);
     expect(story).not.toMatch(/data-surface="(dark|elevated)"/);
-    expect(story).not.toMatch(/\bshadow(-[\w\[\]\/.-]+)?\b|\brounded-card\b|\bborder\s|\bborder-(?!t-2\b)/);
+    expect(story).not.toMatch(/\bshadow(-[\w\[\]\/.-]+)?\b|\bborder\s|\bborder-/);
+    expect(story).toMatch(/\brounded-card\b.*\bbg-card\b/);
   });
 });
 
