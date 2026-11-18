@@ -137,6 +137,38 @@ test.describe("새 /prices — 예산 · 자 · 표 (작업 0220)", () => {
     expect(secBg).toBe("rgba(0, 0, 0, 0)");
   });
 
+  test("나라 더 보기 — 표 아래 왼쪽 밑줄 글자 링크 (버튼 상자 · 배경 없음) · 누르면 펼침 · 접기 버튼은 지금 모양 그대로 (작업 0220 사용자 지적)", async ({ page }) => {
+    await page.goto("/prices");
+    test.skip(!(await ready(page)), "자료 없음");
+    await page.waitForLoadState("networkidle");
+    const more = tid(page, "price-bands").getByRole("button", { name: /^나라 더 보기 \(\d+곳\) ›$/ });
+    await expect(more).toBeVisible();
+    const st = await more.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { bg: s.backgroundColor, borderTop: s.borderTopWidth, borderBottom: s.borderBottomWidth, radius: s.borderTopLeftRadius, weight: s.fontWeight };
+    });
+    expect(st.bg).toBe("rgba(0, 0, 0, 0)"); // 배경 없음
+    expect(st.borderTop).toBe("0px"); // 버튼 상자 테두리 없음 — 밑줄만
+    expect(parseFloat(st.borderBottom)).toBeGreaterThanOrEqual(2);
+    expect(Number(st.weight)).toBeGreaterThanOrEqual(700);
+    // 표 아래 왼쪽
+    const table = (await tid(page, "price-bands").locator("section").first().boundingBox())!;
+    const mb = (await more.boundingBox())!;
+    const bands = (await tid(page, "price-bands").boundingBox())!;
+    expect(mb.y).toBeGreaterThanOrEqual(table.y + table.height - 1);
+    expect(Math.abs(mb.x - bands.x)).toBeLessThanOrEqual(2);
+    // 누르면 지금처럼 펼침 (aria-expanded) · 접기는 눈에 띄는 알약 + 화면 아래에 붙음 (#232 · #240 그대로)
+    await more.click();
+    const fold = tid(page, "price-bands").getByRole("button", { name: "나라 접기" });
+    await expect(fold).toHaveAttribute("aria-expanded", "true");
+    const fs = await fold.evaluate((el) => { const s = getComputedStyle(el); return { bg: s.backgroundColor, bw: s.borderTopWidth, r: s.borderTopLeftRadius }; });
+    expect(fs.bg).not.toBe("rgba(0, 0, 0, 0)");
+    expect(parseFloat(fs.bw)).toBeGreaterThanOrEqual(2);
+    expect(await tid(page, "fold-bar").evaluate((el) => getComputedStyle(el).position)).toBe("sticky");
+    await fold.click();
+    await expect(tid(page, "price-bands").getByRole("button", { name: /^나라 더 보기/ })).toBeVisible();
+  });
+
   test("자바스크립트를 꺼도 제목 · 예산 · 자 · 표가 보임", async ({ browser, baseURL }) => {
     const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL });
     const page = await ctx.newPage();
