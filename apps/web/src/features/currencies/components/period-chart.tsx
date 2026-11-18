@@ -23,6 +23,7 @@ export function PeriodChart({ rates, unit = 1, unitText, lastTone }: { rates: { 
     marks.push({ series: "rate", index: iMax, kind: "max", text: extremeLabelText("max", { baseRate: ex.max.baseRate, unit }), place: "top", tone: "red" });
     marks.push({ series: "rate", index: iMin, kind: "min", text: extremeLabelText("min", { baseRate: ex.min.baseRate, unit }), place: "left", tone: "navy" });
   }
+  void unitText; // 읽기용 글 · 끝 말풍선 단위는 rateText 가 만듦 (옛 호출 자리 유지)
   void lastTone; // 판정 색은 그래프 끝 말풍선 대신 위 카드가 보임 (시안 F: 끝 말풍선은 울트라마린)
   return (
     <section data-testid="year-flow" aria-labelledby="year-flow-title">
@@ -48,7 +49,7 @@ export function PeriodChart({ rates, unit = 1, unitText, lastTone }: { rates: { 
         {axis && stats && last && rate ? (
           <LineChart
             // 기간을 바꾸면 새로 그림(움직임은 처음 한 번만 — 기간이 바뀐 뒤에는 바로 최종 모양)
-            aria={`${period.label} 흐름 — 최저 ${cardRateText(stats.min, rate)} · 최고 ${cardRateText(stats.max, rate)} · 평균 ${cardRateText(stats.avg, rate)} · 마지막 ${shown.at(-1)?.date} ${unitText}`}
+            aria={`${period.label} 흐름 — 최저 ${cardRateText(stats.min, rate)} · 최고 ${cardRateText(stats.max, rate)} · 평균 ${cardRateText(stats.avg, rate)} · 마지막 ${last.date} ${cardRateText(last.baseRate, rate)}`}
             x={[dayNumber(shown[0].date), dayNumber(last.date)]}
             y={{ min: axis.min, max: axis.max, ticks: axis.ticks }}
             xTicks={dateTicks(shown[0].date, last.date)}
