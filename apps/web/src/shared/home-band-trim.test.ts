@@ -23,7 +23,7 @@ function sources(dir: string): string[] {
 }
 const HOME = sources(join(WEB_SRC, "features/home"));
 const homeText = HOME.map(read).join("\n");
-const band = read(join(WEB_SRC, "features/home/components/today-board.tsx")); // 작업 0177: 바다 띠 → 출발 안내판 (파일 이름만 바뀜 · 문구 규칙은 그대로)
+const band = [read(join(WEB_SRC, "features/home/components/today-board.tsx")), read(join(WEB_SRC, "features/home/components/ticket.tsx"))].join("\n"); // 작업 0217: 탑승권 카드(ticket.tsx)가 판정 한 줄을 그림 // 작업 0177: 바다 띠 → 출발 안내판 (파일 이름만 바뀜 · 문구 규칙은 그대로)
 const boardLib = read(join(WEB_SRC, "features/home/lib/today-board.ts"));
 
 describe("홈 바다 띠 — 지울 문구 (작업 0174)", () => {

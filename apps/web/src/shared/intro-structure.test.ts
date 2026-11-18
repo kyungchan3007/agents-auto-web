@@ -44,8 +44,8 @@ describe("파일 구성", () => {
     expect(walk(join(INTRO, "components"), (f) => /bubble-[\w-]+\.tsx$/.test(f)).length).toBeGreaterThan(0);
   });
 
-  it("홈 쪽 파일 — picked-board · use-picked-destination · picked.ts", () => {
-    for (const f of ["features/home/components/picked-board.tsx", "features/home/hooks/use-picked-destination.ts", "features/home/lib/picked.ts"]) expect(existsSync(join(WEB_SRC, f)), f).toBe(true);
+  it("홈 쪽 파일 — ticket(작업 0217 · 예전 picked-board) · use-picked-destination · picked.ts", () => {
+    for (const f of ["features/home/components/ticket.tsx", "features/home/hooks/use-picked-destination.ts", "features/home/lib/picked.ts"]) expect(existsSync(join(WEB_SRC, f)), f).toBe(true);
   });
 });
 
@@ -173,8 +173,8 @@ describe("기능 폴더 규칙 — 홈 · 인트로가 서로 가져오지 않�
     expect(h).toMatch(/useEffect\(/); // 서버 HTML 은 지금 그대로 · 마운트 뒤에 읽음
   });
 
-  it("홈 picked-board — 같은 FlapBoard 로 pickedBoard() 를 그림 · key 로 다시 넘어가게 · 탑승권 보기 버튼", () => {
-    const b = read(join(WEB_SRC, "features/home/components/picked-board.tsx"));
+  it("홈 ticket — 같은 FlapBoard 로 pickedBoard() 를 그림 · key 로 다시 넘어가게 · 탑승권 보기 버튼 (작업 0217)", () => {
+    const b = read(join(WEB_SRC, "features/home/components/ticket.tsx"));
     expect(b).toMatch(/from\s*"@hav\/ui\/data\/flap-board"/);
     expect(b).toMatch(/\bpickedBoard\(|\bpickedChip\(/);
     expect(b).toMatch(/\bkey=/);
@@ -182,9 +182,10 @@ describe("기능 폴더 규칙 — 홈 · 인트로가 서로 가져오지 않�
     expect(b).toMatch(/탑승권 보기|pickedChip/);
   });
 
-  it("홈 안내판 컴포넌트가 picked-board 를 씀 (today-board 또는 home 에서) — 안 한 사람에게는 지금 그대로", () => {
+  it("홈 안내판(today-board → Ticket)이 고른 나라 판을 씀 — 안 한 사람에게는 지금 그대로", () => {
     const home = ["today-board.tsx", "home.tsx"].map((f) => read(join(WEB_SRC, "features/home/components", f))).join("\n");
-    expect(home).toMatch(/\bPickedBoard\b/);
+    expect(home).toMatch(/\bTicket\b/);
+    expect(read(join(WEB_SRC, "features/home/components/ticket.tsx"))).toMatch(/\bpickedBoard\(/);
     expect(home).toMatch(/\btodayBoard\(/); // 서버에서 그리는 지금 안내판은 그대로
   });
 });

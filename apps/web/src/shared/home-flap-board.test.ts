@@ -26,7 +26,8 @@ function sources(dir: string): string[] {
   });
 }
 const HOME_COMPONENTS = sources(join(WEB_SRC, "features/home/components"));
-const board = () => read(join(WEB_SRC, "features/home/components/today-board.tsx"));
+// 작업 0217: 서버 계산(today-board.tsx) + 탑승권 카드(ticket.tsx · 판 · 제목 · 판정 한 줄)
+const board = () => ["today-board.tsx", "ticket.tsx"].map((f) => read(join(WEB_SRC, "features/home/components", f))).join("\n");
 const sectionTag = (s: string) => /<section\b[^>]*id="today"[^>]*>|<section\b[^>]*>(?=[^<]*)/.exec(s.match(/<section\b[^>]*id="today"[^>]*>/)?.[0] ?? "")?.[0] ?? "";
 
 describe("울트라마린 전체 띠 없음 (B1)", () => {
@@ -48,7 +49,8 @@ describe("울트라마린 전체 띠 없음 (B1)", () => {
   });
 
   it("홈 화면 코드에 data-surface=\"dark\" · \"elevated\"(전체 띠)가 없음 — 울트라마린은 판(FlapBoard)에만", () => {
-    for (const f of HOME_COMPONENTS) expect(read(f), f).not.toMatch(/data-surface="(dark|elevated)"/);
+    // 작업 0217: 새 홈 첫 면(hero-section · 메뉴와 이어지는 파랑)만 data-surface="dark" — 탑승권 카드 · 나머지 구간은 아님
+    for (const f of HOME_COMPONENTS.filter((x) => !x.endsWith("hero-section.tsx"))) expect(read(f), f).not.toMatch(/data-surface="(dark|elevated)"/);
     expect(board()).not.toMatch(/\bbg-cheap\b|\bbg-\[#2438a8\]/i);
   });
 });
@@ -103,7 +105,8 @@ describe("사진 아래 하늘 종이 위에 놓음 (B2 · 작업 0177 수정: �
   });
 
   it("홈 맨 위 사진 구간(travel-timing-section)이 fadeBottom 을 켬 · 다른 화면의 PhotoHeader 는 그대로", () => {
-    expect(read(join(WEB_SRC, "features/home/components/travel-timing-section.tsx"))).toMatch(/<(?:Picked)?PhotoHeader\b[^>]*\bfadeBottom\b/);
+    // 작업 0217: 새 홈은 사진 머리가 없음 (사진 파일 · PhotoHeader 부품은 다른 화면용으로 남음)
+    for (const f of HOME_COMPONENTS) expect(read(f), f).not.toMatch(/\bPhotoHeader\b|\bPickedPhotoHeader\b/);
   });
 });
 
@@ -122,7 +125,7 @@ describe("3D 지구 제거 · 비행기는 그대로 (작업 0177 수정)", () =
   }
 
   it("홈에 3D 지구 · 둘레 원 · 지구 그림 파일이 없음 — GlobeLazy · SEOUL · EARTH_TEXTURE 를 쓰지 않음", () => {
-    for (const f of HOME_COMPONENTS) expect(read(f), f).not.toMatch(/\bGlobeLazy\b|\bSEOUL\b|EARTH_TEXTURE|rounded-full/);
+    for (const f of HOME_COMPONENTS) expect(read(f), f).not.toMatch(/\bGlobeLazy\b|\bSEOUL\b|EARTH_TEXTURE/); // 작업 0217: 상태 점 · 막대 끝은 rounded-full 을 씀 (지구 둘레 원이 아님)
     expect(read(join(WEB_SRC, "features/home/lib/places.ts"))).not.toMatch(/SEOUL|EARTH_TEXTURE|earth-2048/);
   });
 
