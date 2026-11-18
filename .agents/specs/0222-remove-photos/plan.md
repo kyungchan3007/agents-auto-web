@@ -46,6 +46,7 @@
 - 0221 사용자 결정(직구 계산 머리 파랑 · 38fadbc): `shared/number-emphasis.test.ts` — 직구 큰 문장은 0221 쪽(sea) · 여행 물가는 0220 쪽(sea) · 홈 줄은 0217 쪽 주석(0222 쪽에서 이미 정리됨) 채택 / `shared/pages-redesign.test.ts` — 파랑 면 예외를 converter.tsx(0219) · prices-header.tsx(0220) · calc-page.tsx(0221) 세 파일을 한 식에 모음.
 - 표 모양 지적 수정(2026-11-18 · 0217 파인 홈 · 0218 표 뒤 옅은 면 + 작은 글자판 · 0220 제목 세 줄): 세 브랜치의 새 커밋을 local 브랜치로 merge — 충돌 없음(건드린 파일이 겹치지 않음: ticket.tsx · flights-page.tsx · mini-board.tsx · prices-header.tsx · 각 e2e · 소스 테스트 새 파일).
 - 0220 예산 카드 시안 B 위치 · 크기(2026-11-18 · 0220 의 새 커밋): local 브랜치 merge — 충돌 없음(price-page.tsx · budget-planner.tsx · prices-title.test.ts · prices-redesign.spec.ts 는 0222 가 건드리지 않은 파일). 입력 칸 모양은 0221 의 옅은 공용 Field 가 0222 에 이미 합쳐져 있어 카드 안 칸도 같은 모양(높이만 64px).
+- 2026-11-18 오후 지시 셋(0218 절취선 동그라미 없앰 · 0220 휴대폰 자 라벨 겹침 · 0221 직구 제목 한 줄 · 좁은 폭 카드 높이): local 브랜치 세 개 merge — 충돌 없음(건드린 파일 겹침 없음: flights-page.tsx · price-ruler.tsx · ruler.ts · calc-copy.ts · calc-page.tsx · calc-result.tsx · 각 e2e · 소스 테스트). 0221 의 calc-gap.spec.ts 폭 구간 최소 높이와 0222 의 no-photos 검사는 서로 안 겹침.
 - 합친 뒤 고친 것(브랜치끼리 섞여서 생긴 것): `shared/calc-blue.test.ts`(0221) — "사진 없음" 줄이 PhotoHeader 글자를 담아 no-photos 검사에 걸림 → 영문 라벨 줄만 남기고 지움(이 브랜치에서만 고침 · 충돌 없음) / `e2e/photos.spec.ts` "휴대폰 — 사진 구간이 가로로 넘치지 않고…" — 0218 이 /prices 로 바꿨는데 0220 이 /prices 사진을 뺌 → /about 으로(2단계에서 이 검사도 지움) / `e2e/flights-redesign.spec.ts` 탑승권 칸 검사 — 들어오기 움직임 중 위치를 재면 흔들림 → 움직임 줄이기로 고정.
 - 합친 뒤 e2e: 가짜 API 빌드로 582 통과 · 실패 19건은 모두 가짜 자료에 /geo · /log 자료와 핀란드 같은 나라가 없어서(변경과 무관 · 실제 자료 미리보기에서 확인).
 
