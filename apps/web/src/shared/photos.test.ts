@@ -8,7 +8,7 @@
 //     막(veil): light = 하늘 종이색(--hav-surface) 그라데이션(데스크톱 왼쪽 → 오른쪽 · 모바일 아래 → 위) · ultramarine = 울트라마린 + 흰 글자 — 이 부품만 그라데이션 허용(0168 "장식 그라데이션 없음" 검사에서 제외)
 //   화면(맨 위 구간만 감쌈 · priority — 각 화면은 사진이 하나라 맨 위가 첫 화면): 홈 travel-timing-section="window-fjord"(light) · /flights flights-page="window-sunrise"(light) · /prices price-page="swiss-traveler"(light) ·
 //     /calc calc-page="plane-below"(ultramarine) · /about about-page="plane-sunset"(light) · 그 밖(작업실 · 통화 · GEO)에는 PhotoHeader 도 사진 경로도 없음
-//   OG: apps/web/src/app/opengraph-image.tsx 가 plane-sunset 을 1200×630 으로 잘라 배경으로 쓰고 지금의 글자 · 로고를 위에 (size 1200×630 · alt · 정적은 그대로)
+//   OG: apps/web/src/app/opengraph-image.tsx — 작업 0216 부터 사진 없이 새 디자인 1안 (size 1200×630 · alt · 정적은 그대로)
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -166,14 +166,22 @@ describe("다섯 화면에만 — 맨 위 구간", () => {
 describe("공유 미리보기(OG) 이미지", () => {
   const og = read(join(WEB_SRC, "app/opengraph-image.tsx"));
 
-  it("plane-sunset 사진을 배경으로 씀", () => {
-    expect(og).toContain("plane-sunset");
+  // 작업 0216 사용자 결정 "새 디자인으로" → 1안 (.tmp/redesign-1118/og/og-1.png): 사진 없이 파랑 한 면 · B 로고 · 큰 제목 · 안내판 한 줄
+  it("사진 없이 파랑 한 면 (plane-sunset 안 씀) · B 로고 flap 흰 + fx 노랑 · 안내판 한 줄 ICN → 도쿄 뉴욕 파리", () => {
+    expect(og).not.toContain("plane-sunset");
+    expect(og).not.toMatch(/<img\b/);
+    expect(og).toMatch(/background:\s*"#2438A8"/i);
+    expect(og).toMatch(/>\s*flap\s*</);
+    expect(og).toMatch(/#F7C548[^\n]*>\s*fx\s*</i);
+    expect(og).toContain("싼 편");
+    expect(og).toContain("ICN → 도쿄 뉴욕 파리");
+    expect(og).toContain("Pretendard-Black");
   });
 
   it("크기 1200×630 · alt · 정적 그림은 그대로 (지금의 글자 · 로고를 위에)", () => {
     expect(og).toMatch(/size\s*=\s*\{\s*width:\s*1200\s*,\s*height:\s*630\s*\}/);
     expect(og).toMatch(/export const alt\b/);
     expect(og).toMatch(/dynamic\s*=\s*"force-static"/);
-    expect(og).toContain("Flapfx");
+    expect(og).toContain("Flapfx"); // alt 문장
   });
 });
