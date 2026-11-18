@@ -27,6 +27,15 @@ async function open(page: Page, body: object) {
   await page.goto("/geo");
 }
 
+/** 화면의 "자료 기준일"(빌드 때 한국 날짜)에서 '바꾼 뒤 일수'(2026-11-17 포함)를 구함 — 오늘 날짜에 기대지 않음 (패치: 자정을 넘기면 11-19 칸이 생겨 고정 기대가 깨졌음) */
+async function daysAfterRename(page: Page): Promise<number> {
+  const text = (await tid(page, "rename-asof").innerText()).replace(/\s+/g, " ");
+  const asOf = text.match(/자료 기준일 (\d{4}-\d{2}-\d{2})/)?.[1];
+  expect(asOf, "자료 기준일").toBeTruthy();
+  return Math.round((Date.parse(`${asOf}T00:00:00Z`) - Date.parse("2026-11-17T00:00:00Z")) / 86400_000) + 1;
+}
+const perDay = (hits: number, days: number) => String(Math.round((hits / days) * 10) / 10);
+
 test.describe("이름 바꾼 날 전후 비교 (작업 0205)", () => {
   test("맨 위 구간 · 기준일 표시 · 수치 카드보다 위", async ({ page }) => {
     await open(page, WITH_DAILY);
@@ -60,12 +69,14 @@ test.describe("이름 바꾼 날 전후 비교 (작업 0205)", () => {
   test("막대 — 같은 숫자를 글로도 · 기준일 표시", async ({ page }) => {
     await open(page, WITH_DAILY);
     const bars = tid(page, "rename-bars").first();
-    await expect(bars).toHaveAttribute("aria-label", /GPTBot 날짜별 방문: 11-05 4회.*11-17 3회, 11-18 1회 \(2026-11-17 이름 바꾼 날\)/);
+    // 11-18 뒤에 자료 기준일까지 날짜가 더 붙을 수 있음(예: 11-19 0회) — 끝 날짜에 기대지 않고 '11-18 1회' 뒤 · 이름 바꾼 날 표시 앞은 아무 날짜나
+    await expect(bars).toHaveAttribute("aria-label", /GPTBot 날짜별 방문: 11-05 4회.*11-17 3회, 11-18 1회[^()]*\(2026-11-17 이름 바꾼 날\)/);
   });
 
   test("유입 · 답변 · 검색 노출", async ({ page }) => {
     await open(page, WITH_DAILY);
-    await expect(tid(page, "rename-compare").getByRole("row", { name: /ChatGPT/ })).toContainText("하루 0회 (합계 0회)하루 0.5회 (합계 1회)");
+    const days = await daysAfterRename(page);
+    await expect(tid(page, "rename-compare").getByRole("row", { name: /ChatGPT/ })).toContainText(`하루 0회 (합계 0회)하루 ${perDay(1, days)}회 (합계 1회)`);
     await expect(tid(page, "rename-compare").getByRole("row", { name: /해외직구 관세 계산기/ })).toContainText("찾음 1 · 인용 0 / 1회");
     await expect(tid(page, "rename-brand")).toContainText("Flapfx 시기(3판): 1일 측정");
     await expect(tid(page, "rename-search")).toContainText("새 속성(flapfx.com): 아직 없음 (Search Console 새 속성 등록 대기 #214)");
