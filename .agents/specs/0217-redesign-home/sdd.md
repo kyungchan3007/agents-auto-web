@@ -22,6 +22,7 @@
 - .agents/orchestration/TASKS.md · .agents/specs/0217-redesign-home/**
 
 ## 계획 밖 변경 이유
+- packages/ui/src/components/form/trip-switcher.tsx · packages/ui/src/hooks/use-trip-switcher.ts — 새 파일(사용자 지적 · 카드 안 여행지 바꾸기)
 - packages/ui/src/hooks/use-count-up.ts — 웹 쪽 화면이 ui 의 lib 를 직접 가져올 수 없어(package.json exports 가 보호 파일) 훅 파일에서 formatCount 를 같이 내보냄
 - packages/ui/src/components/data/flap-board.tsx — 375px 에서 판이 탑승권 카드 밖으로 넘쳐, 칸이 줄어들 수 있게(min-w-0 shrink) 함
 - apps/web/e2e/hero-photo.spec.ts — 삭제: 홈 머리 사진 덮개 · 노란 형광펜 표시줄 검사만 있었고 새 홈에는 둘 다 없음
@@ -39,6 +40,8 @@
 - lead: 미리보기 1280 · 390 · 시안 캡처와 나란히 비교 · 사파리 눈으로 확인
 
 ## 계획과 달라진 점
+- (사용자 지적 · 원문 "내여행지 고르기 말고 지금처럼 여행지 바꾸면 바로 확인하면 좋을거 같아") 카드의 "내 여행지 고르기" 버튼 · 시트 대신 카드 안에서 바로 바꿈: 자주 가는 곳 칩(국기 + 이름 · aria-pressed) + 같은 줄 검색 칸(combobox · listbox). 누르면 판 · 판정 줄 · 막대가 바로 바뀌고 새로고침해도 유지(같은 저장 값). 새 부품 TripSwitcher · 훅 use-trip-switcher (packages/ui). 여행 물가의 "다른 나라 보기"(시트)는 0220 에서 판단.
+- 흰 바탕 결정(0216 의 세 커밋 cherry-pick): 흰 바탕 위 흰 판은 옅은 선(border-line)으로 구분 — 환전 목록 · 탑승권 카드에 테두리, 막대 홈은 surface-2.
 - 도착지 줄: ui 의 DestinationRow 를 고치지 않고 홈 안에 새 목록(destination-table.tsx)을 만듦 — 줄 안에서 카운트업 훅(useCountUp)을 쓰는 client 부품이 필요하고, DestinationRow 는 /design 견본이 그대로 쓰고 있어서. ui 쪽 파일은 바꾸지 않음.
 - 탑승권 카드: 위(제목 + 글자판) · 아래(판정 + 고르기)를 CSS grid 두 줄(subgrid)로 나누고 파랑 띠를 첫 줄 높이만큼만 깔아 경계가 절취선에 맞음. 시안의 절취선 양쪽 홈(파랑 동그라미)도 같은 방식.
 - 예전 PickedBoard(client)를 Ticket 으로 합침: 서버가 지금 안내판 값(initial)을 계산해 넘기고, 고른 나라가 있으면 같은 카드 안에서 판이 그 나라로 바뀜.

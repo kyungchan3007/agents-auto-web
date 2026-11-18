@@ -23,7 +23,7 @@ export function TripSwitcher({ className = "" }: { className?: string }) {
                 data-testid="pick-chip"
                 aria-pressed={on}
                 onClick={() => s.choose(hit)}
-                className={`flex min-h-9 items-center gap-2 rounded-pill border-2 px-3 text-small font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cheap ${on ? "border-pin-cheap bg-pin-cheap text-foam" : "border-line bg-card text-fg hover:bg-surface"}`}
+                className={`flex min-h-9 items-center gap-2 rounded-pill border-2 px-3 text-small font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cheap ${on ? "border-pin-cheap bg-pin-cheap text-foam" : "border-line bg-card text-fg hover:bg-surface-2"}`}
               >
                 <Flag country={country?.flag ?? null} label={`${country?.name ?? hit.city} 국기`} className="h-3.5 w-5 shrink-0" />
                 {hit.city}
