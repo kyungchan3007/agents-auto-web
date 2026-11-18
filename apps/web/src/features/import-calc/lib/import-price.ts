@@ -38,3 +38,12 @@ export function importPriceKpis(rows: AlignedMonth[]): { price: Kpi | null; fx: 
   };
   return { price: kpi("price"), fx: kpi("fx") };
 }
+
+/** 카운트업 소수 자리 — 값이 보이는 만큼(끝 0 제외 · 최대 max) · 정수면 0 (작업 0221 · formatCount 끝 글 = numberText 지금 글) */
+export function kpiDigits(value: number, max = 2): number {
+  const frac = (Number(value.toFixed(max)).toString().split(".")[1] ?? "").length;
+  return Math.min(max, frac);
+}
+
+/** 전달보다 — 오름 up · 내림 down · 같음 flat · 없으면 null (점 색 · 작업 0221) */
+export const deltaTone = (delta: number | null): "up" | "down" | "flat" | null => (delta === null ? null : delta > 0 ? "up" : delta < 0 ? "down" : "flat");

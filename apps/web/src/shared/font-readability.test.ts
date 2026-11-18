@@ -33,6 +33,7 @@ const ALL = [...sources(WEB_SRC), ...sources(UI_SRC)];
 const ALLOWED = [
   "packages/ui/src/components/text/heading.tsx",
   "packages/ui/src/components/text/big-number.tsx",
+  "apps/web/src/features/import-calc/components/customs-board.tsx", // 작업 0221 과세환율 작은 글자판 칸 글자 (FlapBoard 와 같은 Pretendard 800)
   "packages/ui/src/components/layout/nav-bar.tsx",
   "apps/web/src/features/travel-price/components/prices-header.tsx", // 작업 0220 새 /prices 파랑 첫 면 큰 제목 (Pretendard 800 · 시안 B)
   "packages/ui/src/components/data/flap-board.tsx", // 작업 0177 출발 안내판 칸 글자 (옛 today-band 자리)

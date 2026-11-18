@@ -26,23 +26,24 @@ test("여행 물가 — 큰 문장의 퍼센트(63% 같은)는 파랑 면 위 �
 
 // 직구 맨 위는 사진 위 울트라마린 막(흰 글자) — 어두운 바탕이라 숫자는 노란 띠가 아니라 해 노랑 글자 (작업 0175 · lead 결정)
 //   비쌈 뜻(세금이 붙음)도 같은 노란 글자 — 주홍(#C13A22)은 울트라마린(#2438A8) 위 대비가 3 미만이라 읽히지 않음 (contrast.test.ts)
-test("직구 — 울트라마린 막 위 '$180' 은 해 노랑 글자(띠 아님) · 세금이 붙어도 금액은 노란 글자", async ({ page }) => {
+test("직구 — 흰 면 위 '$180' 은 노란 밑줄 형광펜 · 글자색은 그대로 (작업 0221 · 세금이 붙으면 금액에 주홍 글자)", async ({ page }) => {
   await page.goto("/calc");
   await fillCalc(page, "180");
   const h1 = page.getByRole("heading", { level: 1 });
   await expect(h1).toContainText("세금 없이 받습니다");
   const first = h1.locator('[data-testid="emph"]').first();
   await expect(first).toHaveText(/180/);
+  await expect(first).toHaveAttribute("data-bg", "light");
   const a = await css(first);
-  expect(a.color).toBe(SUN);
-  expect(a.image).not.toContain("linear-gradient");
+  expect(a.image).toContain("linear-gradient");
+  expect(a.image).toContain(SUN);
+  expect(a.color).not.toBe(SUN); // 노란 글자는 흰 면 위 대비 부족 — 글자색은 그대로
   await fillCalc(page, "250", "8");
   await expect(h1).toContainText(/관세 · 부가세 약 [\d,]+원이 붙습니다/);
   const money = h1.locator('[data-testid="emph"]').first();
   await expect(money).toHaveAttribute("data-tone", "expensive");
   const b = await css(money);
-  expect(b.color).toBe(SUN); // 주홍이 아니라 노란 글자 — 울트라마린 위에서 읽히게
-  expect(b.color).not.toBe(VERMILION);
+  expect(b.color).toBe(VERMILION); // 비싼 쪽 뜻은 주홍 글자 (흰 면 위 대비 충분)
   expect(b.image).not.toContain("linear-gradient");
 });
 
