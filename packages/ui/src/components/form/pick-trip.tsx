@@ -5,7 +5,13 @@
 import { usePickTrip } from "../../hooks/use-pick-trip";
 import { Input } from "./field";
 
-export function PickTrip({ label, changeLabel, testId = "pick-trip-open", className = "" }: { label: string; /** 이미 골랐을 때 버튼 글 (없으면 label 그대로) */ changeLabel?: string; testId?: string; className?: string }) {
+// variant: outline(기본 · 테두리 알약) · solid(파랑 면 알약 · 흰 글자 — 새 홈 탑승권 카드 · 작업 0217)
+const BUTTON = {
+  outline: "border-2 border-cheap px-5 text-body font-semibold text-cheap hover:bg-surface-2 focus-visible:outline-cheap",
+  solid: "bg-pin-cheap px-6 text-body font-bold text-foam hover:bg-pin-ink focus-visible:outline-pin-cheap",
+} as const;
+
+export function PickTrip({ label, changeLabel, testId = "pick-trip-open", className = "", variant = "outline" }: { label: string; /** 이미 골랐을 때 버튼 글 (없으면 label 그대로) */ changeLabel?: string; testId?: string; className?: string; variant?: keyof typeof BUTTON }) {
   const s = usePickTrip();
   return (
     <>
@@ -14,7 +20,7 @@ export function PickTrip({ label, changeLabel, testId = "pick-trip-open", classN
         data-testid={testId}
         aria-haspopup="dialog"
         onClick={s.show}
-        className={`min-h-11 rounded-pill border-2 border-cheap px-5 text-body font-semibold text-cheap hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cheap ${className}`}
+        className={`min-h-11 rounded-pill focus-visible:outline-2 focus-visible:outline-offset-2 ${BUTTON[variant]} ${className}`}
       >
         {s.picked ? (changeLabel ?? label) : label}
       </button>
