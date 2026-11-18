@@ -58,3 +58,8 @@
 - 그래프 부품(year-bars 등)은 손대지 않음(4 · 5 대기).
 - 파일 계획: apps/web/src/features/home/** 의 머리(hero-section) · 환전 목록(destination-table) · 필요하면 공통 motion 부품. 테스트는 test 담당 파일(e2e · *.test.ts).
 - 역할: test 가 테스트 먼저 커밋 → builder 구현 커밋 → builder 가 0223 · 0222 에 merge → 푸시 한 번 → test 가 미리보기 확인.
+- (미리보기 뒤 고칠 것 1 · 여백) 설명 문장 ↔ 탑승권 카드: 시안 B/home.html 은 `.hero` 아래 300px − 카드 위로 250px = **50px**(휴대폰 230 − 190 = **40px**). 이전 구현은 hero 아래 여백 80px(휴대폰 48px)이었음. 고침: hero-section 아래 여백 `pb-10`(휴대폰 40) · `sm:pb-[50px]`. 캡처 01(시안 왼쪽 · 미리보기 오른쪽)의 비율과 같음.
+- (고칠 것 2 · 화면 높이) 폭 `lg`(1024) 이상에서만, 높이 구간 셋(≤880 · 881~1000 · 1001~1180 · 서로 겹치지 않게 `[@media(min-height…)_and_(max-height…)]`)으로 hero 의 큰 제목 글자(`min(11vw, 9vh | 10vh)`) · 위아래 여백, 탑승권 카드 폭(34 · 38 · 45rem) · 안쪽 여백 · 글자판 칸 높이(36 · 44 · 64px)·글자 크기만 줄임. 1181 이상은 시안 값 그대로, 폭 기준 배치(휴대폰 · 태블릿 세로)는 그대로. 손으로 잰 예상(1280×720 · 1366×768 · 1440×900 · 1920×950 · 2000×1012 · 2560×1440 모두 검색 칸 아래 끝이 화면 높이 − 16px 안)이며 실제 확인은 test.
+- (고칠 것 3 · 환전 카드) `hooks/use-stagger-reveal.ts`(새) — 목록이 화면에 들어오면(useInViewOnce) 줄마다 100ms 간격으로 `hidden → shown`. 서버 첫 그림 · 움직임 줄이기 · 자바스크립트가 못 도는 곳은 `final`(그대로 보임). destination-table 의 줄이 `translate-y-3 opacity-0 → 보임`(0.5초 ease-out)으로 나타나며, `useCountUp` 에 `enabled` 옵션을 더해 "나타나는 순간" 카운트업 · 동그라미(progress)가 같이 시작.
+- 계획 밖 변경 이유: packages/ui/src/hooks/use-count-up.ts — `enabled` 옵션 추가(기본 true · 다른 쓰는 곳 영향 없음). 줄이 나타나는 순간에 맞춰 카운트업을 시작하려면 훅 쪽 시작 허락이 필요했음(화면 쪽에서 훅을 둘로 쪼개면 서버 첫 그림이 바뀜).
+- 그래프(year-bars 등)는 손대지 않음(사용자 3D 결정 대기). 역할 나눔에 따라 이번 구현은 builder 가 테스트 · 게이트 · 미리보기 확인을 하지 않음(타입 확인 · Tailwind 클래스 생성 확인만).
