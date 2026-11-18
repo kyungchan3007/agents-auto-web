@@ -138,7 +138,8 @@ describe("큰 제목 · 큰 숫자 — 굵기 800 · 자간 -0.03em · 숫자는
     expect(all.length, "font-display 사용처").toBeGreaterThanOrEqual(5);
     for (const [f, c] of all) {
       expect(c, `${f} 굵기`).toMatch(/\bfont-extrabold\b|\bfont-\[800\]/);
-      expect(c, `${f} 자간`).toMatch(/tracking-\[-0\.03em\]|\btracking-display\b/);
+      // 로고 flapfx(nav-bar)만 -0.05em (작업 0216 · 시안 B 로고) · 나머지는 -0.03em
+      expect(c, `${f} 자간`).toMatch(f.endsWith("layout/nav-bar.tsx") ? /tracking-\[-0\.05em\]/ : /tracking-\[-0\.03em\]|\btracking-display\b/);
       expect(c, `${f} font-normal`).not.toMatch(/\bfont-normal\b/);
       expect(c, `${f} 옛 자간`).not.toMatch(/\btracking-(tight|tighter)\b/);
     }

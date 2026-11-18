@@ -111,7 +111,7 @@ export default function DesignPage() {
       </Section>
 
       <Section id="motion" eyebrow="움직임" title="화면에 들어올 때 한 번.">
-        <div data-testid="motion-sample-count" className="font-display text-number font-extrabold">
+        <div data-testid="motion-sample-count" className="text-number font-extrabold">
           예시 · <CountUp value={1338.8} digits={1} suffix="원" />
         </div>
         <p className="mt-2 text-small text-fg-2">최종 값 근처에서 시작해 약 1초 · 움직임 줄이기를 켜면 바로 최종 값입니다.</p>
