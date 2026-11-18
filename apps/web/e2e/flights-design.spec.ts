@@ -36,5 +36,8 @@ test.describe("/flights 디자인 (작업 0211)", () => {
     const plane = { left: cx - 150 * s, right: cx - 20 * s, top: cy - 40 * s, bottom: cy + 30 * s };
     const overlap = lb.x < plane.right && plane.left < lb.x + lb.width && lb.y < plane.bottom && plane.top < lb.y + lb.height;
     expect(overlap, "이름표와 비행기 칸이 겹침").toBe(false);
+    // 노란 점도 가리지 않음
+    const hitDot = lb.x < dot.x + dot.width && dot.x < lb.x + lb.width && lb.y < dot.y + dot.height && dot.y < lb.y + lb.height;
+    expect(hitDot, "이름표가 노란 점을 가림").toBe(false);
   });
 });

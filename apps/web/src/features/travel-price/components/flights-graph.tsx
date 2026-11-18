@@ -8,7 +8,7 @@ import { PLANE_MODEL_URL } from "@hav/shared/travel";
 import { PointLabels } from "@hav/ui/data/point-labels";
 import { PlaneRouteLazy } from "@hav/ui/three/scene/lazy";
 import { useFlightsGraph } from "../hooks/use-flights-graph";
-import { INDEX_BASE_NOTE, type SeriesId, UNIT_NOTE, axisTicks, endLabelText, extremeTexts, legendText, lineStyle, seriesStats, spreadLabels } from "../lib/flights-graph-view";
+import { INDEX_BASE_NOTE, type SeriesId, UNIT_NOTE, axisTicks, endLabelText, extremeTexts, legendText, dotBox, lineStyle, planeAvoidBox, seriesStats, spreadLabels } from "../lib/flights-graph-view";
 import type { IndexPoint } from "../lib/travel-index";
 
 const W = 1000;
@@ -101,7 +101,7 @@ export function FlightsGraph({ air, tour, fx }: { air: IndexPoint[]; tour: Index
             <PlaneRouteLazy url={PLANE_MODEL_URL} points={airPts.map((p) => ({ x: p.x / W, y: 1 - p.y / H }))} stopIndex={cheapIdx} className="size-full" />
           </div>
           {texts && cheap && pricey && (
-            <PointLabels max={{ ...px(pricey), text: texts.max }} min={{ ...px(cheap), text: texts.min }} today={px(airPts[airPts.length - 1])} bounds={{ left: 0, top: -PAD_LABEL, right: pw, bottom: H * s + PAD_LABEL }} />
+            <PointLabels max={{ ...px(pricey), text: texts.max }} min={{ ...px(cheap), text: texts.min }} today={px(airPts[airPts.length - 1])} bounds={{ left: 0, top: -PAD_LABEL, right: pw, bottom: H * s + PAD_LABEL }} avoid={[planeAvoidBox(px(cheap), s), dotBox(px(cheap), s)]} />
           )}
         </div>
         {endOn &&

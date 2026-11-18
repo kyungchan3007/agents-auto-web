@@ -4,8 +4,8 @@ import { type Placed, placeExtremeLabels } from "../../lib/extreme-labels";
 
 type Pt = { x: number; y: number };
 
-export function PointLabels({ max, min, today, bounds, charWidth = 9 }: { max: Pt & { text: string }; min: Pt & { text: string }; today: Pt; bounds: { left: number; top: number; right: number; bottom: number }; charWidth?: number }) {
-  const placed = placeExtremeLabels({ max, min, today, bounds, font: { size: 13, charWidth } });
+export function PointLabels({ max, min, today, bounds, charWidth = 9, avoid }: { max: Pt & { text: string }; min: Pt & { text: string }; today: Pt; bounds: { left: number; top: number; right: number; bottom: number }; charWidth?: number; /** 가리면 안 되는 칸들 (작업 0211) */ avoid?: { left: number; top: number; right: number; bottom: number }[] }) {
+  const placed = placeExtremeLabels({ max, min, today, bounds, font: { size: 13, charWidth }, avoid });
   return (
     <>
       <PointLabel placed={placed.max} testId="extreme-max" className="text-expensive" text={max.text} />

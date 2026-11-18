@@ -168,7 +168,7 @@ describe("spreadLabels — 끝 라벨 겹치면 위아래로 밀어 띄움", () 
 });
 
 // 작업 0211 — 3D 비행기가 가장 싼 달 점 왼쪽에 서는 칸 (이름표가 피할 칸)
-import { planeAvoidBox } from "./flights-graph-view";
+import { dotBox, planeAvoidBox } from "./flights-graph-view";
 
 describe("planeAvoidBox — 비행기가 서는 칸 (작업 0211)", () => {
   it("점 왼쪽에 놓이고 · 그래프 폭(s)에 비례", () => {
@@ -179,5 +179,8 @@ describe("planeAvoidBox — 비행기가 서는 칸 (작업 0211)", () => {
     expect(a.bottom).toBeGreaterThan(300);
     const half = planeAvoidBox({ x: 400, y: 300 }, 0.5);
     expect(400 - half.left).toBeCloseTo((400 - a.left) / 2, 5);
+  });
+  it("노란 점 칸은 점 가운데 ±12", () => {
+    expect(dotBox({ x: 100, y: 50 }, 1)).toEqual({ left: 88, right: 112, top: 38, bottom: 62 });
   });
 });

@@ -101,3 +101,11 @@ export function spreadLabels(ys: number[], minGap: number, lo: number, hi: numbe
   });
   return res;
 }
+
+/** 3D 비행기가 가장 싼 달 점 왼쪽에 서는 칸 (화면 픽셀 · s = 그래프 폭 ÷ 1000) — 이름표가 이 칸을 피함 (작업 0211 · 캡처로 잰 크기: 폭 약 130 · 높이 약 70 · 점에서 20 떨어진 곳까지) */
+export function planeAvoidBox(point: { x: number; y: number }, s: number): { left: number; top: number; right: number; bottom: number } {
+  return { left: point.x - 150 * s, right: point.x - 20 * s, top: point.y - 40 * s, bottom: point.y + 30 * s };
+}
+
+/** 가장 싼 달 노란 점(반지름 11)을 가리지 않게 — 이름표가 피할 칸 (작업 0211) */
+export const dotBox = (point: { x: number; y: number }, s: number) => ({ left: point.x - 12 * s, right: point.x + 12 * s, top: point.y - 12 * s, bottom: point.y + 12 * s });
