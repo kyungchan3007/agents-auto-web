@@ -44,11 +44,11 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
               </span>
             </span>
           </Eyebrow>
-          <h1 data-testid="big-rate" className="mt-4">
-            <span className="block text-[1.5rem] font-bold text-fg-2 sm:text-[1.875rem]">
+          <h1 data-testid="big-rate" className="mt-4 font-display font-extrabold tracking-display tabular-nums">
+            <span className="block text-[1.5rem] text-fg-2 sm:text-[1.875rem]">
               {name}({code}) 환율
             </span>
-            <span className="mt-1 block font-display text-[clamp(3.25rem,9vw,6.5rem)] leading-[1.05] font-extrabold tracking-display text-figure tabular-nums">
+            <span className="mt-1 block text-[clamp(3.25rem,9vw,6.5rem)] leading-[1.05] text-figure tabular-nums">
               <CountUp value={big.value} digits={big.digits} suffix={t.unit === "원" ? "원" : ""} />
               {t.unit !== "원" && <span className="ml-1 text-city"> {t.unit}</span>}
             </span>
