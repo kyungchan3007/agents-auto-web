@@ -45,9 +45,9 @@ describe("항상 밝은 화면으로 알림", () => {
     expect(css).not.toMatch(/color-scheme\s*:\s*light\s+dark/);
   });
 
-  it("layout.tsx 의 주소창 색 themeColor 가 하늘 종이 한 값 — media 배열 · 어두운 값 없음", () => {
+  it("layout.tsx 의 주소창 색 themeColor 가 흰색 한 값(작업 0216 · 예전 하늘 종이) — media 배열 · 어두운 값 없음", () => {
     const layout = stripComments(readFileSync(join(WEB_SRC, "app/layout.tsx"), "utf8"));
-    expect(layout).toMatch(/themeColor:\s*"#EAF4F2"/i);
+    expect(layout).toMatch(/themeColor:\s*"#FFFFFF"/i);
     expect(layout).not.toMatch(/media:/);
     expect(layout).not.toMatch(/#121C5C/i);
   });
