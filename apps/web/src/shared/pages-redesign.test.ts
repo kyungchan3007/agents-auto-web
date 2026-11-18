@@ -39,8 +39,8 @@ const T = Object.fromEntries(Object.entries(SCREENS).map(([k, v]) => [k, text(v.
 describe("울트라마린 전면 화면 없음 (P10) — 이 화면들에는 바다 띠(data-surface=\"dark\" · \"elevated\")가 없음", () => {
   it("통화 · 여행 타이밍 · 여행 물가 · 직구 · 작업실 · 소개 · GEO · 404", () => {
     const files = [...Object.values(SCREENS).flat(), "app/not-found.tsx"].filter((f) => existsSync(join(WEB_SRC, f)));
-    // 작업 0219: 통화 상세 계산 탑승권(converter.tsx)의 짙은 남색 칸만 예외 (바다 띠가 아니라 탑승권 안 한 칸)
-    const bad = files.filter((f) => !f.endsWith("currencies/components/converter.tsx") && /data-surface="(dark|elevated)"/.test(codeOf(read(join(WEB_SRC, f)))));
+    // 작업 0219: 통화 상세 계산 탑승권(converter.tsx)의 짙은 남색 칸 · 작업 0220: 새 /prices 파랑 첫 면 큰 제목(prices-header.tsx)만 예외
+    const bad = files.filter((f) => !f.endsWith("currencies/components/converter.tsx") && !f.endsWith("travel-price/components/prices-header.tsx") && /data-surface="(dark|elevated)"/.test(codeOf(read(join(WEB_SRC, f)))));
     expect(bad).toEqual([]);
   });
 });
