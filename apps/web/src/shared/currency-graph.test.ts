@@ -63,7 +63,7 @@ describe("PeriodChart — 고른 기간의 최고 · 최저 (C2 · C4)", () => {
   it("기간을 자른 값(shown)으로 extremeDays · extremeLabelText 를 만들어 넘김", () => {
     expect(period()).toMatch(/extremeDays\(\s*shown\s*\)/);
     expect(period()).toMatch(/extremeLabelText\(/);
-    expect(period()).toMatch(/extremeText=\{/);
+    expect(period()).toMatch(/marks=\{marks\}/); // 그래프 2D(시안 F): 최고 · 최저 글은 공통 LineChart 의 marks(꼬리표)로 넘김
   });
 
   it("카드와 같은 계산 — 같은 yearStats 계열 함수를 씀(detail-view)", () => {
