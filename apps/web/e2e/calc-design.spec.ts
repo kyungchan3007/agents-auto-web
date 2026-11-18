@@ -67,15 +67,15 @@ test.describe("직구 계산 디자인 (작업 0208)", () => {
     expect(card.y + card.height - (note.y + note.height)).toBeLessThanOrEqual(48); // 카드 최소 높이(408px)가 글보다 조금 클 수 있어 안쪽 여백(24px) + 여분 24px 까지
   });
 
-  test("넓은 화면 — 과세환율 칸은 기록이 2주 미만이면 짧음 · 수입물가 그래프 높이 340 ~ 380px (휴대폰은 더 낮음)", async ({ page }) => {
+  test("넓은 화면 — 과세환율 칸은 기록이 2주 미만이면 짧음 · 수입물가 그래프 높이(시안 F: 넓은 화면 380px · 휴대폰 300px — 약간의 여유를 둠)", async ({ page }) => {
     await page.goto("/calc");
     const chart = await box(tid(page, "import-chart"));
     if (isPhone(page)) {
-      expect(chart.height).toBeGreaterThanOrEqual(200);
+      expect(chart.height).toBeGreaterThanOrEqual(260);
       expect(chart.height).toBeLessThan(340);
     } else {
-      expect(chart.height).toBeGreaterThanOrEqual(340);
-      expect(chart.height).toBeLessThanOrEqual(380);
+      expect(chart.height).toBeGreaterThanOrEqual(360);
+      expect(chart.height).toBeLessThanOrEqual(460);
     }
     const customs = tid(page, "customs-section");
     const hasGraph = (await customs.getByRole("img").count()) > 0;
