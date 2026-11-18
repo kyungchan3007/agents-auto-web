@@ -35,6 +35,7 @@ const ALLOWED = [
   "packages/ui/src/components/text/big-number.tsx",
   "packages/ui/src/components/layout/nav-bar.tsx",
   "packages/ui/src/components/data/flap-board.tsx", // 작업 0177 출발 안내판 칸 글자 (옛 today-band 자리)
+  "packages/ui/src/components/data/line-chart.tsx", // 작업 0216 그래프 2D 끝 말풍선 큰 숫자
   "apps/web/src/features/currencies/components/currency-detail.tsx",
   "apps/web/src/features/import-calc/components/calc-result.tsx",
 ];
