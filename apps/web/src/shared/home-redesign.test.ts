@@ -118,3 +118,23 @@ describe("죽은 코드를 남기지 않음 (H10)", () => {
     expect(unused).toEqual([]);
   });
 });
+
+// 작업 0217 사용자 지적 — 표 가장자리 홈은 파인 홈 (시안 B/home.html .perf: 표 overflow hidden 이 홈을 카드 안쪽으로 자름 · 홈 색 = 뒤 바탕 파랑 · 파랑 면 끝 = 홈 아래 끝)
+describe("탑승권 홈 — 파인 홈", () => {
+  const code = codeOf(read("features/home/components/ticket.tsx"));
+
+  it("홈은 가짜 요소(before · after)가 아니라 진짜 요소 둘(data-testid=ticket-hole) · 틀(ticket-hole-clip)이 overflow-hidden 으로 카드 안쪽에서 자름 · 절취선 표시(ticket-perf)", () => {
+    expect(code).toMatch(/data-testid="ticket-hole-clip"[^>]*overflow-hidden|overflow-hidden[^>]*data-testid="ticket-hole-clip"/);
+    expect((code.match(/data-testid="ticket-hole"/g) ?? []).length).toBe(2);
+    expect(code).toMatch(/data-testid="ticket-perf"/);
+    expect(code).not.toMatch(/before:rounded-full|after:rounded-full/);
+  });
+
+  it("홈 색은 파랑 면 토큰(bg-pin-cheap) — 뒤 바탕과 같은 색", () => {
+    for (const m of code.matchAll(/<[^>]*data-testid="ticket-hole"[^>]*>/g)) expect(m[0]).toMatch(/bg-pin-cheap/);
+  });
+
+  it("파랑 띠가 첫 줄보다 홈 아래 끝(절취선 + 13px)까지 내려옴 — 띠에 음수 아래 여백(-mb-)", () => {
+    expect(/<div[^>]*data-testid="ticket-band"[^>]*>/.exec(code)?.[0] ?? "").toMatch(/-mb-/);
+  });
+});
