@@ -43,7 +43,8 @@
 - 0220: `TASKS.md` — 0220 줄 PR 대기 / `e2e/country-photos.spec.ts` — 0217 쪽(홈은 시트 없이 카드 안 칩으로 고르기) 채택 · 0220 쪽의 "홈 사진 그대로" 줄은 버림 / `e2e/photos.spec.ts` — 목록에서 /prices 도 뺌 · "/flights 사진 없음" 과 "/prices 사진 없음" 테스트 둘 다 유지 / `shared/font-readability.test.ts` — 허용 목록에 0223(window-transition) · 0220(prices-header) 두 줄 모두 둠 / `shared/pages-redesign.test.ts` — 파랑 면 예외를 converter.tsx(0219) · prices-header.tsx(0220) 둘 다 허용하는 한 식으로 합침 / `shared/photos.test.ts` — 홈 · /flights · /prices 항목을 모두 뺌(주석 셋).
 - 0221: `TASKS.md` — 0221 줄 PR 대기 / `e2e/photos.spec.ts` — 목록에서 /calc 도 뺌 · "/calc 사진 없음" 테스트까지 넷 모두 유지 / `shared/photos.test.ts` — /calc 항목도 뺌(주석 넷).
 - 0221 한 번 더(151e0db · 넓은 화면 제목 자리 세 줄 → 두 줄): 충돌 없음.
-- 합친 뒤 고친 것(브랜치끼리 섞여서 생긴 것): `e2e/photos.spec.ts` "휴대폰 — 사진 구간이 가로로 넘치지 않고…" — 0218 이 /prices 로 바꿨는데 0220 이 /prices 사진을 뺌 → /about 으로(2단계에서 이 검사도 지움) / `e2e/flights-redesign.spec.ts` 탑승권 칸 검사 — 들어오기 움직임 중 위치를 재면 흔들림 → 움직임 줄이기로 고정.
+- 0221 사용자 결정(직구 계산 머리 파랑 · 38fadbc): `shared/number-emphasis.test.ts` — 직구 큰 문장은 0221 쪽(sea) · 여행 물가는 0220 쪽(sea) · 홈 줄은 0217 쪽 주석(0222 쪽에서 이미 정리됨) 채택 / `shared/pages-redesign.test.ts` — 파랑 면 예외를 converter.tsx(0219) · prices-header.tsx(0220) · calc-page.tsx(0221) 세 파일을 한 식에 모음.
+- 합친 뒤 고친 것(브랜치끼리 섞여서 생긴 것): `shared/calc-blue.test.ts`(0221) — "사진 없음" 줄이 PhotoHeader 글자를 담아 no-photos 검사에 걸림 → 영문 라벨 줄만 남기고 지움(이 브랜치에서만 고침 · 충돌 없음) / `e2e/photos.spec.ts` "휴대폰 — 사진 구간이 가로로 넘치지 않고…" — 0218 이 /prices 로 바꿨는데 0220 이 /prices 사진을 뺌 → /about 으로(2단계에서 이 검사도 지움) / `e2e/flights-redesign.spec.ts` 탑승권 칸 검사 — 들어오기 움직임 중 위치를 재면 흔들림 → 움직임 줄이기로 고정.
 - 합친 뒤 e2e: 가짜 API 빌드로 582 통과 · 실패 19건은 모두 가짜 자료에 /geo · /log 자료와 핀란드 같은 나라가 없어서(변경과 무관 · 실제 자료 미리보기에서 확인).
 
 ## 계획 밖 변경 이유

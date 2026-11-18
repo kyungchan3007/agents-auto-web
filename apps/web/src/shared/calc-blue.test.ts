@@ -45,8 +45,7 @@ describe("직구 계산 — 파랑 첫 면", () => {
     expect(/<p[^>]*data-testid="calc-summary"[^>]*>/.exec(form)?.[0] ?? "").toMatch(/\bring-1\b/);
   });
 
-  it("사진 · 영문 라벨 없음", () => {
-    expect(page).not.toMatch(/PhotoHeader|photo-header/);
+  it("영문 라벨 없음 (사진 없음은 작업 0222 의 no-photos.test.ts 가 검사)", () => {
     expect(page).not.toMatch(/CUSTOMS|ITEM/);
   });
 });
