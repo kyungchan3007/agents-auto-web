@@ -23,6 +23,9 @@ const idx = (period: string) => Number(period.slice(0, 4)) * 12 + Number(period.
 
 type Pt = { x: number; y: number; period: string };
 
+/** 칸을 사방으로 n px 넓힘 — 노란 점의 테두리(굵기 2 · 크기가 그래프 폭과 상관없이 일정)까지 이름표가 피하게 (작업 0218 · 그래프가 좁아져도 안 가림) */
+const grow = (b: { left: number; top: number; right: number; bottom: number }, n: number) => ({ left: b.left - n, top: b.top - n, right: b.right + n, bottom: b.bottom + n });
+
 /** 선 하나의 점들 — x 는 달 순서(공통 범위) · y 는 이 선의 최저 ~ 최고 */
 function layout(points: IndexPoint[], from: number, to: number): Pt[] {
   const vs = points.map((p) => p.value);
@@ -101,7 +104,7 @@ export function FlightsGraph({ air, tour, fx }: { air: IndexPoint[]; tour: Index
             <PlaneRouteLazy url={PLANE_MODEL_URL} points={airPts.map((p) => ({ x: p.x / W, y: 1 - p.y / H }))} stopIndex={cheapIdx} className="size-full" />
           </div>
           {texts && cheap && pricey && (
-            <PointLabels max={{ ...px(pricey), text: texts.max }} min={{ ...px(cheap), text: texts.min }} today={px(airPts[airPts.length - 1])} bounds={{ left: 0, top: -PAD_LABEL, right: pw, bottom: H * s + PAD_LABEL }} avoid={[planeAvoidBox(px(cheap), s), dotBox(px(cheap), s)]} />
+            <PointLabels max={{ ...px(pricey), text: texts.max }} min={{ ...px(cheap), text: texts.min }} today={px(airPts[airPts.length - 1])} bounds={{ left: 0, top: -PAD_LABEL, right: pw, bottom: H * s + PAD_LABEL }} avoid={[planeAvoidBox(px(cheap), s), grow(dotBox(px(cheap), s), 2)]} />
           )}
         </div>
         {endOn &&

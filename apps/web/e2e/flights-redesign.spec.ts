@@ -145,7 +145,7 @@ test.describe("새 /flights — 움직임 (작업 0218)", () => {
   test("움직임 켜짐 — 탑승권이 왼쪽에서 들어와 제자리(±1px) · 끝나면 숫자 = 최종 값 · 숫자 글이 겹치지 않음", async ({ page }) => {
     await page.goto("/flights");
     test.skip(!(await ready(page)), "자료 없음");
-    const home = (await box(page, "flights-ticket")).x;
+    const home = ((await page.getByRole("heading", { level: 1 }).boundingBox())?.x) ?? 0; // 제목 왼쪽 = 탑승권이 서야 할 왼쪽 (같은 가운데 칸)
     await slide(page).scrollIntoViewIfNeeded();
     await page.waitForTimeout(1800);
     expect(Math.abs((await box(page, "flights-ticket")).x - home)).toBeLessThanOrEqual(1);

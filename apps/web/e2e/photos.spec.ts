@@ -5,7 +5,7 @@ import { expect, test } from "@playwright/test";
 
 const WITH_PHOTO: [string, string, RegExp][] = [
   // 홈은 작업 0217 새 디자인에서 사진 없음 (아래 "홈 — 사진 없음")
-  ["/flights", "window-sunrise", /./],
+  // /flights 는 작업 0218 새 디자인에서 사진 없음 (머리는 글자판 · 아래 "사진 없음" 목록)
   ["/prices", "swiss-traveler", /./],
   ["/calc", "plane-below", /./],
   ["/about", "plane-sunset", /./],
@@ -44,7 +44,7 @@ for (const path of ["/", "/log", "/currencies", "/currencies/USD", "/geo"]) {
 
 test("휴대폰 — 사진 구간이 가로로 넘치지 않고 큰 제목이 화면 안", async ({ page }) => {
   test.skip(test.info().project.name !== "휴대폰", "휴대폰 전용");
-  await page.goto("/flights");
+  await page.goto("/prices"); // /flights 는 작업 0218 에서 사진 머리가 글자판으로 바뀜 — 사진 머리가 남은 화면으로 확인
   const h1 = await page.locator('[data-testid="photo-header"]').getByRole("heading", { level: 1 }).boundingBox();
   const width = page.viewportSize()?.width ?? 0;
   expect(h1?.x ?? -1).toBeGreaterThanOrEqual(0);
@@ -59,4 +59,11 @@ test("공유 미리보기 이미지 — /opengraph-image 가 1200×630 PNG", asy
   const body = await res.body();
   expect(body.readUInt32BE(16)).toBe(1200); // PNG IHDR 폭
   expect(body.readUInt32BE(20)).toBe(630); // 높이
+});
+
+// 작업 0218 — /flights 는 새 디자인에서 사진 없음 (머리는 글자판) · 사진 파일 · 부품 삭제는 0222
+test("/flights — 사진 없음 (머리는 글자판)", async ({ page }) => {
+  await page.goto("/flights");
+  await expect(page.locator('[data-testid="photo-header"]')).toHaveCount(0);
+  await expect(page.locator('img[src*="/images/photos/"], img[srcset*="/images/photos/"]')).toHaveCount(0);
 });
