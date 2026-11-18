@@ -41,6 +41,15 @@ describe("흰 글자 줄 (작업 0216 · 시안 B 의 .w)", () => {
   });
 });
 
+describe("이름은 흰 글자 · 값은 노랑 — 줄 안 whiteUntil (작업 0218)", () => {
+  it("Row 에 whiteUntil(앞 N칸은 흰 글자)을 받음 — 기본은 줄 색 그대로", () => {
+    const s = src();
+    expect(s).toMatch(/whiteUntil\??:\s*number/);
+    expect(s).toMatch(/whiteUntil/);
+    expect(s).toMatch(/text-foam/);
+  });
+});
+
 describe("접근성 — 판 전체를 한 문장으로 (B6)", () => {
   it("판에 role=\"img\" + aria-label={label} — 칸 글자는 aria-hidden (글자 하나씩 읽지 않음)", () => {
     const s = src();
