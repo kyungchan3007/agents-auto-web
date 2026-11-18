@@ -33,6 +33,7 @@
 | 0195 | 플랩 파비콘 · 앱 아이콘 · 남은 이름 검사 (#222) | builder | 머지됨 (#230) | task/0195-flap-icons | apps/web/src/app/icon.svg · apple-icon.png · public/icons/** |
 | 0197 | 사이트 이름 표기 플랩 → Flapfx (#228 · Full) | builder | 머지됨 (#229) | task/0197-flapfx-name | apps/web/src/** · apps/api/src/features/geo/** · docs/** · README.md |
 | 0198 | 여행 물가 나라 더 보기 · 접기를 알약 버튼으로 · 펼치면 화면 아래에 붙음 (#231) | builder | 머지됨 (#232) | task/0198-fold-button | apps/web/src/features/travel-price/** · apps/web/e2e/** |
-| 0199 | 나라 국기(SVG) — 홈 도착지 · 통화 · 여행 물가 (#234) | builder | PR 대기 | task/0199-country-flags | apps/web/src/features/{home,currencies,travel-price}/** · packages/ui/src/components/data/*flag.tsx |
-| 0200 | 직구 계산 배치 — 시안 B (입력 두 줄 · 칸 고정 · 예시 값 · 수입물가 가로 전체 → 과세환율) (#235) | builder | PR 대기 | task/0200-calc-layout | apps/web/src/features/import-calc/** |
-| 0201 | 고른 나라 사진 · 휴대폰 여행지 고르기 · 고른 나라 물가 (#233 · Full) | builder | PR 대기 | task/0201-country-photos | apps/web/public/images/photos/country-* · packages/ui/src/lib/photo.ts · features/{home,intro,travel-price}/** |
+| 0199 | 나라 국기(SVG) — 홈 도착지 · 통화 · 여행 물가 (#234) | builder | 머지됨 (#236) | task/0199-country-flags | apps/web/src/features/{home,currencies,travel-price}/** · packages/ui/src/components/data/*flag.tsx |
+| 0200 | 직구 계산 배치 — 시안 B (입력 두 줄 · 칸 고정 · 예시 값 · 수입물가 가로 전체 → 과세환율) (#235) | builder | 머지됨 (#237) | task/0200-calc-layout | apps/web/src/features/import-calc/** |
+| 0201 | 고른 나라 사진 · 휴대폰 여행지 고르기 · 고른 나라 물가 (#233 · Full) | builder | 머지됨 (#238) | task/0201-country-photos | apps/web/public/images/photos/country-* · packages/ui/src/lib/photo.ts · features/{home,intro,travel-price}/** |
+| 0204 | 2026-11-18 AI 답변 세션 측정 (질문 3판 첫 측정) · #157 조사 | geo | PR 대기 | task/0204-geo-answers-1118 | apps/api/data/geo-answers/2026-11-18.json |

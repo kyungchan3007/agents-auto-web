@@ -16,6 +16,7 @@
 - .tmp/ 의 PR 본문 · #157 댓글 초안 (커밋하지 않음)
 
 ## 계획 밖 변경 이유
+- .agents/orchestration/TASKS.md — lead: 0199~0201 머지됨 · 0204 PR 대기 줄 (작업 보드는 lead 가 PR 마다 고침)
 
 ## 완료 기준
 - [x] bash .agents/checks.sh PASS
