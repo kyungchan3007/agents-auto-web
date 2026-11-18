@@ -130,8 +130,11 @@ describe("장식을 걷어 냄 (R9) — 등장 효과 · 오로라 글자 · 그
 
   it("공통 컴포넌트(packages/ui/src/components)에 그림자(shadow) · 그라데이션이 없음", () => {
     // 사진 머리 부품(photo-header.tsx)의 막 · 숫자 강조 부품(emph.tsx)의 형광펜 띠는 글자를 읽히게 · 돋보이게 하는 기능이라 그라데이션을 허용 (작업 0175) · 그림자는 안내판(flap-board.tsx · 작업 0177 "벽에 걸린 물건처럼")만 허용
+    // 그래프 2D(시안 F · 사용자 확정 "시안 그대로"): 그래프 부품(선 그래프 · 12달 막대 · 여행 물가 자)은 그라데이션 면 · 그림자가 시안의 핵심이라 허용 — SVG 의 linearGradient · feDropShadow
+    const GRAPH_PARTS = ["line-chart.tsx", "month-bars.tsx", "ruler-chart.tsx"];
     const bad = sources(join(UI_SRC, "components"))
       .filter((f) => {
+        if (GRAPH_PARTS.some((g) => f.endsWith(g))) return false;
         const code = codeOf(read(f));
         const gradient = !f.endsWith("photo-header.tsx") && !f.endsWith("emph.tsx") && /bg-gradient|linear-gradient|\bfrom-[\w/.-]+\s+to-|\bvia-[\w/.-]+/.test(code);
         return gradient || (!f.endsWith("flap-board.tsx") && /\bshadow(-[\w\[\]\/.-]+)?\b/.test(code));
