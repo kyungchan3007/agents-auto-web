@@ -32,6 +32,9 @@ test.describe("새 홈 — 첫 화면 (작업 0217)", () => {
     const band = await box(page, "ticket-band");
     const card = await box(page, "ticket");
     expect(await bg(page, "ticket-band")).toBe(BLUE);
+    const vw = page.viewportSize()?.width ?? 0;
+    expect(band.x, "파랑 띠가 왼쪽 끝부터").toBeLessThanOrEqual(1);
+    expect(band.x + band.width, "파랑 띠가 오른쪽 끝까지").toBeGreaterThanOrEqual(vw - 1);
     expect(band.y + band.height).toBeGreaterThan(card.y + 20); // 파랑 띠 끝이 카드 위쪽보다 아래 ·
     expect(band.y + band.height).toBeLessThan(card.y + card.height - 20); // 카드 아래쪽보다 위 = 경계에 걸침
     const flap = await box(page, "flap-board");
