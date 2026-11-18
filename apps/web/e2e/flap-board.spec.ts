@@ -1,5 +1,5 @@
 // 작업 0177 — 홈 첫 화면 출발 안내판 (실행은 lead 가 PR 직전에 — 빌드한 사이트를 읽음 · 작성만)
-// 표시: data-testid="flap-board"(판 · role=img · aria-label) · "flap-row"(data-tone dest|money) · "flap-cell"(칸 · aria-hidden) · "photo-header"(사진 구간) · "photo-fade-bottom" · #today (작업 0177 수정: 3D 지구 없음 · 판은 사진 아래 하늘 종이 위)
+// 표시: data-testid="flap-board"(판 · role=img · aria-label) · "flap-row"(data-tone dest|money) · "flap-cell"(칸 · aria-hidden) · #today (작업 0177 수정: 3D 지구 없음 · 판은 하늘 종이 위)
 // 값은 날마다 · 자료 유무에 따라 달라서 두 경우(값 있음 · 없음 "----") 모두 맞게 봄
 import { expect, test } from "@playwright/test";
 
@@ -27,7 +27,6 @@ for (const width of [375, 1440, 1920]) {
       expect(b.x, "판이 화면 안 왼쪽").toBeGreaterThanOrEqual(0);
       expect(b.x + b.width, "판이 화면 안 오른쪽").toBeLessThanOrEqual(width + 0.5);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), "가로 넘침").toBeLessThanOrEqual(0);
-      await expect(page.locator('[data-testid="photo-header"]')).toHaveCount(0);
     });
 
     test("판 색 — 판 #16246E · 칸 #1f3190 · 두 줄 모두 햇빛 노랑 · 그림자 · 모서리 10px", async ({ page }) => {
