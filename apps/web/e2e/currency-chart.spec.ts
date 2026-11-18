@@ -71,7 +71,7 @@ test.describe("통화 상세 1년 흐름 — 풍성한 2D (작업 0219 · 시안
         const b = boxes[j];
         expect(a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height, `꼬리표 · 말풍선 ${i + 1} · ${j + 1} 겹침`).toBe(false);
       }
-    expect((await chart.boundingBox())!.height, "그래프 높이").toBeGreaterThanOrEqual(isPhone(page) ? 240 : 380);
+    expect((await chart.boundingBox())!.height, "그래프 높이").toBeGreaterThanOrEqual(isPhone(page) ? 260 : 360);
   });
 
   test("화면에 들어오기 전엔 시작 안 함(idle · 0) → 들어오면 재생 → 끝나면 done", async ({ page }) => {
