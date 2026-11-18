@@ -22,6 +22,12 @@
 - .agents/orchestration/TASKS.md · .agents/specs/0217-redesign-home/**
 
 ## 계획 밖 변경 이유
+- packages/ui/src/hooks/use-count-up.ts — 웹 쪽 화면이 ui 의 lib 를 직접 가져올 수 없어(package.json exports 가 보호 파일) 훅 파일에서 formatCount 를 같이 내보냄
+- packages/ui/src/components/data/flap-board.tsx — 375px 에서 판이 탑승권 카드 밖으로 넘쳐, 칸이 줄어들 수 있게(min-w-0 shrink) 함
+- apps/web/e2e/hero-photo.spec.ts — 삭제: 홈 머리 사진 덮개 · 노란 형광펜 표시줄 검사만 있었고 새 홈에는 둘 다 없음
+- apps/web/e2e/country-photos.spec.ts · flap-board.spec.ts · home-design.spec.ts · home.spec.ts · photos.spec.ts · flags.spec.ts — 옛 홈(사진 · 선 그래프 · 비행기 · 옛 도착지 줄)을 전제한 기대를 새 홈에 맞게 고침
+- apps/web/src/shared/{font-readability · home-band-trim · home-flap-board · home-redesign · intro-structure · number-emphasis · photos}.test.ts — 같은 이유로 소스 검사 고침 (hero-section 큰 제목 font-display 허용 · 사진 머리 없음 · picked-board 가 ticket 으로)
+- apps/web/src/features/home/components/{travel-timing-section · picked-photo-header · picked-board}.tsx — 삭제: 새 홈이 쓰지 않아 "죽은 코드 없음" 검사(home-redesign.test H10)가 요구함 (사진 부품 PhotoHeader · three/ 코드는 그대로 · 삭제는 0222)
 
 ## 위험
 - 기존 홈 e2e · 소스 검사가 사진 머리 · 3D 를 전제 — 새 결정에 맞게 고치고 이유를 여기 적음
@@ -33,3 +39,9 @@
 - lead: 미리보기 1280 · 390 · 시안 캡처와 나란히 비교 · 사파리 눈으로 확인
 
 ## 계획과 달라진 점
+- 도착지 줄: ui 의 DestinationRow 를 고치지 않고 홈 안에 새 목록(destination-table.tsx)을 만듦 — 줄 안에서 카운트업 훅(useCountUp)을 쓰는 client 부품이 필요하고, DestinationRow 는 /design 견본이 그대로 쓰고 있어서. ui 쪽 파일은 바꾸지 않음.
+- 탑승권 카드: 위(제목 + 글자판) · 아래(판정 + 고르기)를 CSS grid 두 줄(subgrid)로 나누고 파랑 띠를 첫 줄 높이만큼만 깔아 경계가 절취선에 맞음. 시안의 절취선 양쪽 홈(파랑 동그라미)도 같은 방식.
+- 예전 PickedBoard(client)를 Ticket 으로 합침: 서버가 지금 안내판 값(initial)을 계산해 넘기고, 고른 나라가 있으면 같은 카드 안에서 판이 그 나라로 바뀜.
+- 12달 막대 높이는 가장 싼 달 20% ~ 가장 비싼 달 92% 선형 (시안 값과 같은 범위).
+- /flights 링크는 prefetch 끔 — 켜 두면 /flights 의 머리 사진이 홈에서 미리 받아져 "홈 사진 요청 0" 이 깨짐.
+- 900 굵기는 넣지 않음: 큰 제목 800 · 자간 -0.03em (시안은 900 · -0.055em). 글자 모양이 시안과 조금 다름.

@@ -15,10 +15,10 @@ const choose = async (page: Page, query: string, optionText: string) => {
 };
 
 test.describe("여행지 고르기 시트 · 나라 사진 (작업 0201)", () => {
-  test("안 고른 첫 화면 — 지금 사진 · 지금 물가 문장 · 버튼이 보임", async ({ page }) => {
+  test("안 고른 첫 화면 — 홈에 사진 없음(작업 0217) · 여행 물가는 지금 사진 · 지금 물가 문장 · 버튼이 보임", async ({ page }) => {
     await page.goto("/");
     await expect(open(page)).toBeVisible();
-    expect(await heroSrc(page)).toContain("window-fjord");
+    await expect(page.getByTestId("photo-header-img")).toHaveCount(0);
     await page.goto("/prices");
     expect(await heroSrc(page)).toContain("swiss-traveler");
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/한국보다 물가가 \d+% 낮습니다/);
@@ -51,13 +51,13 @@ test.describe("여행지 고르기 시트 · 나라 사진 (작업 0201)", () =>
     }
   });
 
-  test("도쿄 고르기 → 홈 머리 사진이 일본 · 안내판이 바뀜 · 새로고침해도 유지", async ({ page }) => {
+  test("도쿄 고르기 → 안내판이 바뀜 · 새로고침해도 유지 (홈에는 사진 없음 · 작업 0217)", async ({ page }) => {
     await page.goto("/");
     await choose(page, "도쿄", "도쿄");
-    await expect.poll(() => heroSrc(page)).toContain("country-jpn");
     await expect(page.locator("#today")).toContainText(/도쿄/);
     await page.reload();
-    await expect.poll(() => heroSrc(page)).toContain("country-jpn");
+    await expect(page.locator("#today")).toContainText(/도쿄/);
+    await expect(page.getByTestId("photo-header-img")).toHaveCount(0);
   });
 
   test("칩으로 고르기 — 방콕", async ({ page }) => {
@@ -65,15 +65,15 @@ test.describe("여행지 고르기 시트 · 나라 사진 (작업 0201)", () =>
     await open(page).click();
     await dialog(page).getByTestId("pick-chip").filter({ hasText: "방콕" }).click();
     await expect(dialog(page)).toHaveCount(0);
-    await expect.poll(() => heroSrc(page)).toContain("country-tha");
+    await expect(page.locator("#today")).toContainText(/방콕/);
   });
 
-  test("유로 나라(파리)는 유럽 사진 · 사진 없는 나라(두바이)는 지금 사진", async ({ page }) => {
+  test("유로 나라(파리) · 환율 없는 나라(두바이)도 안내판이 그 도시로 바뀜", async ({ page }) => {
     await page.goto("/");
     await choose(page, "파리", "파리");
-    await expect.poll(() => heroSrc(page)).toContain("country-eur");
+    await expect(page.locator("#today")).toContainText(/파리/);
     await choose(page, "두바이", "두바이");
-    await expect.poll(() => heroSrc(page)).toContain("window-fjord");
+    await expect(page.locator("#today")).toContainText(/두바이/);
   });
 
   test("여행 물가 — 고른 나라 문장 + 그 나라 사진 · '다른 나라 보기' 로 바꿈", async ({ page }) => {
@@ -97,10 +97,10 @@ test.describe("여행지 고르기 시트 · 나라 사진 (작업 0201)", () =>
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/한국보다 물가가/);
   });
 
-  test("망가진 저장 값 · 모르는 나라는 무시 — 지금 화면", async ({ page }) => {
+  test("망가진 저장 값 · 모르는 나라는 무시 — 지금 안내판 · 지금 사진(여행 물가)", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem("flapfx:picked", '{"v":1,"country":"XXX","city":"없음","budget":0}'));
     await page.goto("/");
-    expect(await heroSrc(page)).toContain("window-fjord");
+    await expect(page.locator("#today")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
     await page.goto("/prices");
     expect(await heroSrc(page)).toContain("swiss-traveler");
   });

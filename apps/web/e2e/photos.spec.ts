@@ -4,7 +4,7 @@
 import { expect, test } from "@playwright/test";
 
 const WITH_PHOTO: [string, string, RegExp][] = [
-  ["/", "window-fjord", /여행 타이밍/],
+  // 홈은 작업 0217 새 디자인에서 사진 없음 (아래 "홈 — 사진 없음")
   ["/flights", "window-sunrise", /./],
   ["/prices", "swiss-traveler", /./],
   ["/calc", "plane-below", /./],
@@ -34,8 +34,8 @@ for (const [path, photo] of WITH_PHOTO) {
   });
 }
 
-for (const path of ["/log", "/currencies", "/currencies/USD", "/geo"]) {
-  test(`${path} — 사진 없음 (작업실 · 통화 · GEO)`, async ({ page }) => {
+for (const path of ["/", "/log", "/currencies", "/currencies/USD", "/geo"]) {
+  test(`${path} — 사진 없음 (홈 · 작업실 · 통화 · GEO)`, async ({ page }) => {
     await page.goto(path);
     await expect(page.locator('[data-testid="photo-header"]')).toHaveCount(0);
     await expect(page.locator('img[src*="/images/photos/"], img[srcset*="/images/photos/"]')).toHaveCount(0);

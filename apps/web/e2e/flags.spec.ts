@@ -24,7 +24,7 @@ test.describe("나라 국기 (작업 0199)", () => {
     expect(n).toBeGreaterThan(0);
     for (let i = 0; i < n; i++) await expect(rows.nth(i).locator("svg").first()).toBeVisible();
     await noEmojiFlag(page);
-    await noOverlap(rows.first().locator("svg").first(), tid(page, "dest-city").first().locator("span").last());
+    await noOverlap(rows.first().locator("svg").first(), tid(page, "dest-city").first()); // 작업 0217: 국기는 도시 이름 왼쪽
   });
 
   test("통화 목록 — 줄마다 svg 국기", async ({ page }) => {

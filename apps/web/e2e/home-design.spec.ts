@@ -1,4 +1,4 @@
-// 작업 0210 (#249) — 홈 첫 화면 디자인 검사 지적: 1280×800 첫 화면에 "내 여행지 고르기" · 안내판 제목은 머리에 딸린 라벨 · 휴대폰 구간 간격 · 각주 · 그래프 라벨 대비
+// 작업 0210 (#249) → 작업 0217 — 홈 첫 화면 검사 (새 디자인: 큰 제목 · 탑승권 카드 · 12달 막대 라벨 대비) · 옛 사진 머리 · 선 그래프 · 휴대폰 간격 검사는 새 홈에 없는 모양이라 뺌
 import { type Locator, type Page, expect, test } from "@playwright/test";
 
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 640;
@@ -44,55 +44,37 @@ async function worstContrast(page: Page, loc: Locator): Promise<number> {
   );
 }
 
-test.describe("홈 첫 화면 디자인 (작업 0210)", () => {
-  test("1280×800 첫 화면 안에 '내 여행지 고르기' 와 안내판이 들어옴", async ({ page }) => {
+test.describe("홈 첫 화면 디자인 (작업 0210 → 0217 새 디자인)", () => {
+  test("1280×800 첫 화면 안에 큰 제목과 설명이 들어오고 · 탑승권 카드 위쪽이 보임", async ({ page }) => {
     test.skip(isPhone(page), "넓은 화면 전용");
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/");
     await page.waitForTimeout(400);
-    const btn = await box(page.getByTestId("pick-trip-open").first());
-    expect(btn.y + btn.height, "버튼 아래 끝").toBeLessThanOrEqual(800);
-    const board = await box(page.getByTestId("flap-board").first());
-    expect(board.y + board.height, "안내판 아래 끝").toBeLessThanOrEqual(800);
+    const h1 = await box(page.getByRole("heading", { level: 1 }));
+    expect(h1.y + h1.height, "큰 제목 아래 끝").toBeLessThanOrEqual(800);
+    const card = await box(page.getByTestId("ticket"));
+    expect(card.y, "탑승권 카드가 첫 화면 안에서 시작").toBeLessThan(800);
   });
 
-  test("'이번 주 가장 싸게 갈 수 있는 곳' 은 머리의 작은 제목(여행 타이밍)과 같은 라벨 모양 · 제목(h2) 시맨틱은 그대로", async ({ page }) => {
+  test("'이번 주 가장 싸게 갈 수 있는 곳' 은 제목(h2) 시맨틱 그대로 · 구간 이름으로 쓰임", async ({ page }) => {
     await page.goto("/");
     const label = page.locator("#today-title");
     expect(await label.evaluate((el) => el.tagName)).toBe("H2");
-    const eyebrow = page.locator("section[aria-labelledby='timing-title'] p").first();
-    const style = (l: Locator) => l.evaluate((el) => { const s = getComputedStyle(el); return [s.fontSize, s.fontWeight, s.color, s.letterSpacing]; });
-    expect(await style(label)).toEqual(await style(eyebrow));
+    await expect(page.locator("#today")).toHaveAttribute("aria-labelledby", "today-title");
   });
 
-  test("휴대폰 — 머리 → 안내판 · 안내판 → 버튼 · 버튼 → 그래프 간격이 같음 (±2px)", async ({ page }) => {
-    test.skip(!isPhone(page), "휴대폰 전용");
-    await page.goto("/");
-    await page.waitForTimeout(400);
-    const head = await box(page.getByTestId("photo-header").first());
-    const title = await box(page.locator("#today-title"));
-    const evidence = await box(page.locator("#today p").first());
-    const btn = await box(page.getByTestId("pick-trip-open").first());
-    const graph = await box(page.getByTestId("travel-graph"));
-    const a = title.y - (head.y + head.height);
-    const b = btn.y - (evidence.y + evidence.height);
-    const c = graph.y - (btn.y + btn.height);
-    expect(Math.abs(a - b), `머리→안내판 ${a} · 안내판→버튼 ${b}`).toBeLessThanOrEqual(2);
-    expect(Math.abs(c - b), `버튼→그래프 ${c} · 안내판→버튼 ${b}`).toBeLessThanOrEqual(2);
-  });
-
-  test("그래프 각주 · '가장 쌈 / 가장 비쌈' 라벨 글자 대비 4.5:1 이상", async ({ page }) => {
+  test("12달 막대 각주 · '가장 쌈 / 가장 비쌈' 라벨 글자 대비 4.5:1 이상", async ({ page }) => {
     await page.goto("/");
     await page.waitForTimeout(500);
     const note = page.getByText("지수는 값이 클수록 항공료가 비싸다는 뜻", { exact: false }).first();
     await note.scrollIntoViewIfNeeded();
+    await page.evaluate(() => window.scrollBy(0, -200));
     expect(await worstContrast(page, note), "각주").toBeGreaterThanOrEqual(4.5);
-    if (!isPhone(page)) {
-      for (const text of [/월 가장 쌈/, /월 가장 비쌈/]) {
-        const label = page.locator("[data-testid=travel-graph]").getByText(text).first();
-        await label.scrollIntoViewIfNeeded();
-        expect(await worstContrast(page, label), String(text)).toBeGreaterThanOrEqual(4.5);
-      }
+    for (const text of [/월 가장 쌈/, /월 가장 비쌈/]) {
+      const label = page.locator("[data-testid=year-bars]").getByText(text).first();
+      await label.scrollIntoViewIfNeeded();
+      await page.evaluate(() => window.scrollBy(0, -200)); // 따라오는 메뉴(파랑) 밑에 깔리지 않게
+      expect(await worstContrast(page, label), String(text)).toBeGreaterThanOrEqual(4.5);
     }
   });
 });
