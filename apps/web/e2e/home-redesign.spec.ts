@@ -74,6 +74,55 @@ test.describe("새 홈 — 첫 화면 (작업 0217)", () => {
   });
 });
 
+test.describe("새 홈 — 표 가장자리 홈은 파인 홈 (작업 0217 사용자 지적 · 시안 B/home.html .perf)", () => {
+  // 시안: 표(overflow hidden)가 홈 동그라미를 카드 안쪽으로 잘라 냄 · 홈 색 = 그 자리 뒤 바탕(파랑) · 파랑 면 끝 = 홈 아래 끝(절취선 + 반지름 13px) → 홈이 통째로 파랑 안에 있어 파인 것으로 보임
+  //   표시: data-testid="ticket-perf"(절취선) · "ticket-hole"(홈 동그라미 · 왼쪽 오른쪽) · "ticket-hole-clip"(홈을 카드 안쪽으로 자르는 틀)
+  const measure = (page: Page) =>
+    page.evaluate(() => {
+      const r = (id: string) => [...document.querySelectorAll(`[data-testid="${id}"]`)].map((e) => e.getBoundingClientRect());
+      const band = r("ticket-band")[0];
+      const card = r("ticket")[0];
+      const clip = r("ticket-hole-clip")[0];
+      const perf = r("ticket-perf")[0];
+      const holes = [...document.querySelectorAll('[data-testid="ticket-hole"]')].map((e) => ({ rect: e.getBoundingClientRect(), bg: getComputedStyle(e).backgroundColor }));
+      return { band, card, clip, perf, holes: holes.map((h) => ({ top: h.rect.top, bottom: h.rect.bottom, left: h.rect.left, right: h.rect.right, bg: h.bg })) };
+    });
+
+  for (const stage of ["처음", "여행지를 바꾼 뒤(카드 높이가 달라짐)"]) {
+    test(`홈이 통째로 파랑 면 안(아래 끝 = 파랑 면 아래 끝 ±1px) · 홈 색 = 파랑 · 카드 안쪽으로 잘림 · ${stage}`, async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await page.goto("/");
+      await page.waitForTimeout(500);
+      if (stage !== "처음") {
+        await tid(page, "ticket").getByTestId("pick-chip").filter({ hasText: "방콕" }).click();
+        await page.waitForTimeout(500);
+      }
+      const m = await measure(page);
+      expect(m.holes.length, "홈 두 개").toBe(2);
+      for (const h of m.holes) {
+        expect(Math.abs(h.bottom - (m.band.top + m.band.height)), "홈 아래 끝 = 파랑 면 아래 끝").toBeLessThanOrEqual(1);
+        expect(h.top, "홈 위 끝이 파랑 면 안").toBeGreaterThan(m.band.top);
+        expect(h.bg, "홈 색 = 뒤 바탕(파랑)").toBe(BLUE);
+        expect(h.bottom - h.top, "지름 28px").toBeGreaterThan(26);
+      }
+      // 절취선은 홈 한가운데 높이 (홈 아래 끝 − 13px ± 1.5)
+      expect(Math.abs(m.perf.top - (m.holes[0].bottom - 13)), "절취선 높이 = 홈 가운데").toBeLessThanOrEqual(1.5);
+      // 틀은 카드 폭 그대로(홈이 카드 밖으로 안 삐져나옴 = 잘림)
+      expect(Math.abs(m.clip.left - m.card.left)).toBeLessThanOrEqual(1.5);
+      expect(Math.abs(m.clip.right - m.card.right)).toBeLessThanOrEqual(1.5);
+      expect(await page.evaluate(() => getComputedStyle(document.querySelector('[data-testid="ticket-hole-clip"]') as HTMLElement).overflow)).toBe("hidden");
+    });
+  }
+
+  test("파랑 면이 카드 위 · 아래로 걸침은 그대로 · 가로 넘침 없음", async ({ page }) => {
+    await page.goto("/");
+    const m = await measure(page);
+    expect(m.band.top + m.band.height).toBeGreaterThan(m.card.top + 20);
+    expect(m.band.top + m.band.height).toBeLessThan(m.card.top + m.card.height - 20);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+  });
+});
+
 test.describe("새 홈 — 12달 막대 (작업 0217)", () => {
   test("12개 · 가장 비싼 달 빨강 · 가장 싼 달 노랑 · 나머지 연한 파랑 · 막대 위 글 · 자세히 링크", async ({ page }) => {
     await page.goto("/");
