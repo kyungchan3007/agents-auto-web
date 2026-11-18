@@ -32,6 +32,7 @@
 - apps/web/src/shared/{font-readability · number-emphasis · pages-redesign · photos}.test.ts — 옛 /prices(사진 머리 · 흰 카드)를 전제한 소스 검사를 새 디자인에 맞게 (큰 글씨 허용 목록에 prices-header 추가 · 큰 문장 EmphText 가 bg="sea" · 파랑 면 예외 · 사진 머리 없음)
 - apps/web/e2e/{country-photos · detail-design · emphasis · photos}.spec.ts — 같은 이유로 옛 /prices 기대(사진 · 흰 카드 틀 · 형광펜 띠)를 고침
 - 흰 바탕 결정: 0216 의 네 커밋(a4ee96e · cd82273 · 79b3ae1 · 94b795f)을 cherry-pick (lead 지시) · 예산 카드에 옅은 선
+- (그래프 2D · 시안 F) apps/web/src/features/travel-price/components/price-ruler.tsx — 자 그림을 새 부품 RulerChart 로 교체(자료 · 위치 · 휴대폰 tier 계산은 그대로 두고 그림만 넘김) / packages/ui/src/components/data/ruler-chart.tsx — 새 파일: 그라데이션 자 막대 · 국기 원(Flag) · 이름 · 큰 숫자 카운트업 · 한국 100 진한 선 + 노랑 꼬리표 · 순서 움직임(자 뻗음 → 나라 싼 순 → 한국 선 → 꼬리표 · useChartTimeline) · 옛 ruler-axis · ruler-korea 는 ruler-bar · ruler-korea-line · ruler-korea-tag 로 바뀜 / 시안의 "다시 보기" 버튼 · "대략 모양입니다" 설명 글은 넣지 않음(lead 지시) / 큰 숫자가 font-display 라 font-readability 허용 목록에 ruler-chart.tsx 추가가 필요함(test 에 요청)
 
 ## 완료 기준
 - [x] 1280 · 768 · 390 가로 넘침 없음 · 콘솔 오류 없음 · 사진 요청 0
