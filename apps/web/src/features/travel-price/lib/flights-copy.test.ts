@@ -69,3 +69,17 @@ describe("cheapMonthsCard — 가장 싼 달 (평균에 쓴 해 수는 받은 �
     expect(cheapMonthsCard(null, null)).toBeNull();
   });
 });
+
+// 작업 0211 — 항공료 · 단체여행의 싼 달이 같으면 한 번만
+describe("싼 달이 같을 때 한 번만 (작업 0211)", () => {
+  it("큰 문장 — 같으면 '항공료 · 단체여행 모두 11월이 싼 편' · 다르면 지금 문장 · 하나만이면 그것만", () => {
+    expect(flightsHeadline(11, 11)).toBe("항공료 · 단체여행 모두 11월이 싼 편");
+    expect(flightsHeadline(4, 11)).toBe("항공료는 4월, 단체여행은 11월이 싼 편");
+    expect(flightsHeadline(11, null)).toBe("항공료는 11월이 싼 편");
+    expect(flightsHeadline(null, null)).toBe("준비 중");
+  });
+  it("카드 — 같으면 '11월' 한 번 · 다르면 '4월 · 11월' 그대로", () => {
+    expect(cheapMonthsCard(11, 11, 2)?.value).toBe("11월");
+    expect(cheapMonthsCard(4, 11, 2)?.value).toBe("4월 · 11월");
+  });
+});

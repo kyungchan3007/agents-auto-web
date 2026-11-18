@@ -164,3 +164,22 @@ describe("임의 시나리오 600개 — 항상 영역 안 · 안 겹침 · 점�
     }
   });
 });
+
+// 작업 0211 — 3D 비행기처럼 피해야 할 칸(avoid)을 가리지 않음
+describe("avoid — 피해야 할 칸 (작업 0211)", () => {
+  const max: Pt & { text: string } = { x: 500, y: 40, text: "최고 158.6" };
+  const min: Pt & { text: string } = { x: 200, y: 120, text: "2025-05 최저 · 지수 118.8" };
+  const today: Pt = { x: 560, y: 80 };
+  const hit = (a: Box, b: Box) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+  it("avoid 가 없으면 지금과 같음 — 최저 라벨은 점 아래 가운데", () => {
+    const r = placeExtremeLabels({ max, min, today, bounds: BOUNDS });
+    expect(r.min.anchor).toBe("middle");
+  });
+  it("비행기가 점 왼쪽에 서 있으면 최저 라벨이 그 칸을 피해 점에서 오른쪽으로 놓임", () => {
+    const plane: Box = { left: 50, top: 85, right: 180, bottom: 150 };
+    const r = placeExtremeLabels({ max, min, today, bounds: BOUNDS, avoid: [plane] });
+    expect(hit(r.min.box, plane)).toBe(false);
+    expect(hit(r.max.box, plane)).toBe(false);
+    expect(r.min.box.left).toBeGreaterThanOrEqual(min.x - 1);
+  });
+});
