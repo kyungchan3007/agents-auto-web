@@ -5,7 +5,7 @@ import { expect, test } from "@playwright/test";
 
 const SEA = "rgb(36, 56, 168)"; // #2438A8 예전 울트라마린 띠(없어야 함)
 const INK = "rgb(22, 36, 110)"; // #16246E 판
-const CELL = "rgb(36, 51, 127)"; // #24337f 칸
+const CELL = "rgb(31, 49, 144)"; // #1f3190 칸 (작업 0216 · 시안 B)
 const SUN = "rgb(247, 197, 72)"; // #F7C548 두 줄 글자
 const board = (page: import("@playwright/test").Page) => page.locator('[data-testid="flap-board"]');
 // 처음 한 번 넘어가는 움직임(1~2초)이 끝난 뒤에 읽음 — 움직임 중에는 칸 글자가 중간 글자라 값이 다름
@@ -42,7 +42,7 @@ for (const width of [375, 1440, 1920]) {
       expect(await cs(page.locator("#today"), "background-color")).not.toBe(SEA);
     });
 
-    test("판 색 — 판 #16246E · 칸 #24337f · 두 줄 모두 햇빛 노랑 · 그림자 · 모서리 10px", async ({ page }) => {
+    test("판 색 — 판 #16246E · 칸 #1f3190 · 두 줄 모두 햇빛 노랑 · 그림자 · 모서리 10px", async ({ page }) => {
       await page.goto("/");
       expect(await cs(board(page), "background-color")).toBe(INK);
       expect(await cs(board(page), "border-top-left-radius")).toBe("10px");

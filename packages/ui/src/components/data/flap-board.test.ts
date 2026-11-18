@@ -32,6 +32,15 @@ describe("구성 · 표시", () => {
   });
 });
 
+describe("흰 글자 줄 (작업 0216 · 시안 B 의 .w)", () => {
+  it("tone 에 white 를 더함 — 글자 색 text-foam · 기존 dest · money 는 노랑 그대로", () => {
+    const s = src();
+    expect(s).toMatch(/"dest"\s*\|\s*"money"\s*\|\s*"white"/);
+    expect(s).toMatch(/white:\s*"text-foam"/);
+    expect(s).toMatch(/dest:\s*"text-sun"/);
+  });
+});
+
 describe("접근성 — 판 전체를 한 문장으로 (B6)", () => {
   it("판에 role=\"img\" + aria-label={label} — 칸 글자는 aria-hidden (글자 하나씩 읽지 않음)", () => {
     const s = src();
