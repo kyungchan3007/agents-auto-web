@@ -29,8 +29,8 @@ test.describe("통화 상세 1년 흐름 — 풍성한 2D (작업 0219 · 시안
     await expect(chart.locator('[data-testid="chart-mark"][data-kind="min"]')).toHaveText(/^최저 [\d,]+(\.\d+)?원$/);
     await expect(chart.locator('[data-testid="chart-ref"]')).toHaveCount(1); // 점선
     await expect(chart.locator('[data-testid="chart-ref-label"]')).toHaveText(/평균 [\d,]+(\.\d+)?원/); // 점선 꼬리표 글
-    await expect(chart.locator('[data-testid="chart-end"][data-series="rate"]')).toContainText("오늘");
-    await expect(chart.locator('[data-testid="chart-axis"]')).toContainText(/20\d\d-\d\d/); // 날짜 눈금
+    if (!isPhone(page)) await expect(chart.locator('[data-testid="chart-end"][data-series="rate"]')).toContainText("오늘"); // 휴대폰 말풍선은 숫자만(시안 휴대폰)
+    await expect(chart.locator('[data-testid="chart-axis"]')).toContainText(isPhone(page) ? /\d\d\.\d\d/ : /20\d\d-\d\d/); // 날짜 눈금
     await expect(chart.locator('[data-testid="chart-axis"]')).toContainText(/1,\d{3}/); // 값 눈금(원)
   });
 
@@ -168,7 +168,7 @@ test.describe("통화 상세 1년 흐름 — 풍성한 2D (작업 0219 · 시안
       await group.getByRole("button", { name: label }).click();
       await expect(group.getByRole("button", { name: label })).toHaveAttribute("aria-pressed", "true");
       await expect(page.getByRole("img", { name: new RegExp(`^${label} 흐름 — `) })).toBeVisible();
-      await expect(chart.locator('[data-testid="chart-ref-label"]')).toContainText(`${label} 평균`);
+      await expect(chart.locator('[data-testid="chart-ref-label"]')).toContainText(isPhone(page) ? "평균" : `${label} 평균`); // 휴대폰은 짧은 글 '평균 …'
       await expect(chart).toHaveAttribute("data-state", "done");
       expect(await lastValue(chart), `${label}: 마지막 값`).toBe(today);
       expect((await endValue(chart).textContent())?.trim(), `${label}: 끝 숫자`).toBe(today);
