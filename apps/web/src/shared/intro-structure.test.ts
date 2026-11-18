@@ -151,9 +151,9 @@ describe("건너뛰기 · 이전 · 움직임", () => {
     for (const f of SRC(join(INTRO, "components"))) expect(read(f), rel(f)).not.toMatch(/\buse(State|Effect|LayoutEffect|Ref|Memo|Callback|Reducer|Transition)\(/);
   });
 
-  it("창문 전환 — 홈 첫 화면 사진의 실제 자리(photo-header-img · getBoundingClientRect)로 줄어들어 들어감", () => {
+  it("끝 장면(작업 0223) — 로고가 홈 메뉴 로고의 실제 자리(getBoundingClientRect)로 옮겨 감 · 창밖 사진 자리는 쓰지 않음", () => {
     const code = SRC(INTRO).map(read).join("\n");
-    expect(code).toMatch(/photo-header-img/);
+    expect(code).not.toMatch(/photo-header-img/);
     expect(code).toMatch(/getBoundingClientRect\(/);
   });
 });
