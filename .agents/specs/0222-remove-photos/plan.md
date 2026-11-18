@@ -72,3 +72,4 @@
 - 옛 작업 기록(.agents/specs/0175-user-photos · 0201-country-photos)은 이력이라 그대로 둠.
 - `docs/design.md` 의 지구본 표(작업 0085) 줄은 옛 기록이라 그대로 둠(이미 "작업 0177 에서 없앰" 표시).
 
+- 0217 홈 고칠 것 1~3 merge(task/0217-redesign-home bd1b48a): 충돌 없음. hero-section · ticket · destination-table · hooks/use-stagger-reveal.ts(새) · e2e/home-fix-0217.spec.ts(새)는 그대로, packages/ui use-count-up.ts 는 `enabled` 옵션만 더함(기본 켜짐 → 0219 · 0220 동작 그대로).
