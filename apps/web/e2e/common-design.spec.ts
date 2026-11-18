@@ -53,7 +53,7 @@ test.describe("메뉴 띠 · 로고 (작업 0216)", () => {
   });
 });
 
-const sampleText = (page: Page) => page.getByTestId("motion-sample-count").getByTestId("count-up").locator("[aria-hidden]").innerText();
+const sampleText = (page: Page) => page.getByTestId("motion-sample-count").getByTestId("count-up").innerText();
 
 test.describe("카운트업 (작업 0216)", () => {
   test("움직임 줄이기 — 처음부터 최종 값 · 화면 읽기 글은 최종 값", async ({ page }) => {
@@ -67,8 +67,8 @@ test.describe("카운트업 (작업 0216)", () => {
       expect(await sampleText(page)).toBe(final);
       await page.waitForTimeout(60);
     }
-    await expect(cu.locator(".sr-only")).toHaveText(final!);
-    await expect(cu.locator("[aria-hidden]")).toHaveAttribute("aria-hidden", "true");
+    expect(await cu.evaluate((el) => el.textContent)).toBe(final); // 숫자 글이 겹치지 않음 (복사본 없음)
+    expect(await cu.locator(".sr-only, [aria-hidden]").count()).toBe(0);
   });
 
   test("움직임 켜짐 — 화면에 들어오면 값이 바뀌며 올라가 끝나면 최종 값 (한 번만)", async ({ page }) => {
@@ -77,7 +77,7 @@ test.describe("카운트업 (작업 0216)", () => {
     const final = (await cu.getAttribute("data-final"))!;
     await page.evaluate(() => {
       (window as unknown as { __seen: string[] }).__seen = [];
-      const el = document.querySelector('[data-testid="motion-sample-count"] [aria-hidden]') as HTMLElement;
+      const el = document.querySelector('[data-testid="motion-sample-count"] [data-testid="count-up"]') as HTMLElement;
       const tick = () => {
         const w = window as unknown as { __seen: string[] };
         if (w.__seen[w.__seen.length - 1] !== el.innerText) w.__seen.push(el.innerText);
@@ -90,7 +90,8 @@ test.describe("카운트업 (작업 0216)", () => {
     const seen = await page.evaluate(() => (window as unknown as { __seen: string[] }).__seen);
     expect(seen.length).toBeGreaterThan(3);
     expect(seen[seen.length - 1]).toBe(final);
-    await expect(cu.locator("[aria-hidden]")).toHaveText(final);
+    await expect(cu).toHaveText(final);
+    expect(await cu.evaluate((el) => el.textContent)).toBe(final);
     // 다시 보여도 다시 돌지 않음
     await page.evaluate(() => window.scrollTo(0, 0));
     await cu.scrollIntoViewIfNeeded();
@@ -103,7 +104,7 @@ test.describe("카운트업 (작업 0216)", () => {
     const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL });
     const page = await ctx.newPage();
     await page.goto("/design");
-    await expect(page.getByTestId("motion-sample-count").locator("[aria-hidden]")).toHaveText("1,338.8원");
+    await expect(page.getByTestId("motion-sample-count").getByTestId("count-up")).toHaveText("1,338.8원");
     await ctx.close();
   });
 });
