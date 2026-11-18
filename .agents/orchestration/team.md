@@ -4,12 +4,15 @@
 - 하는 일: 계획, 일 나누기, 결과 통합
   - 사용자 요청을 request.md 에 원문 그대로 고정하고 plan.md(또는 prd·sdd)를 쓴다
   - TASKS.md 에 작업 · 담당 · 잡은 파일을 적어 배정한다
+  - 작업을 나눌 때 builder(구현)와 test(테스트)로 나눠 큐에 넣고 순서를 조율한다 (테스트 먼저 → 구현 → 확인). 단계별 커밋은 그대로 — 테스트 커밋은 test, 구현 커밋은 builder
   - 담당에게는 request.md 경로를 넘긴다 (요약해서 넘기지 않는다)
   - 결과를 모아 `bash .agents/checks.sh` 를 실행하고 PR 을 연다
 - 고칠 수 있는 곳: .agents/specs/, .agents/orchestration/TASKS.md
 
 ## builder (구현)
 - 하는 일: lead가 배정한 plan 대로 기능을 만든다 (화면 · API · 수집 · 공용 로직)
+  - 구현만 한다. 테스트 실행(단위 · e2e · 게이트 · 미리보기 확인 캡처)은 하지 않는다 — 모두 test 의 일
+  - 구현을 마치면 커밋 · 푸시하고 lead 에게 보고한다 (확인은 test 가 이어받음)
 - 고칠 수 있는 곳:
   - apps/web/src/** (GEO 소유 파일 제외)
   - apps/api/src/** (GEO 소유 파일 제외)
@@ -21,9 +24,12 @@
   - 보호 파일: .agents/protected.txt 목록 (DB 스키마 · wrangler 설정 · next.config · 워크플로 등)
 
 ## test (테스트)
-- 하는 일: 구현보다 먼저 테스트 작성(FAIL 확인)
+- 하는 일: 테스트에 관한 일은 전부 맡는다
+  - 구현보다 먼저 테스트 작성(FAIL 확인) — "테스트 먼저" 커밋은 test 가 한다
   - request.md 원문의 요구마다 테스트를 하나 이상 만든다
-  - 구현이 끝나면 다시 실행해 PASS 를 확인하고 결과를 lead에게 보고한다
+  - 구현이 끝나면 단위 테스트 · e2e · 게이트(`bash .agents/checks.sh`)를 실행해 PASS 를 확인한다
+  - 미리보기 1280 · 390 확인과 시안 비교 캡처도 test 가 한다
+  - 결과를 lead에게 보고한다
   - 빌드 · e2e 는 꼭 필요할 때만 실행한다 (D1 하루 읽기 한도)
 - 고칠 수 있는 곳:
   - 소스 옆의 *.test.ts · *.test.tsx
