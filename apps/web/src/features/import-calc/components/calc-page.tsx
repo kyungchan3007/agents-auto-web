@@ -31,9 +31,9 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
           <div data-testid="calc-band" aria-hidden className="col-span-3 col-start-1 row-start-1 bg-pin-cheap" />
           <section aria-labelledby="calc-title" data-surface="dark" className="col-start-2 row-start-1 pt-10 pb-56 sm:pt-14 sm:pb-[12.25rem]">
             <Eyebrow className="text-fg!">직구 계산</Eyebrow>
-            {/* 큰 문장은 입력에 따라 2~3줄 — 제목 + 설명 덩어리의 높이를 미리 잡아(휴대폰은 제목 세 줄 + 설명 두 줄 · 넓은 화면도 제목 세 줄(세금이 붙는 긴 문장) + 설명 한 줄 — 제목 글자 크기와 같은 clamp 로 계산) 값을 바꿔도 아래 칸이 밀리지 않게 · 남는 자리는 파랑 면 안 설명 아래로 (제목 ~ 설명 사이는 바짝) */}
-            <div className="min-h-[calc(4.02*clamp(2.25rem,4.5vw,3.5rem)+5rem)] sm:min-h-[calc(4.02*clamp(2.25rem,4.5vw,3.5rem)+3.4rem)]">
-              <Title as="h1" size="page" id="calc-title" className="mt-3 text-fg">
+            {/* 큰 문장은 입력에 따라 2~3줄 — 제목 + 설명 덩어리의 높이를 미리 잡아(휴대폰은 가장 긴 문장이 세 줄이라 세 줄 + 설명 두 줄 · 640~767 은 두 줄 · 768 이상은 한 줄(작업 0221 사용자 지적: 문장을 짧게 해 한 줄 · 실측으로 정함) — 제목 글자 크기와 같은 clamp 로 계산) 값을 바꿔도 아래 칸이 밀리지 않게 · 남는 자리는 파랑 면 안 설명 아래로 (제목 ~ 설명 사이는 바짝) */}
+            <div className="min-h-[calc(4.02*clamp(2.25rem,4.5vw,3.5rem)+5rem)] sm:min-h-[calc(2.68*clamp(2.25rem,4.5vw,3.5rem)+3.4rem)] md:min-h-[calc(1.34*clamp(2.25rem,4.5vw,3.5rem)+3.4rem)]">
+              <Title as="h1" size="page" id="calc-title" className="mt-3 max-w-none! text-fg">
                 <EmphText bg="sea" text={hasRates ? calcHeadline(form.result, form.input) : "환율을 받지 못했습니다"} />
               </Title>
               <p className="mt-4 max-w-[36em] text-body text-fg-2">물건 값을 넣으면 면세 한도 안인지 바로 알려 드립니다.</p>
