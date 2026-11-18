@@ -41,7 +41,7 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
   return (
     <section id="today" aria-labelledby="today-title" className="text-fg">
       <div className="grid grid-cols-[minmax(1rem,1fr)_minmax(0,45rem)_minmax(1rem,1fr)] sm:grid-cols-[minmax(2rem,1fr)_minmax(0,45rem)_minmax(2rem,1fr)]">
-        <div data-testid="ticket-band" aria-hidden className="col-span-3 col-start-1 row-start-1 bg-pin-cheap" />
+        <div data-testid="ticket-band" aria-hidden className="col-span-3 col-start-1 row-start-1 -mb-[13px] bg-pin-cheap" />
         <div data-testid="ticket" className="relative z-10 col-start-2 row-span-2 row-start-1 grid grid-cols-[minmax(0,1fr)] grid-rows-subgrid rounded-[1.75rem] border border-line bg-card shadow-ticket">
           <div className="px-4 pt-6 pb-5 sm:px-8 sm:pt-7 sm:pb-6">
             <h2 id="today-title" className="text-[0.9375rem] font-bold text-fg">
@@ -52,7 +52,12 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
             </div>
           </div>
           <div className="relative flex flex-col gap-5 px-4 pt-5 pb-6 sm:px-8 sm:pb-7">
-            <div aria-hidden className="absolute top-0 right-[22px] left-[22px] border-t-2 border-dashed border-line before:absolute before:-top-[15px] before:-left-[38px] before:size-7 before:rounded-full before:bg-pin-cheap before:content-[''] after:absolute after:-top-[15px] after:-right-[38px] after:size-7 after:rounded-full after:bg-pin-cheap after:content-['']" />
+            {/* 절취선 + 가장자리 홈 (시안 B .perf) — 홈은 카드 안쪽으로 잘린 반원 · 색 = 뒤 바탕(파랑 면) · 파랑 띠가 홈 아래 끝(절취선 + 13px)까지 내려와 홈이 통째로 파랑 안에 있어 파인 것으로 보임 */}
+            <div aria-hidden data-testid="ticket-hole-clip" className="pointer-events-none absolute inset-x-[-1px] -top-[15px] h-7 overflow-hidden">
+              <span data-testid="ticket-hole" className="absolute top-0 -left-[14px] size-7 rounded-full bg-pin-cheap" />
+              <span data-testid="ticket-hole" className="absolute top-0 -right-[14px] size-7 rounded-full bg-pin-cheap" />
+            </div>
+            <div aria-hidden data-testid="ticket-perf" className="absolute top-0 right-[22px] left-[22px] border-t-2 border-dashed border-line" />
             <div className="min-w-0">
               <p data-testid="ticket-evidence" className="text-[1.0625rem] font-bold text-fg">
                 <Evidence text={board.evidence} />
