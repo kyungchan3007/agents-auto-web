@@ -1,16 +1,11 @@
-// 수입물가 영역 — 새 디자인(작업 0221 · 시안 A): 왼쪽 제목 · 숫자 카드 두 장(카운트업) / 오른쪽 그래프 + 이번 주 과세환율(children) · 원/달러 월평균과 한국은행 수입물가지수(원화기준 · 2020=100)를 한 차트에 (작업 0165)
+// 수입물가 영역 — 새 디자인(작업 0221 · 시안 A · 그래프는 작업 0221 그래프 2D 시안 F: 공통 LineChart · 0216 — 면 · 눈금 · 2025-10 = 100 기준선 · 끝 말풍선 · 순서 움직임): 왼쪽 제목 · 숫자 카드 두 장(카운트업) / 오른쪽 그래프 + 이번 주 과세환율(children) · 원/달러 월평균과 한국은행 수입물가지수(원화기준 · 2020=100)를 한 차트에 (작업 0165)
 //   두 값의 단위가 달라 "처음 같은 달 = 100" 으로 맞춰 겹쳐 그림 · 숫자는 아래 표로도 (색 · 그림만으로 전하지 않음) · 자료가 없으면 "준비 중"
 import { numberText } from "@hav/shared/format";
+import { LineChart } from "@hav/ui/data/line-chart";
 import { CountUp } from "@hav/ui/motion/count-up";
 import { SectionTitle } from "@hav/ui/text/heading";
 import type { ReactNode } from "react";
 import { type FxDay, type Kpi, type MonthPoint, deltaTone, importPriceKpis, importPriceView, kpiDigits } from "../lib/import-price";
-
-const W = 600;
-const H = 200;
-const PAD = 10;
-/** 선 끝 금액을 놓을 오른쪽 여백 (viewBox 폭 기준) */
-const RIGHT = 90;
 
 export function ImportPriceSection({ fxRows, price, children }: { fxRows: FxDay[] | null; price: MonthPoint[] | null; /** 그래프 아래 오른쪽 칸에 놓을 것 (이번 주 과세환율) */ children?: ReactNode }) {
   const v = importPriceView(fxRows, price);
@@ -68,48 +63,58 @@ function Kpis({ rows }: { rows: { period: string; fx: number | null; price: numb
 }
 
 function Chart({ rows }: { rows: { period: string; fx: number | null; price: number | null }[] }) {
-  // 두 값이 모두 있는 첫 달을 100 으로
+  // 두 값이 모두 있는 첫 달을 100 으로 — 선 모양만 맞춰 비교 (끝 말풍선 숫자는 실제 값)
   const base = rows.find((r) => r.fx !== null && r.price !== null);
-  const idx = rows.map((r) => ({ period: r.period, fx: r.fx !== null && base?.fx ? (r.fx / base.fx) * 100 : null, price: r.price !== null && base?.price ? (r.price / base.price) * 100 : null }));
-  const all = idx.flatMap((r) => [r.fx, r.price]).filter((n): n is number => n !== null);
-  const lo = Math.min(...all);
-  const hi = Math.max(...all);
-  const x = (i: number) => PAD + (rows.length === 1 ? 0.5 : i / (rows.length - 1)) * (W - PAD * 2 - RIGHT);
-  const y = (n: number) => (hi === lo ? H / 2 : PAD + (1 - (n - lo) / (hi - lo)) * (H - PAD * 2));
-  // 비어 있는 달은 잇지 않고 끊음
-  const path = (key: "fx" | "price") => idx.map((r, i) => (r[key] === null ? "" : `${idx[i - 1]?.[key] == null ? "M" : "L"}${x(i).toFixed(1)},${y(r[key] as number).toFixed(1)}`)).join(" ");
+  const norm = (key: "fx" | "price") => rows.flatMap((r) => (r[key] !== null && base?.[key] ? [{ x: monthIdx(r.period), v: ((r[key] as number) / (base[key] as number)) * 100, raw: r[key] as number, period: r.period }] : []));
+  const fx = norm("fx");
+  const price = norm("price");
+  const all = [...fx, ...price].map((p) => p.v);
+  const range = Math.max(...all) - Math.min(...all) || 1;
+  const lo = Math.min(...all) - range * 0.06;
+  const hi = Math.max(...all) + range * 0.06;
   const last = rows[rows.length - 1];
-  // 선 끝 — 각 값의 가장 최근 달 점과 금액 (HTML 글자라 휴대폰에서도 작아지지 않음)
-  const end = (key: "fx" | "price") => {
-    let i = idx.length - 1;
-    while (i >= 0 && idx[i][key] === null) i--;
-    return i < 0 ? null : { left: (x(i) / W) * 100, top: (y(idx[i][key] as number) / H) * 100, raw: rows[i][key] as number };
-  };
-  const ends = [
-    { key: "fx" as const, color: "var(--hav-cheap)", e: end("fx"), text: (n: number) => `${numberText(n, { maximumFractionDigits: 0 })}원` },
-    { key: "price" as const, color: "var(--hav-band)", e: end("price"), text: (n: number) => numberText(n, { maximumFractionDigits: 2 }) },
-  ];
+  const first = monthIdx(rows[0].period);
+  const lastIdx = monthIdx(last.period);
+  const xTicks = monthAxis(first, lastIdx);
+  const lastOf = (pts: typeof fx) => pts[pts.length - 1];
   return (
     <div>
       <p className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-small text-fg-2">
         <span className="inline-flex items-center gap-2"><i className="inline-block h-1 w-5 rounded-pill" style={{ background: "var(--hav-cheap)" }} />원/달러 월평균</span>
         <span className="inline-flex items-center gap-2"><i className="inline-block h-1 w-5 rounded-pill" style={{ background: "var(--hav-band)" }} />수입물가지수</span>
-        <span>· {rows.find((r) => r.fx !== null && r.price !== null)?.period} = 100 으로 맞춤</span>
+        <span>· {base?.period} = 100 으로 맞춤</span>
       </p>
-      {/* 그래프 높이 고정 — 넓은 화면 352px(340 ~ 380) · 휴대폰 224px · 글자는 HTML 이라 늘어나지 않음 (작업 0208) */}
-      <div data-testid="import-chart" className="relative mt-3 h-56 sm:h-[22rem]">
-        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`원/달러 월평균과 수입물가지수 — ${rows[0].period}부터 ${last.period}까지, 처음 같은 달을 100으로 맞춤`} preserveAspectRatio="none" className="block h-full w-full overflow-visible">
-          <path d={path("fx")} fill="none" stroke="var(--hav-cheap)" strokeWidth={2.5} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-          <path d={path("price")} fill="none" stroke="var(--hav-band)" strokeWidth={2.5} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-        </svg>
-        {ends.map((l) =>
-          l.e ? (
-            <span key={l.key} data-testid="import-end-label" className="absolute -translate-y-1/2 pl-2 text-small font-semibold whitespace-nowrap tabular-nums" style={{ left: `${l.e.left}%`, top: `${l.e.top}%`, color: l.color }}>
-              ● {l.text(l.e.raw)}
-            </span>
-          ) : null,
-        )}
+      {/* 그래프 높이 고정 — 넓은 화면 400px · 휴대폰 280px (작업 0208 · 값이 바뀌어도 크기 고정) */}
+      <div data-testid="import-chart" className="mt-3">
+        <LineChart
+          aria={`원/달러 월평균과 수입물가지수 — ${rows[0].period}부터 ${last.period}까지, ${base?.period}을 100으로 맞춤`}
+          x={[first, lastIdx]}
+          y={{ min: lo, max: hi, ticks: Array.from({ length: 6 }, (_, i) => ({ v: lo + ((hi - lo) * i) / 5 })) }}
+          xTicks={xTicks}
+          series={[
+            ...(price.length ? [{ id: "price", color: "var(--hav-band)", points: price, area: 0.22, maxStep: 1, end: { label: `수입물가 ${lastOf(price).period}`, value: lastOf(price).raw, digits: 2 } }] : []),
+            ...(fx.length ? [{ id: "fx", color: "var(--hav-pin-cheap)", points: fx, area: 0.3, maxStep: 1, end: { label: `원/달러 ${lastOf(fx).period}`, value: Math.round(lastOf(fx).raw), digits: 0, unit: "원" } }] : []),
+          ]}
+          refs={base ? [{ v: 100, text: `${base.period} = 100`, short: "= 100", tone: "navy" }] : []}
+          height={400}
+          heightPhone={280}
+          pad={{ l: 24 }}
+          padPhone={{ l: 16, t: 32, b: 30 }}
+        />
       </div>
     </div>
   );
+}
+
+/** "2026-10" → 달 번호(연 × 12 + 월 − 1) */
+const monthIdx = (period: string) => Number(period.slice(0, 4)) * 12 + Number(period.slice(5, 7)) - 1;
+const periodOf = (i: number) => `${Math.floor(i / 12)}-${String((i % 12) + 1).padStart(2, "0")}`;
+/** 가로 눈금 — 처음 · 끝을 포함해 고르게 5개(달이 5개 미만이면 달마다) */
+function monthAxis(first: number, last: number): { x: number; label: string; short: string }[] {
+  const n = Math.min(5, last - first + 1);
+  return Array.from({ length: n }, (_, i) => {
+    const x = n === 1 ? first : Math.round(first + ((last - first) * i) / (n - 1));
+    const p = periodOf(x);
+    return { x, label: p, short: `${p.slice(2, 4)}.${p.slice(5, 7)}` };
+  });
 }
