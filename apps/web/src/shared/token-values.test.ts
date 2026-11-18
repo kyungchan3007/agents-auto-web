@@ -19,4 +19,9 @@ describe("토큰 값 = 예전 직접 쓴 값 (작업 0215)", () => {
     expect(tokenOf("--shadow-window")).toBe("inset 0 2px 0 var(--hav-card), 0 0 0 1px #d3dae2, 0 34px 60px -26px rgba(22, 36, 110, 0.45)");
     expect(tokenOf("--shadow-glass")).toBe("0 0 0 7px #eef2f5, 0 0 0 8px #c9d2db, inset 0 8px 18px rgba(22, 36, 110, 0.28)");
   });
+  it("하늘 · 창문 색 토큰 (인트로)", () => {
+    expect(tokenOf("--hav-sky-top")).toBe("#afd4e6");
+    expect(tokenOf("--hav-sky-mid")).toBe("#d3e9ee");
+    expect(tokenOf("--hav-window-shade")).toBe("#f4f6f8");
+  });
 });

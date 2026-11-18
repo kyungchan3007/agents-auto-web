@@ -20,14 +20,14 @@ export function WindowTransition({ s }: { s: IntroView }) {
         animate={{ opacity: phase >= 7 ? 0 : phase >= 6 ? 0 : 1 }}
         transition={{ duration: d(phase >= 6 ? 1.1 : 0.65), ease: "easeOut" }}
         className="pointer-events-none fixed inset-0 z-[4] grid place-items-center overflow-hidden"
-        style={{ background: phase >= 6 ? "#EAF4F2" : "radial-gradient(120% 95% at 50% 45%, #F6F8FA 0%, #E6EBF0 58%, #D6DDE4 100%)" }}
+        style={{ background: phase >= 6 ? "var(--hav-surface)" : "radial-gradient(120% 95% at 50% 45%, #F6F8FA 0%, #E6EBF0 58%, #D6DDE4 100%)" }}
       >
         <motion.div
           initial={{ scale: 1.35, filter: "blur(4px)" }}
           animate={{ scale: phase >= 4 ? 6 : 1, filter: "blur(0px)", visibility: phase >= 6 ? "hidden" : "visible" }}
           transition={{ duration: d(phase >= 4 ? 1.1 : 0.8), ease: phase >= 4 ? [0.6, 0, 0.9, 0.4] : EASE }}
           className="relative aspect-[0.7] rounded-[48%/34%] shadow-window"
-          style={{ width: "min(27vw, 360px)", background: "linear-gradient(160deg, #FFFFFF, #E4E9EE)" }}
+          style={{ width: "min(27vw, 360px)", background: "linear-gradient(160deg, var(--hav-card), #E4E9EE)" }}
         >
           <div className="absolute inset-[9%] overflow-hidden rounded-[46%/33%] shadow-glass" style={{ background: `center / cover url(${PHOTO})` }}>
             <motion.div
@@ -35,7 +35,7 @@ export function WindowTransition({ s }: { s: IntroView }) {
               animate={{ y: phase >= 3 ? "-100%" : 0 }}
               transition={{ duration: d(1.7), ease: [0.45, 0, 0.2, 1] }}
               className="absolute inset-0 z-[1]"
-              style={{ background: "repeating-linear-gradient(180deg, #F4F6F8 0 10px, #E5E9ED 10px 11px)" }}
+              style={{ background: "repeating-linear-gradient(180deg, var(--hav-window-shade) 0 10px, #E5E9ED 10px 11px)" }}
             />
           </div>
         </motion.div>
@@ -54,7 +54,7 @@ export function WindowTransition({ s }: { s: IntroView }) {
           animate={{ opacity: phase >= 6 ? 1 : 0 }}
           transition={{ duration: d(1.1) }}
           className="absolute inset-0"
-          style={{ background: "linear-gradient(90deg, #EAF4F2 18%, rgba(234,244,242,.75) 34%, rgba(234,244,242,0) 55%), linear-gradient(0deg, #EAF4F2 0%, rgba(234,244,242,0) 22%)" }}
+          style={{ background: "linear-gradient(90deg, var(--hav-surface) 18%, color-mix(in srgb, var(--hav-surface) 75%, transparent) 34%, color-mix(in srgb, var(--hav-surface) 0%, transparent) 55%), linear-gradient(0deg, var(--hav-surface) 0%, color-mix(in srgb, var(--hav-surface) 0%, transparent) 22%)" }}
         />
       </motion.div>
     </>
