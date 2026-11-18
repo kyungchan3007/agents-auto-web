@@ -10,7 +10,7 @@ import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import { SignalPin } from "@hav/ui/data/signal-pin";
 import Link from "next/link";
 import { usePriceBands } from "../hooks/use-price-bands";
-import type { PriceBand } from "../lib/bands";
+import { type PriceBand, rateBadgeText } from "../lib/bands";
 
 const BAND_TITLE: Record<Band, string> = { cheap: "한국보다 싼 곳", similar: "비슷한 곳", pricey: "한국보다 비싼 곳" };
 const BAND_CARD: Record<Band, string> = { cheap: "border-2 border-cheap", similar: "", pricey: "border-2 border-expensive-shape" };
@@ -47,7 +47,7 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
                     </span>
                     {r.currency && signal ? (
                       <Link href={`/currencies/${r.currency}`} aria-label={`${r.name} 통화 상세`} className="shrink-0">
-                        <SignalPin signal={signal} percentile={percentileOf[r.currency] ?? null} />
+                        <SignalPin signal={signal} text={rateBadgeText(signal, percentileOf[r.currency] ?? null)} />
                       </Link>
                     ) : (
                       <span className="shrink-0 text-small text-fg-2">{r.currency && r.currency in signalOf ? "신호 없음" : "환율 없음"}</span>

@@ -79,3 +79,17 @@ test.describe("통화 상세 (작업 0212)", () => {
     }
   });
 });
+
+test.describe("여행 물가 (작업 0212)", () => {
+  test("나라 줄 판정 알약은 '환율 …' 으로 시작 — 물가와 구분 (다른 화면 알약은 그대로)", async ({ page }) => {
+    await page.goto("/prices");
+    const pills = tid(page, "price-bands").locator("a span.rounded-pill");
+    const n = await pills.count();
+    expect(n).toBeGreaterThan(0);
+    for (let i = 0; i < n; i++) expect((await pills.nth(i).innerText()).trim()).toMatch(/^환율 /);
+    // 통화 목록 알약은 그대로
+    await page.goto("/currencies/USD");
+    const first = await tid(page, "currency-list").locator("nav ul li a span.rounded-pill").first().innerText();
+    expect(first.trim()).not.toMatch(/^환율/);
+  });
+});
