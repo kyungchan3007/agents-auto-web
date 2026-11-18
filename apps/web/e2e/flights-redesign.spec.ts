@@ -1,6 +1,6 @@
 // 작업 0218 — 새 디자인 /flights (시안 A + 머리 글자판) · 테스트 먼저
 //   표시: data-testid="flights-hero"(흰 머리) · "hero-board"(머리 글자판 묶음) · "flights-ticket"(탑승권 카드) · "slide-in"(들어오기) · "yoy-cards"(오른쪽 숫자) · "yoy-dot" · "cheap-board"(작은 글자판 묶음)
-//        "strip-max" · "strip-min" · "strip-fx"(한 줄 띠) · "travel-graph" · "plane-route"(그래프 그대로)
+//        "strip-max" · "strip-min" · "strip-fx"(한 줄 띠) · "travel-graph" · (그래프 그림은 0218 그래프 2D 에서 새로 — 비행기 없음)
 import { type Page, expect, test } from "@playwright/test";
 
 const WHITE = "rgb(255, 255, 255)";
@@ -72,7 +72,6 @@ test.describe("새 /flights — 탑승권 · 한 줄 띠 (작업 0218)", () => {
     const card = await box(page, "flights-ticket");
     const graph = await box(page, "travel-graph");
     const nums = await box(page, "yoy-cards");
-    await expect(tid(page, "plane-route")).toHaveCount(1);
     await expect(tid(page, "travel-legend")).toContainText("국제항공료");
     expect(graph.x).toBeGreaterThanOrEqual(card.x);
     expect(nums.x + nums.width).toBeLessThanOrEqual(card.x + card.width + 1);
