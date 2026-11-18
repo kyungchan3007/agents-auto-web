@@ -50,3 +50,4 @@
 - 탑승권 왼쪽 그래프가 오른쪽 숫자 칸보다 낮아 아래에 빈 자리가 남음(넓은 화면). 시안은 비슷한 높이.
 - 시안의 영문 작은 라벨(FARE WATCH · DEPARTURES · FARE INDEX · BOARDING PASS · 24 MONTHS)은 넣지 않음.
 - 이 브랜치는 0216 위라 0217 의 같은 파일 수정(photos.spec · photos.test · flap-board)과 가까운 줄에서 합칠 때 충돌이 날 수 있음.
+- (사용자 지적 · 표 모양) 표 뒤 구간(flights-back)을 옅은 면(surface-2 #F2F5F9)으로 두고 가장자리 홈 색(NOTCH)도 같은 색으로 — 시안 C/flights-hero-flap.html .pass::before/after 의 방식(홈 색 = 그 자리 뒤 바탕색). 홈 가운데가 카드 가장자리 위에 있음을 e2e 로 검사. "가장 싼 달" 작은 글자판(MiniBoard)은 큰 판 틀(남색 바탕 · 안쪽 여백 · 둥근 틀)을 없애고 칸 셋만 단독으로(칸 남색 + 노랑 글자 · 높이 44px). 파일: flights-page.tsx · mini-board.tsx · shared/flights-redesign.test.ts(새) · e2e/flights-redesign.spec.ts
