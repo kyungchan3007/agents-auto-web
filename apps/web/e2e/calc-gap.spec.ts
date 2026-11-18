@@ -1,0 +1,52 @@
+// 작업 0208 추가 (#255) — 직구 입력 칸 "안내 문구 아래 빈칸" 줄이기: 안내 · 오류 자리를 두 줄(2.75rem)에서 한 줄 높이로 · 오류가 떠도 입력 칸 높이는 같음(0200) · 결과 카드 최소 높이 408px 그대로
+import { type Locator, type Page, expect, test } from "@playwright/test";
+
+const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
+const box = async (loc: Locator) => {
+  const b = await loc.boundingBox();
+  if (!b) throw new Error("화면에 없음");
+  return b;
+};
+const fill = async (page: Page, id: string, v: string) => {
+  await page.locator(`#${id}`).fill(v);
+  await expect(page.locator(`#${id}`)).toHaveValue(v);
+};
+
+test.describe("직구 입력 안내 아래 빈칸 (작업 0208 추가)", () => {
+  test("물건 값 안내 문구 아래 ~ 보내는 곳 사이 간격이 20px 이하 · 안내 자리는 한 줄 높이", async ({ page }) => {
+    await page.goto("/calc");
+    const hint = page.locator('form[data-testid="calc-input"] label[for="price"]').locator("xpath=../..").locator("p").last();
+    const hb = await box(hint);
+    expect(hb.height, "안내 자리 높이").toBeLessThanOrEqual(24);
+    const routeLabel = await box(page.locator('label[for="route"]'));
+    expect(routeLabel.y - (hb.y + hb.height), "안내 아래 ~ 보내는 곳").toBeLessThanOrEqual(20);
+  });
+
+  for (const width of [390, 700, 1000, 1280]) {
+    test(`오류가 떠도 입력 칸 · 결과 카드 높이가 같음 (폭 ${width})`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/calc");
+      await page.waitForTimeout(300);
+      const heights = async () => ({ form: Math.round((await box(tid(page, "calc-input"))).height), result: Math.round((await box(tid(page, "calc-result"))).height) });
+      const base = await heights();
+      await fill(page, "price", "abc");
+      expect(await heights(), "물건 값 오류").toEqual(base);
+      await fill(page, "price", "180");
+      await fill(page, "shipping", "xyz");
+      expect(await heights(), "배송비 오류").toEqual(base);
+      await fill(page, "shipping", "");
+      await fill(page, "duty", "200");
+      expect(await heights(), "관세율 오류").toEqual(base);
+    });
+  }
+
+  test("결과 카드 최소 높이 408px 그대로 (첫 화면 · 오류가 있어도)", async ({ page }) => {
+    await page.goto("/calc");
+    await page.waitForTimeout(300);
+    const h = (await box(tid(page, "calc-result"))).height;
+    expect(h).toBeGreaterThanOrEqual(407.5);
+    expect(h).toBeLessThanOrEqual(412);
+    await fill(page, "price", "abc");
+    expect((await box(tid(page, "calc-result"))).height).toBeGreaterThanOrEqual(407.5);
+  });
+});
