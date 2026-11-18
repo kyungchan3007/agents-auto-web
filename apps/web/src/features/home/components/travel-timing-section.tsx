@@ -60,7 +60,7 @@ function Graph({ timing }: { timing: Ready }) {
   const last = timing.months[timing.months.length - 1].month;
   const label = `국제항공료 지수 선 그래프 — ${timing.cheapest}월이 가장 낮고 ${timing.priciest}월이 가장 높습니다`;
   return (
-    <div className="mt-10">
+    <div>
       <div data-testid="travel-graph" className="relative">
         <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label} className="block h-auto w-full overflow-visible">
           {/* 가로 기준선 3개 */}
@@ -105,7 +105,7 @@ function PointLabel({ x, y, text, className, below = false }: { x: number; y: nu
   return (
     <span
       aria-hidden
-      className={`pointer-events-none absolute hidden -translate-x-1/2 text-small font-semibold whitespace-nowrap min-[761px]:block ${className}`}
+      className={`pointer-events-none absolute hidden -translate-x-1/2 rounded-pill bg-surface px-2 py-0.5 text-small font-semibold whitespace-nowrap min-[761px]:block ${className}`}
       style={{ left: `${(x / W) * 100}%`, top: `${(y / H) * 100}%`, transform: `translate(-50%, ${below ? "20px" : "calc(-100% - 20px)"})` }}
     >
       {text}
@@ -113,6 +113,7 @@ function PointLabel({ x, y, text, className, below = false }: { x: number; y: nu
   );
 }
 
+// 점 라벨은 바탕 받침(하늘 종이색)을 깔아 그래프 선이 글자 뒤로 지나가도 대비 4.5:1 이상 (작업 0210)
 /** 안내판 아래 선 그래프 + 3D 비행기 — 지수가 없으면 아무것도 그리지 않음 (작업 0177: 안내판이 사진에 걸치도록 그래프를 사진 구간에서 떼어 냄) */
 export function TravelTimingGraph({ timing }: { timing: TravelTiming }) {
   if (timing.kind !== "ready") return null;

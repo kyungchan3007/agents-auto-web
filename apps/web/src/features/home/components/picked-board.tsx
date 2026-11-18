@@ -16,7 +16,7 @@ export function PickedBoard({ rates, signals, windowDays, children }: { rates: R
   if (!picked || !board) return <>{children}</>;
   return (
     <>
-      <h2 id="today-title" className="text-base font-semibold text-accent">
+      <h2 id="today-title" className="text-base font-normal text-accent">
         {board.title}
       </h2>
       <FlapBoard key={`${picked.country}-${picked.city}`} rows={board.rows} cols={BOARD_COLS} label={board.label} className="mt-3" />
