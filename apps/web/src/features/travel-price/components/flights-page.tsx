@@ -67,7 +67,7 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
               )}
             </div>
             {board && (
-              <div data-testid="hero-board" className="min-w-0 lg:justify-self-end">
+              <div data-testid="hero-board" className="flex min-w-0 lg:justify-end">
                 <FlapBoard rows={board.rows.map((r) => ({ ...r, tone: "dest" as const }))} cols={board.cols} label={board.label} />
               </div>
             )}
