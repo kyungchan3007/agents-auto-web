@@ -241,7 +241,8 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
             const tw = textWidth(txt, phone ? 11 : 12, true) + 18;
             const th = phone ? 22 : 24;
             let tx = m.place === "left" ? -tw - 14 : -tw / 2;
-            tx = Math.max(4 - pt.x, Math.min(W - 4 - pt.x - tw, tx));
+            // 오른쪽 끝은 끝 말풍선(R + 16 부터) 앞까지만 — 말풍선이 있으면 꼬리표가 그쪽으로 넘어가 겹치지 않게
+            tx = Math.max(4 - pt.x, Math.min((ends.length > 0 ? R + 4 : W - 4) - pt.x - tw, tx));
             const ty = m.place === "below" ? 14 : m.place === "left" ? -th / 2 : -14 - th;
             return (
               <g key={`${sh.s.id}${j}`} data-testid="chart-mark" data-kind={m.kind} data-series={sh.s.id} data-reveal={rv(at(ms, sched.series[k].marks[j]))} transform={`translate(${pt.x} ${pt.y}) scale(${Math.max(0.0001, e)})`} opacity={e > 0 ? 1 : 0}>
