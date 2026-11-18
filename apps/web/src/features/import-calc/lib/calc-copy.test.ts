@@ -7,7 +7,7 @@
 //     - result.ok 가 아니고 field 가 "rate" → "환율을 받지 못했습니다" · 다른 field 는 result.reason 그대로 (IMP-05 이유를 보여 줌)
 //     - ok · 한도 안(over false) → `${금액} 물건, 세금 없이 받습니다` — 금액 = currencySymbol(통화) + 입력한 물건 값(쉼표) → "$180" · "¥20,000" · 기호가 없는 통화는 코드 + 공백 ("THB 5,000")
 //     - ok · 한도 넘음 · 관세율을 넣음(tax.duty · tax.vat 가 숫자) → `관세 · 부가세 약 ${duty + vat 쉼표}원이 붙습니다`
-//     - ok · 한도 넘음 · 관세율 비움(duty · vat null) → "면세 한도를 넘었습니다 · 관세율을 넣으면 세금을 계산합니다" (금액을 지어내지 않음)
+//     - ok · 한도 넘음 · 관세율 비움(duty · vat null) → "한도 초과 · 관세율을 넣어 보세요" (금액을 지어내지 않음)
 import { describe, expect, it } from "vitest";
 import { calc } from "./calc";
 import { calcHeadline } from "./calc-copy";
@@ -46,7 +46,7 @@ describe("calcHeadline", () => {
 
   it("한도 넘음 + 관세율 비움 → 금액을 지어내지 않음", () => {
     const r = calc({ ...base, price: "250" }, RATES);
-    expect(calcHeadline(r, { currency: "USD", price: "250" })).toBe("면세 한도를 넘었습니다 · 관세율을 넣으면 세금을 계산합니다");
+    expect(calcHeadline(r, { currency: "USD", price: "250" })).toBe("한도 초과 · 관세율을 넣어 보세요");
   });
 
   it("환율을 받지 못함 → '환율을 받지 못했습니다' · 다른 입력 오류는 이유 그대로", () => {
