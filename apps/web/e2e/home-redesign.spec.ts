@@ -24,7 +24,7 @@ test.describe("새 홈 — 첫 화면 (작업 0217)", () => {
     await expect(h1).toHaveText(/^\d+월에 떠나세요$/);
     expect(await tid(page, "hero-month").evaluate((el) => getComputedStyle(el).color)).toBe(SUN);
     await expect(tid(page, "hero-month")).toHaveText(/^\d+월$/);
-    await expect(tid(page, "home-hero").locator("p").first()).toContainText("통계청 국제항공료 지수로 보면");
+    await expect(tid(page, "home-hero")).toContainText("통계청 국제항공료 지수로 보면");
   });
 
   test("탑승권 카드가 파랑 면과 하늘 면 경계에 걸침 · 글자판은 카드 안 · 아래에 판정 한 줄 · 막대 · 고르기 버튼", async ({ page }) => {

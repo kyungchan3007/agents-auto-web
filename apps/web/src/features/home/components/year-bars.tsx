@@ -1,4 +1,5 @@
 // 12달 막대 — 국제항공료 지수 달별 평균 (작업 0217 · 시안 B) · 가장 비싼 달 빨강 · 가장 싼 달 노랑 · 나머지 연한 파랑 · 막대 위 "N월 가장 비쌈 / 가장 쌈"
+// /flights 링크는 미리 받지 않음(prefetch=false) — /flights 의 머리 사진 요청이 홈 화면에서 나가지 않게 (홈 사진 요청 0)
 // 높이 · 색은 yearBars(실제 자료 계산) 그대로 · 지수가 없으면 아무것도 그리지 않음 (달을 지어내지 않음) · 3D 비행 경로 없음
 import { Eyebrow, Title } from "@hav/ui/text/heading";
 import Link from "next/link";
@@ -26,7 +27,7 @@ export function YearBars({ timing }: { timing: TravelTiming }) {
               {timing.cheapest}월 가장 쌈 · {timing.priciest}월 가장 비쌈
             </Title>
           </div>
-          <Link data-testid="year-link" href="/flights" className="inline-flex items-center gap-1.5 border-b-2 border-cheap pb-0.5 font-bold text-cheap hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cheap">
+          <Link data-testid="year-link" href="/flights" prefetch={false} className="inline-flex items-center gap-1.5 border-b-2 border-cheap pb-0.5 font-bold text-cheap hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cheap">
             항공료 그래프 자세히 ›
           </Link>
         </div>
