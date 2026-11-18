@@ -19,8 +19,6 @@ import { MiniBoard } from "./mini-board";
 export type TravelItem = { key: string; name: string; points: IndexPoint[] | null };
 
 const DOT = { cheap: "bg-pin-cheap", normal: "bg-pin-line", expensive: "bg-pin-expensive" } as const;
-// 가장자리 홈 — 색 = 표 뒤 구간 색(bg-surface-2)이라 카드가 파인 것으로 보임 (작업 0218 사용자 지적 · 시안 C/flights-hero-flap.html .pass::before/after)
-const NOTCH = "absolute z-10 size-7 rounded-full bg-surface-2";
 
 /** 탑승권 오른쪽 숫자 한 칸 — 이름 · 월 / 큰 지수(카운트업) / 점 + "작년보다 ±N.N%"(카운트업) */
 function YoyItem({ name, points }: { name: string; points: IndexPoint[] | null }) {
@@ -75,7 +73,7 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
             )}
           </div>
         </section>
-        {/* 표 뒤 구간 — 옅은 면(surface-2) · 홈 색과 같음 (작업 0218 사용자 지적) */}
+        {/* 표 뒤 구간 — 옅은 면(surface-2) · 절취선 끝 동그라미(홈)는 없고 점선만 (작업 0218 사용자 지적 "동그라미가 없어야 하는거 아냐?") */}
         <div data-testid="flights-back" className="bg-surface-2 px-4 pt-10 pb-10 sm:px-8 sm:pt-14">
           <div className="mx-auto max-w-page">
             {ready && (
@@ -89,8 +87,6 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
                       </div>
                     </div>
                     <div className="relative border-t-2 border-dashed border-line px-5 py-6 sm:px-8 sm:py-8 lg:border-t-0 lg:border-l-2">
-                      <span aria-hidden data-testid="flights-ticket-hole" className={`${NOTCH} -top-3.5 -left-3.5`} />
-                      <span aria-hidden data-testid="flights-ticket-hole" className={`${NOTCH} -top-3.5 -right-3.5 lg:top-auto lg:right-auto lg:-bottom-3.5 lg:-left-3.5`} />
                       <div data-testid="yoy-cards">
                         <h2 className="text-small font-bold text-fg">작년 대비와 가장 싼 달</h2>
                         <div className="mt-3 divide-y divide-line">

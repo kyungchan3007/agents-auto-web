@@ -51,3 +51,4 @@
 - 시안의 영문 작은 라벨(FARE WATCH · DEPARTURES · FARE INDEX · BOARDING PASS · 24 MONTHS)은 넣지 않음.
 - 이 브랜치는 0216 위라 0217 의 같은 파일 수정(photos.spec · photos.test · flap-board)과 가까운 줄에서 합칠 때 충돌이 날 수 있음.
 - (사용자 지적 · 표 모양) 표 뒤 구간(flights-back)을 옅은 면(surface-2 #F2F5F9)으로 두고 가장자리 홈 색(NOTCH)도 같은 색으로 — 시안 C/flights-hero-flap.html .pass::before/after 의 방식(홈 색 = 그 자리 뒤 바탕색). 홈 가운데가 카드 가장자리 위에 있음을 e2e 로 검사. "가장 싼 달" 작은 글자판(MiniBoard)은 큰 판 틀(남색 바탕 · 안쪽 여백 · 둥근 틀)을 없애고 칸 셋만 단독으로(칸 남색 + 노랑 글자 · 높이 44px). 파일: flights-page.tsx · mini-board.tsx · shared/flights-redesign.test.ts(새) · e2e/flights-redesign.spec.ts
+- (사용자 지적 2 · 절취선 동그라미) 탑승권 절취선 위 · 아래 끝 동그라미(홈 · NOTCH 두 개)를 없애고 점선(절취선)만 남김 — 표 뒤가 옅은 면이라 파인 홈이 아니라 따로 붙은 점처럼 보인다는 지적. 표 뒤 옅은 면(surface-2)과 작은 글자판은 그대로. 이전 지적(홈 색 = 뒤 구간 색)의 e2e · 소스 테스트를 "홈 없음 · 점선 있음"으로 바꿈. 홈(0217) 탑승권의 파인 홈은 그대로(lead). 다른 표(통화 상세 · 직구 꼬리표 · 여행 물가)에는 절취선 끝 동그라미가 없어 해당 없음. 파일: flights-page.tsx · shared/flights-redesign.test.ts · e2e/flights-redesign.spec.ts
