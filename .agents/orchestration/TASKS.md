@@ -44,5 +44,5 @@
 | 0211 | 디자인 4 · /flights 비행기가 이름표 가림 · 같은 달 반복 문장 (#250) | builder | PR 대기 | task/0211-design-flights | apps/web/src/features/travel-price/** |
 | 0212 | 디자인 5 · 통화 상세 · 여행 물가 다듬기 (#251) | builder | PR 대기 | task/0212-design-detail | apps/web/src/features/{currencies,travel-price}/** |
 | 0213 | 디자인 6 · 접근성 · 기본기 묶음 (#252) | builder | PR 대기 | task/0213-design-a11y | packages/ui/src/** · apps/web/src/shared/** · globals.css |
-| 0214 | 디자인 7 · /geo · /log 정리 (#253 · 시안 먼저) | builder | 시안 만드는 중 | (시안 뒤 task/0214-design-geo-log) | apps/web/src/features/{geo,log}/** |
+| 0214 | 디자인 7 · /geo 시안 B(막대 · 카드 2열) · /log 시안 A(흰 카드) (#253) | builder | 진행 중 | task/0214-design-geo-log | apps/web/src/features/{geo,log}/** |
 | 0215 | 디자인 8 · 색 숫자를 토큰으로 (#254) | builder | 진행 대기 | task/0215-design-tokens | packages/ui/src/tokens.css · apps/web/src/features/** |
