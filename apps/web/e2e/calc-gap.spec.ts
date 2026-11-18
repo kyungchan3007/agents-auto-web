@@ -42,13 +42,15 @@ test.describe("직구 입력 안내 아래 빈칸 (작업 0208 추가)", () => {
     });
   }
 
-  test("결과 카드 최소 높이 408px 그대로 (첫 화면 · 오류가 있어도)", async ({ page }) => {
+  test("결과 카드 최소 높이 그대로 (첫 화면 · 오류가 있어도) — 세관 꼬리표 크기 (작업 0221 · 예전 408px)", async ({ page }) => {
     await page.goto("/calc");
     await page.waitForTimeout(300);
+    const wide = (page.viewportSize()?.width ?? 0) >= 1024;
+    const min = wide ? 580.8 : 576; // 꼬리표(남색 결론 + 영수증 내역)가 나온 상태 높이 — 값이 바뀌어도 이 높이 아래로 줄지 않음
     const h = (await box(tid(page, "calc-result"))).height;
-    expect(h).toBeGreaterThanOrEqual(407.5);
-    expect(h).toBeLessThanOrEqual(412);
+    expect(h).toBeGreaterThanOrEqual(min - 0.5);
+    expect(h).toBeLessThanOrEqual(min + 8);
     await fill(page, "price", "abc");
-    expect((await box(tid(page, "calc-result"))).height).toBeGreaterThanOrEqual(407.5);
+    expect((await box(tid(page, "calc-result"))).height).toBeGreaterThanOrEqual(min - 0.5);
   });
 });

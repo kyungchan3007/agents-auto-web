@@ -28,12 +28,22 @@
 - .agents/orchestration/TASKS.md · .agents/specs/0221-redesign-calc/**
 
 ## 계획 밖 변경 이유
+- apps/web/src/features/import-calc/components/customs-board.tsx · lib/kpi.test.ts — 새 파일(계획의 import-calc/** 안): 과세환율 작은 글자판 · 숫자 카드 계산 테스트
+- packages/ui/src/hooks/use-count-up.ts — 웹 쪽 화면이 ui 의 lib 를 직접 가져올 수 없어 formatCount 를 훅 파일에서 같이 내보냄 (0217 · 0219 와 같은 줄)
+- apps/web/src/shared/{font-readability · photos}.test.ts — 큰 글씨 허용 목록에 customs-board 추가 · /calc 사진 머리 검사 뺌
+- apps/web/e2e/{emphasis · photos}.spec.ts — 직구 큰 문장이 흰 면 위 노란 밑줄이 됨 · /calc 사진 없음
+- 흰 바탕 결정(0216 의 네 커밋)은 lead 가 이미 cherry-pick 해 둠 · 흰 바탕 위 흰 카드에 옅은 선(border-line)
 
 ## 완료 기준
-- [ ] 1280 · 768 · 390 가로 넘침 없음 · 콘솔 오류 없음 · 사진 요청 0
-- [ ] 0208 크기 안정 검사(180 · 201 · abc · 빈 값 · 99999999 · 배송비 오류) 그대로 통과
-- [ ] 계산 결과 · 내역 숫자 지금과 같음 · 과세환율 글자판 값 = 실제 값
-- [ ] bash .agents/checks.sh PASS · 빌드 한 번
+- [x] 1280 · 768 · 390 가로 넘침 없음 · 콘솔 오류 없음 · 사진 요청 0
+- [x] 0208 크기 안정 검사(180 · 201 · abc · 빈 값 · 99999999 · 배송비 오류) 그대로 통과
+- [x] 계산 결과 · 내역 숫자 지금과 같음 · 과세환율 글자판 값 = 실제 값
+- [x] bash .agents/checks.sh PASS · 빌드 한 번
 
 ## 허점
--
+- 웹킷(사파리) 확인 못 함.
+- e2e 는 `next dev` 가 이 환경에서 하이드레이션이 안 돼 못 쓰고 **가짜 API 로 만든 빌드**(운영 D1 읽기 0 · 통화 10개 · 과세환율 2주 · 수입물가 24개월)로 돌렸음 — 실제 자료 미리보기에서 확인 필요(/geo 같은 다른 페이지 e2e 는 가짜 자료가 없어 실패).
+- 결과 카드(세관 꼬리표)는 예전(408px)보다 길어져(휴대폰 576px · 넓은 화면 581px) 최소 높이를 올렸고, 입력 카드는 늘이지 않고 자연 높이로 둠(시안 A) — 0208 의 "값이 바뀌어도 크기 고정"은 412px 폭 이상에서 그대로 통과(360px 같은 아주 좁은 폭은 줄바꿈으로 높이가 조금 달라질 수 있음).
+- 결과 금액은 입력에 따라 바뀌어 카운트업하지 않음(계획대로) · 수입물가 숫자 카드만 카운트업.
+- 과세환율 작은 글자판은 움직임 없음(처음 한 번 넘어가는 큰 글자판 FlapBoard 와 달리) — 칸이 작은 판이라 지금 180px 높이 검사(0208)를 지키려고.
+- 시안의 영문 라벨(CUSTOMS · ITEM · CUSTOMS TAG · IMPORT PRICES)은 넣지 않음. 보내는 곳은 시안의 두 줄 선택지가 아니라 지금 선택 칸 그대로(계획: 지금 칸 그대로).

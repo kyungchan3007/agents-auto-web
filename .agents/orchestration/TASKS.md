@@ -51,4 +51,4 @@
 | 0218 | 새 디자인 여행 타이밍 — 시안 A · 머리 글자판 · 탑승권 들어오기 · 지수 카운트업 | builder | PR 대기 | task/0218-redesign-flights | apps/web/src/features/travel-price/** (flights) |
 | 0219 | 새 디자인 통화 상세 — 시안 A · 카운트업 · 1년 흐름 그리기 · 통화 검색 · 국기 칩 | builder | PR 대기 | task/0219-redesign-currency | apps/web/src/features/currencies/** |
 | 0220 | 새 디자인 여행 물가 — 시안 B · 숫자 카운트업 | builder | PR 대기 | task/0220-redesign-prices | apps/web/src/features/travel-price/** (prices) |
-| 0221 | 새 디자인 직구 계산 — 시안 A · 세관 꼬리표 결과 · 과세환율 글자판 | builder | 진행 대기 | task/0221-redesign-calc | apps/web/src/features/import-calc/** |
+| 0221 | 새 디자인 직구 계산 — 시안 A · 세관 꼬리표 결과 · 과세환율 글자판 | builder | PR 대기 | task/0221-redesign-calc | apps/web/src/features/import-calc/** |

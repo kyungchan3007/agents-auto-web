@@ -14,8 +14,8 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
   const rateText = source ? source.label : rate ? `${rate.date} 기준 · ${SOURCE_NAME[rate.source]}` : "환율을 받지 못했습니다";
   return (
     // 넓은 화면은 입력 묶음과 같은 높이 (바깥은 늘어나는 칸 · 안쪽을 겹쳐 넘치는 글은 칸 안에서 스크롤 · 작업 0200) · 휴대폰은 결과가 나온 상태 높이를 최소로 — 빈칸 없이 · 빈 값 · 오류 · 한도 넘음에도 아래 칸이 움직이지 않게 (작업 0208)
-    <div data-testid="calc-result" className="relative min-h-[36rem] overflow-hidden rounded-[1.75rem] border border-line bg-card shadow-ticket lg:h-auto" aria-live="polite">
-      <div className="flex h-full min-h-[inherit] flex-col lg:absolute lg:inset-0 lg:min-h-0 lg:overflow-y-auto">
+    <div data-testid="calc-result" className="relative min-h-[36rem] overflow-hidden rounded-[1.75rem] border border-line bg-card shadow-ticket lg:min-h-[36.3rem]" aria-live="polite">
+      <div className="flex h-full min-h-[inherit] flex-col">
         <div data-testid="calc-tag-top" className="relative bg-pin-ink px-6 pt-5 pb-6 text-foam">
           <span aria-hidden className="absolute top-4 right-4 size-3 rounded-full bg-card" />
           {/* 도장 · 넘음 글은 같은 높이 칸에 — 한도 안 · 밖이 바뀌어도 아래 줄이 같은 자리 (작업 0208) */}
@@ -66,7 +66,7 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
 
 function Row({ k, v, total = false }: { k: string; v: string; total?: boolean }) {
   return (
-    <div className={`flex flex-wrap items-baseline justify-between gap-x-4 py-3 ${total ? "mt-1 border-t-2 border-fg pt-4 text-[1rem] font-bold" : "border-b border-dashed border-line"}`}>
+    <div className={`flex flex-wrap items-baseline justify-between gap-x-4 py-2.5 ${total ? "mt-1 border-t-2 border-fg pt-4 text-[1rem] font-bold" : "border-b border-dashed border-line"}`}>
       <dt className={total ? "" : "text-fg-2"}>{k}</dt>
       <dd className={`text-right ${total ? "text-[1.25rem] font-extrabold tabular-nums" : "font-semibold"}`}>{v}</dd>
     </div>
