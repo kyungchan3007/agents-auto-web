@@ -1,6 +1,6 @@
 import { createVerify, generateKeyPairSync } from "node:crypto";
 import { describe, expect, it, vi } from "vitest";
-import { accessToken, gscSql, serviceJwt, toGscData } from "./gsc";
+import { GSC_SITE, accessToken, gscSql, serviceJwt, toGscData } from "./gsc";
 import { searchSummary } from "./summary";
 
 const { privateKey, publicKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
@@ -25,16 +25,26 @@ describe("Search Console 가져오기 (작업 0130)", () => {
     const d = toGscData(
       [{ keys: ["2026-11-01"], clicks: 1, impressions: 5, position: 3.5 }, { keys: ["틀림"], clicks: 1 }],
       [{ keys: ["달러 환율"], clicks: 0, impressions: 2, position: 8 }, { keys: ["개인 이름"], impressions: 1 }, { keys: [""], impressions: 9 }],
-      [{ keys: ["https://tripfx.pages.dev/calc"], clicks: 1, impressions: 3, position: 2 }, { keys: ["https://evil.example/x"], impressions: 9 }],
+      [
+        { keys: ["https://flapfx.com/calc"], clicks: 1, impressions: 3, position: 2 },
+        { keys: ["https://www.flapfx.com/prices"], impressions: 2 },
+        { keys: ["https://tripfx.pages.dev/geo"], impressions: 4 },
+        { keys: ["https://flapfx.com.evil.example/x"], impressions: 9 },
+        { keys: ["https://evil.example/x"], impressions: 9 },
+      ],
     );
     expect(d.daily.map((r) => r.day)).toEqual(["2026-11-01"]);
-    expect(d.top.map((r) => r.key)).toEqual(["달러 환율", "/calc"]);
+    expect(d.top.map((r) => r.key)).toEqual(["달러 환율", "/calc", "/prices"]);
   });
   it("SQL 이스케이프 — 검색어는 데이터", () => {
     const sql = gscSql({ daily: [], top: [{ kind: "query", key: "x'); DROP TABLE fx_rates; --", clicks: 1, impressions: 2, position: 1.5 }] }, "2026-11-05T00:00:00.000Z");
     expect(sql).toContain("'x''); DROP TABLE fx_rates; --'");
     expect(sql.startsWith("DELETE FROM gsc_daily;")).toBe(true);
   });
+});
+
+it("속성은 도메인 속성 sc-domain:flapfx.com (작업 0206)", () => {
+  expect(GSC_SITE).toBe("sc-domain:flapfx.com");
 });
 
 describe("검색 요약 (작업 0130)", () => {
