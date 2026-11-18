@@ -56,14 +56,14 @@ describe("홈 구성 — 순서 · 구간", () => {
     expect(HOME_UI).toContain("도착지별 환전 타이밍");
   });
 
-  it("여행 타이밍 라벨 · 선 그래프 · 비행기 자리 표시(data-testid) · 안내판 · 비행기 · 도착지 줄 컴포넌트를 씀 (지구는 없앰)", () => {
+  it("여행 타이밍 라벨 · 12달 막대 · 안내판 · 도착지 목록 컴포넌트를 씀 (지구 · 3D 비행 경로는 없앰 · 작업 0217)", () => {
     expect(HOME_UI).toContain("여행 타이밍");
-    expect(HOME_UI).toMatch(/data-testid="travel-graph"/);
-    expect(HOME_UI).toMatch(/data-testid="plane-route"/);
+    expect(HOME_UI).toMatch(/data-testid="year-bars"/);
+    expect(HOME_UI).not.toMatch(/data-testid="plane-route"|data-testid="travel-graph"/);
     expect(HOME_UI).not.toMatch(/\bGlobeLazy\b/); // 작업 0177 수정: 3D 지구를 없앰
     expect(HOME_UI).toMatch(/\bFlapBoard\b/); // 작업 0177 출발 안내판
-    expect(HOME_UI).toMatch(/\bPlaneRouteLazy\b/);
-    expect(HOME_UI).toMatch(/\bDestinationRow\b/);
+    expect(HOME_UI).not.toMatch(/\bPlaneRouteLazy\b/);
+    expect(HOME_UI).toMatch(/\bDestinationTable\b/);
   });
 
   it("계산은 lib 의 순수 함수로 — travelTiming · travelTimingCopy · cheapestDestination · cheapestCopy · destinationRows", () => {
@@ -76,8 +76,9 @@ describe("홈 구성 — 순서 · 구간", () => {
 });
 
 describe("도착지 줄 핀 근거 숫자 (작업 0170 추가 요청)", () => {
-  it("DestinationRow 에 percentile 로 넘김 (옛 pct 가 아님) — 핀에 '하위 12% · 쌈' 같은 근거 숫자가 나옴", () => {
-    expect(HOME_UI).toMatch(/percentile=\{[^}]*\.percentile/);
+  it("목록 줄이 pinText('하위 12% · 쌈' 근거 숫자)와 막대 위치(position)를 그림 — 옛 pct 가 아님 (작업 0217)", () => {
+    expect(HOME_UI).toMatch(/\.pinText\b/);
+    expect(HOME_UI).toMatch(/data-position=/);
     expect(HOME_UI).not.toMatch(/\bpct=/);
   });
 });
