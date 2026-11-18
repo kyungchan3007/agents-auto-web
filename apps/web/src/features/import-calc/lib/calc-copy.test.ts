@@ -57,3 +57,21 @@ describe("calcHeadline", () => {
     expect(calcHeadline(bad, { currency: "USD", price: "-3" })).toBe(bad.ok ? "" : bad.reason);
   });
 });
+
+// 작업 0208 — 휴대폰 폼 위 결과 요약 한 줄 (높이는 화면이 고정 · 글만 바뀜)
+import { summaryLine } from "./calc-copy";
+
+describe("summaryLine — 휴대폰 결과 요약 (작업 0208)", () => {
+  const input = { ...base, price: "180" };
+  it("입력 전 · 오류는 안내 글 · 이유 그대로", () => {
+    expect(summaryLine(null)).toBe("물건 값을 넣으면 여기에 결과가 보입니다");
+    expect(summaryLine(calc({ ...base, price: "abc" }, RATES))).toBe("물건 값은 0 이상의 숫자만 됩니다");
+  });
+  it("한도 안 — 원화 금액 · 면세 한도 안", () => {
+    expect(summaryLine(calc(input, RATES))).toBe("252,000원 · 면세 한도 안");
+  });
+  it("한도 넘음 — 관세율이 있으면 세금 약 ○원 · 없으면 관세율 안내 (금액을 지어내지 않음)", () => {
+    expect(summaryLine(calc({ ...input, price: "201", dutyRate: "8" }, RATES))).toMatch(/^281,400원 · 한도 넘음 · 세금 약 [\d,]+원$/);
+    expect(summaryLine(calc({ ...input, price: "201" }, RATES))).toBe("281,400원 · 한도 넘음 · 관세율을 넣으면 세금 계산");
+  });
+});
