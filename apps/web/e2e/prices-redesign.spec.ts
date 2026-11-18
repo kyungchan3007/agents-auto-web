@@ -58,6 +58,63 @@ test.describe("새 /prices — 첫 화면 (작업 0220)", () => {
   });
 });
 
+test.describe("새 /prices — 예산 카드 위치 · 크기 (작업 0220 사용자 지적 · 시안 B/prices.html .budget)", () => {
+  // 시안(1280): 카드 폭 452px · 위 끝이 제목 첫 줄보다 약 100px 아래 · 파랑 면 아래 끝을 가로질러 아래 약 110px 가 흰 면 · 입력 칸 높이 64px · 결과 숫자 44px · 안쪽 여백 28 30 26
+  //   시안은 .budget 이 translateY(150px) (자리는 그대로 두고 아래로 내림) · 파랑 면 끝 = 카드 원래 자리 아래 + 40px
+  test("넓은 화면 — 카드 폭 · 제목보다 아래에서 시작 · 파랑/흰 경계를 가로지름(위 대부분 파랑 · 아래 약 110px 흰 면)", async ({ page }) => {
+    test.skip(isPhone(page), "넓은 화면 전용");
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/prices");
+    test.skip(!(await ready(page)), "자료 없음");
+    await page.waitForTimeout(400);
+    const card = await box(page, "budget");
+    const band = await box(page, "prices-band");
+    const h1 = await page.getByRole("heading", { level: 1 }).boundingBox();
+    expect(Math.abs(card.width - 452), `카드 폭 ${Math.round(card.width)}`).toBeLessThanOrEqual(4);
+    expect(card.y - (h1?.y ?? 0), "카드 위 끝이 제목 첫 줄 위 끝보다 아래").toBeGreaterThanOrEqual(80);
+    expect(card.y - (h1?.y ?? 0), "시안은 약 100px 아래").toBeLessThanOrEqual(140);
+    const bandBottom = band.y + band.height;
+    const below = card.y + card.height - bandBottom;
+    expect(bandBottom - card.y, "카드 위 부분(파랑 안)이 큼").toBeGreaterThanOrEqual(280);
+    expect(below, `카드 아래 흰 면 부분 ${Math.round(below)}px`).toBeGreaterThanOrEqual(80);
+    expect(below).toBeLessThanOrEqual(160);
+    // 아래 구간(한국 = 100 자)은 카드와 겹치지 않음
+    const ruler = await box(page, "ruler");
+    expect(ruler.y, "자가 카드 아래").toBeGreaterThanOrEqual(card.y + card.height + 20);
+  });
+
+  test("넓은 화면 — 입력 칸 높이 약 64px · 결과 숫자 약 44px · 안쪽 여백(위 28 · 옆 30)", async ({ page }) => {
+    test.skip(isPhone(page), "넓은 화면 전용");
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/prices");
+    test.skip(!(await ready(page)), "자료 없음");
+    const heights = await tid(page, "budget").locator("select, input").evaluateAll((els) => els.map((e) => e.getBoundingClientRect().height));
+    expect(heights.length).toBeGreaterThanOrEqual(3);
+    for (const h of heights) expect(Math.abs(h - 64), `입력 칸 ${Math.round(h)}px`).toBeLessThanOrEqual(3);
+    const fs = await tid(page, "budget-total").evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+    expect(Math.abs(fs - 44), `결과 숫자 ${fs}px`).toBeLessThanOrEqual(2);
+    const pad = await tid(page, "budget").evaluate((el) => ({ t: parseFloat(getComputedStyle(el).paddingTop), l: parseFloat(getComputedStyle(el).paddingLeft) }));
+    expect(Math.abs(pad.t - 28)).toBeLessThanOrEqual(2);
+    expect(Math.abs(pad.l - 30)).toBeLessThanOrEqual(2);
+  });
+
+  test("값을 바꿔도(나라 · 입력 오류) 카드 위 끝은 그대로 · 계산 결과 · 가로 넘침 없음", async ({ page }) => {
+    test.skip(isPhone(page), "넓은 화면 전용");
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/prices");
+    test.skip(!(await ready(page)), "자료 없음");
+    const y0 = (await box(page, "budget")).y;
+    await tid(page, "budget").getByRole("combobox").selectOption({ index: 1 });
+    await tid(page, "budget").locator("input").first().fill("abc");
+    await page.waitForTimeout(300);
+    expect(Math.abs((await box(page, "budget")).y - y0)).toBeLessThanOrEqual(1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+  });
+});
+
 test.describe("새 /prices — 머리 제목 세 줄 (작업 0220 사용자 지적 · 시안 B/shots/prices-1280.png)", () => {
   // 시안: 왼쪽 칼럼에 세 줄 "인도는 한국보다 / 물가가 63% / 낮습니다" · 오른쪽에 예산 카드 — 넓게 두 줄로 놓지 않음 · 줄 나눔은 고른 나라 문장도 같은 규칙 · 휴대폰은 위아래 그대로
   const lines = (page: Page) =>
