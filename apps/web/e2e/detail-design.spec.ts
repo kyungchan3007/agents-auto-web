@@ -108,4 +108,20 @@ test.describe("여행 물가 (작업 0212)", () => {
     const marks = await tid(page, "band-mark").evaluateAll((els) => els.map((e) => getComputedStyle(e).backgroundColor));
     expect(new Set(marks).size).toBe(3);
   });
+
+  test("여행 하루 예산 — 고른 나라가 있으면 그 나라로 시작 · 없으면 일본", async ({ page }) => {
+    await page.goto("/prices");
+    const select = tid(page, "budget").getByLabel("나라");
+    await expect(select).toHaveValue("JPN");
+    await page.evaluate(() => localStorage.setItem("flapfx:picked", JSON.stringify({ v: 1, country: "THA", city: "방콕", budget: 0 })));
+    await page.goto("/prices");
+    await expect(tid(page, "budget").getByLabel("나라")).toHaveValue("THA");
+    // 주소의 ?country= 가 더 앞
+    await page.goto("/prices?country=FRA");
+    await expect(tid(page, "budget").getByLabel("나라")).toHaveValue("FRA");
+    // 두바이(아랍에미리트)도 물가 자료에 있는 나라 — 그 나라로 시작
+    await page.evaluate(() => localStorage.setItem("flapfx:picked", JSON.stringify({ v: 1, country: "ARE", city: "두바이", budget: 0 })));
+    await page.goto("/prices");
+    await expect(tid(page, "budget").getByLabel("나라")).toHaveValue("ARE");
+  });
 });
