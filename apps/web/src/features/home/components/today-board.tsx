@@ -19,11 +19,13 @@ export function TodayBoard({ rates, signals, windowDays, problem }: Props) {
   const board = todayBoard({ found, hasRates: rates.length > 0, windowDays, problem });
   const source = found ? rates.find((r) => r.currency === found.rate.currency) : undefined;
   return (
-    <section id="today" aria-labelledby="today-title" className="px-4 pt-6 pb-8 text-fg sm:px-8 sm:pt-8 sm:pb-10">
-      <div className="mx-auto max-w-page">
+    <section id="today" aria-labelledby="today-title" className="px-4 pt-6 pb-6 text-fg sm:px-8 sm:pt-8 sm:pb-8">
+      <div className="mx-auto max-w-page lg:flex lg:items-center lg:gap-10">
+        <div className="min-w-0">
         {/* 인트로에서 나라를 골랐으면 PickedBoard 가 같은 판으로 "내가 고른 여행지" 를 그림 · 아니면 아래 지금 안내판 그대로 (서버가 그림) */}
         <PickedBoard rates={rates} signals={signals} windowDays={windowDays}>
-          <h2 id="today-title" className="text-base font-semibold text-accent">
+          {/* 머리에 딸린 라벨 — 여행 타이밍 작은 제목(Eyebrow)과 같은 모양 · 제목(h2) 시맨틱은 그대로 (작업 0210) */}
+          <h2 id="today-title" className="text-base font-normal text-accent">
             {board.title}
           </h2>
           <FlapBoard rows={board.rows} cols={BOARD_COLS} label={board.label} className="mt-3" />
@@ -34,8 +36,10 @@ export function TodayBoard({ rates, signals, windowDays, problem }: Props) {
             </p>
           )}
         </PickedBoard>
+        </div>
         {/* 휴대폰은 인트로가 없어 여기서 여행지를 고름 (넓은 화면에서도 보임 · 인트로를 끈 사람) — 고르면 안내판 · 사진이 바로 바뀜 (작업 0201) */}
-        <PickTrip label="내 여행지 고르기" changeLabel="여행지 바꾸기" className="mt-6" />
+        {/* 넓은 화면은 안내판 옆(1280×800 첫 화면 안) · 휴대폰은 아래 (작업 0210) */}
+        <PickTrip label="내 여행지 고르기" changeLabel="여행지 바꾸기" className="mt-6 lg:mt-0 lg:shrink-0" />
       </div>
     </section>
   );
