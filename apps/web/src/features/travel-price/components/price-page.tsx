@@ -1,4 +1,4 @@
-// 여행 물가 페이지 — 하늘 종이 바탕 · 큰 문장(물가가 가장 낮은 나라 + 세계은행 자료 연도) → 물가 구간 3칸 → 여행 하루 예산 (작업 0170 · Figma 04)
+// 여행 물가 페이지 — 새 디자인(작업 0220 · 시안 B): 메뉴와 이어지는 파랑 첫 면(큰 문장 + 오른쪽 하루 예산 카드가 경계에 걸침) → 한국 = 100 물가 자 → 물가 구간 3칸 표 (작업 0170 · Figma 04)
 // 물가 · 환율 신호는 빌드 때 받은 값만 · 없으면 이유 (docs/domain/travel-price.md) · 숫자를 지어내지 않음
 import type { Fetched } from "@/shared/api";
 import { SiteNav } from "@/shared/site-nav";
@@ -11,6 +11,7 @@ import { pricesHeadline } from "../lib/prices-copy";
 import { BudgetPlanner } from "./budget-planner";
 import { Suspense } from "react";
 import { PriceBands } from "./price-bands";
+import { PriceRuler } from "./price-ruler";
 import { PricesHeader } from "./prices-header";
 import { PriceView } from "./price-view";
 
@@ -26,9 +27,21 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
     <>
       <SiteNav page="prices" />
       <main id="main" tabIndex={-1} className="bg-surface text-fg">
-        <PricesHeader rows={rows.map((r) => ({ country: r.country, name: r.name, relative: r.relative, year: r.year }))} title={headline ? headline.title : "여행 물가 자료를 받지 못했습니다"} />
-        <div className="px-4 pt-6 pb-10 sm:px-8">
+        {/* 첫 면 — 파랑 띠는 그리드 첫 줄 높이만큼만 깔리고 예산 카드는 그 경계에 걸침 (그라데이션 · 음수 여백 대신 칸 나눔 · 휴대폰은 카드를 위로 끌어올림) */}
+        <div className="grid grid-cols-[minmax(1rem,1fr)_minmax(0,var(--container-page))_minmax(1rem,1fr)] sm:grid-cols-[minmax(2rem,1fr)_minmax(0,var(--container-page))_minmax(2rem,1fr)]">
+          <div data-testid="prices-band" aria-hidden className="col-span-3 col-start-1 row-start-1 bg-pin-cheap" />
+          <div className="relative z-10 col-start-2 row-start-1 pt-10 pb-12 sm:pt-14 lg:pr-[calc(26rem+3rem)] lg:pb-16">
+            <PricesHeader rows={rows.map((r) => ({ country: r.country, name: r.name, relative: r.relative, year: r.year }))} title={headline ? headline.title : "여행 물가 자료를 받지 못했습니다"} />
+          </div>
+          {data && data.bands.length > 0 && (
+            <div className="relative z-10 col-start-2 row-start-2 -mt-24 pb-2 lg:row-span-2 lg:row-start-1 lg:mt-14 lg:ml-auto lg:w-[26rem] lg:self-start">
+              <BudgetPlanner rows={rows} latestOf={latestOf} />
+            </div>
+          )}
+        </div>
+        <div className="px-4 pt-14 pb-10 sm:px-8 sm:pt-16">
         <div className="mx-auto max-w-page">
+          {data && data.bands.length > 0 && <PriceRuler bands={data.bands} />}
           <div>
             {data && data.bands.length > 0 ? (
               // 주소의 ?currency= 는 브라우저에서 읽음(정적 사이트) — 읽기 전 · 검색 · AI 가 읽는 HTML 은 전체 목록 (작업 0193)
@@ -39,12 +52,6 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
               <EmptyState>물가 자료를 받지 못했습니다 ({levels.ok ? "여행지 나라 자료 없음" : levels.reason})</EmptyState>
             )}
           </div>
-
-          {data && data.bands.length > 0 && (
-            <div className="mt-6">
-              <BudgetPlanner rows={rows} latestOf={latestOf} />
-            </div>
-          )}
 
           {data && (data.missing.length > 0 || !signals.ok) && (
             <div className="mt-6 space-y-1 text-small text-fg-2">
