@@ -70,11 +70,22 @@ test.describe("홈 첫 화면 디자인 (작업 0210 → 0217 새 디자인)", (
     await note.scrollIntoViewIfNeeded();
     await page.evaluate(() => window.scrollBy(0, -200));
     expect(await worstContrast(page, note), "각주").toBeGreaterThanOrEqual(4.5);
-    for (const text of [/월 가장 쌈/, /월 가장 비쌈/]) {
-      const label = page.locator("[data-testid=year-bars]").getByText(text).first();
-      await label.scrollIntoViewIfNeeded();
-      await page.evaluate(() => window.scrollBy(0, -200)); // 따라오는 메뉴(파랑) 밑에 깔리지 않게
-      expect(await worstContrast(page, label), String(text)).toBeGreaterThanOrEqual(4.5);
-    }
+    // 그래프 2D(시안 F): 말풍선은 SVG(빨강 · 노랑 바탕 + 글) — 픽셀 대신 글 색 · 바탕 색의 WCAG 대비로 잼
+    const ratios = await page.locator("[data-testid=year-bars] [data-testid=year-tag]").evaluateAll((tags) => {
+      const rgb = (c: string) => (c.match(/\d+(\.\d+)?/g) ?? ["0", "0", "0"]).slice(0, 3).map(Number);
+      const lum = ([r, g, b]: number[]) => {
+        const f = (v: number) => ((v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+        return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+      };
+      return tags.map((t) => {
+        const text = t.querySelector("text") as SVGTextElement;
+        const rect = t.querySelector("rect") as SVGRectElement;
+        const a = lum(rgb(getComputedStyle(text).fill));
+        const b = lum(rgb(getComputedStyle(rect).fill));
+        return { kind: t.getAttribute("data-kind"), ratio: (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05) };
+      });
+    });
+    expect(ratios.length, "말풍선 둘").toBe(2);
+    for (const r of ratios) expect(r.ratio, `${r.kind} 말풍선 글자 대비`).toBeGreaterThanOrEqual(4.5);
   });
 });

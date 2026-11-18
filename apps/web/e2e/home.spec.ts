@@ -53,13 +53,13 @@ test("메뉴 '오늘 환율' → 홈의 바다 띠(#today)로", async ({ page })
   await expect(page.locator("#today")).toBeInViewport();
 });
 
-test("바닥 띠 — 비행기 모델 출처(CC-BY 4.0)와 자료 출처", async ({ page }) => {
+test("바닥 띠 — 자료 출처 · 3D 비행기를 홈에서 뺐으므로 비행기 모델 출처는 없음 (그래프 2D · 인트로 화면에는 그대로)", async ({ page }) => {
   await page.goto("/");
   const footer = page.getByRole("contentinfo");
-  await expect(footer).toContainText("Poly by Google");
-  await expect(footer).toContainText("CC-BY 4.0");
   await expect(footer).toContainText("한국수출입은행");
-  await expect(footer.locator('a[href^="https://poly.pizza/"]')).toHaveCount(1);
+  await expect(footer).toContainText("Kenney");
+  await expect(footer).not.toContainText("Poly by Google");
+  await expect(footer.locator('a[href^="https://poly.pizza/"]')).toHaveCount(0);
 });
 
 // 도착지 줄 — 작업 0170 추가 요청 (사용자 "시안이랑 다르다"): 데스크톱은 한 줄 세 칸 · 줄 높이 시안(90)의 절반쯤 아니라 시안 그대로 · 모바일은 눈금 없이 핀 오른쪽
