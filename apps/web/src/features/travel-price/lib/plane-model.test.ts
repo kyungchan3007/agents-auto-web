@@ -43,10 +43,14 @@ describe("출처 표시 (CC-BY 4.0 은 출처 표시가 조건)", () => {
     expect(PLANE_CREDIT.licenseUrl).toBe("https://creativecommons.org/licenses/by/4.0/");
   });
 
-  it("화면 코드가 출처를 보여 주고 모델 주소를 비행기에 넘김", () => {
+  it("비행기는 인트로에서만 쓰므로 출처도 인트로 화면이 보여 주고 모델 주소를 비행기에 넘김 · /flights 화면(travel-price 컴포넌트)에는 비행기도 출처도 없음 (그래프 2D)", () => {
     const dir = join(WEB, "src/features/travel-price/components");
-    const sources = readdirSync(dir).filter((f) => f.endsWith(".tsx")).map((f) => readFileSync(join(dir, f), "utf8"));
-    expect(sources.some((s) => s.includes("PLANE_CREDIT")), "PLANE_CREDIT 을 쓰는 화면").toBe(true);
-    expect(sources.some((s) => /PlaneLazy|Plane/.test(s) && s.includes("PLANE_MODEL_URL")), "비행기에 PLANE_MODEL_URL").toBe(true);
+    const flights = readdirSync(dir).filter((f) => f.endsWith(".tsx")).map((f) => readFileSync(join(dir, f), "utf8"));
+    expect(flights.some((s) => s.includes("PLANE_CREDIT")), "/flights 에 PLANE_CREDIT 이 남음").toBe(false);
+    expect(flights.some((s) => /PlaneRouteLazy|PlaneLazy/.test(s)), "/flights 에 비행기가 남음").toBe(false);
+    const intro = readFileSync(join(WEB, "src/features/intro/components/intro.tsx"), "utf8");
+    expect(intro, "인트로의 출처").toContain("PLANE_CREDIT");
+    const scene = readFileSync(join(WEB, "src/features/intro/lib/scene.ts"), "utf8");
+    expect(scene, "인트로 장면의 비행기에 모델 주소").toContain("PLANE_MODEL_URL");
   });
 });
