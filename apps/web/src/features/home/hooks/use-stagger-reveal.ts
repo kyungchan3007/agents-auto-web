@@ -6,7 +6,7 @@
 //   phase(i): "final"(그대로 보임) · "hidden"(투명 + 살짝 아래) · "shown"(나타남 — 이때 카운트업 · 동그라미도 시작)
 import { useInViewOnce } from "@hav/ui/hooks/use-in-view-once";
 import { useReducedMotion } from "motion/react";
-import { type RefObject, useEffect, useState } from "react";
+import { type RefObject, useEffect, useState, useSyncExternalStore } from "react";
 
 export type RevealPhase = "final" | "hidden" | "shown";
 
@@ -15,11 +15,13 @@ export const REVEAL_STEP_MS = 100;
 export function useStaggerReveal<T extends Element>(count: number, stepMs = REVEAL_STEP_MS): { ref: RefObject<T | null>; phase: (index: number) => RevealPhase } {
   const reduce = useReducedMotion();
   const { ref, seen } = useInViewOnce<T>();
-  const [armed, setArmed] = useState(false);
+  // 숨김 준비 — 서버 첫 그림 · 하이드레이션 = false(보임), 움직일 수 있는 브라우저에서만 true (effect 안 setState 없이 구함)
+  const armed = useSyncExternalStore(
+    () => () => {},
+    () => !reduce,
+    () => false,
+  );
   const [open, setOpen] = useState(0); // 나타난 줄 수 (위에서부터)
-  useEffect(() => {
-    if (!reduce) setArmed(true);
-  }, [reduce]);
   useEffect(() => {
     if (!armed || !seen) return;
     const timers = Array.from({ length: count }, (_, i) => setTimeout(() => setOpen((n) => Math.max(n, i + 1)), i * stepMs));
