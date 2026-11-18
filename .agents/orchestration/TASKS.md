@@ -36,13 +36,19 @@
 | 0199 | 나라 국기(SVG) — 홈 도착지 · 통화 · 여행 물가 (#234) | builder | 머지됨 (#236) | task/0199-country-flags | apps/web/src/features/{home,currencies,travel-price}/** · packages/ui/src/components/data/*flag.tsx |
 | 0200 | 직구 계산 배치 — 시안 B (입력 두 줄 · 칸 고정 · 예시 값 · 수입물가 가로 전체 → 과세환율) (#235) | builder | 머지됨 (#237) | task/0200-calc-layout | apps/web/src/features/import-calc/** |
 | 0201 | 고른 나라 사진 · 휴대폰 여행지 고르기 · 고른 나라 물가 (#233 · Full) | builder | 머지됨 (#238) | task/0201-country-photos | apps/web/public/images/photos/country-* · packages/ui/src/lib/photo.ts · features/{home,intro,travel-price}/** |
-| 0204 | 2026-11-18 AI 답변 세션 측정 (질문 3판 첫 측정) · #157 조사 | geo | PR 대기 | task/0204-geo-answers-1118 | apps/api/data/geo-answers/2026-11-18.json |
-| 0205 | 이름 바꾼 날(11-17) 전후 비교 — /geo 맨 위 (#243 · Full) | builder | PR 대기 | task/0205-rename-compare | packages/shared/src/contracts/geo.ts · apps/api/src/features/geo/** · apps/web/src/features/geo/** |
-| 0208 | 디자인 1 · 직구 계산 — 휴대폰 결과 위치 · 빈칸 · 한도 넘을 때 줄 · 과세환율 칸 · 그래프 높이 (#247) | builder | PR 대기 | task/0208-design-calc | apps/web/src/features/import-calc/** |
-| 0209 | 디자인 2 · 휴대폰 홈 사진 덮개 · 노란 표시줄 (#248 · 기본 나라 사진은 정정으로 뺌) | builder | PR 대기 | task/0209-design-hero | apps/web/src/features/home/** · packages/ui photo-header · emph |
-| 0210 | 디자인 3 · 홈 첫 화면 — 고르기 버튼 · 이번 주 제목 · 간격 · 대비 (#249) | builder | PR 대기 | task/0210-design-home | apps/web/src/features/home/** |
-| 0211 | 디자인 4 · /flights 비행기가 이름표 가림 · 같은 달 반복 문장 (#250) | builder | PR 대기 | task/0211-design-flights | apps/web/src/features/travel-price/** |
-| 0212 | 디자인 5 · 통화 상세 · 여행 물가 다듬기 (#251) | builder | PR 대기 | task/0212-design-detail | apps/web/src/features/{currencies,travel-price}/** |
-| 0213 | 디자인 6 · 접근성 · 기본기 묶음 (#252) | builder | PR 대기 | task/0213-design-a11y | packages/ui/src/** · apps/web/src/shared/** · globals.css |
-| 0214 | 디자인 7 · /geo 시안 B(막대 · 카드 2열) · /log 시안 A(흰 카드) (#253) | builder | PR 대기 | task/0214-design-geo-log | apps/web/src/features/{geo,log}/** |
-| 0215 | 디자인 8 · 색 숫자를 토큰으로 (#254) | builder | 진행 대기 | task/0215-design-tokens | packages/ui/src/tokens.css · apps/web/src/features/** |
+| 0204 | 2026-11-18 AI 답변 세션 측정 (질문 3판 첫 측정) · #157 조사 | geo | 머지됨 | task/0204-geo-answers-1118 | apps/api/data/geo-answers/2026-11-18.json |
+| 0205 | 이름 바꾼 날(11-17) 전후 비교 — /geo 맨 위 (#243 · Full) | builder | 머지됨 | task/0205-rename-compare | packages/shared/src/contracts/geo.ts · apps/api/src/features/geo/** · apps/web/src/features/geo/** |
+| 0208 | 디자인 1 · 직구 계산 — 휴대폰 결과 위치 · 빈칸 · 한도 넘을 때 줄 · 과세환율 칸 · 그래프 높이 (#247) | builder | 머지됨 | task/0208-design-calc | apps/web/src/features/import-calc/** |
+| 0209 | 디자인 2 · 휴대폰 홈 사진 덮개 · 노란 표시줄 (#248 · 기본 나라 사진은 정정으로 뺌) | builder | 머지됨 | task/0209-design-hero | apps/web/src/features/home/** · packages/ui photo-header · emph |
+| 0210 | 디자인 3 · 홈 첫 화면 — 고르기 버튼 · 이번 주 제목 · 간격 · 대비 (#249) | builder | 머지됨 | task/0210-design-home | apps/web/src/features/home/** |
+| 0211 | 디자인 4 · /flights 비행기가 이름표 가림 · 같은 달 반복 문장 (#250) | builder | 머지됨 | task/0211-design-flights | apps/web/src/features/travel-price/** |
+| 0212 | 디자인 5 · 통화 상세 · 여행 물가 다듬기 (#251) | builder | 머지됨 | task/0212-design-detail | apps/web/src/features/{currencies,travel-price}/** |
+| 0213 | 디자인 6 · 접근성 · 기본기 묶음 (#252) | builder | 머지됨 | task/0213-design-a11y | packages/ui/src/** · apps/web/src/shared/** · globals.css |
+| 0214 | 디자인 7 · /geo 시안 B(막대 · 카드 2열) · /log 시안 A(흰 카드) (#253) | builder | 머지됨 | task/0214-design-geo-log | apps/web/src/features/{geo,log}/** |
+| 0215 | 디자인 8 · 색 숫자를 토큰으로 (#254) | builder | 머지됨 | task/0215-design-tokens | packages/ui/src/tokens.css · apps/web/src/features/** |
+| 0216 | 새 디자인 공통 — 파랑 메뉴 띠 · B 로고 · 글자판 B 모양 · 카운트업 · 들어오기 부품 | builder | 진행 대기 | task/0216-redesign-common | packages/ui/src/** · apps/web/src/shared/site-nav.tsx |
+| 0217 | 새 디자인 홈 — 시안 B + 환전 타이밍 A · 국기 · 카운트업 | builder | 진행 대기 | task/0217-redesign-home | apps/web/src/features/home/** |
+| 0218 | 새 디자인 여행 타이밍 — 시안 A · 머리 글자판 · 탑승권 들어오기 · 지수 카운트업 | builder | 진행 대기 | task/0218-redesign-flights | apps/web/src/features/travel-price/** (flights) |
+| 0219 | 새 디자인 통화 상세 — 시안 A · 카운트업 · 1년 흐름 그리기 · 통화 검색 · 국기 칩 | builder | 진행 대기 | task/0219-redesign-currency | apps/web/src/features/currencies/** |
+| 0220 | 새 디자인 여행 물가 — 시안 B · 숫자 카운트업 | builder | 진행 대기 | task/0220-redesign-prices | apps/web/src/features/travel-price/** (prices) |
+| 0221 | 새 디자인 직구 계산 — 시안 A · 세관 꼬리표 결과 · 과세환율 글자판 | builder | 진행 대기 | task/0221-redesign-calc | apps/web/src/features/import-calc/** |
