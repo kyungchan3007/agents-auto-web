@@ -14,6 +14,7 @@ import { averageYears, cheapMonth, type IndexPoint } from "../lib/travel-index";
 import { cheapMonthsCard, flightsHeadline, yoyCard } from "../lib/flights-copy";
 import { flightsBoard, latestNumbers, stripStats } from "../lib/flights-view";
 import { FlightsGraph } from "./flights-graph";
+import { MiniBoard } from "./mini-board";
 
 export type TravelItem = { key: string; name: string; points: IndexPoint[] | null };
 
@@ -26,9 +27,9 @@ function YoyItem({ name, points }: { name: string; points: IndexPoint[] | null }
   const n = latestNumbers(points);
   if (!card || !n) return null;
   return (
-    <div className="py-5 first:pt-0">
+    <div className="py-4 first:pt-0">
       <p className="text-small text-fg-2">{card.label}</p>
-      <p className="mt-1 text-[2.25rem] leading-tight font-extrabold tracking-display text-fg tabular-nums">
+      <p className="mt-0.5 text-[2rem] leading-tight font-extrabold tracking-display text-fg tabular-nums">
         <CountUp value={n.value} digits={1} />
       </p>
       <p className="mt-1 flex items-center gap-2 text-small font-semibold text-fg">
@@ -90,17 +91,17 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
                       <span aria-hidden className={`${NOTCH} -top-3.5 -right-3.5 lg:top-auto lg:right-auto lg:-bottom-3.5 lg:-left-3.5`} />
                       <div data-testid="yoy-cards">
                         <h2 className="text-small font-bold text-fg">작년 대비와 가장 싼 달</h2>
-                        <div className="mt-4 divide-y divide-line">
+                        <div className="mt-3 divide-y divide-line">
                           <YoyItem name="국제항공료" points={air} />
                           <YoyItem name="해외단체여행비" points={tour} />
                         </div>
                         {cheaps && (
-                          <div className="mt-2 border-t border-line pt-5">
+                          <div className="border-t border-line pt-4">
                             <p className="text-small text-fg-2">{cheaps.label}</p>
-                            <div data-testid="cheap-board" className="mt-3">
-                              <FlapBoard rows={[{ text: cheaps.value, tone: "dest" }]} cols={Math.max(3, Array.from(cheaps.value).length)} label={`가장 싼 달 ${cheaps.value}`} />
+                            <div data-testid="cheap-board" className="mt-2">
+                              <MiniBoard text={cheaps.value} label={`가장 싼 달 ${cheaps.value}`} />
                             </div>
-                            <p className="mt-3 flex items-center gap-2 text-small font-semibold text-fg">
+                            <p className="mt-2 flex items-center gap-2 text-small font-semibold text-fg">
                               <span aria-hidden className="size-2 shrink-0 rounded-full bg-sun ring-1 ring-fg" />
                               {cheaps.note}
                             </p>
