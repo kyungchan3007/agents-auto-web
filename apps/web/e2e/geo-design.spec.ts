@@ -78,4 +78,13 @@ test.describe("/geo 시안 B (작업 0214)", () => {
     if (!isPhone(page)) expect((await box(tid(page, "geo-grid"))).height).toBeLessThanOrEqual(1700);
     expect(errors.filter((e) => !/Failed to load resource|favicon/.test(e))).toEqual([]);
   });
+
+  test("제목 위 초록 라벨(GEO 측정)은 그대로 · h1 보다 위", async ({ page }) => {
+    await page.goto("/geo");
+    const eyebrow = page.locator("main p").first();
+    await expect(eyebrow).toHaveText("GEO 측정");
+    await expect(eyebrow).toBeVisible();
+    expect(await eyebrow.evaluate((el) => getComputedStyle(el).color)).toBe("rgb(10, 107, 99)");
+    expect((await box(eyebrow)).y).toBeLessThan((await box(page.getByRole("heading", { level: 1 }))).y);
+  });
 });

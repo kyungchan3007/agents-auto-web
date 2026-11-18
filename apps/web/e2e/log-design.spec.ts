@@ -69,4 +69,13 @@ test.describe("/log 시안 A (작업 0214)", () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
     expect(errors.filter((e) => !/Failed to load resource|favicon/.test(e))).toEqual([]);
   });
+
+  test("제목 위 초록 라벨(작업실)은 그대로 · h1 보다 위", async ({ page }) => {
+    await page.goto("/log");
+    const eyebrow = page.locator("main p").first();
+    await expect(eyebrow).toHaveText("작업실");
+    await expect(eyebrow).toBeVisible();
+    expect(await eyebrow.evaluate((el) => getComputedStyle(el).color)).toBe("rgb(10, 107, 99)");
+    expect((await box(eyebrow)).y).toBeLessThan((await box(page.getByRole("heading", { level: 1 }))).y);
+  });
 });
