@@ -4,8 +4,9 @@
 import type { SignalList } from "@hav/shared/signal";
 import type { TravelRow } from "@hav/shared/travel";
 import { useState } from "react";
+import { usePickedTrip } from "@hav/ui/hooks/use-picked-trip";
 import { useQueryParam } from "@hav/ui/hooks/use-query-param";
-import { budgetOf, parseDaily, parseDays } from "../lib/budget";
+import { budgetCountry, budgetOf, parseDaily, parseDays } from "../lib/budget";
 
 export type Latest = SignalList["signals"][number]["latest"];
 
@@ -14,8 +15,9 @@ export function useBudgetPlanner(rows: TravelRow[], latestOf: Record<string, Lat
   // /prices?country=THA#budget (홈 여행지 · 통화 상세에서 옴 · 작업 0100)
   const fromUrl = useQueryParam("country");
   const [picked, setCountry] = useState<string | null>(null);
-  const fallback = rows.some((r) => r.country === "JPN") ? "JPN" : (sorted[0]?.country ?? "");
-  const country = picked ?? (rows.some((r) => r.country === fromUrl) ? fromUrl : fallback);
+  // 여행지(홈 · 시트 · 인트로)로 고른 나라가 있으면 그 나라로 시작 — 마운트 뒤에 읽어 서버 HTML 은 지금 그대로 (작업 0212)
+  const pickedTrip = usePickedTrip();
+  const country = budgetCountry({ rows: sorted, chosen: picked, fromUrl, pickedTrip: pickedTrip?.country ?? null });
   const [daily, setDaily] = useState("100,000");
   const [days, setDays] = useState("4");
   const row = rows.find((r) => r.country === country);

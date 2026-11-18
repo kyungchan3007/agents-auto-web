@@ -33,3 +33,25 @@ describe("여행 예산 계산 (작업 0088)", () => {
     expect(parseDays("91")).toBeNull();
   });
 });
+
+// 작업 0212 — 여행 하루 예산의 시작 나라: 직접 고른 나라 > 주소(?country=) > 여행지로 고른 나라 > 일본 > 첫 나라
+import { budgetCountry } from "./budget";
+
+describe("budgetCountry — 예산 나라 시작값 (작업 0212)", () => {
+  const rows = [{ country: "THA" }, { country: "JPN" }, { country: "FRA" }];
+  const base = { rows, chosen: null, fromUrl: null, pickedTrip: null };
+  it("아무것도 없으면 일본", () => {
+    expect(budgetCountry(base)).toBe("JPN");
+  });
+  it("여행지로 고른 나라가 있으면 그 나라로 시작", () => {
+    expect(budgetCountry({ ...base, pickedTrip: "FRA" })).toBe("FRA");
+  });
+  it("주소의 ?country= 가 여행지 선택보다 앞 · 직접 고른 값이 가장 앞", () => {
+    expect(budgetCountry({ ...base, pickedTrip: "FRA", fromUrl: "THA" })).toBe("THA");
+    expect(budgetCountry({ ...base, pickedTrip: "FRA", fromUrl: "THA", chosen: "JPN" })).toBe("JPN");
+  });
+  it("물가 자료에 없는 나라(두바이 등)는 무시하고 다음 후보 · 일본도 없으면 첫 나라", () => {
+    expect(budgetCountry({ ...base, pickedTrip: "ARE" })).toBe("JPN");
+    expect(budgetCountry({ rows: [{ country: "THA" }, { country: "FRA" }], chosen: null, fromUrl: null, pickedTrip: "ARE" })).toBe("THA"); // 일본이 없으면 목록 첫 나라
+  });
+});
