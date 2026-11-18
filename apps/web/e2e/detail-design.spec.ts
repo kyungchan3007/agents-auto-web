@@ -33,4 +33,27 @@ test.describe("통화 상세 (작업 0212)", () => {
     const digits = values.map((v) => v.match(/\.(\d+)/)?.[1].length ?? 0);
     expect(new Set(digits).size, values.join(" | ")).toBe(1);
   });
+
+  test("휴대폰 — 위쪽 통화 줄의 판정 알약이 그 통화 칸 안에 있음", async ({ page }) => {
+    test.skip(!isPhone(page), "휴대폰 전용");
+    await page.goto("/currencies/USD");
+    const links = tid(page, "currency-list").locator("nav ul li a");
+    let checked = 0;
+    for (let i = 0; i < 3; i++) {
+      const link = links.nth(i);
+      const pill = link.locator("span.rounded-pill");
+      if ((await pill.count()) === 0) continue;
+      const lb = await box(link);
+      const pb = await box(pill);
+      expect(pb.x, "알약 왼쪽").toBeGreaterThanOrEqual(lb.x - 0.5);
+      expect(pb.x + pb.width, "알약 오른쪽").toBeLessThanOrEqual(lb.x + lb.width + 0.5);
+      expect(pb.y + pb.height, "알약 아래").toBeLessThanOrEqual(lb.y + lb.height + 0.5);
+      checked++;
+    }
+    expect(checked).toBeGreaterThan(0);
+    // 칸끼리 겹치지 않음
+    const a = await box(links.nth(0));
+    const b = await box(links.nth(1));
+    expect(a.x + a.width).toBeLessThanOrEqual(b.x + 0.5);
+  });
 });
