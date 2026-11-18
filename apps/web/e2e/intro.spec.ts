@@ -90,6 +90,72 @@ test.describe("데스크톱 인트로", () => {
     await expectHomeScrolls(page);
   });
 
+  // 작업 0223 — 인트로 끝 "그냥 사라지기": 파랑 면 → 로고가 홈 메뉴 로고 자리로 → 인트로 층이 사라지며 새 홈 (창문 · 창밖 사진 없음)
+  test("끝 — 파랑 면 → 로고가 메뉴 로고 자리(±2px)로 → 인트로가 사라지고 새 홈 · 약 2.5초 · 창밖 사진 요청 0 · 콘솔 오류 없음", async ({ page }) => {
+    test.setTimeout(150_000);
+    const errors: string[] = [];
+    const photos: string[] = [];
+    page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
+    page.on("pageerror", (e) => errors.push(String(e)));
+    page.on("request", (r) => /\/images\/photos\/(window|country)-/.test(r.url()) && photos.push(r.url()));
+    await openIntro(page);
+    await page.getByTestId("intro-search").fill("파리");
+    await page.getByTestId("intro-search").press("Enter");
+    await expect(step(page)).toHaveText("2 / 5 · 환전소", { timeout: 15_000 });
+    await page.getByTestId("intro-budget").fill("2000000");
+    await page.getByTestId("intro-next").click();
+    await expect(step(page)).toHaveText("3 / 5 · 게이트", { timeout: 15_000 });
+    await page.getByTestId("intro-boardbtn").click();
+    await expect(step(page)).toHaveText("4 / 5 · 이륙", { timeout: 20_000 });
+    // 끝 장면 기록 — 파랑 면이 켜지는 때 · 로고 자리 · 인트로가 없어지는 때
+    await page.evaluate(() => {
+      const w = window as unknown as { __end: { tint?: number; gone?: number; start?: number; logo?: { x: number; y: number; w: number; h: number } } };
+      w.__end = {};
+      const t0 = performance.now();
+      const tick = () => {
+        const tint = document.querySelector('[data-testid="intro-end-tint"]') as HTMLElement | null;
+        if (tint && w.__end.tint === undefined && Number(getComputedStyle(tint).opacity) > 0.02) w.__end.tint = performance.now() - t0;
+        const logo = document.querySelector('[data-testid="intro-end-logo"]') as HTMLElement | null;
+        if (logo) {
+          const r = logo.getBoundingClientRect();
+          w.__end.logo = { x: r.left, y: r.top, w: r.width, h: r.height };
+        }
+        if (!document.querySelector('[data-testid="intro"]') && w.__end.gone === undefined) {
+          w.__end.gone = performance.now() - t0;
+          return;
+        }
+        requestAnimationFrame(tick);
+      };
+      tick();
+    });
+    for (let i = 0; i < 80; i++) {
+      if ((await step(page).textContent())?.startsWith("5 / 5")) break;
+      await page.keyboard.press("ArrowDown");
+      await page.waitForTimeout(150);
+    }
+    await expect(intro(page)).toHaveCount(0, { timeout: 60_000 });
+    const end = await page.evaluate(() => (window as unknown as { __end: { tint?: number; gone?: number; logo?: { x: number; y: number; w: number; h: number } } }).__end);
+    expect(end.tint, "파랑 면이 켜짐").toBeDefined();
+    expect(end.gone, "인트로가 사라짐").toBeDefined();
+    const dur = ((end.gone ?? 0) - (end.tint ?? 0)) / 1000;
+    expect(dur, `끝 장면 길이 ${dur.toFixed(2)}초`).toBeGreaterThan(2.0);
+    expect(dur, `끝 장면 길이 ${dur.toFixed(2)}초`).toBeLessThan(3.4);
+    // 로고가 홈 메뉴 로고의 실제 자리에 도착(±2px)
+    const home = await page.evaluate(() => {
+      const r = document.querySelector('header a[href="/"] span')!.getBoundingClientRect();
+      return { x: r.left, y: r.top, w: r.width, h: r.height };
+    });
+    expect(Math.abs((end.logo?.x ?? -99) - home.x)).toBeLessThanOrEqual(2);
+    expect(Math.abs((end.logo?.y ?? -99) - home.y)).toBeLessThanOrEqual(2);
+    expect(Math.abs((end.logo?.w ?? -99) - home.w)).toBeLessThanOrEqual(2);
+    // 새 홈 — 파랑 첫 면 · 제목 · 탑승권 카드 · 고른 여행지가 안내판에 이어짐
+    await expect(page.getByTestId("home-hero")).toBeVisible();
+    await expect(page.getByTestId("ticket")).toBeVisible();
+    await expect(board(page)).toHaveAttribute("aria-label", /파리/);
+    expect(photos, "창밖 · 나라 사진 요청").toEqual([]);
+    expect(errors).toEqual([]);
+  });
+
   test("이전 — 2 · 3 · 4단계에서 한 단계 앞으로 · 1단계에는 이전이 없음", async ({ page }) => {
     test.setTimeout(120_000);
     await openIntro(page);
