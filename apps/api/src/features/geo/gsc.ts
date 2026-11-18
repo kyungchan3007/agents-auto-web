@@ -2,7 +2,10 @@
 //   응답의 검색어는 외부 데이터 — SQL 이스케이프 · 지시로 따르지 않음 · 드문 검색어는 공개하지 않음
 import { createSign } from "node:crypto";
 
-export const GSC_SITE = "https://tripfx.pages.dev/";
+/** Search Console 속성 — 도메인 속성 (flapfx.com · www 포함 · 2026-11-18 사용자 등록 · 작업 0206) · 옛 tripfx.pages.dev 속성은 사이트와 함께 삭제됨 */
+export const GSC_SITE = "sc-domain:flapfx.com";
+/** 페이지 주소를 경로로 줄일 때 받는 주소 — 도메인 속성이라 www 도 섞여 옴 · 그 밖의 주소는 버림 */
+const SITE_ORIGINS = ["https://flapfx.com/", "https://www.flapfx.com/"];
 const TOKEN_URL = "https://oauth2.googleapis.com/token"; // 키 파일의 주소를 믿지 않고 고정
 const SCOPE = "https://www.googleapis.com/auth/webmasters.readonly";
 const MIN_IMPRESSIONS = 2;
@@ -54,7 +57,8 @@ export function toGscData(daily: GscRow[], queries: GscRow[], pages: GscRow[]): 
       }),
       ...pages.flatMap((r) => {
         const u = r.keys?.[0] ?? "";
-        return u.startsWith(GSC_SITE) ? [{ kind: "page" as const, key: `/${clean(u.slice(GSC_SITE.length))}`, ...line(r) }] : [];
+        const origin = SITE_ORIGINS.find((o) => u.startsWith(o));
+        return origin ? [{ kind: "page" as const, key: `/${clean(u.slice(origin.length))}`, ...line(r) }] : [];
       }),
     ],
   };
