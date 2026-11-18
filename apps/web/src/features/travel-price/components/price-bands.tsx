@@ -67,16 +67,29 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
         //   뒤에 하늘 종이 색 띠를 깔아, 지나가는 나라 줄 글자가 버튼과 겹쳐 보이지 않고 띠 아래로 흐려지며 들어감 (작업 0203)
         <div
           data-testid="fold-bar"
-          className={`z-10 flex justify-center ${open ? "sticky bottom-0 -mx-4 mt-0 bg-gradient-to-t from-surface from-60% to-surface/0 px-4 pt-8 pb-4 sm:-mx-8 sm:px-8" : "mt-4"}`}
+          className={`z-10 flex ${open ? "sticky bottom-0 -mx-4 mt-0 justify-center bg-gradient-to-t from-surface from-60% to-surface/0 px-4 pt-8 pb-4 sm:-mx-8 sm:px-8" : "mt-6 justify-start"}`}
         >
-          <button
-            type="button"
-            onClick={toggle}
-            aria-expanded={open}
-            className="min-h-11 rounded-pill border-2 border-cheap bg-card px-6 text-body font-semibold text-cheap hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cheap"
-          >
-            {open ? "나라 접기" : `나라 더 보기 (${more}곳) ›`}
-          </button>
+          {open ? (
+            // 펼친 뒤 "나라 접기" 는 눈에 띄는 알약 · 화면 아래에 붙어 따라옴 — #232 · #240 지적으로 고친 지금 모양 그대로 (바꾸지 않음)
+            <button
+              type="button"
+              onClick={toggle}
+              aria-expanded
+              className="min-h-11 rounded-pill border-2 border-cheap bg-card px-6 text-body font-semibold text-cheap hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cheap"
+            >
+              나라 접기
+            </button>
+          ) : (
+            // 닫혀 있을 때는 시안처럼 밑줄 글자 링크 (작업 0220 사용자 지적 · 버튼 상자 · 배경 없음)
+            <button
+              type="button"
+              onClick={toggle}
+              aria-expanded={false}
+              className="border-b-2 border-cheap pb-0.5 text-body font-bold text-cheap hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cheap"
+            >
+              {`나라 더 보기 (${more}곳) ›`}
+            </button>
+          )}
         </div>
       )}
     </div>

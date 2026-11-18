@@ -335,21 +335,32 @@ test.describe("여행 물가 — 나라 접기 버튼 (작업 0198)", () => {
   const openBtn = (page: Page) => bandsOf(page).getByRole("button", { name: /나라 더 보기/ });
   const foldBtn = (page: Page) => bandsOf(page).getByRole("button", { name: "나라 접기" });
 
-  test("버튼 모양 — 테두리 알약 · 높이 44px 이상 · 초점 표시", async ({ page }) => {
+  test("버튼 모양 — 더 보기는 밑줄 글자 링크 (작업 0220 시안) · 접기는 테두리 알약 · 높이 44px 이상 · 둘 다 초점 표시", async ({ page }) => {
     await page.goto("/prices");
     const btn = openBtn(page);
     await expect(btn).toBeVisible();
-    expect((await box(btn)).height).toBeGreaterThanOrEqual(44);
-    const style = await btn.evaluate((el) => {
+    const link = await btn.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { top: parseFloat(s.borderTopWidth), bottom: parseFloat(s.borderBottomWidth), bg: s.backgroundColor };
+    });
+    expect(link.top).toBe(0); // 상자 테두리 없음
+    expect(link.bottom).toBeGreaterThanOrEqual(2); // 밑줄
+    expect(link.bg).toBe("rgba(0, 0, 0, 0)");
+    await page.keyboard.press("Tab");
+    await btn.focus();
+    expect(await btn.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe("none");
+    await btn.click();
+    const fold = foldBtn(page);
+    await expect(fold).toBeVisible();
+    expect((await box(fold)).height).toBeGreaterThanOrEqual(44);
+    const style = await fold.evaluate((el) => {
       const s = getComputedStyle(el);
       return { border: parseFloat(s.borderTopWidth), radius: parseFloat(s.borderTopLeftRadius) };
     });
     expect(style.border).toBeGreaterThanOrEqual(2);
     expect(style.radius).toBeGreaterThanOrEqual(20);
-    await page.keyboard.press("Tab");
-    await btn.focus();
-    const outline = await btn.evaluate((el) => getComputedStyle(el).outlineStyle);
-    expect(outline).not.toBe("none");
+    await fold.focus();
+    expect(await fold.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe("none");
   });
 
   test("펼친 뒤 목록 중간까지 스크롤해도 나라 접기가 화면 안에 보임", async ({ page }) => {
