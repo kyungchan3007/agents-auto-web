@@ -15,6 +15,9 @@ import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 import type { IntroStep, SceneApi } from "./scene-types";
 import { FLIGHT_START, type Shot, type Vec3, LIFT, advance, autoGoal, cameraAt, liftReached, planeAt, windowDue } from "./flight";
 
+/** 3D 장면의 색은 CSS 변수를 못 읽는 그림판(canvas)에 칠하므로 브라우저에서 토큰(packages/ui/src/tokens.css)의 값을 읽어 씀 — 색 값은 토큰 한 곳 (작업 0215) */
+const token = (name: string): string => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
 // ── 흐름과 주고받는 값의 모양은 lib/scene-types.ts ──
 // ── 경로 값은 lib/flight.ts (순수 함수 · 테스트 있음) — 여기서는 가져다 씀 ──
 type Vec = Vec3;
@@ -94,9 +97,9 @@ export function mountIntroScene(el: HTMLElement, api: SceneApi): () => void {
     const g = c.getContext("2d");
     if (g) {
       const gr = g.createLinearGradient(0, 0, 0, 256);
-      gr.addColorStop(0, "#AFD4E6");
-      gr.addColorStop(0.45, "#D3E9EE");
-      gr.addColorStop(1, "#EAF4F2");
+      gr.addColorStop(0, token("--hav-sky-top"));
+      gr.addColorStop(0.45, token("--hav-sky-mid"));
+      gr.addColorStop(1, token("--hav-surface"));
       g.fillStyle = gr;
       g.fillRect(0, 0, 2, 256);
     }
@@ -209,14 +212,14 @@ export function mountIntroScene(el: HTMLElement, api: SceneApi): () => void {
     const draw = () => {
       const g = c.getContext("2d");
       if (!g) return;
-      g.fillStyle = "#2438A8";
+      g.fillStyle = token("--hav-pin-cheap");
       g.fillRect(0, 0, 512, 128);
-      g.fillStyle = "#fff";
+      g.fillStyle = token("--hav-foam");
       g.font = '800 72px Pretendard, "IBM Plex Sans KR", sans-serif';
       g.textAlign = "center";
       g.textBaseline = "middle";
       g.fillText(txt, 256, 66);
-      g.fillStyle = "#F7C548";
+      g.fillStyle = token("--hav-sun");
       g.fillRect(0, 118, 512, 10);
       t.needsUpdate = true;
     };
