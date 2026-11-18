@@ -44,7 +44,7 @@ for (const path of ["/", "/log", "/currencies", "/currencies/USD", "/geo"]) {
 
 test("휴대폰 — 사진 구간이 가로로 넘치지 않고 큰 제목이 화면 안", async ({ page }) => {
   test.skip(test.info().project.name !== "휴대폰", "휴대폰 전용");
-  await page.goto("/prices"); // /flights 는 작업 0218 에서 사진 머리가 글자판으로 바뀜 — 사진 머리가 남은 화면으로 확인
+  await page.goto("/about"); // 새 디자인에서 사진 머리가 남은 화면은 /about 뿐 (작업 0222 합치기 후 보정 · 2단계에서 이 검사도 지움)
   const h1 = await page.locator('[data-testid="photo-header"]').getByRole("heading", { level: 1 }).boundingBox();
   const width = page.viewportSize()?.width ?? 0;
   expect(h1?.x ?? -1).toBeGreaterThanOrEqual(0);

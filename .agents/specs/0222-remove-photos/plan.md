@@ -35,11 +35,21 @@
 - 합치기(merge)로 들어오는 0216 · 0218~0221 의 파일은 이 작업의 변경이 아님 — 게이트가 범위 경고를 내면 "계획 밖 변경 이유"에 "합치기"로 적음
 
 ## 합치기 기록
+(merge 커밋 순서: 0217 → 0216 → 0218 → 0219 → 0220 → 0221 → 0221 한 번 더. 사용자가 PR 을 차례로 rebase 머지할 때 lead 가 같은 충돌을 풀 때 쓰는 기록 — 파일마다 한 줄)
+- 0217: 충돌 없음. 이 브랜치의 아래 0223 이 0217 의 앞선 시점 위라 0217 의 나중 커밋(카드 안 여행지 바꾸기 · 흰 판 선 · 0216 흰 바탕 중복 커밋)이 빠져 있어서 먼저 합침.
+- 0216(최신): 충돌 없음.
+- 0218: `.agents/orchestration/TASKS.md` — 0217 줄(PR 대기)과 0218 줄(PR 대기)을 한 줄씩 양쪽 상태 그대로 둠 / `apps/web/e2e/photos.spec.ts` — WITH_PHOTO 목록에서 홈 · /flights 항목을 둘 다 빼고 "사진 없음" 주석 둘 / `apps/web/src/shared/photos.test.ts` — 홈 · /flights 항목을 둘 다 뺌(주석) / `packages/ui/src/components/data/flap-board.tsx` — 0218 쪽(`whiteUntil` 로 줄 안 앞 칸을 흰 글자로 감싼 span) 채택.
+- 0219: `TASKS.md` — 0217 · 0218 줄은 PR 대기 유지 + 0219 줄 PR 대기로.
+- 0220: `TASKS.md` — 0220 줄 PR 대기 / `e2e/country-photos.spec.ts` — 0217 쪽(홈은 시트 없이 카드 안 칩으로 고르기) 채택 · 0220 쪽의 "홈 사진 그대로" 줄은 버림 / `e2e/photos.spec.ts` — 목록에서 /prices 도 뺌 · "/flights 사진 없음" 과 "/prices 사진 없음" 테스트 둘 다 유지 / `shared/font-readability.test.ts` — 허용 목록에 0223(window-transition) · 0220(prices-header) 두 줄 모두 둠 / `shared/pages-redesign.test.ts` — 파랑 면 예외를 converter.tsx(0219) · prices-header.tsx(0220) 둘 다 허용하는 한 식으로 합침 / `shared/photos.test.ts` — 홈 · /flights · /prices 항목을 모두 뺌(주석 셋).
+- 0221: `TASKS.md` — 0221 줄 PR 대기 / `e2e/photos.spec.ts` — 목록에서 /calc 도 뺌 · "/calc 사진 없음" 테스트까지 넷 모두 유지 / `shared/photos.test.ts` — /calc 항목도 뺌(주석 넷).
+- 0221 한 번 더(151e0db · 넓은 화면 제목 자리 세 줄 → 두 줄): 충돌 없음.
+- 합친 뒤 고친 것(브랜치끼리 섞여서 생긴 것): `e2e/photos.spec.ts` "휴대폰 — 사진 구간이 가로로 넘치지 않고…" — 0218 이 /prices 로 바꿨는데 0220 이 /prices 사진을 뺌 → /about 으로(2단계에서 이 검사도 지움) / `e2e/flights-redesign.spec.ts` 탑승권 칸 검사 — 들어오기 움직임 중 위치를 재면 흔들림 → 움직임 줄이기로 고정.
+- 합친 뒤 e2e: 가짜 API 빌드로 582 통과 · 실패 19건은 모두 가짜 자료에 /geo · /log 자료와 핀란드 같은 나라가 없어서(변경과 무관 · 실제 자료 미리보기에서 확인).
 
 ## 계획 밖 변경 이유
 
 ## 완료 기준
-- [ ] 0216(최신) · 0218 · 0219 · 0220 · 0221 이 모두 합쳐짐 · 합치기 기록 작성
+- [x] 0216(최신) · 0217 · 0218 · 0219 · 0220 · 0221 이 모두 합쳐짐 · 합치기 기록 작성
 - [ ] apps/web/public/images/photos · plane-sunset-og.jpg 없음 · 저장소 전체에서 /images/photos 를 부르는 코드 없음(인트로 포함)
 - [ ] 빌드 결과물: 모든 페이지 · 인트로 끝까지 /images/photos 요청 0 · 깨진 이미지 0 (e2e)
 - [ ] /about 사진 없는 머리 · 1280 · 390 가로 넘침 없음
