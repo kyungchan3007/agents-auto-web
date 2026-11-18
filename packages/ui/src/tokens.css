@@ -31,6 +31,8 @@
   --hav-normal: #4a5a8c;
   --hav-expensive: #c13a22;
   --hav-line: #b9cdd6;
+  /* 입력 칸 옅은 선 (작업 0221 · 시안) — 흰 칸 위 도형 대비 3 이상 (3.17) · 글자 남색보다 옅고 포커스 파랑과 구분됨 */
+  --hav-field-line: #8190b8;
 }
 
 /* 바다 띠 — 울트라마린 바탕 · 글자는 종이색 · 해 노랑 포인트 */
@@ -113,6 +115,7 @@
   --color-sun: var(--hav-sun);
   --color-flap-cell: var(--hav-flap-cell);
   --color-line: var(--hav-line);
+  --color-field-line: var(--hav-field-line);
   --color-foam: var(--hav-foam);
   --color-band: var(--hav-band);
   --color-on-band: var(--hav-on-band);

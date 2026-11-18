@@ -28,6 +28,8 @@
 - .agents/orchestration/TASKS.md · .agents/specs/0221-redesign-calc/**
 
 ## 계획 밖 변경 이유
+- packages/ui/src/tokens.css · components/form/field.tsx · lib/contrast.test.ts — 사용자 지적: 입력 칸을 시안처럼 옅은 선으로(공용 Field · 새 토큰 field-line · 대비 검사)
+- apps/web/e2e/calc-gap.spec.ts — 보내는 곳이 라디오 그룹이 되어 이름표 위치를 #route-label 로
 - apps/web/src/features/import-calc/components/customs-board.tsx · lib/kpi.test.ts — 새 파일(계획의 import-calc/** 안): 과세환율 작은 글자판 · 숫자 카드 계산 테스트
 - packages/ui/src/hooks/use-count-up.ts — 웹 쪽 화면이 ui 의 lib 를 직접 가져올 수 없어 formatCount 를 훅 파일에서 같이 내보냄 (0217 · 0219 와 같은 줄)
 - apps/web/src/shared/{font-readability · photos}.test.ts — 큰 글씨 허용 목록에 customs-board 추가 · /calc 사진 머리 검사 뺌
@@ -41,6 +43,8 @@
 - [x] bash .agents/checks.sh PASS · 빌드 한 번
 
 ## 허점
+- (사용자 지적 · 시안과 다른 곳) ① 보내는 곳: 드롭다운 → 두 줄 선택지(라디오 카드 둘 · radiogroup · 화살표 키 · 고른 쪽 짙은 테두리 + 오른쪽 동그라미) — 계획서의 "지금 그대로"가 틀렸음 ② 입력 칸: 공용 Field 를 옅은 선(--hav-field-line · 도형 대비 3.17) · 더 둥근 모서리 · 56px · 포커스만 파랑 테두리 + 옅은 파랑 윤곽으로 — 여행 물가 예산 카드 · 통화 검색도 같이 바뀜(대비는 contrast.test 에 남김) ③ 휴대폰 제목 ~ 설명 간격 16px(제목 + 설명 덩어리 높이를 제목 글자 크기와 같은 clamp 로 미리 잡아 남는 자리는 설명 아래로) ④ 수입물가 숫자 카드 두 장 휴대폰도 나란히 두 칸.
+- 시안과 남은 차이: 시안의 영문 작은 라벨(ITEM · CUSTOMS · CUSTOMS TAG · IMPORT PRICES)은 없음(사용자 확인 전) · 큰 제목 높이를 3줄로 잡아 값에 따라 제목 아래에 빈칸이 생김(0208 크기 고정 때문) · 과세환율 작은 글자판은 움직임 없음.
 - 웹킷(사파리) 확인 못 함.
 - e2e 는 `next dev` 가 이 환경에서 하이드레이션이 안 돼 못 쓰고 **가짜 API 로 만든 빌드**(운영 D1 읽기 0 · 통화 10개 · 과세환율 2주 · 수입물가 24개월)로 돌렸음 — 실제 자료 미리보기에서 확인 필요(/geo 같은 다른 페이지 e2e 는 가짜 자료가 없어 실패).
 - 결과 카드(세관 꼬리표)는 예전(408px)보다 길어져(휴대폰 576px · 넓은 화면 581px) 최소 높이를 올렸고, 입력 카드는 늘이지 않고 자연 높이로 둠(시안 A) — 0208 의 "값이 바뀌어도 크기 고정"은 412px 폭 이상에서 그대로 통과(360px 같은 아주 좁은 폭은 줄바꿈으로 높이가 조금 달라질 수 있음).
