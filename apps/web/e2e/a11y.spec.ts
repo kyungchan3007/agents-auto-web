@@ -51,3 +51,20 @@ test.describe("본문 바로가기 (작업 0213)", () => {
     });
   }
 });
+
+test.describe("가로 넘침 방지 (작업 0213)", () => {
+  test("html · body 가 overflow-x: clip — 페이지 가로 스크롤이 생기지 않음", async ({ page }) => {
+    await page.goto("/");
+    const styles = await page.evaluate(() => [getComputedStyle(document.documentElement).overflowX, getComputedStyle(document.body).overflowX]);
+    expect(styles).toEqual(["clip", "clip"]);
+    for (const path of PAGES) {
+      await page.goto(path);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth), path).toBeLessThanOrEqual(1);
+    }
+  });
+  test("sticky 는 그대로 — 통화 목록(넓은 화면)이 스크롤을 따라옴", async ({ page }) => {
+    test.skip((page.viewportSize()?.width ?? 0) < 1024, "넓은 화면 전용");
+    await page.goto("/currencies/USD");
+    expect(await page.locator('[data-testid="currency-list"]').evaluate((el) => getComputedStyle(el).position)).toBe("sticky");
+  });
+});

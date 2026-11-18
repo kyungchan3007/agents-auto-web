@@ -9,10 +9,13 @@
 /* 바탕은 토큰 (하늘 종이 하나) */
 html {
   background: var(--hav-surface);
+  /* 가로로 넘치는 글 · 그림이 페이지 가로 스크롤을 만들지 않게 (clip 은 스크롤 칸을 만들지 않아 sticky 가 그대로) (작업 0213) */
+  overflow-x: clip;
   color-scheme: light; /* 밝은 화면 하나만 — 기기가 어두운 화면 설정이어도 기본 컨트롤 · 스크롤바까지 밝게 (작업 0173) */
 }
 
 body {
+  overflow-x: clip;
   font-family: var(--font-sans);
   /* 한국어는 낱말 중간에서 줄이 바뀌지 않게 ("한국수 / 출입은행" 을 휴대폰에서 봄) */
   word-break: keep-all;
