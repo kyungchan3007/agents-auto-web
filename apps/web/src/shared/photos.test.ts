@@ -175,7 +175,7 @@ describe("공유 미리보기(OG) 이미지", () => {
     expect(og).toMatch(/#F7C548[^\n]*>\s*fx\s*</i);
     expect(og).toContain("싼 편");
     expect(og).toContain("ICN → 도쿄 뉴욕 파리");
-    expect(og).toContain("Pretendard-Black");
+    expect(og).toMatch(/font\("Black"\)/); // Pretendard 900 (Black) 파일을 읽음
   });
 
   it("크기 1200×630 · alt · 정적 그림은 그대로 (지금의 글자 · 로고를 위에)", () => {
