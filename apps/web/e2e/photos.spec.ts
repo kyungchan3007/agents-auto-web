@@ -4,9 +4,9 @@
 import { expect, test } from "@playwright/test";
 
 const WITH_PHOTO: [string, string, RegExp][] = [
-  ["/", "window-fjord", /여행 타이밍/],
+  ["/", "window-fjord|country-[a-z]{3}", /여행 타이밍/], // 안 고른 상태는 안내판 도착지 나라 사진 · 사진 없으면 window-fjord (작업 0209)
   ["/flights", "window-sunrise", /./],
-  ["/prices", "swiss-traveler", /./],
+  ["/prices", "swiss-traveler|country-[a-z]{3}", /./], // 큰 문장 속 나라 사진 · 없으면 swiss-traveler (작업 0209)
   ["/calc", "plane-below", /./],
   ["/about", "plane-sunset", /./],
 ];
@@ -24,7 +24,7 @@ for (const [path, photo] of WITH_PHOTO) {
     // 사진: 불러와졌고 폭별 srcset · sizes · alt · 우선 불러오기
     await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0), { timeout: 10_000 }).toBe(true);
     const srcset = (await img.getAttribute("srcset")) ?? "";
-    for (const w of [640, 1024, 1672]) expect(srcset, `${w}w`).toContain(`/images/photos/${photo}-${w}.webp ${w}w`);
+    for (const w of [640, 1024, 1672]) expect(srcset, `${w}w`).toMatch(new RegExp(`/images/photos/(${photo})-${w}\\.webp ${w}w`));
     expect(await img.getAttribute("sizes")).toBe("100vw");
     expect((await img.getAttribute("alt"))?.trim().length ?? 0).toBeGreaterThan(0);
     expect(await img.getAttribute("fetchpriority")).toBe("high");

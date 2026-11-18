@@ -10,6 +10,13 @@ export function pricesHeadline(rows: { name: string; relative: number; year: num
   return { title: `${low.name}${josa} 한국보다 물가가 ${Math.round((1 - low.relative) * 100)}% 낮습니다`, note };
 }
 
+/** 큰 문장 속 나라 — pricesHeadline 과 같은 가장 싼 나라(한국보다 낮을 때만) · 없으면 null (안 고른 상태의 머리 사진 · 작업 0209) */
+export function lowestCountry<T extends { country: string; relative: number }>(rows: T[]): string | null {
+  if (rows.length === 0) return null;
+  const low = rows.reduce((a, b) => (b.relative < a.relative ? b : a));
+  return low.relative < 1 ? low.country : null;
+}
+
 const josaOf = (name: string): "은" | "는" => {
   const last = name.charCodeAt(name.length - 1);
   return last >= 0xac00 && last <= 0xd7a3 && (last - 0xac00) % 28 !== 0 ? "은" : "는";
