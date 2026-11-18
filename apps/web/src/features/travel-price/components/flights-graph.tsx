@@ -1,48 +1,23 @@
 "use client";
 
-// /flights 그래프 — 국제항공료(울트라마린 · 굵기 3 · 주인공) · 해외단체여행비(청록) · 원/달러 월평균(점선) 은 굵기 2 · 옅게 배경으로 + 3D 비행기가 항공료 선을 따라 남 (작업 0170 · 0181)
-// 세 값은 단위가 달라 선마다 자기 최저 ~ 최고 범위로 높이를 맞춤 — 공통 세로 눈금이 없어 가로 눈금선은 그리지 않고 "모양만 비교합니다" 안내 (작업 0181)
-// 숫자: 항공료 선에 최저(노란 점) · 최고 라벨 · 선 오른쪽 끝에 이름 + 최근 값 · 범례 칩에도 최근 값 · 칩을 누르면 그 선만 강조 · 값이 없는 선은 그리지 않고 라벨도 없음
-// 비행기는 0169 의 선 따라가기 부품 그대로 · 항공료 선의 점을 넘김 · 움직임 줄이기면 항공료가 가장 싼 달 점에 멈춤
-import { PLANE_MODEL_URL } from "@hav/shared/travel";
-import { PointLabels } from "@hav/ui/data/point-labels";
-import { PlaneRouteLazy } from "@hav/ui/three/scene/lazy";
+// /flights 그래프 — 새 디자인(작업 0218 · 시안 F): 공통 2D 선 그래프(LineChart · 0216) — 국제항공료(울트라마린 · 면 · 최고/최저 점) · 해외단체여행비(청록 · 면) · 원/달러 월평균(점선 · 오른쪽 눈금) · 끝 큰 숫자 말풍선 · 순서 움직임(한 번)
+// 지수 두 선은 같은 눈금(왼쪽 위 숫자) · 원/달러는 자기 눈금(아래 회색 숫자 = 같은 가로선의 원 환산) — 점은 모두 받은 실제 값 · 값이 없는 선은 그리지 않고 말풍선도 없음
+// 배치는 그대로 — 안내 글 · 그래프 · 범례 칩(누르면 그 선만 강조 · 칩에 최근 값) / 3D 비행기는 2D 결정으로 이 그래프에서 뺌 (비행기 부품 파일은 그대로)
+import { LineChart, type ChartMark, type ChartSeries } from "@hav/ui/data/line-chart";
+import { numberText } from "@hav/shared/format";
 import { useFlightsGraph } from "../hooks/use-flights-graph";
-import { INDEX_BASE_NOTE, type SeriesId, UNIT_NOTE, axisTicks, endLabelText, extremeTexts, legendText, dotBox, lineStyle, planeAvoidBox, seriesStats, spreadLabels } from "../lib/flights-graph-view";
+import { INDEX_BASE_NOTE, type SeriesId, UNIT_NOTE, extremeTexts, legendText, monthTicks, seriesStats } from "../lib/flights-graph-view";
 import type { IndexPoint } from "../lib/travel-index";
 
-const W = 1000;
-const H = 300;
-const PAD_X = 32;
-const PAD_Y = 40;
-const PAD_LABEL = 22; // 그래프 위아래 라벨 자리 (py-6 = 24px 안)
-const END_W = 152; // 선 오른쪽 끝 라벨 칸 (px · 넓은 화면만)
-const END_GAP = 18; // 끝 라벨끼리 최소 세로 간격 (px)
-
 const idx = (period: string) => Number(period.slice(0, 4)) * 12 + Number(period.slice(5, 7)) - 1;
+/** "2025-05" → "25.05" (휴대폰 눈금) */
+const shortPeriod = (p: string) => `${p.slice(2, 4)}.${p.slice(5, 7)}`;
 
-type Pt = { x: number; y: number; period: string };
-
-/** 칸을 사방으로 n px 넓힘 — 노란 점의 테두리(굵기 2 · 크기가 그래프 폭과 상관없이 일정)까지 이름표가 피하게 (작업 0218 · 그래프가 좁아져도 안 가림) */
-const grow = (b: { left: number; top: number; right: number; bottom: number }, n: number) => ({ left: b.left - n, top: b.top - n, right: b.right + n, bottom: b.bottom + n });
-
-/** 선 하나의 점들 — x 는 달 순서(공통 범위) · y 는 이 선의 최저 ~ 최고 */
-function layout(points: IndexPoint[], from: number, to: number): Pt[] {
-  const vs = points.map((p) => p.value);
-  const lo = Math.min(...vs);
-  const hi = Math.max(...vs);
-  return points.map((p) => ({
-    period: p.period,
-    x: PAD_X + (to === from ? 0.5 : (idx(p.period) - from) / (to - from)) * (W - PAD_X * 2),
-    y: hi === lo ? H / 2 : PAD_Y + (1 - (p.value - lo) / (hi - lo)) * (H - PAD_Y * 2),
-  }));
-}
-
-/** 없는 달에서는 선을 끊음 (채우지 않음) */
-const pathOf = (pts: Pt[]) => pts.map((p, i) => `${i > 0 && idx(pts[i - 1].period) === idx(p.period) - 1 ? "L" : "M"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+const COLOR = { air: "var(--hav-pin-cheap)", tour: "var(--hav-band)", fx: "color-mix(in srgb, var(--hav-pin-line) 62%, var(--hav-card))" } as const;
+const END_NAME: Record<SeriesId, string> = { air: "국제항공료", tour: "단체여행비", fx: "원/달러" };
 
 export function FlightsGraph({ air, tour, fx }: { air: IndexPoint[]; tour: IndexPoint[] | null; fx: IndexPoint[] }) {
-  const { box, width: pw, focus, toggle } = useFlightsGraph(W);
+  const { focus, toggle } = useFlightsGraph();
   // 최근 36개월 안에서 세 선이 같은 가로축을 씀
   const all = [...air, ...(tour ?? []), ...fx];
   const to = Math.max(...all.map((p) => idx(p.period)));
@@ -51,83 +26,69 @@ export function FlightsGraph({ air, tour, fx }: { air: IndexPoint[]; tour: Index
   const airVals = inRange(air);
   const tourVals = tour ? inRange(tour) : [];
   const fxVals = inRange(fx);
-  const airPts = layout(airVals, from, to);
-  const tourPts = layout(tourVals, from, to);
-  const fxPts = layout(fxVals, from, to);
-  // 항공료가 가장 싼 달(최근 36개월 중 최저 지수) — 움직임 줄이기에서 비행기가 멈출 점 · 노란 점
-  const stats = seriesStats(airVals);
-  const cheapIdx = stats ? airVals.findIndex((p) => p.period === stats.min.period) : 0;
-  const cheap = airPts[cheapIdx];
-  const priceyIdx = stats ? airVals.findIndex((p) => p.period === stats.max.period) : 0;
-  const pricey = airPts[priceyIdx];
-  const label = `국제항공료 · 해외단체여행비 지수와 원/달러 월평균 선 그래프 (${airVals[0]?.period} ~ ${airVals.at(-1)?.period})`;
-  // 선 · 끝 라벨 · 범례에 쓸 줄 목록 — 값이 없는 선은 넣지 않음 (그리지 않고 라벨도 없음)
-  const lines: { id: SeriesId; pts: Pt[]; vals: IndexPoint[] }[] = [
-    { id: "air", pts: airPts, vals: airVals },
-    ...(tourVals.length > 0 ? [{ id: "tour" as const, pts: tourPts, vals: tourVals }] : []),
-    ...(fxVals.length > 0 ? [{ id: "fx" as const, pts: fxPts, vals: fxVals }] : []),
+  const lines: { id: SeriesId; vals: IndexPoint[] }[] = [
+    { id: "air", vals: airVals },
+    ...(tourVals.length > 0 ? [{ id: "tour" as const, vals: tourVals }] : []),
+    ...(fxVals.length > 0 ? [{ id: "fx" as const, vals: fxVals }] : []),
   ];
-  // 라벨은 화면 픽셀 기준 — 그래프(SVG)는 폭에 맞춰 같은 비율로 줄어듦
-  const s = pw / W;
-  const px = (p: Pt) => ({ x: p.x * s, y: p.y * s });
+  // 지수 눈금(왼쪽 위 숫자) — 항공료 · 단체여행비가 함께 쓰는 10 단위 눈금
+  const idxVals = [...airVals, ...tourVals].map((p) => p.value);
+  const yMin = Math.floor((Math.min(...idxVals) - 2) / 10) * 10;
+  const yMax = Math.ceil((Math.max(...idxVals) + 3) / 5) * 5;
+  // 원/달러 눈금 — 선이 위아래 10% 여백 안에 들어오게 · 같은 가로선에 원 환산 값을 회색으로
+  const fxNums = fxVals.map((p) => p.value);
+  const fxLo = fxNums.length ? Math.min(...fxNums) : 0;
+  const fxHi = fxNums.length ? Math.max(...fxNums) : 1;
+  const fxPad = (fxHi - fxLo || 1) * 0.12;
+  const y2 = fxVals.length > 0 ? { min: fxLo - fxPad, max: fxHi + fxPad } : undefined;
+  const ticks = Array.from({ length: Math.floor((yMax - yMin) / 10) + 1 }, (_, i) => yMin + i * 10).map((v) => ({
+    v,
+    t: String(v),
+    s: y2 ? `${numberText(Math.round((y2.min + ((v - yMin) / (yMax - yMin)) * (y2.max - y2.min)) / 10) * 10)}원` : undefined,
+  }));
+  const mk = (id: SeriesId, vals: IndexPoint[]) => vals.map((p) => ({ x: idx(p.period), v: p.value }));
+  const lastOf = (vals: IndexPoint[]) => vals[vals.length - 1].value;
+  const series: ChartSeries[] = [
+    ...(fxVals.length > 0 ? [{ id: "fx", color: COLOR.fx, points: mk("fx", fxVals), axis: "y2" as const, dash: "6 6", width: 2.2, maxStep: 1, end: { label: END_NAME.fx, value: Math.round(lastOf(fxVals)), digits: 0, unit: "원" } }] : []),
+    ...(tourVals.length > 0 ? [{ id: "tour", color: COLOR.tour, points: mk("tour", tourVals), area: 0.22, maxStep: 1, end: { label: END_NAME.tour, value: lastOf(tourVals), digits: 1 } }] : []),
+    { id: "air", color: COLOR.air, points: mk("air", airVals), area: 0.3, maxStep: 1, end: { label: END_NAME.air, value: lastOf(airVals), digits: 1 } },
+  ];
+  // 최고 · 최저 점은 항공료 선 위 — 글은 받은 값(seriesStats · extremeTexts)
+  const stats = seriesStats(airVals);
   const texts = stats ? extremeTexts(stats) : null;
-  const showMax = !!stats && stats.max.period !== stats.min.period;
-  // 선 오른쪽 끝 이름 + 최근 값 — 휴대폰(그래프 폭이 좁음)에서는 칸이 없어 범례 칩이 최근 값을 보임
-  const endOn = pw >= 560;
-  const endYs = spreadLabels(lines.map((l) => l.pts[l.pts.length - 1].y * s), END_GAP, -PAD_LABEL, H * s + PAD_LABEL);
-  const ticks = axisTicks(from, to, pw);
-  const xPct = (i: number) => ((PAD_X + (to === from ? 0.5 : (i - from) / (to - from)) * (W - PAD_X * 2)) / W) * 100;
+  const marks: ChartMark[] = [];
+  if (stats && texts) {
+    const iMax = airVals.findIndex((p) => p.period === stats.max.period);
+    const iMin = airVals.findIndex((p) => p.period === stats.min.period);
+    if (iMax !== iMin) marks.push({ series: "air", index: iMax, kind: "max", text: texts.max, short: `최고 ${stats.max.value.toFixed(1)}`, place: "top", tone: "red" });
+    marks.push({ series: "air", index: iMin, kind: "min", text: texts.min, short: `최저 ${stats.min.value.toFixed(1)}`, place: "below", tone: "sun" });
+  }
+  const label = `국제항공료 · 해외단체여행비 지수와 원/달러 월평균 선 그래프 (${airVals[0]?.period} ~ ${airVals.at(-1)?.period})`;
   return (
     <div>
       <p className="text-small text-fg-2">
         {INDEX_BASE_NOTE} · {UNIT_NOTE}
       </p>
-      <div data-testid="travel-graph" className="relative py-6" style={endOn ? { paddingRight: END_W } : undefined}>
-        <div ref={box} className="relative">
-          <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label} className="block h-auto w-full overflow-visible">
-            {lines
-              .filter((l) => l.id !== "air" && l.pts.length > 1)
-              .map((l) => {
-                const st = lineStyle(focus, l.id);
-                return l.id === "fx" ? (
-                  <path key={l.id} d={pathOf(l.pts)} fill="none" stroke="var(--hav-fg-2)" strokeWidth={st.width} strokeOpacity={st.opacity} strokeDasharray="6 5" vectorEffect="non-scaling-stroke" />
-                ) : (
-                  <path key={l.id} d={pathOf(l.pts)} fill="none" stroke="var(--hav-accent)" strokeWidth={st.width} strokeOpacity={st.opacity} strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-                );
-              })}
-            <path d={pathOf(airPts)} fill="none" stroke="var(--hav-cheap)" strokeWidth={lineStyle(focus, "air").width} strokeOpacity={lineStyle(focus, "air").opacity} strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-            {pricey && showMax && <circle cx={pricey.x} cy={pricey.y} r={6} fill="var(--hav-expensive-shape)" />}
-            {cheap && <circle cx={cheap.x} cy={cheap.y} r={11} fill="var(--hav-sun)" stroke="var(--hav-fg)" strokeWidth={2} vectorEffect="non-scaling-stroke" />}
-          </svg>
-          {/* 3D 비행기 — 항공료 선 위에 같은 크기로 겹침 · 선과 같은 높이로 날아감 · 마우스를 막지 않음 */}
-          <div data-testid="plane-route" aria-hidden className="pointer-events-none absolute inset-0">
-            <PlaneRouteLazy url={PLANE_MODEL_URL} points={airPts.map((p) => ({ x: p.x / W, y: 1 - p.y / H }))} stopIndex={cheapIdx} className="size-full" />
-          </div>
-          {texts && cheap && pricey && (
-            <PointLabels max={{ ...px(pricey), text: texts.max }} min={{ ...px(cheap), text: texts.min }} today={px(airPts[airPts.length - 1])} bounds={{ left: 0, top: -PAD_LABEL, right: pw, bottom: H * s + PAD_LABEL }} avoid={[planeAvoidBox(px(cheap), s), grow(dotBox(px(cheap), s), 2)]} />
-          )}
-        </div>
-        {endOn &&
-          lines.map((l, i) => (
-            <span key={l.id} data-testid={`end-label-${l.id}`} aria-hidden className={`pointer-events-none absolute text-small font-semibold whitespace-nowrap ${l.id === "air" ? "text-cheap" : l.id === "tour" ? "text-accent" : "text-fg-2"}`} style={{ left: `calc(100% - ${END_W - 10}px)`, top: PAD_LABEL + 2 + endYs[i], transform: "translateY(-50%)" }}>
-              {endLabelText(l.id, l.vals[l.vals.length - 1])}
-            </span>
-          ))}
-      </div>
-      {/* 가로축 — 처음 · 끝 달은 늘 보이고(끝은 오른쪽으로 붙여 칸 밖으로 안 나감) 사이는 6개월 간격 · 글자가 겹치면 생략 */}
-      <div className="relative mt-1 h-5 text-small whitespace-nowrap text-fg-2 tabular-nums" aria-hidden style={endOn ? { marginRight: END_W } : undefined}>
-        {ticks.map((t) => (
-          <span key={t.idx} data-testid="month-tick" className="absolute whitespace-nowrap" style={{ left: `${xPct(t.idx)}%`, transform: `translateX(${t.anchor === "start" ? "0%" : t.anchor === "end" ? "-100%" : "-50%"})` }}>
-            {t.period}
-          </span>
-        ))}
+      <div data-testid="travel-graph" className="mt-3">
+        <LineChart
+          aria={label}
+          x={[from, to]}
+          y={{ min: yMin, max: yMax, ticks }}
+          y2={y2}
+          xTicks={monthTicks(from, to).map((t) => ({ x: t.idx, label: t.period, short: shortPeriod(t.period) }))}
+          series={series}
+          marks={marks}
+          focus={focus}
+          height={400}
+          heightPhone={320}
+        />
       </div>
       {/* 범례 — 칩을 누르면 그 선만 강조 (다시 누르면 원래대로) · 칩에 최근 값 */}
       <ul data-testid="travel-legend" className="mt-3 flex flex-wrap gap-2 text-small text-fg">
         {lines.map((l) => (
           <li key={l.id}>
             <button type="button" aria-pressed={focus === l.id} onClick={() => toggle(l.id)} className={`flex items-center gap-2 rounded-pill border-2 px-3 py-1 transition-colors ${focus === l.id ? "border-cheap bg-card font-semibold" : "border-line hover:bg-surface-2"}`}>
-              {l.id === "fx" ? <span aria-hidden className="inline-block w-5 border-t-2 border-dashed border-fg-2" /> : <span aria-hidden className={`inline-block h-1 w-5 rounded-pill ${l.id === "air" ? "bg-cheap" : "bg-accent"}`} />}
+              {l.id === "fx" ? <span aria-hidden className="inline-block w-5 border-t-2 border-dashed border-fg-2" /> : <span aria-hidden className={`inline-block h-1 w-5 rounded-pill ${l.id === "air" ? "bg-cheap" : "bg-band"}`} />}
               <span className="tabular-nums">{legendText(l.id, l.vals[l.vals.length - 1])}</span>
             </button>
           </li>
