@@ -62,9 +62,9 @@ test.describe("가로 넘침 방지 (작업 0213)", () => {
       expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth), path).toBeLessThanOrEqual(1);
     }
   });
-  test("sticky 는 그대로 — 통화 목록(넓은 화면)이 스크롤을 따라옴", async ({ page }) => {
+  test("sticky 는 그대로 — 계산 탑승권(넓은 화면)이 스크롤을 따라옴 (작업 0219 · 예전엔 왼쪽 통화 목록)", async ({ page }) => {
     test.skip((page.viewportSize()?.width ?? 0) < 1024, "넓은 화면 전용");
     await page.goto("/currencies/USD");
-    expect(await page.locator('[data-testid="currency-list"]').evaluate((el) => getComputedStyle(el).position)).toBe("sticky");
+    expect(await page.locator('[data-testid="converter"]').evaluate((el) => getComputedStyle(el.parentElement as HTMLElement).position)).toBe("sticky");
   });
 });

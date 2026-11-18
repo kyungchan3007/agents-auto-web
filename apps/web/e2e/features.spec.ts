@@ -27,17 +27,18 @@ test("환율 계산기 — 외화를 넣으면 원화 결과가 바뀜 · 틀린
   await page.goto("/currencies/USD");
   const box = page.getByTestId("converter");
   const input = box.locator("input");
-  const result = box.locator('p[aria-live="polite"]');
+  // 작업 0219: 결과는 글자판 — 화면 읽기 이름(aria-label)이 결과 글 한 문장
+  const result = box.getByTestId("converter-board").getByTestId("flap-board");
   await expect(input).toHaveCount(1); // 입력칸은 외화 하나
   await input.fill("100");
-  await expect(result).toHaveText(/^\d[\d,]*(\.\d+)?원$/);
-  const first = await result.textContent();
+  await expect(result).toHaveAttribute("aria-label", /^\d[\d,]*(\.\d+)?원$/);
+  const first = await result.getAttribute("aria-label");
   await input.fill("200");
-  await expect(result).not.toHaveText(first ?? "");
-  await expect(result).toHaveText(/^\d[\d,]*(\.\d+)?원$/);
+  await expect(result).not.toHaveAttribute("aria-label", first ?? "");
+  await expect(result).toHaveAttribute("aria-label", /^\d[\d,]*(\.\d+)?원$/);
   await input.fill("abc");
   await expect(page.locator("#converter-note")).toContainText("0 이상의 숫자");
-  await expect(result).toHaveText("—");
+  await expect(result).toHaveAttribute("aria-label", "—");
 });
 
 test("환율 계산기 — 빠른 금액 칩을 누르면 입력과 결과가 채워짐 (작업 0170)", async ({ page }) => {
@@ -48,7 +49,7 @@ test("환율 계산기 — 빠른 금액 칩을 누르면 입력과 결과가 �
   await box.locator("input").fill("abc"); // 틀린 값에서 시작해도 칩이 바로잡음
   await chips.nth(1).click();
   await expect(box.locator("input")).toHaveValue(/^\d[\d,]*(\.\d+)?$/);
-  await expect(box.locator('p[aria-live="polite"]')).toHaveText(/^\d[\d,]*(\.\d+)?원$/);
+  await expect(box.getByTestId("converter-board").getByTestId("flap-board")).toHaveAttribute("aria-label", /^\d[\d,]*(\.\d+)?원$/);
 });
 
 // 흐름 기간 — 시안(작업 0170): 기간 칩 "1개월 · 3개월 · 1년" 이 그래프 아래로 · 눌린 칩이 표시되고 그래프가 그 기간으로 바뀜 (작업 0087)

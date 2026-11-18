@@ -10,31 +10,32 @@ const box = async (loc: Locator) => {
 };
 
 test.describe("통화 상세 (작업 0212)", () => {
-  test("휴대폰 — 1년 최저 · 최고 · 평균 카드가 한 줄 세 칸 · 글자가 칸 밖으로 안 나감", async ({ page }) => {
+  test("1년 최저 · 최고 한 줄 · 글자가 칸 밖으로 안 나감 · 가로 넘침 없음 (작업 0219 · 비행 경로 카드)", async ({ page }) => {
     await page.goto("/currencies/USD");
-    const cards = tid(page, "currency-detail").locator("dl > div");
-    await expect(cards).toHaveCount(3);
-    const boxes = [await box(cards.nth(0)), await box(cards.nth(1)), await box(cards.nth(2))];
-    if (isPhone(page)) {
-      expect(Math.abs(boxes[0].y - boxes[1].y)).toBeLessThan(1);
-      expect(Math.abs(boxes[1].y - boxes[2].y)).toBeLessThan(1);
-      expect(boxes[0].x).toBeLessThan(boxes[1].x);
-      expect(boxes[1].x).toBeLessThan(boxes[2].x);
-      for (let i = 0; i < 3; i++) expect(await cards.nth(i).locator("dd").evaluate((el) => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
-      expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
-    } else {
-      expect(Math.abs(boxes[0].y - boxes[2].y)).toBeLessThan(1); // 넓은 화면도 한 줄 (그대로)
+    const [min, max] = [await box(tid(page, "route-min")), await box(tid(page, "route-max"))];
+    expect(Math.abs(min.y - max.y)).toBeLessThan(1); // 휴대폰도 한 줄
+    expect(min.x).toBeLessThan(max.x);
+    const card = await box(tid(page, "route-card"));
+    for (const b of [min, max]) {
+      expect(b.x).toBeGreaterThanOrEqual(card.x - 1);
+      expect(b.x + b.width).toBeLessThanOrEqual(card.x + card.width + 1);
     }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
   });
 
   test("1년 최저 · 최고 · 평균 값은 같은 소수 자릿수", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/currencies/USD");
-    const values = await tid(page, "currency-detail").locator("dl > div dd").allInnerTexts();
+    const values = [
+      (await tid(page, "route-min").getByTestId("count-up").getAttribute("data-final")) ?? "",
+      (await tid(page, "route-max").getByTestId("count-up").getAttribute("data-final")) ?? "",
+      (await tid(page, "route-avg").innerText()).replace("1년 평균", ""),
+    ];
     const digits = values.map((v) => v.match(/\.(\d+)/)?.[1].length ?? 0);
     expect(new Set(digits).size, values.join(" | ")).toBe(1);
   });
 
-  test("휴대폰 — 위쪽 통화 줄의 판정 알약이 그 통화 칸 안에 있음", async ({ page }) => {
+  test("휴대폰 — 맨 아래 통화 줄의 판정 알약이 그 통화 칸 안에 있음", async ({ page }) => {
     test.skip(!isPhone(page), "휴대폰 전용");
     await page.goto("/currencies/USD");
     const links = tid(page, "currency-list").locator("nav ul li a");
@@ -51,31 +52,24 @@ test.describe("통화 상세 (작업 0212)", () => {
       checked++;
     }
     expect(checked).toBeGreaterThan(0);
-    // 칸끼리 겹치지 않음
+    // 칸끼리 겹치지 않음 (작업 0219: 맨 아래 목록은 격자 — 같은 줄이면 옆 칸 · 다음 줄이면 아래 칸)
     const a = await box(links.nth(0));
     const b = await box(links.nth(1));
-    expect(a.x + a.width).toBeLessThanOrEqual(b.x + 0.5);
+    expect(a.x + a.width <= b.x + 0.5 || a.y + a.height <= b.y + 0.5).toBe(true);
   });
 
-  test("넓은 화면 — 왼쪽 목록 맨 아래 줄이 중간에서 잘리지 않음 (줄 경계에서 끝남 · 여러 높이)", async ({ page }) => {
-    test.skip(isPhone(page), "넓은 화면 전용");
-    for (const height of [700, 800, 900]) {
-      await page.setViewportSize({ width: 1280, height });
-      await page.goto("/currencies/USD");
-      await page.waitForTimeout(300);
-      const ul = tid(page, "currency-list").locator("nav ul");
-      const ub = await box(ul);
-      const items = tid(page, "currency-list").locator("nav ul li");
-      const n = await items.count();
-      let partial = 0;
-      for (let i = 0; i < n; i++) {
-        const b = await box(items.nth(i));
-        const inside = b.y + b.height <= ub.y + ub.height + 1;
-        const outside = b.y >= ub.y + ub.height - 1;
-        if (!inside && !outside) partial++;
-      }
-      expect(partial, `높이 ${height}`).toBe(0);
-      expect(await ul.evaluate((el) => el.scrollHeight > el.clientHeight), "목록은 계속 스크롤 가능").toBe(true);
+  test("맨 아래 통화 목록 — 격자로 모두 보임 (스크롤 칸 없음 · 중간에서 잘리지 않음 · 가로 넘침 없음)", async ({ page }) => {
+    await page.goto("/currencies/USD");
+    const ul = tid(page, "currency-list").locator("nav ul");
+    expect(await ul.evaluate((el) => el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+    const ub = await box(ul);
+    const items = tid(page, "currency-list").locator("nav ul li");
+    const n = await items.count();
+    expect(n).toBeGreaterThan(3);
+    for (let i = 0; i < n; i++) {
+      const b = await box(items.nth(i));
+      expect(b.y + b.height, `${i + 1}번째 줄`).toBeLessThanOrEqual(ub.y + ub.height + 1);
+      expect(b.x + b.width).toBeLessThanOrEqual(ub.x + ub.width + 1);
     }
   });
 });
