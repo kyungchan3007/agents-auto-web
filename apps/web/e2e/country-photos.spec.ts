@@ -3,29 +3,32 @@
 import { type Page, expect, test } from "@playwright/test";
 
 const heroSrc = async (page: Page) => (await page.getByTestId("photo-header-img").first().getAttribute("src")) ?? "";
-const open = (page: Page) => page.getByTestId("pick-trip-open").first();
+// 작업 0217 지적: 홈은 버튼 · 시트 없이 카드 안 칩 · 검색으로 바로 바꿈 — 시트(dialog)는 여행 물가 "다른 나라 보기"(pick-trip-other)에만 남음
+const open = (page: Page) => page.getByTestId("pick-trip-other").first();
+const switcher = (page: Page) => page.getByTestId("trip-switcher");
+const savePicked = (page: Page, country = "JPN", city = "도쿄") => page.addInitScript(([c, t]) => localStorage.setItem("flapfx:picked", JSON.stringify({ v: 1, country: c, city: t, budget: 0 })), [country, city]);
 const dialog = (page: Page) => page.getByRole("dialog", { name: "어디로 떠나세요?" });
-const choose = async (page: Page, query: string, optionText: string) => {
-  await open(page).click();
-  await expect(dialog(page)).toBeVisible();
-  const box = dialog(page).getByRole("combobox", { name: "여행지 검색" });
+// 홈 — 카드 안 검색 칸에 쓰고 첫 후보를 고름 (시트 없음)
+const choose = async (page: Page, query: string, _optionText?: string) => {
+  const box = switcher(page).getByRole("combobox", { name: "여행지 검색" });
   await box.fill(query);
-  await dialog(page).getByRole("option", { name: new RegExp(optionText) }).first().click();
-  await expect(dialog(page)).toHaveCount(0);
+  await switcher(page).getByRole("option").first().click();
 };
 
 test.describe("여행지 고르기 시트 · 나라 사진 (작업 0201)", () => {
   test("안 고른 첫 화면 — 홈에 사진 없음(작업 0217) · 여행 물가는 지금 사진 · 지금 물가 문장 · 버튼이 보임", async ({ page }) => {
     await page.goto("/");
-    await expect(open(page)).toBeVisible();
+    await expect(switcher(page)).toBeVisible();
+    await expect(page.getByTestId("pick-trip-open")).toHaveCount(0);
     await expect(page.getByTestId("photo-header-img")).toHaveCount(0);
     await page.goto("/prices");
     expect(await heroSrc(page)).toContain("swiss-traveler");
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/한국보다 물가가 \d+% 낮습니다/);
   });
 
-  test("시트 — 이름 있는 dialog · 자동완성 · 자주 가는 곳 칩 · Esc 로 닫으면 버튼으로 초점", async ({ page }) => {
-    await page.goto("/");
+  test("시트 — 이름 있는 dialog · 자동완성 · 자주 가는 곳 칩 · Esc 로 닫으면 버튼으로 초점 (여행 물가 \"다른 나라 보기\")", async ({ page }) => {
+    await savePicked(page);
+    await page.goto("/prices");
     await open(page).click();
     const d = dialog(page);
     await expect(d).toBeVisible();
@@ -43,7 +46,8 @@ test.describe("여행지 고르기 시트 · 나라 사진 (작업 0201)", () =>
   });
 
   test("초점이 시트 안에 갇힘 — Tab 을 여러 번 눌러도 시트 밖으로 나가지 않음", async ({ page }) => {
-    await page.goto("/");
+    await savePicked(page);
+    await page.goto("/prices");
     await open(page).click();
     for (let i = 0; i < 25; i++) {
       await page.keyboard.press("Tab");
@@ -62,9 +66,7 @@ test.describe("여행지 고르기 시트 · 나라 사진 (작업 0201)", () =>
 
   test("칩으로 고르기 — 방콕", async ({ page }) => {
     await page.goto("/");
-    await open(page).click();
-    await dialog(page).getByTestId("pick-chip").filter({ hasText: "방콕" }).click();
-    await expect(dialog(page)).toHaveCount(0);
+    await switcher(page).getByTestId("pick-chip").filter({ hasText: "방콕" }).click(); // 시트 없이 카드 안 칩 (작업 0217 지적)
     await expect(page.locator("#today")).toContainText(/방콕/);
   });
 

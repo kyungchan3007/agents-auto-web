@@ -43,7 +43,9 @@ test.describe("새 홈 — 첫 화면 (작업 0217)", () => {
     await expect(tid(page, "ticket")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
     await expect(tid(page, "ticket-evidence")).toContainText("최근 90일");
     await expect(tid(page, "ticket-bar")).toBeVisible();
-    await expect(tid(page, "ticket").getByTestId("pick-trip-open")).toBeVisible();
+    // 작업 0217 사용자 지적: "내 여행지 고르기" 버튼 · 시트 없이 카드 안에서 바로 바꿈
+    await expect(tid(page, "ticket").getByTestId("trip-switcher")).toBeVisible();
+    await expect(page.getByTestId("pick-trip-open")).toHaveCount(0);
     // 시안의 영문 작은 라벨은 넣지 않음 (사용자 확인 전)
     for (const en of ["DEPARTURES", "BOARDING PASS", "12 MONTHS", "EXCHANGE", "DESTINATION", "KRW", "STATUS"]) await expect(page.locator("main")).not.toContainText(en);
   });
@@ -183,5 +185,67 @@ test.describe("새 홈 — 도착지별 환전 타이밍 (작업 0217)", () => {
     await expect(tid(page, "year-bar")).toHaveCount(12);
     await expect(tid(page, "flap-board")).toBeVisible();
     await ctx.close();
+  });
+});
+
+// 작업 0217 사용자 지적 — 홈 카드 안에서 여행지를 바로 바꿈 (원문 "내여행지 고르기 말고 지금처럼 여행지 바꾸면 바로 확인하면 좋을거 같아")
+test.describe("새 홈 — 카드 안 여행지 바꾸기 (작업 0217 지적)", () => {
+  const board = (page: Page) => tid(page, "ticket").getByTestId("flap-board");
+  const switcher = (page: Page) => tid(page, "trip-switcher");
+
+  test("버튼 · 시트 없음 — 카드 안에 자주 가는 곳 칩 줄 + 검색 칸이 바로 보임 (칩마다 국기 · 이름)", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByTestId("pick-trip-open")).toHaveCount(0);
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    const chips = switcher(page).getByTestId("pick-chip");
+    expect(await chips.count()).toBeGreaterThanOrEqual(6);
+    await expect(chips.first().locator("svg")).toBeVisible();
+    await expect(switcher(page).getByRole("combobox", { name: "여행지 검색" })).toBeVisible();
+    const card = await box(page, "ticket");
+    const sw = await box(page, "trip-switcher");
+    expect(sw.y).toBeGreaterThan(card.y + 200);
+    expect(sw.y + sw.height).toBeLessThanOrEqual(card.y + card.height + 1); // 카드 안
+  });
+
+  test("칩을 누르면 안내판 글 · 판정 줄 · 막대가 그 나라로 바로 바뀌고 눌린 칩 표시(aria-pressed) · 새로고침해도 유지", async ({ page }) => {
+    await page.goto("/");
+    await switcher(page).getByTestId("pick-chip").filter({ hasText: "도쿄" }).click();
+    await expect(board(page)).toHaveAttribute("aria-label", /도쿄/, { timeout: 1500 });
+    await expect(switcher(page).getByTestId("pick-chip").filter({ hasText: "도쿄" })).toHaveAttribute("aria-pressed", "true");
+    await expect(tid(page, "ticket")).toContainText(/내가 고른 여행지/);
+    await expect(tid(page, "ticket-evidence")).toContainText("최근 90일");
+    await switcher(page).getByTestId("pick-chip").filter({ hasText: "방콕" }).click();
+    await expect(board(page)).toHaveAttribute("aria-label", /방콕/, { timeout: 1500 });
+    await expect(switcher(page).getByTestId("pick-chip").filter({ hasText: "도쿄" })).toHaveAttribute("aria-pressed", "false");
+    await page.reload();
+    await expect(board(page)).toHaveAttribute("aria-label", /방콕/);
+    await expect(switcher(page).getByTestId("pick-chip").filter({ hasText: "방콕" })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  test("목록에 없는 나라는 같은 줄 검색 칸으로 — 입력 → 후보(listbox · option) → 키보드 · 마우스로 고르기", async ({ page }) => {
+    await page.goto("/");
+    const input = switcher(page).getByRole("combobox", { name: "여행지 검색" });
+    await input.fill("두바이");
+    await expect(switcher(page).getByRole("listbox")).toBeVisible();
+    await input.press("ArrowDown");
+    await expect(input).toHaveAttribute("aria-activedescendant", /.+/);
+    await input.press("Enter");
+    await expect(board(page)).toHaveAttribute("aria-label", /두바이/, { timeout: 1500 });
+    await input.fill("하노이");
+    await switcher(page).getByRole("option").first().click();
+    await expect(board(page)).toHaveAttribute("aria-label", /하노이/, { timeout: 1500 });
+    await expect(switcher(page).getByRole("listbox")).toHaveCount(0);
+  });
+
+  test("휴대폰 — 칩 줄은 가로 스크롤 없이 줄바꿈 · 가로 넘침 없음", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    const list = switcher(page).locator("ul").first();
+    expect(await list.evaluate((el) => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+    const ys = await list.locator("li").evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top)));
+    expect(new Set(ys).size, "휴대폰에서는 두 줄 이상으로 줄바꿈").toBeGreaterThan(1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+    await switcher(page).getByTestId("pick-chip").filter({ hasText: "파리" }).click();
+    await expect(board(page)).toHaveAttribute("aria-label", /파리/, { timeout: 1500 });
   });
 });
