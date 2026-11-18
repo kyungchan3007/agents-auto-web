@@ -35,6 +35,8 @@
 - apps/web/src/features/travel-price/lib/flights-view.ts · flights-view.test.ts — 새 파일(계획의 lib/** 안): 머리 글자판 · 최신 숫자 · 한 줄 띠 계산
 - apps/web/src/features/travel-price/components/flights-graph.tsx — 그래프가 탑승권 왼쪽 칸에 들어가 좁아져 '최저' 이름표가 노란 점 테두리를 가려, 피할 칸을 2px 넓힘 (그래프 모양은 그대로)
 
+- (그래프 2D · 시안 F) apps/web/src/features/travel-price/components/flights-graph.tsx — 그래프 그림을 공통 부품 LineChart(0216)로 교체: 선 셋(항공료 · 단체여행비 면 + 원/달러 점선 오른쪽 눈금) · 최고/최저 점 · 끝 큰 숫자 말풍선 · 순서 움직임. 배치(안내 글 · 범례 칩 · 탑승권 안 위치)는 그대로. 3D 비행기는 2D 결정으로 이 그래프에서 뺌(비행기 부품 파일 · 옛 flights-graph-view 계산 함수는 그대로 둠 — 옛 테스트가 있어 지우지 않음) / hooks/use-flights-graph.ts — 그래프 폭 재기를 공통 부품이 맡아 강조 선 상태만 남김 / 안내 글 UNIT_NOTE("선마다 단위가 달라 모양만 비교합니다")는 옛 테스트가 값을 고정해 그대로 둠 — 지금 그림은 지수 두 선이 같은 눈금이라 문장이 어긋남(test 가 값을 정하면 바꿈). 옛 소스 검사 flights-graph.test.ts 는 옛 그래프(비행기 · month-tick)를 전제해 새 그래프에 맞게 test 가 고쳐야 함
+
 ## 완료 기준
 - [x] 1280 · 768 · 390 가로 넘침 없음 · 콘솔 오류 없음 · 사진 요청 0
 - [x] 글자판 값 = 실제 최신 지수 · 가장 싼 달 = 지금 계산 (단위 · e2e)
