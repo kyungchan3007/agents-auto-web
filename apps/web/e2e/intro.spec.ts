@@ -156,6 +156,39 @@ test.describe("데스크톱 인트로", () => {
     expect(errors).toEqual([]);
   });
 
+  test("끝 — 움직임 줄이기면 끝 장면(파랑 면 · 로고 이동) 없이 바로 새 홈 (작업 0223)", async ({ browser }) => {
+    test.setTimeout(150_000);
+    const ctx = await browser.newContext({ reducedMotion: "reduce", viewport: DESKTOP, storageState: { cookies: [], origins: [] } });
+    const page = await ctx.newPage();
+    await openIntro(page);
+    await page.evaluate(() => {
+      const w = window as unknown as { __tint: boolean };
+      w.__tint = false;
+      const tick = () => {
+        if (document.querySelector('[data-testid="intro-end-tint"], [data-testid="intro-end-logo"]')) w.__tint = true;
+        requestAnimationFrame(tick);
+      };
+      tick();
+    });
+    await page.getByTestId("intro-search").fill("파리");
+    await page.getByTestId("intro-search").press("Enter");
+    await expect(step(page)).toHaveText("2 / 5 · 환전소", { timeout: 15_000 });
+    await page.getByTestId("intro-next").click();
+    await expect(step(page)).toHaveText("3 / 5 · 게이트", { timeout: 15_000 });
+    await page.getByTestId("intro-boardbtn").click();
+    await expect(step(page)).toHaveText("4 / 5 · 이륙", { timeout: 20_000 });
+    for (let i = 0; i < 80; i++) {
+      if ((await intro(page).count()) === 0) break;
+      await page.keyboard.press("ArrowDown");
+      await page.waitForTimeout(150);
+    }
+    await expect(intro(page)).toHaveCount(0, { timeout: 60_000 });
+    await expect(page.getByTestId("home-hero")).toBeVisible();
+    await expect(board(page)).toHaveAttribute("aria-label", /파리/);
+    expect(await page.evaluate(() => (window as unknown as { __tint: boolean }).__tint), "끝 장면(파랑 면 · 로고)이 한 번도 안 그려짐").toBe(false);
+    await ctx.close();
+  });
+
   test("이전 — 2 · 3 · 4단계에서 한 단계 앞으로 · 1단계에는 이전이 없음", async ({ page }) => {
     test.setTimeout(120_000);
     await openIntro(page);
