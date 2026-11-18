@@ -91,7 +91,7 @@ describe("모양 — 판 · 칸 · 이음선 · 글자 색 (B3)", () => {
     const s = src();
     expect(s).toMatch(/dest[\s\S]{0,80}text-sun|text-sun[\s\S]{0,80}dest/);
     expect(s).toMatch(/money[\s\S]{0,80}text-sun|text-sun[\s\S]{0,80}money/);
-    expect(s).not.toMatch(/text-(foam|white)/);
+    expect(s.replace(/white:\s*"text-foam"/, "")).not.toMatch(/text-(foam|white)/); // 흰 글자는 white 줄 선택(작업 0216)에만
   });
 
   it("글꼴 — 칸 글자는 큰 제목 글꼴(font-display · Pretendard 800) · 숫자는 같은 폭(tabular-nums)", () => {
@@ -108,9 +108,9 @@ describe("모양 — 판 · 칸 · 이음선 · 글자 색 (B3)", () => {
   });
 });
 
-describe("토큰 — 칸 색 #24337f", () => {
-  it("--hav-flap-cell: #24337f · @theme 에서 --color-flap-cell 로 연결", () => {
-    expect(tokens()).toMatch(/--hav-flap-cell\s*:\s*#24337f/i);
+describe("토큰 — 칸 색 #1f3190 (작업 0216 · 시안 B)", () => {
+  it("--hav-flap-cell: #1f3190 · @theme 에서 --color-flap-cell 로 연결", () => {
+    expect(tokens()).toMatch(/--hav-flap-cell\s*:\s*#1f3190/i);
     expect(tokens()).toMatch(/--color-flap-cell\s*:\s*var\(--hav-flap-cell\)/);
   });
 });
