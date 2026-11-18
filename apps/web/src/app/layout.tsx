@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 // 휴대폰 주소창 색 — 사이트 바탕(하늘 종이) 한 값 · 밝은 화면 하나만 (작업 0173)
 export const viewport: Viewport = {
-  themeColor: "#EAF4F2",
+  themeColor: "#FFFFFF",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
