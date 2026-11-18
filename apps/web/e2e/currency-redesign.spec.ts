@@ -132,6 +132,96 @@ test.describe("새 통화 상세 — 비행 경로 · 계산 탑승권 (작업 0
   });
 });
 
+test.describe("새 통화 상세 — 계산 결과 글자판 카운트업 (작업 0219 사용자 지적)", () => {
+  // 글자판 칸 글자를 이어 붙인 글 (칸 밖 빈칸 제외)
+  const shown = (page: Page) => tid(page, "converter-board").evaluate((el) => (el.textContent ?? "").replace(/\s+/g, ""));
+  const record = (page: Page) =>
+    page.evaluate(() => {
+      const w = window as unknown as { __seen: string[] };
+      w.__seen = [];
+      const el = document.querySelector('[data-testid="converter-board"]') as HTMLElement;
+      const tick = () => {
+        const t = (el.textContent ?? "").replace(/\s+/g, "");
+        if (w.__seen[w.__seen.length - 1] !== t) w.__seen.push(t);
+        requestAnimationFrame(tick);
+      };
+      tick();
+    });
+  const seen = (page: Page) => page.evaluate(() => (window as unknown as { __seen: string[] }).__seen);
+
+  test("움직임 줄이기 — 처음부터 최종 값 · 금액을 바꿔도 바로 새 값", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/currencies/USD");
+    const board = tid(page, "converter-board").getByTestId("flap-board");
+    const first = (await board.getAttribute("aria-label")) ?? "";
+    for (let i = 0; i < 4; i++) {
+      expect(await shown(page)).toBe(first);
+      await page.waitForTimeout(60);
+    }
+    await tid(page, "converter").getByRole("textbox").first().fill("200");
+    await expect.poll(() => shown(page)).toBe((await board.getAttribute("aria-label")) ?? "");
+    const rec = await seen(page).catch(() => []);
+    expect(rec).toBeDefined();
+  });
+
+  test("처음 화면에 들어올 때 — 칸 글자가 중간 값을 거쳐 최종 값 (글자판 넘김이 아니라 값이 올라가며 맞춰짐)", async ({ page }) => {
+    await page.goto("/currencies/USD");
+    await record(page);
+    await tid(page, "converter").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(1600);
+    const rec = await seen(page);
+    const board = tid(page, "converter-board").getByTestId("flap-board");
+    const final = (await board.getAttribute("aria-label")) ?? "";
+    expect(rec[rec.length - 1]).toBe(final);
+    const nums = rec.map((t) => Number(t.replace(/[^\d]/g, ""))).filter((n) => Number.isFinite(n) && n > 0);
+    expect(nums.length, `값이 올라가며 바뀜: ${rec.join(" ")}`).toBeGreaterThan(3);
+    const finalN = Number(final.replace(/[^\d]/g, ""));
+    expect(Math.min(...nums)).toBeLessThan(finalN); // 시작은 최종보다 작음
+    expect(Math.max(...nums)).toBeLessThanOrEqual(finalN); // 넘지 않음
+    for (let i = 1; i < nums.length; i++) expect(nums[i]).toBeGreaterThanOrEqual(nums[i - 1]); // 올라가기만 함
+    expect(rec.filter((t) => /[^\d,원]/.test(t)).length, "무작위 글자(넘김)가 끼지 않음").toBe(0);
+  });
+
+  test("금액을 바꾸면 이전 값에서 새 값으로 (중간 값을 거침) · 끝 값 = 계산 값 · 같은 입력 → 같은 값", async ({ page }) => {
+    await page.goto("/currencies/USD");
+    await page.waitForTimeout(1800); // 처음 움직임이 끝난 뒤
+    const board = tid(page, "converter-board").getByTestId("flap-board");
+    const before = Number(((await board.getAttribute("aria-label")) ?? "").replace(/[^\d]/g, ""));
+    await record(page);
+    await tid(page, "converter").getByRole("textbox").first().fill("500");
+    await page.waitForTimeout(1200);
+    const rec = await seen(page);
+    const after = Number(((await board.getAttribute("aria-label")) ?? "").replace(/[^\d]/g, ""));
+    expect(after).toBeGreaterThan(before * 4.9);
+    expect(rec[rec.length - 1]).toBe(((await board.getAttribute("aria-label")) ?? "").replace(/\s+/g, ""));
+    const nums = rec.map((t) => Number(t.replace(/[^\d]/g, ""))).filter((n) => n > 0);
+    expect(nums.some((n) => n > before && n < after), `중간 값을 거침: ${rec.join(" ")}`).toBe(true);
+    await tid(page, "converter").getByRole("textbox").first().fill("100");
+    await page.waitForTimeout(1000);
+    expect(Number(((await board.getAttribute("aria-label")) ?? "").replace(/[^\d]/g, ""))).toBe(before); // 같은 입력 → 같은 값
+  });
+
+  test("틀린 입력은 '—' · 화면 읽기(aria-label)는 늘 최종 값 한 문장", async ({ page }) => {
+    await page.goto("/currencies/USD");
+    const board = tid(page, "converter-board").getByTestId("flap-board");
+    await expect(board).toHaveAttribute("role", "img");
+    await tid(page, "converter").getByRole("textbox").first().fill("abc");
+    await expect(board).toHaveAttribute("aria-label", "—");
+    await tid(page, "converter").getByRole("textbox").first().fill("100");
+    await expect(board).toHaveAttribute("aria-label", /^[\d,]+원$/);
+  });
+
+  test("자바스크립트를 꺼도 결과가 보임 (서버 첫 그림 = 최종 값)", async ({ browser, baseURL }) => {
+    const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL });
+    const page = await ctx.newPage();
+    await page.goto("/currencies/USD");
+    const board = page.locator('[data-testid="converter-board"] [data-testid="flap-board"]');
+    await expect(board).toHaveAttribute("aria-label", /^[\d,]+원$/);
+    expect(((await board.textContent()) ?? "").replace(/\s+/g, "")).toBe(await board.getAttribute("aria-label"));
+    await ctx.close();
+  });
+});
+
 test.describe("새 통화 상세 — 1년 흐름 · 아래 목록 (작업 0219)", () => {
   test("선이 그려지며 나타남(한 번) · 움직임 줄이기면 처음부터 다 그려짐 · 자바스크립트 끄면 다 그려짐", async ({ page, browser, baseURL }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });

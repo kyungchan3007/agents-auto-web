@@ -5,9 +5,11 @@
 //   export function countUpStart(final: number, digits = 0): number  // 0 이 아니라 최종 값 근처(85%)에서 시작 · 소수 자리에 맞춰 반올림 · 최종 값이 0 이면 0
 //   export function easeOut(t: number): number                       // 0..1 → 0..1 · 끝에서 느려짐 · 범위 밖은 자름
 //   export function countUpValue(final: number, progress: number, digits = 0): number  // 시작 값 → 최종 값 · progress 0 = 시작 값 · 1 = 정확히 최종 값 · 소수 자리에 맞춰 반올림
+//   export const COUNT_TO_MS = 600                                   // 값을 바꿀 때 이전 값 → 새 값 시간 (작업 0219 · 계산기 결과)
+//   export function countTo(from: number, to: number, progress: number, digits = 0): number  // 이전 값 → 새 값 · progress 0 = from · 1 = 정확히 to · 끝에서 느려짐(easeOut) · 범위 밖은 자름 · 소수 자리 반올림
 //   export function formatCount(value: number, digits = 0): string   // 쉼표 · 소수 자리 고정 (한국어 로캘) — 1338.8 · 1 → "1,338.8" · 912 · 0 → "912"
 import { describe, expect, it } from "vitest";
-import { COUNT_UP_MS, countUpStart, countUpValue, easeOut, formatCount } from "./count-up";
+import { COUNT_TO_MS, COUNT_UP_MS, countTo, countUpStart, countUpValue, easeOut, formatCount } from "./count-up";
 
 describe("formatCount — 쉼표 · 소수 자리", () => {
   it("쉼표와 소수 자리를 고정", () => {
@@ -87,5 +89,39 @@ describe("시간", () => {
   it("약 1초", () => {
     expect(COUNT_UP_MS).toBeGreaterThanOrEqual(800);
     expect(COUNT_UP_MS).toBeLessThanOrEqual(1200);
+  });
+});
+
+describe("countTo — 값을 바꿀 때 이전 값에서 새 값으로 (작업 0219)", () => {
+  it("0 = 이전 값 · 1 = 정확히 새 값", () => {
+    expect(countTo(133880, 267760, 0)).toBe(133880);
+    expect(countTo(133880, 267760, 1)).toBe(267760);
+    expect(countTo(100, 100, 0.4)).toBe(100);
+  });
+  it("올라갈 때 단조 증가 · 내려갈 때 단조 감소 · 사이 값", () => {
+    let prev = 133880;
+    for (let p = 0; p <= 1.0001; p += 0.1) {
+      const v = countTo(133880, 267760, p);
+      expect(v).toBeGreaterThanOrEqual(prev);
+      expect(v).toBeLessThanOrEqual(267760);
+      prev = v;
+    }
+    let down = 267760;
+    for (let p = 0; p <= 1.0001; p += 0.1) {
+      const v = countTo(267760, 133880, p);
+      expect(v).toBeLessThanOrEqual(down);
+      expect(v).toBeGreaterThanOrEqual(133880);
+      down = v;
+    }
+  });
+  it("범위 밖 progress 는 자름 · 소수 자리에 맞춰 반올림", () => {
+    expect(countTo(10, 20, -1)).toBe(10);
+    expect(countTo(10, 20, 3)).toBe(20);
+    const v = countTo(1, 2, 0.37, 1);
+    expect(Math.round(v * 10) / 10).toBe(v);
+  });
+  it("시간 약 0.6초", () => {
+    expect(COUNT_TO_MS).toBeGreaterThanOrEqual(400);
+    expect(COUNT_TO_MS).toBeLessThanOrEqual(800);
   });
 });
