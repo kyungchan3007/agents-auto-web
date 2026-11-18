@@ -47,14 +47,24 @@
 - 합친 뒤 e2e: 가짜 API 빌드로 582 통과 · 실패 19건은 모두 가짜 자료에 /geo · /log 자료와 핀란드 같은 나라가 없어서(변경과 무관 · 실제 자료 미리보기에서 확인).
 
 ## 계획 밖 변경 이유
+- packages/ui/src/components/text/emph.tsx — 사진 막(group/photo · veil)을 알던 클래스 두 개 제거 (PhotoHeader 가 없어져 쓸 곳이 없음)
+- packages/ui/src/lib/contrast.test.ts · apps/web/src/shared/{home-flap-board · redesign-foundation · number-emphasis · intro-window · intro-structure}.test.ts — 사진 막 · PhotoHeader 를 검사하던 줄 · 주석 정리
+- apps/web/e2e/country-photos.spec.ts → country-pick.spec.ts 로 이름 변경 — 여행지 고르기 시트 · 칩 검사는 사진과 무관해 남기고 사진 줄만 지움 / e2e/flap-board.spec.ts 사진 구간 줄 정리
+- apps/web/src/features/intro/lib/scene-types.ts · scene.ts · hooks/use-intro.ts — 안 쓰는 창문 카메라(zoomIn)와 옛 창문 설명 주석 삭제 (계획의 "인트로 남은 창문 코드 정리". 3D 장면의 다른 부분은 그대로)
+- 합치기(0217 · 0216 · 0218~0221)로 들어온 파일은 이 작업의 변경이 아님
 
 ## 완료 기준
 - [x] 0216(최신) · 0217 · 0218 · 0219 · 0220 · 0221 이 모두 합쳐짐 · 합치기 기록 작성
-- [ ] apps/web/public/images/photos · plane-sunset-og.jpg 없음 · 저장소 전체에서 /images/photos 를 부르는 코드 없음(인트로 포함)
-- [ ] 빌드 결과물: 모든 페이지 · 인트로 끝까지 /images/photos 요청 0 · 깨진 이미지 0 (e2e)
-- [ ] /about 사진 없는 머리 · 1280 · 390 가로 넘침 없음
-- [ ] bash .agents/checks.sh PASS · 빌드는 가짜 API 로(운영 D1 읽기 0) · 미리보기는 푸시 한 번
-- [ ] 작업 보드 0222 줄
+- [x] apps/web/public/images/photos · plane-sunset-og.jpg 없음 · 저장소 전체에서 /images/photos 를 부르는 코드 없음(인트로 포함)
+- [x] 빌드 결과물: 모든 페이지 · 인트로 끝까지 /images/photos 요청 0 · 깨진 이미지 0 (e2e)
+- [x] /about 사진 없는 머리 · 1280 · 390 가로 넘침 없음
+- [x] bash .agents/checks.sh PASS · 빌드는 가짜 API 로(운영 D1 읽기 0) · 미리보기는 푸시 한 번
+- [x] 작업 보드 0222 줄
 
 ## 허점
--
+- 웹킷(사파리) 확인 못 함. e2e 는 `next dev` 가 이 환경에서 하이드레이션이 안 돼 못 쓰고 **가짜 API 로 만든 빌드**(운영 D1 읽기 0)로 돌림 — 전체 586 통과.
+- 실패 18건: 17건은 가짜 자료 한계(/geo · /log 자료 · 핀란드 같은 유로 나라가 없음)로 변경과 무관. **1건은 0221 의 lead 커밋 151e0db 때문**: 넓은 화면(1280)에서 직구 계산 큰 문장이 기본 상태("면세 한도를 넘었습니다 · 관세율을 넣으면 세금을 계산합니다")일 때 3줄이 되는데 제목 자리를 2줄만 잡아 보내는 곳을 바꾸면 아래 구간(수입물가)이 약 62px 밀림 (calc-redesign.spec "보내는 곳을 바꿔도 … 크기 고정"). 0221 브랜치에서 고쳐야 함(3줄로 되돌리거나 문장을 줄임) — 이 브랜치에서는 고치지 않음.
+- 사진을 지워서 사이트 파일이 약 5MB 줄어듦(빌드 결과물에 images 폴더 없음). 국기(SVG) · 인트로 3D 모델 · 텍스처는 사진이 아니라 그대로.
+- 옛 작업 기록(.agents/specs/0175-user-photos · 0201-country-photos)은 이력이라 그대로 둠.
+- `docs/design.md` 의 지구본 표(작업 0085) 줄은 옛 기록이라 그대로 둠(이미 "작업 0177 에서 없앰" 표시).
+
