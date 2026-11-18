@@ -23,20 +23,22 @@ test.describe("직구 입력 안내 아래 빈칸 (작업 0208 추가)", () => {
   });
 
   for (const width of [390, 700, 1000, 1280]) {
-    test(`오류가 떠도 입력 칸 · 결과 카드 높이가 같음 (폭 ${width})`, async ({ page }) => {
+    test(`오류가 떠도 입력 칸 높이가 같음 · 결과 카드는 최소 높이 이상 (폭 ${width})`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.goto("/calc");
       await page.waitForTimeout(300);
+      // 입력 칸(form) 높이는 오류가 떠도 같아야 함(작업 0200 규칙) · 결과 카드는 글만큼 자라는 최소 높이 408px 칸이라 상태마다 조금 다를 수 있음(한도 안 409 · 중간 폭 414 등 — 작업 0208 lead 결정) → 408 이상만 확인
       const heights = async () => ({ form: Math.round((await box(tid(page, "calc-input"))).height), result: Math.round((await box(tid(page, "calc-result"))).height) });
+      const same = (a: { form: number; result: number }, b: { form: number; result: number }) => a.form === b.form && a.result >= 407.5 && b.result >= 407.5;
       const base = await heights();
       await fill(page, "price", "abc");
-      expect(await heights(), "물건 값 오류").toEqual(base);
+      expect(same(await heights(), base), "물건 값 오류").toBe(true);
       await fill(page, "price", "180");
       await fill(page, "shipping", "xyz");
-      expect(await heights(), "배송비 오류").toEqual(base);
+      expect(same(await heights(), base), "배송비 오류").toBe(true);
       await fill(page, "shipping", "");
       await fill(page, "duty", "200");
-      expect(await heights(), "관세율 오류").toEqual(base);
+      expect(same(await heights(), base), "관세율 오류").toBe(true);
     });
   }
 
