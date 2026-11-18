@@ -57,7 +57,8 @@ test.describe("/flights 그래프 — 풍성한 2D (작업 0218 · 시안 F)", (
     const g = (await chart.boundingBox())!;
     expect(g.x).toBeGreaterThanOrEqual(ticket.x - 1);
     expect(g.x + g.width).toBeLessThanOrEqual(ticket.x + ticket.width + 1);
-    const bubbles = chart.locator('[data-testid="chart-end-bubble"]');
+    // 말풍선 상자(rect) · 최고/최저 꼬리표 알약(rect)끼리 겹치지 않음 — 이어주는 줄 · 점은 제외
+    const bubbles = chart.locator('[data-testid="chart-end-bubble"] rect, [data-testid="chart-mark"] rect');
     const boxes: { x: number; y: number; width: number; height: number }[] = [];
     for (let i = 0; i < (await bubbles.count()); i++) boxes.push((await bubbles.nth(i).boundingBox())!);
     for (let i = 0; i < boxes.length; i++)
@@ -72,6 +73,8 @@ test.describe("/flights 그래프 — 풍성한 2D (작업 0218 · 시안 F)", (
   });
 
   test("화면에 들어오기 전엔 시작 안 함(idle · 모든 부분 0) → 들어오면 재생 → 끝나면 done", async ({ page }) => {
+    // 그래프가 첫 화면에 걸쳐 있는 노트북 높이에서는 처음부터 재생되므로, 그래프가 확실히 아래에 있도록 낮은 창(300px)에서 잼
+    await page.setViewportSize({ width: page.viewportSize()?.width ?? 1280, height: 300 });
     await page.goto("/flights");
     test.skip(!(await ready(page)), "자료 없음");
     const chart = chartOf(page);
