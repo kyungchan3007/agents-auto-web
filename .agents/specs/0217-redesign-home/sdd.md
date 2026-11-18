@@ -22,6 +22,7 @@
 - .agents/orchestration/TASKS.md · .agents/specs/0217-redesign-home/**
 
 ## 계획 밖 변경 이유
+- (사용자 지적 · 파인 홈) apps/web/src/features/home/components/ticket.tsx — 홈을 가짜 요소(before · after)에서 진짜 요소로 · 카드 안쪽으로 자르는 틀 · 파랑 띠를 홈 아래 끝까지 / apps/web/src/shared/home-redesign.test.ts · apps/web/e2e/home-redesign.spec.ts — 새 검사
 - packages/ui/src/components/form/trip-switcher.tsx · packages/ui/src/hooks/use-trip-switcher.ts — 새 파일(사용자 지적 · 카드 안 여행지 바꾸기)
 - packages/ui/src/hooks/use-count-up.ts — 웹 쪽 화면이 ui 의 lib 를 직접 가져올 수 없어(package.json exports 가 보호 파일) 훅 파일에서 formatCount 를 같이 내보냄
 - packages/ui/src/components/data/flap-board.tsx — 375px 에서 판이 탑승권 카드 밖으로 넘쳐, 칸이 줄어들 수 있게(min-w-0 shrink) 함
@@ -48,3 +49,4 @@
 - 12달 막대 높이는 가장 싼 달 20% ~ 가장 비싼 달 92% 선형 (시안 값과 같은 범위).
 - /flights 링크는 prefetch 끔 — 켜 두면 /flights 의 머리 사진이 홈에서 미리 받아져 "홈 사진 요청 0" 이 깨짐.
 - 900 굵기는 넣지 않음: 큰 제목 800 · 자간 -0.03em (시안은 900 · -0.055em). 글자 모양이 시안과 조금 다름.
+- (사용자 지적 · 원문 "시안처럼 해줘 표디자인처럼" · 파인 홈) 표 가장자리 홈: 시안 B/home.html 의 .perf 는 표에 overflow:hidden 이 있어 홈 동그라미가 카드 안쪽 반원으로 잘리고, 파랑 면이 끝나는 곳이 홈 아래 끝(절취선 + 13px)이라 홈이 통째로 파랑 안에 있어 "파인 것"으로 보임. 이전 구현은 홈이 카드 밖으로 삐져나오고 파랑 면이 절취선에서 끝나 아래 반이 흰 바탕 위에 떠 보였음. 고침: 홈을 진짜 요소 둘(ticket-hole)로 · 틀(ticket-hole-clip · overflow-hidden)이 카드 폭에서 잘라 반원만 보임 · 홈 색 = 파랑 면 토큰 · 파랑 띠 아래에 -mb-[13px] 로 홈 아래 끝까지. lead 지시문의 "절취선 y = 파랑 면 아래 끝(≤1px)"은 시안 CSS 와 달라(시안은 파랑 면이 절취선보다 13px 아래) e2e 는 시안대로(홈 아래 끝 = 파랑 면 아래 끝 · 절취선 = 홈 가운데) 검사함. 여행지를 바꿔 카드 높이가 달라져도 같음(e2e).
