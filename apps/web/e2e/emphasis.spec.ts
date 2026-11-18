@@ -13,16 +13,15 @@ async function fillCalc(page: Page, price: string, duty?: string) {
   if (duty) await input.getByLabel(/관세율/).fill(duty);
 }
 
-test("여행 물가 — 큰 문장의 퍼센트(63% 같은)에 노란 형광펜 띠 · 글자색은 그대로", async ({ page }) => {
+test("여행 물가 — 큰 문장의 퍼센트(63% 같은)는 파랑 면 위 해 노랑 글자 (작업 0220 · 형광펜 띠 아님)", async ({ page }) => {
   await page.goto("/prices");
   const emph = page.getByRole("heading", { level: 1 }).locator('[data-testid="emph"]');
   if ((await emph.count()) === 0) test.skip(true, "물가 자료가 없어 큰 문장에 숫자가 없음");
   await expect(emph.first()).toHaveText(/\d+%/);
-  await expect(emph.first()).toHaveAttribute("data-bg", "light");
+  await expect(emph.first()).toHaveAttribute("data-bg", "sea");
   const s = await css(emph);
-  expect(s.image).toContain("linear-gradient");
-  expect(s.image).toContain(SUN);
-  expect(s.color).not.toBe(SUN); // 노란 글자는 하늘 종이 위 대비 부족 — 글자색은 그대로
+  expect(s.color).toBe(SUN); // 파랑 면 위 노란 글자 (대비 충분)
+  expect(s.image).not.toContain("linear-gradient");
 });
 
 // 직구 맨 위는 사진 위 울트라마린 막(흰 글자) — 어두운 바탕이라 숫자는 노란 띠가 아니라 해 노랑 글자 (작업 0175 · lead 결정)

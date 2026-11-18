@@ -91,7 +91,7 @@ test.describe("여행 물가 (작업 0212)", () => {
     await page.goto("/prices");
     const cards = tid(page, "price-bands").locator("section");
     await expect(cards).toHaveCount(3);
-    const frame = (i: number) => cards.nth(i).evaluate((el) => { const s = getComputedStyle(el); return [s.borderTopWidth, s.borderTopStyle, s.borderTopColor, s.borderRadius, s.backgroundColor, s.paddingLeft, s.paddingTop]; });
+    const frame = (i: number) => cards.nth(i).evaluate((el) => { const s = getComputedStyle(el); return [s.borderTopWidth, s.borderTopStyle, s.borderTopColor, s.borderRadius, s.backgroundColor, s.paddingTop]; }); // 작업 0220: 구간 사이 세로 선 때문에 양 끝 칸의 좌우 안쪽 여백은 다름 — 틀(테두리 · 바탕 · 위 여백)만 비교
     const f0 = await frame(0);
     expect(await frame(1)).toEqual(f0);
     expect(await frame(2)).toEqual(f0);
