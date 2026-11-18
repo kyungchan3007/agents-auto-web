@@ -241,9 +241,18 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
             const tw = textWidth(txt, phone ? 11 : 12, true) + 18;
             const th = phone ? 22 : 24;
             let tx = m.place === "left" ? -tw - 14 : -tw / 2;
-            // 오른쪽 끝은 끝 말풍선(R + 16 부터) 앞까지만 — 말풍선이 있으면 꼬리표가 그쪽으로 넘어가 겹치지 않게
-            tx = Math.max(4 - pt.x, Math.min((ends.length > 0 ? R + 4 : W - 4) - pt.x - tw, tx));
             const ty = m.place === "below" ? 14 : m.place === "left" ? -th / 2 : -14 - th;
+            // 오른쪽 끝은 "같은 높이에 걸치는 끝 말풍선들의 왼쪽 − 6" 까지만 — 꼬리표가 말풍선 위로 넘어가 겹치지 않게
+            const top = pt.y + ty;
+            const bottom = top + th;
+            let limit = W - 4;
+            placedEnds.forEach((pe, j) => {
+              if (!pe.last) return;
+              const bx = pe.last.x + (phone ? 12 : 16);
+              const by = cy[j] - pe.en.h / 2;
+              if (bottom > by - 2 && top < by + pe.en.h + 2) limit = Math.min(limit, bx - 6);
+            });
+            tx = Math.max(4 - pt.x, Math.min(limit - pt.x - tw, tx));
             return (
               <g key={`${sh.s.id}${j}`} data-testid="chart-mark" data-kind={m.kind} data-series={sh.s.id} data-reveal={rv(at(ms, sched.series[k].marks[j]))} transform={`translate(${pt.x} ${pt.y}) scale(${Math.max(0.0001, e)})`} opacity={e > 0 ? 1 : 0}>
                 <circle r={phone ? 9 : 11} fill={tone.dot} opacity={0.18} />
