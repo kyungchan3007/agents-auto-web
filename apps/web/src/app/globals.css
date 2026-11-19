@@ -181,3 +181,9 @@ main:focus {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
 }
+
+/* 고른 통화 칩 — 저장이 있는 사람은 저장 순서로 그려질 때까지 칩 줄을 숨김 (작업 0231 · 첫 그림 깜빡임)
+   <html data-recent-chips> 는 currencies layout 의 작은 스크립트가 저장이 있을 때만 달아 · 칩 줄이 준비되면(data-ready) 풀림 · 높이는 그대로라 아래 내용이 움직이지 않음 · 저장이 없거나 자바스크립트가 꺼져 있으면 숨기지 않음 */
+html[data-recent-chips] [data-testid="currency-chips"]:not([data-ready]) {
+  visibility: hidden;
+}
