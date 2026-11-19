@@ -149,7 +149,8 @@ test.describe("여행 물가 — 통화로 거르기 (작업 0193)", () => {
     await expect(bandsOf(page)).not.toContainText("일본");
     // 핀란드는 자료가 있으면 목록에, 없으면 "물가 자료 없음" 으로 — 둘 중 하나로는 반드시 보임
     // 국기의 <title>핀란드 국기</title> 가 먼저 잡히지 않게 글자 그대로("핀란드") 만 (작업 0199)
-    await expect(page.getByText("핀란드", { exact: true }).first()).toBeVisible();
+    // select 의 <option>핀란드</option> 가 DOM 앞쪽에 있어 first() 가 숨은 option 을 잡던 문제 — 보이는 글만 (작업 0226 gate 실패 확인)
+    await expect(page.getByText("핀란드", { exact: true }).filter({ visible: true }).first()).toBeVisible();
   });
 
   test("모르는 코드 — 거르지 않고 전체 + 안내", async ({ page }) => {
