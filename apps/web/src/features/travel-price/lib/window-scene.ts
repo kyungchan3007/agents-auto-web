@@ -2,6 +2,8 @@
 //   캔버스 세 장(뒤 · 가까운 층 · 앞)에 하늘 · 산 · 언덕 · 밭 띠 · 나무 · 집 · 눈 · 비 · 꽃잎을 그림 · 달마다 계절 팔레트 · 달이 바뀔 때 구름 덩어리가 창을 휙 가림(계절이 바뀌는 곳은 긴 구름 속)
 //   createWindowScene(...) 이 장면 하나를 만들고 · 화면(React)은 보이는 달 · 덮개 상태만 콜백으로 받음 · 날개 그림 없음
 //   색 숫자는 시안 그대로(캔버스는 CSS 토큰을 못 읽음) — 흰색만 한 단계 낮춘 WHITE 로 (눈에는 같음 · 화면 코드의 흰색 직접 쓰기 금지 규칙)
+import { playSequence } from "./window-months";
+
 type G = CanvasRenderingContext2D;
 type Part = { dead: boolean; t: string; x: number; y: number; r: number; rot: number; vr: number; ph: number; vy: number; vx: number; sz: number; c: string };
 type Drop = { x: number; y: number; r: number; vy: number };
@@ -105,7 +107,7 @@ export function createWindowScene(o: SceneOptions): WindowScene {
   const cvB = o.back, cvN = o.near, cvF = o.front;
   const gB = cvB.getContext("2d")!, gN = cvN.getContext("2d")!, gF = cvF.getContext("2d")!;
   // 재생 순서 — 값이 있는 달을 차례로 지나 가장 싼 달에서 멈춤 (가장 싼 달이 마지막이면 그대로)
-  const SEQ = months[months.length - 1] === lowest ? [...months] : [...months, lowest];
+  const SEQ = playSequence(months.map((m) => m + 1), lowest + 1).map((m) => m - 1);
   let VW = 375, SH = 520, K = 1, mobile = false, VMAX = 600;
   let s = 0, v = 0, vT = 0, T = 0, cur = 0, hold = 0, playing = false, seqI = 0, disp = -1, isVisible = false, raf = 0, last = 0, stopAfter = false, token = 0, started = false;
   let tr: { to: number; kind: string; len: number; so: number; a: number } | null = null;

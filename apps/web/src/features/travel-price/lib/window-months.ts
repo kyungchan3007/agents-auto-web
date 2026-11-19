@@ -64,3 +64,13 @@ export function playSequence(months: number[], lowest: number): number[] {
   const sorted = [...months].sort((a, b) => a - b);
   return sorted[sorted.length - 1] === lowest ? sorted : [...sorted, lowest];
 }
+
+/** 받은 값의 기간 "2024-12 ~ 2026-10" — 홈 12달 막대와 같은 최근 36개월 안의 첫 · 끝 달 (설명 글에 씀) · 값이 없으면 null */
+export function periodRange(points: IndexPoint[] | null | undefined): string | null {
+  const ps = (points ?? []).map((p) => p.period).sort();
+  if (ps.length === 0) return null;
+  const idx = (p: string) => Number(p.slice(0, 4)) * 12 + Number(p.slice(5, 7));
+  const last = idx(ps[ps.length - 1]);
+  const inWindow = ps.filter((p) => idx(p) > last - 36);
+  return `${inWindow[0]} ~ ${inWindow[inWindow.length - 1]}`;
+}
