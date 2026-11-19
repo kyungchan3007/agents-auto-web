@@ -9,9 +9,10 @@ import { BarList, DayBars } from "./geo-bars";
 
 const EMPTY = "아직 기록이 없습니다.";
 
-function Card({ id, title, children }: { id: string; title: string; children: ReactNode }) {
+// wide: 넓은 화면에서 격자 두 칸 전체 폭 (기존 네 장의 2열 짝은 그대로 · 작업 0226 — 다섯 번째 카드는 맨 아래 한 줄)
+function Card({ id, title, wide = false, children }: { id: string; title: string; wide?: boolean; children: ReactNode }) {
   return (
-    <section data-testid={id} aria-labelledby={`${id}-title`} className="min-w-0 rounded-card bg-foam px-6 py-5">
+    <section data-testid={id} aria-labelledby={`${id}-title`} className={`min-w-0 rounded-card bg-foam px-6 py-5${wide ? " min-[701px]:col-span-2" : ""}`}>
       <h2 id={`${id}-title`} className="text-lg font-semibold">
         {title}
       </h2>
@@ -91,30 +92,6 @@ export function GeoDetail({ report }: { report: GeoReport }) {
         </Sub>
       </Card>
 
-      <Card id="geo-bot-pages" title="봇별 읽은 페이지">
-        <p className="mt-1 text-small text-fg-2">봇마다 어떤 페이지를 몇 번 읽었는지 (Googlebot · bingbot 같은 검색 엔진 봇 포함 · 사람 유입 · 운영 확인 제외 · 많이 읽은 상위 5곳)</p>
-        {botPages.length === 0 ? (
-          <div className="mt-5">
-            <p className="rounded-card border-2 border-dashed border-line px-3 py-3 text-small text-fg-2">{EMPTY}</p>
-          </div>
-        ) : (
-          botPages.map((b) => (
-            <div key={b.name} data-testid="bot-pages-bot" data-bot={b.name} className="mt-5">
-              <h3 className="text-small font-semibold">
-                {b.name} <span className="font-normal text-fg-2">· {KIND_TEXT[b.kind]}</span>
-              </h3>
-              <p className="mt-0.5 text-small text-fg-2 tabular-nums">{b.text}</p>
-              <BarList tone={b.kind === "engine" ? "accent" : "cheap"} rows={b.rows} />
-              {b.rest && (
-                <p data-testid="bot-pages-rest" className="mt-1.5 text-small text-fg-2 tabular-nums">
-                  {b.rest.text}
-                </p>
-              )}
-            </div>
-          ))
-        )}
-      </Card>
-
       <Card id="geo-search" title="구글 검색 노출 (Search Console)">
         {!d.search ? (
           <p className="mt-2 text-small text-fg-2">아직 가져온 자료가 없습니다.</p>
@@ -144,6 +121,30 @@ export function GeoDetail({ report }: { report: GeoReport }) {
         <Sub title="AI 서비스 유입" empty={d.referrals.length === 0}>
           <DataTable head={["서비스", "횟수", "최근"]} rows={d.referrals} />
         </Sub>
+      </Card>
+
+      <Card id="geo-bot-pages" title="봇별 읽은 페이지" wide>
+        <p className="mt-1 text-small text-fg-2">봇마다 어떤 페이지를 몇 번 읽었는지 (Googlebot · bingbot 같은 검색 엔진 봇 포함 · 사람 유입 · 운영 확인 제외 · 많이 읽은 상위 5곳)</p>
+        {botPages.length === 0 ? (
+          <div className="mt-5">
+            <p className="rounded-card border-2 border-dashed border-line px-3 py-3 text-small text-fg-2">{EMPTY}</p>
+          </div>
+        ) : (
+          botPages.map((b) => (
+            <div key={b.name} data-testid="bot-pages-bot" data-bot={b.name} className="mt-5">
+              <h3 className="text-small font-semibold">
+                {b.name} <span className="font-normal text-fg-2">· {KIND_TEXT[b.kind]}</span>
+              </h3>
+              <p className="mt-0.5 text-small text-fg-2 tabular-nums">{b.text}</p>
+              <BarList tone={b.kind === "engine" ? "accent" : "cheap"} rows={b.rows} />
+              {b.rest && (
+                <p data-testid="bot-pages-rest" className="mt-1.5 text-small text-fg-2 tabular-nums">
+                  {b.rest.text}
+                </p>
+              )}
+            </div>
+          ))
+        )}
       </Card>
     </div>
   );
