@@ -174,6 +174,7 @@ test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 ·
     expect(avg, `줄 사이 평균 간격 ${avg.toFixed(0)}ms (설계 70ms)`).toBeGreaterThanOrEqual(35);
     expect(avg, `줄 사이 평균 간격 ${avg.toFixed(0)}ms (설계 70ms)`).toBeLessThanOrEqual(130);
     const finals = await tid(page, "dest-rate").evaluateAll((els) => els.map((e) => e.getAttribute("data-final")));
+    const starts = await tid(page, "dest-row").evaluateAll((rows) => rows.map((r) => r.querySelector('[data-testid="dest-rate"]')?.getAttribute("data-start") ?? null));
     const dotIdx: number[] = [];
     for (let i = 0; i < n; i++) if (fr[0].rows[i].dotC !== null) dotIdx.push(i);
     expect(dotIdx.length, "점이 있는 줄").toBeGreaterThanOrEqual(1);
@@ -194,9 +195,14 @@ test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 ·
         expect(dur, `${i + 1}번째 줄 점 이동 시간 ${dur.toFixed(0)}ms (설계 620ms)`).toBeLessThanOrEqual(1000);
       }
       // 금액: 같은 시간에 최종 값에 도착 (점 도착 ±200ms) · 나타날 때는 아직 최종 값 아님(카운트업 시작 값이 있는 줄)
-      const textArrive = fr.find((f) => f.t > ts[i] && f.rows[i].text === finals[i])?.t;
-      expect(textArrive, `${i + 1}번째 줄 금액이 최종 값에 도착하지 않음`).toBeDefined();
-      expect(Math.abs(textArrive! - arriveAt!), `${i + 1}번째 줄 금액 · 점 도착 시각 차(ms)`).toBeLessThanOrEqual(220);
+      if (starts[i] === null) {
+        // 중간값이 없는 줄(예전 응답)은 카운트업 없이 오늘 값 그대로 — 숫자를 지어내지 않음
+        for (const f of fr) if (f.rows[i].op > 0.02) expect(f.rows[i].text, `${i + 1}번째 줄(중간값 없음) 금액이 카운트업함`).toBe(finals[i]);
+      } else {
+        const textArrive = fr.find((f) => f.t > ts[i] && f.rows[i].text === finals[i])?.t;
+        expect(textArrive, `${i + 1}번째 줄 금액이 최종 값에 도착하지 않음`).toBeDefined();
+        expect(Math.abs(textArrive! - arriveAt!), `${i + 1}번째 줄 금액 · 점 도착 시각 차(ms)`).toBeLessThanOrEqual(220);
+      }
       // 신호 글은 마지막 — 점이 도착한 뒤(−60ms) 보이기 시작
       const stShown = fr.find((f) => f.rows[i].st !== null && f.rows[i].st! > 0.05 && f.t >= ts[i])?.t;
       if (stShown !== undefined) expect(stShown, `${i + 1}번째 줄 신호 글이 점 도착보다 먼저 나옴`).toBeGreaterThanOrEqual(arriveAt! - 60);
@@ -212,7 +218,8 @@ test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 ·
       rows.map((r) => ({ start: r.querySelector('[data-testid="dest-rate"]')?.getAttribute("data-start") ?? null, final: r.querySelector('[data-testid="dest-rate"]')?.getAttribute("data-final") ?? null, pos: r.querySelector('[data-testid="dest-dot"]')?.getAttribute("data-position") ?? null })),
     );
     const withStart = info.filter((x) => x.start !== null);
-    expect(withStart.length, "중간값(data-start)이 있는 줄 — 중간값을 모두 못 구하면 카운트업이 없는 것").toBeGreaterThanOrEqual(1);
+    // api 가 아직 median 을 안 주는 환경(배포 전 · 예전 응답)에서는 건너뜀 — 자료가 없을 때만 (구현이 없어서가 아님: 가짜 API 는 median 을 줌 · 단위 테스트가 rateStart 를 확인)
+    test.skip(withStart.length === 0, "신호 목록에 median 자료 없음 (api 배포 전)");
     for (const x of withStart) {
       const start = Number(x.start);
       const final = Number((x.final ?? "").replace(/[^\d.]/g, ""));
