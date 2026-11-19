@@ -79,7 +79,13 @@ test.describe("/geo 시안 B (작업 0214)", () => {
     await page.goto("/geo");
     await page.waitForTimeout(800);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
-    if (!isPhone(page)) expect((await box(tid(page, "geo-grid"))).height).toBeLessThanOrEqual(1700);
+    // 작업 0226 뒤: 격자 안에는 맨 아래 전체 폭 '봇별 읽은 페이지' 카드도 있음 — '짧음' 기준은 기존 네 카드 묶음(맨 위 ~ 네 카드 맨 아래)의 높이 (예전 표 구간 2,800px 과 비교하던 것) · 새 카드 높이는 따로 봄
+    if (!isPhone(page)) {
+      const top = (await box(tid(page, "geo-grid"))).y;
+      let bottom = top;
+      for (const id of ["geo-answers", "geo-bots", "geo-pages", "geo-search"]) { const b = await box(tid(page, id)); bottom = Math.max(bottom, b.y + b.height); }
+      expect(bottom - top, "기존 네 카드 격자 높이").toBeLessThanOrEqual(1700);
+    }
     expect(errors.filter((e) => !/Failed to load resource|favicon/.test(e))).toEqual([]);
   });
 
