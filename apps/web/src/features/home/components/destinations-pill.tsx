@@ -6,6 +6,11 @@ import { cheapDestinationCount, type DestinationRowData, pillText } from "../lib
 
 /** fade: 1 보임 → 0 사라짐 (펼치기 시작 0.18초) */
 export function DestinationsPill({ rows, windowDays, fade }: { rows: DestinationRowData[]; windowDays: number; fade: number }) {
+  // 휴대폰에서 글이 꺾일 때 "편" 한 글자만 다음 줄에 남지 않게 — "최근 90일 중 싼 편" 은 한 덩어리로 묶어 그 앞에서 꺾임 (문구는 pillText 그대로 · 나누기만 여기서)
+  const text = pillText(rows.length, cheapDestinationCount(rows), windowDays);
+  const cut = text.indexOf("최근 ");
+  const head = cut < 0 ? text : text.slice(0, cut);
+  const tail = cut < 0 ? "" : text.slice(cut);
   return (
     <div
       data-testid="dest-pill"
@@ -19,8 +24,9 @@ export function DestinationsPill({ rows, windowDays, fade }: { rows: Destination
           </span>
         ))}
       </span>
-      <b data-testid="dest-pill-text" className="text-[0.875rem] leading-[1.35] font-extrabold tracking-display text-fg sm:text-[1.125rem]">
-        {pillText(rows.length, cheapDestinationCount(rows), windowDays)}
+      <b data-testid="dest-pill-text" className="text-[0.875rem] leading-[1.35] font-extrabold tracking-display text-balance text-fg sm:text-[1.125rem]">
+        {head}
+        <span className="whitespace-nowrap">{tail}</span>
       </b>
     </div>
   );
