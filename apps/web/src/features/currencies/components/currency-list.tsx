@@ -1,5 +1,6 @@
 "use client";
 
+// 고르면 환율 자리까지 부드럽게 올라간 뒤 그 통화로 전환(작업 0231 · 클라이언트 이동 · 정적 자료) — 고른 표시(aria-current)가 옮겨 감
 // 왼쪽 목록 — 시안: "둘러보기" + 통화 줄(코드 · 이름 · 판정 핀) · 줄마다 가는 구분선 · 고른 통화는 흰 카드 (작업 0170)
 // 목록은 레이아웃에 있어 통화를 바꿔도 남음 · 휴대폰은 위에서 옆으로 넘기는 줄 — 칸마다 테두리 카드 안에 이름 · 판정 알약을 함께 (작업 0212) · 검색 · 지역 · 정렬 · 즐겨찾기는 시안에 없어 화면에서 뺌 (계산 lib · 훅은 그대로)
 import { currencyName } from "@hav/shared/currency";
@@ -9,7 +10,9 @@ import Link from "next/link";
 import { currencyListLabel } from "../lib/detail-view";
 import type { ListItem } from "../lib/list";
 import { useCurrencyList } from "../hooks/use-currency-list";
+import { useCurrencyPick } from "../hooks/use-currency-pick";
 import { useListFit } from "../hooks/use-list-fit";
+import { commitPick } from "./currency-chips";
 
 export type { ListItem };
 
@@ -17,6 +20,7 @@ export type { ListItem };
 export function CurrencyList({ items, variant = "column" }: { items: ListItem[]; variant?: "column" | "grid" }) {
   const { current, shown } = useCurrencyList(items);
   const listRef = useListFit(shown.length);
+  const { pick } = useCurrencyPick(items.map((i) => i.currency), commitPick); // 고르면 환율 자리까지 올라간 뒤 전환 (작업 0231)
 
   return (
     <nav aria-label="통화 목록" className="min-w-0">
@@ -30,6 +34,7 @@ export function CurrencyList({ items, variant = "column" }: { items: ListItem[];
                 aria-current={on ? "page" : undefined}
                 aria-label={`${currencyName(i.currency)} ${i.currency}`}
                 scroll={false}
+                onClick={(e) => void pick(i.currency, e)}
                 className={variant === "grid" ? `flex items-center justify-between gap-4 rounded-field border-2 bg-card px-4 py-3 transition-colors hover:bg-surface-2 ${on ? "border-pin-ink" : "border-line"}` : `flex flex-col items-start gap-2 rounded-field border-2 px-3 py-3 transition-colors lg:flex-row lg:items-center lg:justify-between lg:gap-4 ${on ? "border-cheap bg-card lg:border-transparent" : "border-line bg-card hover:bg-surface-2 lg:border-transparent lg:bg-transparent"}`}
               >
                 <span className="flex min-w-0 items-center gap-3">

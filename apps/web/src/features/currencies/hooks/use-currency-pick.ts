@@ -6,10 +6,8 @@
 import { useReducedMotion } from "motion/react";
 import { useRouter } from "next/navigation";
 import type { MouseEvent } from "react";
-import { chipRow, pushRecent } from "../lib/recent-chips";
 import { rememberSwitch, setFlyOrigin, touchSwitch, withSwitch } from "../lib/switch-memory";
 import { needsScroll, scrollDuration, scrollTarget } from "../lib/switch-motion";
-import { readRecent, saveRecent } from "./use-recent-currencies";
 import { useCurrentCode } from "./use-currency-list";
 
 const ease = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - (-2 * k + 2) ** 3 / 2);
@@ -41,7 +39,7 @@ function scrollUp(reduce: boolean): Promise<boolean> {
   });
 }
 
-export function useCurrencyPick(codes: string[]) {
+export function useCurrencyPick(codes: string[], commit: (codes: string[], current: string, code: string) => void) {
   const router = useRouter();
   const reduce = !!useReducedMotion();
   const current = useCurrentCode();
@@ -58,8 +56,7 @@ export function useCurrencyPick(codes: string[]) {
     touchSwitch();
     const moved = await scrollUp(reduce);
     if (moved && !reduce) await new Promise((r) => setTimeout(r, 120));
-    const base = readRecent().length > 0 ? readRecent() : chipRow([], current, codes);
-    saveRecent(pushRecent(base, code));
+    commit(codes, current, code); // 칩 줄 맨 앞에 붙임(저장)
     rememberSwitch(withSwitch(current, {}));
     router.push(`/currencies/${code}`, { scroll: false });
   };
