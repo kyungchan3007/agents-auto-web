@@ -50,6 +50,9 @@ export const RENAME_DAY = "2026-11-17";
 /** 날짜별 봇 · 유입 집계 한 줄 — 경로(path)는 뺌 · 운영 확인 방문(test)은 넣지 않음 */
 const GeoDaily = z.object({ day: IsoDate, kind: z.enum(["training", "search", "user", "engine", "referral"]), name: z.string(), hits: z.number().int().nonnegative() });
 
+/** 봇 하나가 읽은 경로 집계 (작업 0226) — hits = 그 봇의 합계 · paths = 경로별 횟수(많은 순 · 같으면 경로 이름순) */
+const GeoBotPages = z.object({ name: z.string(), kind: GeoKind, hits: z.number().int().nonnegative(), paths: z.array(z.object({ path: z.string(), hits: z.number().int().nonnegative() })) });
+
 /** 날짜별 질문 결과 한 줄 — edition: 그 질문을 처음 쓴 판(1 · 2 · 3) */
 const GeoAnswerDay = z.object({
   day: IsoDate,
@@ -77,6 +80,8 @@ export const GeoReport = z.object({
   answers: GeoAnswers.nullable().default(null),
   /** 이름 바꾼 날 전후 비교용 날짜별 자료 (작업 0205) — 선택 필드: 옛 응답에는 없음 */
   daily: z.array(GeoDaily).optional(),
+  /** 봇별 읽은 페이지 (작업 0226) — 선택 필드: 옛 응답에는 없음 · 사람 유입(referral) · 운영 확인(test) 제외 · 검색 엔진 봇 포함 · 봇 · 경로 모두 많은 순 */
+  botPages: z.array(GeoBotPages).optional(),
   answerDays: z.array(GeoAnswerDay).optional(),
 });
 export type GeoReport = z.infer<typeof GeoReport>;

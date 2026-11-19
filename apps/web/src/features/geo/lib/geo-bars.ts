@@ -32,3 +32,24 @@ export function dayColumns(history: NonNullable<GeoReport["answers"]>["history"]
     };
   });
 }
+
+export type BotPagesView = { name: string; kind: NonNullable<GeoReport["botPages"]>[number]["kind"]; hits: number; text: string; rows: BarRow[]; rest: { places: number; hits: number; text: string } | null };
+
+/** 봇별 읽은 페이지 카드 (작업 0226) — 봇마다 많이 읽은 상위 limit 개 경로 막대 + 나머지는 "그 밖 N곳 · M회" · 필드가 없거나 비면 [] · 값은 받은 그대로 */
+export function botPagesView(botPages: GeoReport["botPages"], limit = 5): BotPagesView[] {
+  return (botPages ?? [])
+    .filter((b) => b.paths.length > 0)
+    .map((b) => {
+      const top = b.paths.slice(0, limit);
+      const rest = b.paths.slice(limit);
+      const restHits = rest.reduce((n, p) => n + p.hits, 0);
+      return {
+        name: b.name,
+        kind: b.kind,
+        hits: b.hits,
+        text: `${b.name} · 총 ${numberText(b.hits)}회 · ${b.paths.length}곳`,
+        rows: barRows(top.map((p) => ({ label: p.path, value: p.hits }))),
+        rest: rest.length > 0 ? { places: rest.length, hits: restHits, text: `그 밖 ${rest.length}곳 · ${numberText(restHits)}회` } : null,
+      };
+    });
+}
