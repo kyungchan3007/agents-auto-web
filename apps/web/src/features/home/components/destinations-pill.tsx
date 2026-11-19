@@ -1,0 +1,27 @@
+// 도착지 요약 알약 — 국기들 + "도착지 N곳 중 M곳이 최근 90일 중 싼 편" (작업 0228 · 모션 13번)
+//   카드 안 맨 위에 겹쳐 놓이는 한 줄 · 카드가 알약으로 접혀 있을 때(pill)와 펼치는 동안(expanding) 만 있고 끝(final)에는 DOM 에서 빠짐
+//   N = 도착지 수 · M = 사이트 신호 규칙(하위 30% 이하)으로 싼 편인 도착지 수 (cheapDestinationCount)
+import { Flag } from "@hav/ui/data/flag";
+import { cheapDestinationCount, type DestinationRowData, pillText } from "../lib/destinations";
+
+/** fade: 1 보임 → 0 사라짐 (펼치기 시작 0.18초) */
+export function DestinationsPill({ rows, windowDays, fade }: { rows: DestinationRowData[]; windowDays: number; fade: number }) {
+  return (
+    <div
+      data-testid="dest-pill"
+      className="pointer-events-none absolute inset-0 z-10 flex items-center gap-2.5 px-[1.125rem] sm:gap-3.5 sm:px-7"
+      style={{ opacity: fade, transform: `translateY(${(1 - fade) * -8}px)` }}
+    >
+      <span className="flex shrink-0 gap-[0.3125rem]">
+        {rows.map((row) => (
+          <span key={row.id} data-testid="dest-pill-flag" className="block overflow-hidden rounded-[3px] ring-1 ring-line">
+            <Flag country={row.flag} label={row.flagLabel} className="h-4 w-6 sm:h-5 sm:w-[1.875rem]" />
+          </span>
+        ))}
+      </span>
+      <b data-testid="dest-pill-text" className="text-[0.875rem] leading-[1.35] font-extrabold tracking-display text-fg sm:text-[1.125rem]">
+        {pillText(rows.length, cheapDestinationCount(rows), windowDays)}
+      </b>
+    </div>
+  );
+}
