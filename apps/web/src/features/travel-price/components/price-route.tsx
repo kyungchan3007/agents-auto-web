@@ -64,7 +64,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
   return (
     <>
       <div className="flex flex-wrap items-center gap-x-[1.125rem] gap-y-2 max-[760px]:gap-x-3.5">
-        <span className="relative size-[4.75rem] flex-none max-[760px]:size-14">
+        <span className="relative size-(--route-flag) flex-none">
           <span key={swap} className={`absolute inset-0 grid ${live && swap > 0 ? "animate-[route-pop_.45s_cubic-bezier(.3,1.5,.5,1)]" : ""} place-items-center overflow-hidden rounded-full bg-surface-2 ring-[3px] ring-card ring-offset-[1px] ring-offset-line`}>
             <Flag country={TRAVEL_COUNTRIES[stop.country]?.flag ?? (stop.country === "KR" ? "KR" : null)} label={`${stop.name} 국기`} className="h-full w-[150%] max-w-none shrink-0 rounded-none" />
           </span>
@@ -73,7 +73,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
           <p data-testid="route-card-meta" className="text-[0.8125rem] text-fg-2 max-[760px]:text-[0.75rem]">
             {t.meta}
           </p>
-          <p className="h-[2.5625rem] overflow-hidden text-[2.125rem] leading-[1.2] font-extrabold tracking-display max-[760px]:h-8 max-[760px]:text-[1.625rem]">
+          <p className="h-(--route-name-h) overflow-hidden text-(length:--route-name) leading-[1.2] font-extrabold tracking-display">
             <span key={swap} data-testid="route-card-name" className={`block ${live && swap > 0 ? "animate-[route-up_.42s_cubic-bezier(.2,.9,.3,1)]" : ""}`}>
               {stop.name}
             </span>
@@ -83,13 +83,13 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
           <SignalCell stop={stop} extra={extra} signalOf={signalOf} percentileOf={percentileOf} small />
         </div>
       </div>
-      <div className="mt-5 grid grid-cols-[auto_1fr_1.25fr] border-t-2 border-dashed border-line pt-[1.125rem] max-[760px]:mt-3.5 max-[760px]:grid-cols-2 max-[760px]:gap-y-4 max-[760px]:pt-3.5 [&>div]:border-l [&>div]:border-line [&>div]:px-8 [&>div:first-child]:border-l-0 [&>div:first-child]:pl-0 max-[760px]:[&>div]:pr-0 max-[760px]:[&>div]:pl-4 max-[760px]:[&>div:first-child]:pl-0 max-[760px]:[&>div:nth-child(3)]:col-span-2 max-[760px]:[&>div:nth-child(3)]:border-t max-[760px]:[&>div:nth-child(3)]:border-l-0 max-[760px]:[&>div:nth-child(3)]:pt-3.5 max-[760px]:[&>div:nth-child(3)]:pl-0">
+      <div className="mt-(--route-row-mt) grid grid-cols-[auto_1fr_1.25fr] border-t-2 border-dashed border-line pt-(--route-row-pt) max-[760px]:grid-cols-2 max-[760px]:gap-y-(--route-row-gap) [&>div]:border-l [&>div]:border-line [&>div]:px-8 [&>div:first-child]:border-l-0 [&>div:first-child]:pl-0 max-[760px]:[&>div]:pr-0 max-[760px]:[&>div]:pl-4 max-[760px]:[&>div:first-child]:pl-0 max-[760px]:[&>div:nth-child(3)]:col-span-2 max-[760px]:[&>div:nth-child(3)]:border-t max-[760px]:[&>div:nth-child(3)]:border-l-0 max-[760px]:[&>div:nth-child(3)]:pt-(--route-row-gap) max-[760px]:[&>div:nth-child(3)]:pl-0">
         <div>
           <p className="mb-1.5 text-[0.78125rem] text-fg-2">물가 (한국 = 100)</p>
           <div className="flex items-center gap-1">
-            <div data-testid="route-card-value" className="flex items-center gap-1">
+            <div data-testid="route-card-value" role="img" aria-label={`물가 ${stop.value} (한국 100)`} className="flex items-center gap-1">
               {shownTiles.map((x, k) => (
-                <span key={k} className="relative grid h-[3.625rem] w-11 place-items-center rounded-[5px] bg-flap-cell text-[2.125rem] leading-none font-extrabold text-sun [perspective:200px] after:absolute after:inset-x-0 after:top-1/2 after:h-px after:bg-on-band max-[760px]:h-12 max-[760px]:w-9 max-[760px]:text-[1.75rem]">
+                <span key={k} aria-hidden="true" className="relative grid h-(--route-tile-h) w-(--route-tile-w) place-items-center rounded-[5px] bg-flap-cell text-(length:--route-tile) leading-none font-extrabold text-sun [perspective:200px] after:absolute after:inset-x-0 after:top-1/2 after:h-px after:bg-on-band ">
                   <span className={`block origin-center transition-transform duration-[140ms] ease-in ${x.out ? "[transform:rotateX(90deg)]" : ""} ${x.ch === " " ? "opacity-0" : ""}`}>{x.ch === " " ? "0" : x.ch}</span>
                 </span>
               ))}
@@ -99,7 +99,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
         </div>
         <div>
           <p className="mb-1.5 text-[0.78125rem] text-fg-2">한국과 비교</p>
-          <p data-testid="route-card-pct" className="text-[2.625rem] leading-[1.1] font-extrabold tracking-display whitespace-nowrap text-(--c) tabular-nums max-[760px]:text-[1.75rem] max-[760px]:whitespace-normal">
+          <p data-testid="route-card-pct" className="text-(length:--route-big) leading-[1.1] font-extrabold tracking-display whitespace-nowrap text-(--c) tabular-nums max-[760px]:whitespace-normal">
             {stop.value === 100 ? (
               <>
                 기준<small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:block max-[760px]:text-[0.8125rem]">100,000원 그대로</small>
@@ -114,18 +114,18 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
         </div>
         <div>
           <p className="mb-1.5 text-[0.78125rem] text-fg-2">하루 예산 예시</p>
-          <p data-testid="route-card-budget" className="text-[2.625rem] leading-[1.1] font-extrabold tracking-display whitespace-nowrap text-(--c) tabular-nums max-[760px]:text-[1.75rem] max-[760px]:whitespace-normal">
+          <p data-testid="route-card-budget" className="text-(length:--route-big) leading-[1.1] font-extrabold tracking-display whitespace-nowrap text-(--c) tabular-nums max-[760px]:whitespace-normal">
             약 {bud.toLocaleString("ko-KR")}
             <small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:text-[0.875rem]">원</small>
           </p>
-          <p className="mt-1.5 text-[0.78125rem] text-fg-2 max-[760px]:text-[0.71875rem] max-[760px]:max-[700px]:hidden">한국에서 하루 100,000원 쓰는 만큼 · 물가 비율로 계산</p>
+          <p className="mt-1.5 text-[0.78125rem] text-fg-2 max-[760px]:text-[0.71875rem]">한국에서 하루 100,000원 쓰는 만큼 · 물가 비율로 계산</p>
         </div>
       </div>
     </>
   );
 }
 
-const CARD = "relative overflow-hidden rounded-3xl bg-card px-8 pt-6 pb-[1.625rem] ring-1 ring-line before:absolute before:inset-y-0 before:left-0 before:w-1.5 before:bg-(--c) max-[760px]:rounded-[1.25rem] max-[760px]:px-[1.125rem] max-[760px]:pt-[1.125rem] max-[760px]:pb-5 max-[760px]:before:w-[5px]";
+const CARD = "relative overflow-hidden rounded-3xl bg-card px-8 pt-(--route-card-pt) pb-(--route-card-pb) ring-1 ring-line before:absolute before:inset-y-0 before:left-0 before:w-1.5 before:bg-(--c) max-[760px]:rounded-[1.25rem] max-[760px]:px-[1.125rem] max-[760px]:before:w-[5px]";
 
 export function PriceRoute({ bands, signalOf, percentileOf, latestYear }: Props) {
   const stops = routeStops(bands);
@@ -156,10 +156,10 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
   return (
     <section ref={sec} data-testid="route-section" aria-label="스크롤로 떠나는 물가 노선" className="relative" style={{ "--route-n": n } as CSSProperties}>
       <div ref={stage} data-testid="route-stage" className="w-full">
-        <div className="mb-[1.375rem] flex items-end justify-between gap-6 max-[760px]:mb-2">
+        <div className="mb-(--route-head-mb) flex items-end justify-between gap-6">
           <div>
             <Eyebrow>한국 = 100</Eyebrow>
-            <SectionTitle data-testid="route-title" className="mt-3 text-title text-fg">
+            <SectionTitle data-testid="route-title" className="mt-3 text-(length:--route-title) leading-[1.125] text-fg">
               스크롤로 떠나는 물가 노선
             </SectionTitle>
             <p className="mt-1.5 text-small text-fg-2 max-[760px]:hidden">내릴수록 싼 나라에서 한국을 지나 비싼 나라로 갑니다 · 올리면 거꾸로 돌아옵니다</p>
@@ -190,7 +190,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
             ref={ruler}
             data-testid="route-ruler"
             data-plane-x={planeX}
-            className="relative h-(--rh) [--rh:18.75rem] [--tt:9.375rem] max-[760px]:w-[960px] max-[760px]:[--rh:18.25rem] max-[760px]:[--tt:9.625rem]"
+            className="relative h-(--rh) [--rh:var(--route-rh)] [--tt:var(--route-tt)] max-[760px]:w-[960px]"
           >
             <div className="absolute inset-x-0 top-(--tt) h-[22px] rounded-[11px]" style={{ background: trackBg(scale.lo, scale.hi) }} />
             <div className="absolute inset-x-0 top-[calc(var(--tt)+22px)]">
