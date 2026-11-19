@@ -83,9 +83,10 @@ test.describe("/geo 봇별 읽은 페이지 카드 (작업 0226)", () => {
     const c = (await card.boundingBox())!;
     expect(c.x).toBeGreaterThanOrEqual(grid.x - 1);
     expect(c.x + c.width).toBeLessThanOrEqual(grid.x + grid.width + 1);
-    const other = (await tid(page, "geo-pages").boundingBox())!; // 기존 '읽은 페이지' 카드와 같은 폭
+    const other = (await tid(page, "geo-pages").boundingBox())!; // 기존 '읽은 페이지' 카드
+    // 폭: 휴대폰은 같은 1열 · 넓은 화면은 기존 네 장의 짝을 깨지 않게 아래 한 줄 전체 폭(= 격자 폭 · 작업 0226 gate 실패 뒤 정함)
     if (isPhone(page)) expect(Math.abs(c.width - other.width)).toBeLessThan(1);
-    else expect(Math.abs(c.width - other.width)).toBeLessThan(2);
+    else expect(Math.abs(c.width - grid.width)).toBeLessThan(2);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow, "가로 넘침").toBeLessThanOrEqual(1);
     const bad = await card.locator('[data-testid="bar-row"]').evaluateAll((rows, box) => rows.filter((r) => { const b = r.getBoundingClientRect(); return b.left < box.x - 1 || b.right > box.x + box.w + 1; }).length, { x: c.x, w: c.width });

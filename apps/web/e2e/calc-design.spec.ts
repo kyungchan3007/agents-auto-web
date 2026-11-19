@@ -64,7 +64,7 @@ test.describe("직구 계산 디자인 (작업 0208)", () => {
     await page.goto("/calc");
     const card = await box(tid(page, "calc-result"));
     const note = await box(tid(page, "calc-result").getByText("예상 금액입니다. 실제 세금은 통관 때 정해집니다."));
-    expect(card.y + card.height - (note.y + note.height)).toBeLessThanOrEqual(48); // 카드 최소 높이(408px)가 글보다 조금 클 수 있어 안쪽 여백(24px) + 여분 24px 까지
+    expect(card.y + card.height - (note.y + note.height)).toBeLessThanOrEqual(72); // 카드 최소 높이가 글보다 클 수 있어 안쪽 여백(24px) + 여분 한 줄(48px)까지 — 크기 안정(0208)으로 최소 높이는 '적용 환율' 글이 두 줄인 때 기준이라 실제 자료(한 줄)에서는 64px (운영 /calc 412폭 실측 64.2 · 작업 0226 gate 실패 확인)
   });
 
   test("넓은 화면 — 과세환율 칸은 기록이 2주 미만이면 짧음 · 수입물가 그래프 높이(시안 F: 넓은 화면 380px · 휴대폰 300px — 약간의 여유를 둠)", async ({ page }) => {

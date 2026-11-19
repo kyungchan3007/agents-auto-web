@@ -21,15 +21,19 @@ test.describe("/geo 시안 B (작업 0214)", () => {
 
   test("카드 4장(AI 답변 · 봇 방문 · 읽은 페이지 · 검색 노출) — 넓은 화면 2열 · 휴대폰 1열 · 같은 모양", async ({ page }) => {
     await page.goto("/geo");
-    const ids = ["geo-answers", "geo-bots", "geo-pages", "geo-search"];
-    const b = [] as { x: number; y: number; width: number }[];
+    // 작업 0226: 새 카드 '봇별 읽은 페이지'(geo-bot-pages)는 기존 네 장의 짝(답변 · 봇 / 페이지 · 검색)을 깨지 않게 그 아래 한 줄 전체 폭
+    const ids = ["geo-answers", "geo-bots", "geo-pages", "geo-search", "geo-bot-pages"];
+    const b = [] as { x: number; y: number; width: number; height: number }[];
     for (const id of ids) b.push(await box(tid(page, id)));
     if (isPhone(page)) {
-      for (let i = 1; i < 4; i++) expect(Math.abs(b[i].x - b[0].x)).toBeLessThan(1);
+      for (let i = 1; i < 5; i++) expect(Math.abs(b[i].x - b[0].x)).toBeLessThan(1);
     } else {
       expect(Math.abs(b[0].y - b[1].y), "답변 · 봇 같은 줄").toBeLessThan(1);
       expect(Math.abs(b[2].y - b[3].y), "페이지 · 검색 같은 줄").toBeLessThan(1);
       expect(Math.abs(b[0].width - b[1].width)).toBeLessThan(2);
+      const grid = await box(tid(page, "geo-grid"));
+      expect(b[4].y, "봇별 읽은 페이지는 네 장 아래").toBeGreaterThanOrEqual(Math.max(b[2].y + b[2].height, b[3].y + b[3].height) - 1);
+      expect(Math.abs(b[4].width - grid.width), "봇별 읽은 페이지는 격자 전체 폭").toBeLessThan(2);
     }
     const frame = (id: string) => tid(page, id).evaluate((el) => { const s = getComputedStyle(el); return [s.borderTopLeftRadius, s.backgroundColor, s.paddingLeft, s.paddingTop]; });
     const f0 = await frame(ids[0]);
