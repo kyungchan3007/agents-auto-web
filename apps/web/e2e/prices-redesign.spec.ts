@@ -1,5 +1,5 @@
 // 작업 0220 — 새 디자인 /prices (시안 B) · 테스트 먼저
-//   표시: data-testid="prices-band"(첫 화면 파랑 띠) · "budget"(예산 카드 · 경계에 걸침) · "budget-day" · "budget-total"(카운트업) · "ruler"(role=img 한국 = 100 자) · "ruler-pin"(data-value · data-x · data-side) · "ruler-korea" · "price-bands"(세 칸 표)
+//   표시: data-testid="prices-band"(첫 화면 파랑 띠) · "budget"(예산 카드 · 경계에 걸침) · "budget-day" · "budget-total"(카운트업) · "route-section"(작업 0230: 정적 자 자리의 노선 · 옛 "ruler"(role=img 한국 = 100 자) · "ruler-pin"(data-value · data-x · data-side) · "ruler-korea" · "price-bands"(세 칸 표)
 import { type Page, expect, test } from "@playwright/test";
 
 const BLUE = "rgb(36, 56, 168)";
@@ -202,39 +202,6 @@ test.describe("새 /prices — 예산 · 자 · 표 (작업 0220)", () => {
     await page2.close();
   });
 
-  test("한국 = 100 자 — 점 위치 = 물가 숫자 비율 · 위 · 아래 번갈아 · 한국 100 표시 · 표의 맨 위 나라들", async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/prices");
-    test.skip(!(await ready(page)), "자료 없음");
-    const ruler = tid(page, "ruler");
-    await expect(ruler).toHaveAttribute("role", "img");
-    const rb = (await ruler.boundingBox())!;
-    const pins = tid(page, "ruler-pin");
-    const n = await pins.count();
-    expect(n).toBeGreaterThanOrEqual(2);
-    const info = await pins.evaluateAll((els) => els.map((e) => ({ v: Number((e as HTMLElement).dataset.value), x: Number((e as HTMLElement).dataset.x), side: (e as HTMLElement).dataset.side })));
-    const lo = Number(await ruler.getAttribute("data-lo"));
-    const hi = Number(await ruler.getAttribute("data-hi"));
-    for (let i = 0; i < n; i++) {
-      expect(info[i].x).toBeCloseTo(((info[i].v - lo) / (hi - lo)) * 100, 1);
-      const b = (await pins.nth(i).boundingBox())!;
-      const axis = (await tid(page, "ruler-bar").boundingBox())!;
-      expect(Math.abs(b.x + b.width / 2 - (axis.x + (axis.width * info[i].x) / 100))).toBeLessThanOrEqual(Math.max(2, b.width / 2 + 1)); // 점 · 이름표 가운데가 자 위 위치 근처
-      if (i > 0) expect(info[i].side).not.toBe(info[i - 1].side);
-    }
-    const kr = tid(page, "ruler-korea-tag");
-    await expect(kr).toContainText("한국 100");
-    const kb = (await kr.boundingBox())!;
-    const axis = (await tid(page, "ruler-bar").boundingBox())!;
-    expect(Math.abs(kb.x + kb.width / 2 - (axis.x + (axis.width * (100 - lo)) / (hi - lo)))).toBeLessThanOrEqual(Math.max(2, kb.width / 2 + 1));
-    expect(rb.width).toBeGreaterThan(200);
-    // 자의 나라들 = 표 구간마다 맨 위 두 줄의 물가 숫자
-    const tableTop = await tid(page, "price-bands").locator("section").evaluateAll((secs) =>
-      secs.flatMap((s) => Array.from(s.querySelectorAll("li")).slice(0, 2).map((li) => Number(((li.textContent ?? "").match(/물가\s*(\d+)\s*\(한국 100\)/) ?? [])[1]))),
-    );
-    for (const p of info) expect(tableTop).toContain(p.v);
-  });
-
   test("세 칸 표 — 구간 이름 · 나라 줄에 물가 · 환율 상태 · 나라 더 보기 · 구간 사이 세로 선", async ({ page }) => {
     await page.goto("/prices");
     test.skip(!(await ready(page)), "자료 없음");
@@ -279,59 +246,17 @@ test.describe("새 /prices — 예산 · 자 · 표 (작업 0220)", () => {
     await expect(tid(page, "price-bands").getByRole("button", { name: /^나라 더 보기/ })).toBeVisible();
   });
 
-  test("자바스크립트를 꺼도 제목 · 예산 · 자 · 표가 보임", async ({ browser, baseURL }) => {
+  test("자바스크립트를 꺼도 제목 · 예산 · 노선 · 표가 보임", async ({ browser, baseURL }) => {
     const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL });
     const page = await ctx.newPage();
     await page.goto("/prices");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     if (await ready(page)) {
       await expect(tid(page, "budget")).toBeVisible();
-      await expect(tid(page, "ruler")).toBeVisible();
+      await expect(tid(page, "route-section")).toBeVisible(); // 작업 0230: 정적 자 자리에 노선
       await expect(tid(page, "price-bands")).toBeVisible();
       await expect(tid(page, "budget-total").getByTestId("count-up")).toHaveText(/[\d,]+원/);
     }
     await ctx.close();
-  });
-});
-
-test.describe("새 /prices — 휴대폰 한국 = 100 자 라벨이 겹치지 않음 (작업 0220 lead 지시)", () => {
-  //   표시: data-testid="ruler-pin-text"(점마다 이름 · 숫자 묶음) · "ruler-korea-label"(한국 100 글자)
-  for (const w of [390, 360, 320]) {
-    test(`${w}px — 라벨 상자끼리 겹침 0 · 화면 안 · 자 상자 안`, async ({ page }) => {
-      await page.setViewportSize({ width: w, height: 844 });
-      await page.emulateMedia({ reducedMotion: "reduce" });
-      await page.goto("/prices");
-      test.skip(!(await ready(page)), "자료 없음");
-      await tid(page, "ruler").scrollIntoViewIfNeeded();
-      await page.waitForTimeout(500);
-      const boxes = await page.evaluate(() => [...document.querySelectorAll('[data-testid="ruler-pin-text"], [data-testid="ruler-korea-label"]')].map((e) => { const r = e.getBoundingClientRect(); return { t: (e.textContent ?? "").trim(), x: r.left, y: r.top, r: r.right, b: r.bottom }; }));
-      expect(boxes.length, "점 + 한국 100").toBeGreaterThanOrEqual(3);
-      for (const a of boxes) {
-        expect(a.x, `${a.t} 왼쪽이 화면 안`).toBeGreaterThanOrEqual(-0.5);
-        expect(a.r, `${a.t} 오른쪽이 화면 안`).toBeLessThanOrEqual(w + 0.5);
-      }
-      for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
-        const a = boxes[i];
-        const b = boxes[j];
-        const overlap = Math.min(a.r, b.r) - Math.max(a.x, b.x) > 1 && Math.min(a.b, b.b) - Math.max(a.y, b.y) > 1;
-        expect(overlap, `${a.t} ~ ${b.t} 겹침`).toBe(false);
-      }
-      const ruler = await box(page, "ruler");
-      for (const a of boxes) {
-        expect(a.y, `${a.t} 위가 자 상자 안`).toBeGreaterThanOrEqual(ruler.y - 1);
-        expect(a.b, `${a.t} 아래가 자 상자 안`).toBeLessThanOrEqual(ruler.y + ruler.height + 1);
-      }
-    });
-  }
-
-  test("넓은 화면 — 한국 100 노랑 꼬리표가 자 위 · 점 라벨은 위 · 아래 번갈아 (시안 F)", async ({ page }) => {
-    test.skip(isPhone(page), "넓은 화면 전용");
-    await page.setViewportSize({ width: 1280, height: 900 });
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/prices");
-    test.skip(!(await ready(page)), "자료 없음");
-    const axis = await box(page, "ruler-bar");
-    const kl = await tid(page, "ruler-korea-tag").boundingBox();
-    expect(kl?.y ?? 0, "한국 100 꼬리표가 자 위(시안 F: 노랑 꼬리표가 자 위쪽)").toBeLessThan(axis.y);
   });
 });
