@@ -31,3 +31,5 @@
 - 머지 뒤 API 배포 확인 · 운영 /geo
 
 ## 계획과 달라진 점
+- (구현 · 계획대로) 계약: GeoReport.botPages 선택 필드(GeoBotPages · 봇 이름 · 종류 · 합계 · 경로별 횟수) / 집계: geoReport 가 이미 반복하던 real 행(test 제외)에서 referral 을 뺀 봇 행(검색 엔진 봇 포함)을 봇 이름 · 경로로 한 번 더 묶음 — 새 쿼리 없음 · 봇은 합계 많은 순(같으면 이름순) · 경로는 많은 순(같으면 경로 이름순) · 경로는 전부 내려 주고 상위 5개 자르기는 화면이 함(응답이 커져도 경로는 고정 목록) / 화면: lib/geo-bars.ts 의 botPagesView(순수 함수 · 상위 5개 + "그 밖 N곳 · M회") + geo-detail.tsx 의 "봇별 읽은 페이지" 카드(기존 BarList 문법 · 검색 엔진 봇은 accent 막대) · 필드가 없거나 비면 빈 상태 글 "아직 기록이 없습니다."
+- 계획과 같은 파일만 바꿈(geo.ts · summary.ts · geo-detail.tsx) + 화면 계산 geo-bars.ts(apps/web/src/features/geo/** 안). 타입 확인은 작업 폴더에 node_modules 가 없어 임시 tsconfig(.tmp/tsc-*.json · 커밋 안 함)로 작업 폴더 계약을 보게 해서 함 · 웹 lint 는 eslint-config-next 가 없어 돌리지 못함(test 가 게이트에서 확인).
