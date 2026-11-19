@@ -16,7 +16,8 @@ describe("고른 통화 칩", () => {
     expect(h).toMatch(/RECENT_KEY|recent-currencies/);
   });
   it("칩 부품이 계산 함수를 쓰고 · 더보기 상자 · 쪽 넘김 · 밀림 testid 를 가짐", () => {
-    const s = chips() + code(read(`${F}/components/chip-more-box.tsx`));
+    // 계산 함수는 칩 부품이나 그 훅(hooks/use-chip-row.ts) 어디서 불러도 됨 — 칩 줄 부품 묶음 전체에서 확인
+    const s = chips() + code(read(`${F}/components/chip-more-box.tsx`)) + code(read(`${F}/hooks/use-chip-row.ts`));
     for (const f of ["chipRow", "visibleChips", "moreLabel", "boxPage", "pushRecent"]) expect(s, f).toMatch(new RegExp(`\\b${f}\\b`));
     for (const id of ["currency-chips", "chip", "chip-more", "chip-box", "chip-box-item", "chip-box-prev", "chip-box-next", "chip-box-page"]) expect(s, id).toContain(id);
     for (const a of ["data-code", "data-leaving", "aria-expanded"]) expect(s, a).toContain(a);

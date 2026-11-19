@@ -177,23 +177,31 @@ test.describe("통화 바꾸기 전환 (작업 0231 · 모션 7 · 4)", () => {
     await page.goto("/currencies/JPY");
     await page.waitForTimeout(1500);
     const oldPos = Number(await tid(page, "route-plane").getAttribute("data-position"));
+    // 오늘 점 위치가 JPY 와 15%p 이상 다른 통화를 자료에서 고름(목록의 통화를 하나씩 새 탭으로 열어 읽음) — 그런 통화가 없을 때만 건너뜀
+    const codes = (await tid(page, "currency-list").locator("a[href^='/currencies/']").evaluateAll((els) => els.map((e) => (e.getAttribute("href") ?? "").split("/").pop() ?? ""))).filter((c) => c && c !== "JPY").slice(0, 14);
+    let target: { code: string; pos: number } | null = null;
+    const probe = await page.context().newPage();
+    await probe.emulateMedia({ reducedMotion: "reduce" });
+    for (const code of codes) {
+      await probe.goto(`/currencies/${code}`);
+      const v = await tid(probe, "route-plane").getAttribute("data-position").catch(() => null);
+      if (v !== null && Math.abs(Number(v) - oldPos) >= 0.15) { target = { code, pos: Number(v) }; break; }
+    }
+    await probe.close();
+    test.skip(!target, "JPY 와 오늘 점 위치가 15%p 이상 다른 통화가 없음(자료)");
+    const { code, pos: newPos } = target!;
     await startRec(page);
-    await chip(page, "USD").click();
-    await settle(page, "USD", 4500);
+    await listLink(page, code).click();
+    await settle(page, code, 5000);
     const fr = await stopRec(page);
-    const newPos = Number(await tid(page, "route-plane").getAttribute("data-position"));
-    test.skip(Math.abs(newPos - oldPos) < 0.05, "두 통화의 오늘 점 위치가 거의 같음(자료)");
     const want = newPos < oldPos ? "left" : "right";
     const heads = new Set(fr.map((f) => f.plane?.heading).filter(Boolean));
-    expect(heads.has(want), `움직이는 동안 data-heading=${want} (본 값 ${[...heads]})`).toBe(true);
+    expect(heads.has(want), `움직이는 동안 data-heading=${want} (JPY ${oldPos} → ${code} ${newPos}, 본 값 ${[...heads]})`).toBe(true);
     expect(heads.has(want === "left" ? "right" : "left"), "반대 방향 표시가 섞임").toBe(false);
-    // 움직임: 처음 옛 위치 근처에서 → 끝 새 위치
-    const f0 = fr.find((f) => f.path === "/currencies/USD" && f.plane)!;
     const last = fr[fr.length - 1].plane!;
     expect(Math.abs(last.f - newPos), "끝 위치").toBeLessThanOrEqual(0.03);
-    const mid = fr.filter((f) => f.plane && f.path === "/currencies/USD" && Math.min(oldPos, newPos) + 0.02 < f.plane.f && f.plane.f < Math.max(oldPos, newPos) - 0.02);
+    const mid = fr.filter((f) => f.plane && f.path === `/currencies/${code}` && Math.min(oldPos, newPos) + 0.02 < f.plane.f && f.plane.f < Math.max(oldPos, newPos) - 0.02);
     expect(mid.length, "옛 자리와 새 자리 사이를 지남(프레임 수)").toBeGreaterThanOrEqual(3);
-    void f0;
   });
 
   test("'실제로 바꿀 때' — 글자판이 굴러가고(data-moving) 끝 글 · 입력 · 빠른 금액이 그 통화 · 끝 상태 전체가 그 통화 페이지를 새로 불러온 것과 같음 · 물가 링크 · 그래프", async ({ page }) => {
