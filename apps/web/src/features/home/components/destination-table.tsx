@@ -84,7 +84,7 @@ function Row({ row, f, motion }: { row: DestinationRowData; f: PillFrame; motion
 }
 
 export function DestinationTable({ rows, windowDays = 90 }: { rows: DestinationRowData[]; windowDays?: number }) {
-  const { ref, state, t, full } = useDestinationsPill<HTMLDivElement>(rows.length);
+  const { ref, state, t, full, boot } = useDestinationsPill<HTMLDivElement>(rows.length);
   const motion = state !== "final";
   // 접힘 · 펼침 중 카드 틀 — 높이 · 모서리가 알약(--pill-h · 반지름 = 높이의 절반)에서 끝(full · 24px)으로 (끝에는 인라인 값 없음)
   const g = state === "pill" ? 0 : pillFrame(t, 0).grow;
@@ -96,10 +96,11 @@ export function DestinationTable({ rows, windowDays = 90 }: { rows: DestinationR
       ref={ref}
       data-testid="dest-list"
       data-state={state}
+      data-boot={boot ? "" : undefined}
       style={style}
       className="relative mt-8 divide-y divide-line rounded-[1.5rem] border-2 border-line bg-card px-5 py-2 [--pill-h:4.75rem] sm:px-8 sm:[--pill-h:4.5rem]"
     >
-      {state !== "final" && <DestinationsPill rows={rows} windowDays={windowDays} fade={state === "pill" ? 1 : pillFrame(t, 0).pill} />}
+      {(state !== "final" || boot) && <DestinationsPill rows={rows} windowDays={windowDays} fade={state === "expanding" ? pillFrame(t, 0).pill : 1} />}
       {rows.map((row, i) => (
         <Row key={row.id} row={row} f={state === "pill" ? pillFrame(0, i) : state === "expanding" ? pillFrame(t, i) : DONE} motion={motion} />
       ))}
