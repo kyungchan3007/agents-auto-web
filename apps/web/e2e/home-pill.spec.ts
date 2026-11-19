@@ -7,6 +7,8 @@
 //     pill 일 때 카드: 높이 = 알약 높이(줄은 투명 · 가려짐) · 모서리 = 알약 반지름(높이의 절반) · expanding 동안 높이 → 끝 높이 · 모서리 → 24px
 //     줄 기존 testid 그대로: dest-row · dest-rate(data-final · 시작이 중간값이면 data-start = 90일 중간값 숫자) · dest-dot(data-position) · dest-status · dest-flag · dest-city · dest-scale
 //     시간(스크롤로 카드 윗부분이 들어온 때부터): 높이 약 0.46초 · 줄 0.07초 간격 · 점은 가운데 → 오늘 자리 0.62초 · 금액은 중간값 → 오늘 값 같은 시간 · 신호 글은 점이 도착한 뒤 · 전체 약 1초(끝은 1.9초 안)
+//   깜빡임 고침(작업 0228 · 2차): 서버가 그린 첫 그림부터 카드가 접힌 알약 모양이어야 함 — CSS @media (scripting: enabled) and (prefers-reduced-motion: no-preference) 안에서만 접힘(서버 그림의 dest-pill 은 이때만 보임) · 자바스크립트 꺼짐 · 움직임 줄이기는 서버 그림부터 펼친 최종 모양(dest-pill 은 DOM 에 있어도 보이지 않음 · 높이 0)
+//     보이는 알약 = dest-pill 이 있고 높이 > 0 · data-state="final" 은 줄 · 점 · 금액 · 신호 글까지 눈에 보이는 움직임이 모두 끝난 때(마지막 변화 뒤 0.25초 안)
 //   끝 상태 = reduced-motion(= 지금 운영) 로 연 같은 쪽의 카드와 같음 — 높이 · 모서리 · 줄 글 · 줄 위치
 //   빌드 시점 값만 씀 — 줄이 없는 환경에서는 건너뜀(줄은 지금 화면에도 있음 · 알약이 없어서 건너뛰지 않음)
 import { type Page, expect, test } from "@playwright/test";
@@ -27,7 +29,7 @@ const RECORD = `
         const pill = card.querySelector('[data-testid="dest-pill"]');
         w.__fr.push({
           t: performance.now() - w.__t0, state: card.getAttribute("data-state"), h: cr.height, radius: parseFloat(getComputedStyle(card).borderTopLeftRadius) || 0,
-          pill: pill ? eff(pill, document.body) : null,
+          pill: pill && pill.getBoundingClientRect().height > 0 ? eff(pill, document.body) : null,
           rows: [...card.querySelectorAll('[data-testid="dest-row"]')].map((r) => {
             const rate = r.querySelector('[data-testid="dest-rate"]'), dot = r.querySelector('[data-testid="dest-dot"]'), st = r.querySelector('[data-testid="dest-status"]');
             const track = dot && dot.parentElement ? dot.parentElement.getBoundingClientRect() : null;
@@ -65,7 +67,7 @@ const snapshot = (page: Page) =>
     const card = document.querySelector('[data-testid="dest-list"]') as HTMLElement;
     const cr = card.getBoundingClientRect();
     return {
-      h: cr.height, w: cr.width, radius: getComputedStyle(card).borderTopLeftRadius, pills: card.querySelectorAll('[data-testid="dest-pill"]').length,
+      h: cr.height, w: cr.width, radius: getComputedStyle(card).borderTopLeftRadius, pills: [...card.querySelectorAll('[data-testid="dest-pill"]')].filter((e) => e.getBoundingClientRect().height > 0).length,
       styleAttr: card.getAttribute("style") ?? "",
       rows: [...card.querySelectorAll('[data-testid="dest-row"]')].map((r) => {
         const b = r.getBoundingClientRect();
@@ -208,6 +210,17 @@ test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 ·
       if (stShown !== undefined) expect(stShown, `${i + 1}번째 줄 신호 글이 점 도착보다 먼저 나옴`).toBeGreaterThanOrEqual(arriveAt! - 60);
     }
     expect(checkedDot, "점 이동 시간을 잰 줄 수(가운데에서 먼 줄)").toBeGreaterThanOrEqual(1);
+    // data-state=final 은 눈에 보이는 움직임이 모두 끝난 때 — 마지막 변화(높이 · 줄 투명도 · 금액 · 점 · 신호 글) 뒤 0.25초 안, 끝나기 60ms 보다 먼저는 아님
+    let lastChange = 0;
+    for (let k = 1; k < fr.length; k++) {
+      const a = fr[k - 1], b = fr[k];
+      const changed = Math.abs(a.h - b.h) > 0.3 || b.rows.some((r, i) => Math.abs(r.op - a.rows[i].op) > 0.004 || r.text !== a.rows[i].text || Math.abs((r.dotC ?? 0) - (a.rows[i].dotC ?? 0)) > 0.3 || Math.abs((r.st ?? 0) - (a.rows[i].st ?? 0)) > 0.004);
+      if (changed) lastChange = b.t;
+    }
+    const finalAt = fr.find((f) => f.state === "final")?.t;
+    expect(finalAt, "final 로 바뀌지 않음").toBeDefined();
+    expect(finalAt! - lastChange, `data-state=final 이 마지막 변화(${lastChange.toFixed(0)}ms)보다 늦은 시간(ms)`).toBeLessThanOrEqual(250);
+    expect(finalAt! - lastChange, "data-state=final 이 눈에 보이는 움직임이 끝나기 전에 나옴(ms)").toBeGreaterThanOrEqual(-60);
   });
 
   test("금액은 90일 중간값 → 오늘 값 카운트업 — 중간값이 있는 줄은 data-start · 시작 방향이 점 위치와 맞음(싼 쪽이면 중간값이 더 큼) · 멈추면 최종 값", async ({ page }) => {
@@ -302,7 +315,7 @@ test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 ·
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth), "가로 넘침").toBeLessThanOrEqual(1);
   });
 
-  test("처음 화면에서 이미 카드가 보이면 알약에 멈추지 않고 바로 펼침 — 알약 상태가 0.4초를 넘지 않음 · 끝은 같은 모양", async ({ page }) => {
+  test("처음 화면에서 이미 카드가 보이면 알약으로 시작해 바로 펼침 — 알약이 1.5초를 넘기지 않음(하이드레이션 포함) · 끝은 같은 모양", async ({ page }) => {
     await page.setViewportSize({ width: isPhone(page) ? 412 : 1280, height: 4200 });
     await page.addInitScript(RECORD.replace("(() => {", "document.addEventListener('DOMContentLoaded', () => {").replace(/\}\)\(\)\s*$/, "});"));
     await page.goto("/");
@@ -312,9 +325,54 @@ test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 ·
     const fr = await stopRec(page);
     expect(fr.length).toBeGreaterThan(20);
     const pillFrames = fr.filter((f) => f.state === "pill");
-    if (pillFrames.length > 0) expect(pillFrames[pillFrames.length - 1].t - pillFrames[0].t, "알약 상태로 머문 시간(ms)").toBeLessThanOrEqual(400);
+    if (pillFrames.length > 0) expect(pillFrames[pillFrames.length - 1].t - pillFrames[0].t, "알약 상태로 머문 시간(ms · 서버 그림부터 하이드레이션까지 포함)").toBeLessThanOrEqual(1500);
     await expect(tid(page, "dest-list")).toHaveAttribute("data-state", "final");
     expect((await snapshot(page)).pills).toBe(0);
+  });
+
+  test("깜빡임 없음 — 높은 창에서 처음 그려질 때부터 알약 (펼친 카드가 한 프레임도 안 보임) · 서버 그림의 알약이 보임 · 곧 펼쳐 끝 모양", async ({ page }) => {
+  const INIT = RECORD.replace("(() => {", "document.addEventListener('DOMContentLoaded', () => {").replace(/\}\)\(\)\s*$/, "});");
+    await page.setViewportSize({ width: isPhone(page) ? 412 : 1280, height: 4200 });
+    await page.addInitScript(INIT);
+    await page.goto("/");
+    test.skip(!(await hasRows(page)), "도착지 자료 없음");
+    expect(await cardTop(page), "준비: 카드가 처음부터 화면 안").toBeLessThan(4200 * 0.9);
+    await page.waitForTimeout(3500);
+    const fr = await stopRec(page);
+    expect(fr.length).toBeGreaterThan(20);
+    const finalH = fr[fr.length - 1].h;
+    const pillMax = isPhone(page) ? 110 : 100;
+    expect(finalH, "끝 높이가 알약보다 큼").toBeGreaterThan(pillMax + 100);
+    expect(fr[0].h, "첫 프레임부터 접힌 알약 높이").toBeLessThanOrEqual(pillMax);
+    expect(fr[0].pill, "첫 프레임에서 서버 그림의 알약이 보임").not.toBeNull();
+    expect(fr[0].pill!).toBeGreaterThan(0.9);
+    const startAt = fr.find((f) => f.h > fr[0].h + 8)?.t;
+    expect(startAt, "펼침이 시작되지 않음").toBeDefined();
+    for (const f of fr.filter((x) => x.t < startAt!)) {
+      expect(f.h, `펼치기 전에 카드가 알약보다 큼 (t=${f.t.toFixed(0)}, state ${f.state})`).toBeLessThanOrEqual(pillMax);
+      for (const [i, r] of f.rows.entries()) expect(r.op, `${i + 1}번째 줄이 펼치기 전에 보임 (t=${f.t.toFixed(0)})`).toBeLessThan(0.05);
+    }
+    await expect(tid(page, "dest-list")).toHaveAttribute("data-state", "final");
+    expect((await snapshot(page)).pills, "끝에 보이는 알약이 남음").toBe(0);
+  });
+
+  test("깜빡임 없음 — 움직임 줄이기는 처음 그려질 때부터 펼친 카드 (접힌 프레임 없음 · 보이는 알약 없음)", async ({ page }) => {
+  const INIT = RECORD.replace("(() => {", "document.addEventListener('DOMContentLoaded', () => {").replace(/\}\)\(\)\s*$/, "});");
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize({ width: isPhone(page) ? 412 : 1280, height: 4200 });
+    await page.addInitScript(INIT);
+    await page.goto("/");
+    test.skip(!(await hasRows(page)), "도착지 자료 없음");
+    await page.waitForTimeout(2500);
+    const fr = await stopRec(page);
+    expect(fr.length).toBeGreaterThan(20);
+    const finalH = fr[fr.length - 1].h;
+    expect(finalH).toBeGreaterThan(200);
+    for (const f of fr) {
+      expect(Math.abs(f.h - finalH), `접힌 프레임 (t=${f.t.toFixed(0)}, h ${f.h})`).toBeLessThanOrEqual(1);
+      expect(f.pill, `보이는 알약 (t=${f.t.toFixed(0)})`).toBeNull();
+      for (const [i, r] of f.rows.entries()) expect(r.op, `${i + 1}번째 줄이 처음부터 보이지 않음 (t=${f.t.toFixed(0)})`).toBeGreaterThanOrEqual(0.99);
+    }
   });
 
   test("움직임 줄이기 — 알약 없이 처음부터 최종 카드 (높이 · 줄 · 금액 · 점 그대로, 접힘 · 투명 없음)", async ({ page }) => {
@@ -334,7 +392,7 @@ test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 ·
       expect(Math.abs(f.h - h), `높이가 변함 (t=${f.t.toFixed(0)})`).toBeLessThanOrEqual(1);
       for (const [i, r] of f.rows.entries()) expect(r.op, `${i + 1}번째 줄이 처음부터 안 보임`).toBeGreaterThanOrEqual(0.99);
     }
-    await expect(tid(page, "dest-pill")).toHaveCount(0);
+    await expect(tid(page, "dest-pill").filter({ visible: true })).toHaveCount(0); // 서버 그림의 알약은 DOM 에 있어도 보이지 않음
     const finals = await tid(page, "dest-rate").evaluateAll((els) => els.map((e) => e.getAttribute("data-final")));
     for (const f of fr) for (const [i, r] of f.rows.entries()) if (finals[i]) expect(r.text, `${i + 1}번째 금액 (t=${f.t.toFixed(0)})`).toBe(finals[i]);
   });
@@ -344,7 +402,7 @@ test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 ·
     const page = await ctx.newPage();
     await page.goto("/");
     test.skip(!(await hasRows(page)), "도착지 자료 없음");
-    await expect(tid(page, "dest-pill")).toHaveCount(0);
+    await expect(tid(page, "dest-pill").filter({ visible: true })).toHaveCount(0); // 서버 그림의 알약은 DOM 에 있어도 보이지 않음
     const s = await snapshot(page);
     expect(s.h).toBeGreaterThan(200);
     for (const r of s.rows) expect(r.opacity, `${r.city} (JS 꺼짐)`).toBeGreaterThanOrEqual(0.99);
