@@ -28,11 +28,18 @@ export function weekdaysBetween(from: string, to: string): number {
   return n;
 }
 
+/** 중간값 — 짝수 개면 가운데 두 값의 평균 · 값이 2개 미만이면 null (숫자를 지어내지 않음 · 작업 0228) */
+export function medianOf(values: number[]): number | null {
+  if (values.length < 2) return null;
+  const a = [...values].sort((x, y) => x - y);
+  return (a[Math.floor((a.length - 1) / 2)] + a[Math.floor(a.length / 2)]) / 2;
+}
+
 export function computeSignal(points: Point[], rule: SignalRule = SIGNAL_RULE): SignalResult {
   const base = { method: SIGNAL_METHOD };
   const sorted = points.filter((p) => p.value > 0).sort((a, b) => a.date.localeCompare(b.date));
   const latest = sorted.at(-1);
-  if (!latest) return { ...base, signal: null, reason: "no-data", percentile: null, latest: null, window: null, range: null };
+  if (!latest) return { ...base, signal: null, reason: "no-data", percentile: null, latest: null, window: null, range: null, median: null };
 
   const from = iso(day(latest.date) - (rule.windowDays - 1) * DAY);
   const inWindow = sorted.filter((p) => p.date >= from);
@@ -40,15 +47,16 @@ export function computeSignal(points: Point[], rule: SignalRule = SIGNAL_RULE): 
   const window = { from, to: latest.date, count: inWindow.length, expected };
   const values = inWindow.map((p) => p.value);
   const range = { min: Math.min(...values), max: Math.max(...values) };
+  const median = medianOf(values); // 이미 읽은 창 안 값으로 계산 — 추가 D1 읽기 없음
 
   if (inWindow.length < 2 || inWindow.length < expected * rule.minCoverage) {
-    return { ...base, signal: null, reason: "data-short", percentile: null, latest, window, range };
+    return { ...base, signal: null, reason: "data-short", percentile: null, latest, window, range, median };
   }
   const others = inWindow.length - 1;
   const lower = inWindow.filter((p) => p.value < latest.value).length;
   const percentile = Math.round((lower / others) * 100) / 100;
   const signal: Signal = percentile <= rule.cheapAt ? "cheap" : percentile >= rule.expensiveAt ? "expensive" : "normal";
-  return { ...base, signal, reason: "ok", percentile, latest, window, range };
+  return { ...base, signal, reason: "ok", percentile, latest, window, range, median };
 }
 
 /** 1 외화당 원 — 엔처럼 100 단위 고시도, 출처마다 단위가 달라도 같은 기준으로 (FX-04) */
@@ -63,7 +71,7 @@ export function signalsByCurrency(rows: { currency: string; date: string; baseRa
   const byCurrency = new Map<string, Point[]>();
   for (const r of rows) if (official.has(r.currency)) byCurrency.set(r.currency, [...(byCurrency.get(r.currency) ?? []), { date: r.date, value: perUnit(r) }]);
   return [...byCurrency].map(([currency, points]) => {
-    const { signal, reason, percentile, latest } = computeSignal(points);
-    return { currency, signal, reason, percentile, latest };
+    const { signal, reason, percentile, latest, median } = computeSignal(points);
+    return { currency, signal, reason, percentile, latest, median };
   });
 }
