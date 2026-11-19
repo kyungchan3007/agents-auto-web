@@ -131,11 +131,14 @@ describe("장식을 걷어 냄 (R9) — 등장 효과 · 오로라 글자 · 그
   it("공통 컴포넌트(packages/ui/src/components)에 그림자(shadow) · 그라데이션이 없음", () => {
     // 숫자 강조 부품(emph.tsx)의 형광펜 띠는 글자를 읽히게 · 돋보이게 하는 기능이라 그라데이션을 허용 (작업 0175) · 그림자는 안내판(flap-board.tsx · 작업 0177 "벽에 걸린 물건처럼")만 허용
     // 그래프 2D(시안 F · 사용자 확정 "시안 그대로"): 그래프 부품(선 그래프 · 12달 막대 · 여행 물가 자)은 그라데이션 면 · 그림자가 시안의 핵심이라 허용 — SVG 의 linearGradient · feDropShadow (아래 GRAPH_PARTS)
+    // 0227: rolling-number.tsx 는 mask-image 가리개만 허용(위 코드) — 아래 두 줄 테스트가 그 예외를 확인
     const GRAPH_PARTS = ["line-chart.tsx", "month-bars.tsx", "ruler-chart.tsx"];
     const bad = sources(join(UI_SRC, "components"))
       .filter((f) => {
         if (GRAPH_PARTS.some((g) => f.endsWith(g))) return false;
-        const code = codeOf(read(f));
+        let code = codeOf(read(f));
+        // 굴러가는 숫자(작업 0227): 굴러가는 칸의 위아래 가장자리 흐림 — 색 그라데이션이 아니라 mask-image 가리개만 예외 (시안 .rc.moving) · 그 밖 그라데이션 · 그림자는 그대로 금지
+        if (f.endsWith("rolling-number.tsx")) code = code.replace(/\[(?:-webkit-)?mask-image:linear-gradient\([^\]]*\)\]/g, "");
         const gradient = !f.endsWith("emph.tsx") && /bg-gradient|linear-gradient|\bfrom-[\w/.-]+\s+to-|\bvia-[\w/.-]+/.test(code);
         return gradient || (!f.endsWith("flap-board.tsx") && /\bshadow(-[\w\[\]\/.-]+)?\b/.test(code));
       })
@@ -153,5 +156,17 @@ describe("문서 — docs/design.md 결정 요약 (R10)", () => {
     // 밤 포스터는 작업 0173 에서 없앰 — 문서 결정은 light-only.test.ts 가 검사
     expect(doc).toMatch(/고양이/);
     expect(doc).toMatch(/바뀐 결정/);
+  });
+});
+
+// 작업 0227 — 굴러가는 숫자의 가장자리 흐림은 mask-image 가리개만 (색 그라데이션 · 그림자 아님)
+describe("굴러가는 숫자 흐림 예외 (작업 0227)", () => {
+  const f = join(UI_SRC, "components", "motion", "rolling-number.tsx");
+  it("mask-image 가리개가 있고 · 그 밖 그라데이션 · 그림자 · 색 그라데이션 클래스는 없음", () => {
+    const code = codeOf(read(f));
+    expect(code).toMatch(/\[mask-image:linear-gradient\(/);
+    const rest = code.replace(/\[(?:-webkit-)?mask-image:linear-gradient\([^\]]*\)\]/g, "");
+    expect(rest).not.toMatch(/bg-gradient|linear-gradient|\bfrom-[\w/.-]+\s+to-|\bvia-[\w/.-]+/);
+    expect(rest).not.toMatch(/\bshadow(-[\w[\]/.-]+)?\b/);
   });
 });
