@@ -79,9 +79,9 @@ test.describe("새 /prices — 예산 카드 위치 · 크기 (작업 0220 사�
     expect(bandBottom - card.y, "카드 위 부분(파랑 안)이 큼").toBeGreaterThanOrEqual(280);
     expect(below, `카드 아래 흰 면 부분 ${Math.round(below)}px`).toBeGreaterThanOrEqual(80);
     expect(below).toBeLessThanOrEqual(160);
-    // 아래 구간(한국 = 100 자)은 카드와 겹치지 않음
-    const ruler = await box(page, "ruler");
-    expect(ruler.y, "자가 카드 아래").toBeGreaterThanOrEqual(card.y + card.height + 20);
+    // 아래 구간(작업 0230: 정적 자 자리의 노선 제목)은 카드와 겹치지 않음
+    const ruler = await box(page, "route-title");
+    expect(ruler.y, "노선 제목이 카드 아래").toBeGreaterThanOrEqual(card.y + card.height + 20);
   });
 
   test("넓은 화면 — 입력 칸 높이 약 64px · 결과 숫자 약 44px · 안쪽 여백(위 28 · 옆 30)", async ({ page }) => {
