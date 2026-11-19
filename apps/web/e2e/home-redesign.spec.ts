@@ -203,6 +203,7 @@ test.describe("새 홈 — 도착지별 환전 타이밍 (작업 0217)", () => {
     await page.goto("/");
     const rate = tid(page, "dest-rate").first();
     const final = (await rate.getAttribute("data-final"))!;
+    const startAttr = await rate.getAttribute("data-start");
     await page.evaluate(() => {
       const w = window as unknown as { __rates: string[]; __dots: number[] };
       w.__rates = [];
@@ -223,7 +224,9 @@ test.describe("새 홈 — 도착지별 환전 타이밍 (작업 0217)", () => {
       const w = window as unknown as { __rates: string[]; __dots: number[] };
       return { rates: w.__rates, dots: w.__dots };
     });
-    expect(rates.length).toBeGreaterThan(3);
+    // 작업 0228: 금액은 90일 중간값(data-start)이 있을 때만 카운트업 — api 가 median 을 아직 안 주는 환경(배포 전)에서는 오늘 값 그대로(숫자를 지어내지 않음) · 동그라미는 가운데에서 오늘 자리로 움직임
+    if (startAttr !== null) expect(rates.length).toBeGreaterThan(3);
+    else expect(rates.every((t) => t === final)).toBe(true);
     expect(rates[rates.length - 1]).toBe(final);
     expect(dots.length).toBeGreaterThan(3); // 동그라미도 같은 동안 움직임
   });
