@@ -22,7 +22,8 @@
 
 ## 계획 밖 변경 이유
 - apps/web/src/features/home/hooks/use-destinations-pill.ts (새) — 펼치기 상태(pill · expanding · final)와 시간(rAF) 담당 훅. 파일 계획의 `home/**` 안
-- apps/web/src/features/home/hooks/use-stagger-reveal.ts — 이제 도착지 표가 쓰지 않음(알약 펼침의 줄 순서가 대신). test 의 소스 검사(home-pill.test.ts)가 이 파일을 읽어 지우지 않고 둠 · 정리는 lead 결정
+- apps/web/src/features/home/hooks/use-stagger-reveal.ts — 도착지 표가 알약 펼침 훅으로 바뀌어 쓰는 곳이 없어 삭제함(lead 지시 · test 가 소스 검사의 참조를 먼저 뺌)
+- apps/web/src/features/home/components/destinations-pill.tsx — 휴대폰에서 '편' 한 글자만 다음 줄에 남던 것을 '최근 N일 중 싼 편' 한 덩어리(whitespace-nowrap) + text-balance 로 고침 (사용자 지적)
 - apps/web/src/features/home/lib/dest-motion.ts 에 시간표(pillFrame · rateAt)를 더함 · dotPosition 은 옛 테스트(new-home.test.ts)가 쓰므로 그대로 둠
 
 ## 위험
