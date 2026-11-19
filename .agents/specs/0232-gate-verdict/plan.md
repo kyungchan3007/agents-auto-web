@@ -1,0 +1,28 @@
+# 계획
+
+## 무엇을 · 왜
+- "통과"라고 말하는 기준을 하나로 정해 팀 문서에 넣는다.
+- 2026-11-19 모션 작업(0226 ~ 0231)에서 게이트 결과를 잘못 보고한 일이 네 번 있었다.
+  - lead: #274 에서 미리보기 빌드 통과만 보고 GitHub 게이트 실패를 놓쳤다.
+  - test: 0228 · 0231 에서 게이트 로그를 `tail` 로 끝 몇 줄만 읽어, 앞쪽 단위 테스트 FAIL 을 놓치고 "통과"로 보고했다.
+  - claude-desktop: 대기 스크립트가 결과 없음(진행 중)을 통과로 셌다(두 번). e2e 의 "-"(건너뜀)를 실패로 잘못 읽었다.
+- 근거: .tmp/agent-fix-findings-1119.md 4번(작업 폴더 안 · 커밋 안 함)
+
+## 애매한 곳
+- 보호 파일은 바꾸지 않는다(AGENTS.md · checks.sh · .agents/scripts/** · 워크플로). 그래서 규칙은 문서로만 정한다. 검사로 강제하는 것은 다음 단계 후보다. (가정)
+- lead 가 게이트를 직접 돌리던 줄(team.md "결과를 모아 checks.sh 를 실행")은 작업 0224 역할(테스트는 test 가 전부)과 어긋난다. 그래서 "test 의 판정을 확인하고 PR"로 맞춘다. (가정 — 0224 사용자 승인 범위 안)
+
+## 파일 계획
+- .agents/specs/0232-gate-verdict/**
+- .agents/orchestration/verdict.md — "게이트 판정 규칙" 절 추가
+- .agents/orchestration/team.md — lead · test · 공통 줄에서 그 규칙을 가리킴
+
+## 계획 밖 변경 이유
+
+## 완료 기준
+- [ ] bash .agents/checks.sh PASS
+- [ ] verdict.md 에 로컬 판정 · CI 판정 · e2e 기호 읽기 · 보고 형식이 있다
+- [ ] team.md 의 lead · test · 공통이 그 규칙을 가리킨다
+
+## 허점
+-
