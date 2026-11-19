@@ -132,22 +132,40 @@ test.describe("새 통화 상세 — 비행 경로 · 계산 탑승권 (작업 0
   });
 });
 
-test.describe("새 통화 상세 — 계산 결과 글자판 카운트업 (작업 0219 사용자 지적)", () => {
-  // 글자판 칸 글자를 이어 붙인 글 (칸 밖 빈칸 제외)
-  const shown = (page: Page) => tid(page, "converter-board").evaluate((el) => (el.textContent ?? "").replace(/\s+/g, ""));
+test.describe("새 통화 상세 — 계산 결과 글자판 (작업 0219 사용자 지적 → 작업 0231: 0227 굴러가는 숫자 글자판으로)", () => {
+  // 글자판에 지금 보이는 글 — 칸마다 가려진 띠의 가운데에 걸린 숫자 · 쉼표 칸 · '원' 칸 (띠 전체 글자가 아님)
+  const VISIBLE = `(() => {
+    const root = document.querySelector('[data-testid="converter-board"] [data-testid="rolling-number"]');
+    if (!root) return null;
+    let out = "";
+    for (const c of root.querySelectorAll('[data-testid="roll-cell"], [data-testid="roll-suffix"]')) {
+      const cr = c.getBoundingClientRect();
+      if (cr.width < 0.5) continue;
+      const kind = c.getAttribute("data-kind");
+      if (kind === "comma") { out += ","; continue; }
+      if (!kind) { out += (c.textContent || "").trim(); continue; }
+      let t = "?";
+      for (const s of c.querySelector('[data-testid="roll-strip"]').children) { const r = s.getBoundingClientRect(); const cy = (r.top + r.bottom) / 2; if (cy >= cr.top && cy < cr.bottom) { t = (s.textContent || "").trim(); break; } }
+      out += t;
+    }
+    return out;
+  })()`;
+  const shown = (page: Page) => page.evaluate(VISIBLE) as Promise<string | null>;
   const record = (page: Page) =>
-    page.evaluate(() => {
-      const w = window as unknown as { __seen: string[] };
+    page.evaluate((src) => {
+      const w = window as unknown as { __seen: string[]; __mv: number };
       w.__seen = [];
-      const el = document.querySelector('[data-testid="converter-board"]') as HTMLElement;
+      w.__mv = 0;
       const tick = () => {
-        const t = (el.textContent ?? "").replace(/\s+/g, "");
-        if (w.__seen[w.__seen.length - 1] !== t) w.__seen.push(t);
+        const t = (0, eval)(src) as string | null;
+        if (t !== null && w.__seen[w.__seen.length - 1] !== t) w.__seen.push(t);
+        w.__mv += document.querySelectorAll('[data-testid="converter-board"] [data-moving="true"]').length;
         requestAnimationFrame(tick);
       };
       tick();
-    });
+    }, VISIBLE);
   const seen = (page: Page) => page.evaluate(() => (window as unknown as { __seen: string[] }).__seen);
+  const moved = (page: Page) => page.evaluate(() => (window as unknown as { __mv: number }).__mv);
 
   test("움직임 줄이기 — 처음부터 최종 값 · 금액을 바꿔도 바로 새 값", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
@@ -163,7 +181,7 @@ test.describe("새 통화 상세 — 계산 결과 글자판 카운트업 (작�
     expect(Number(((await board.getAttribute("aria-label")) ?? "").replace(/[^\d]/g, ""))).toBeGreaterThan(first.length > 0 ? Number(first.replace(/[^\d]/g, "")) * 1.9 : 0);
   });
 
-  test("처음 화면에 들어올 때 — 칸 글자가 중간 값을 거쳐 최종 값 (글자판 넘김이 아니라 값이 올라가며 맞춰짐)", async ({ page }) => {
+  test("처음 화면에 들어올 때 — 글자판은 굴러가지 않고 처음부터 최종 값 (작업 0231: 처음 값은 그대로 · 바뀔 때만 굴러감)", async ({ page }) => {
     await page.goto("/currencies/USD");
     await record(page);
     await tid(page, "converter").scrollIntoViewIfNeeded();
@@ -171,37 +189,30 @@ test.describe("새 통화 상세 — 계산 결과 글자판 카운트업 (작�
     const rec = await seen(page);
     const board = tid(page, "converter-board").getByTestId("flap-board");
     const final = (await board.getAttribute("aria-label")) ?? "";
-    expect(rec[rec.length - 1]).toBe(final);
-    const nums = rec.map((t) => Number(t.replace(/[^\d]/g, ""))).filter((n) => Number.isFinite(n) && n > 0);
-    expect(nums.length, `값이 올라가며 바뀜: ${rec.join(" ")}`).toBeGreaterThan(3);
-    const finalN = Number(final.replace(/[^\d]/g, ""));
-    expect(Math.min(...nums)).toBeLessThan(finalN); // 시작은 최종보다 작음
-    expect(Math.max(...nums)).toBeLessThanOrEqual(finalN); // 넘지 않음
-    // 서버 첫 그림(최종 값)이 한 프레임 보인 뒤 시작 값으로 내려가 올라감 — 가장 낮은 값부터는 올라가기만 함
-    const rise = nums.slice(nums.indexOf(Math.min(...nums)));
-    for (let i = 1; i < rise.length; i++) expect(rise[i]).toBeGreaterThanOrEqual(rise[i - 1]);
-    expect(rec.filter((t) => /[^\d,원]/.test(t)).length, "무작위 글자(넘김)가 끼지 않음").toBe(0);
+    expect(rec, "처음부터 끝까지 같은 글(최종 값)").toEqual([final]);
+    expect(await moved(page), "굴러간 칸 프레임").toBe(0);
   });
 
-  test("금액을 바꾸면 이전 값에서 새 값으로 (중간 값을 거침) · 끝 값 = 계산 값 · 같은 입력 → 같은 값", async ({ page }) => {
+  test("금액을 바꾸면 굴러서 새 값 — 굴러가는 칸이 있고(data-moving) 중간 글을 거침 · 끝 값 = 계산 값 · 같은 입력 → 같은 값", async ({ page }) => {
     await page.goto("/currencies/USD");
     await tid(page, "converter-board").scrollIntoViewIfNeeded(); // 화면에 들어와야 움직임 (휴대폰은 판이 첫 화면 아래)
     await page.evaluate(() => document.querySelector('[data-testid="converter-board"]')?.scrollIntoView({ block: "center" }));
-    await page.waitForTimeout(1800); // 처음 움직임이 끝난 뒤
+    await page.waitForTimeout(1800);
     const board = tid(page, "converter-board").getByTestId("flap-board");
     const before = Number(((await board.getAttribute("aria-label")) ?? "").replace(/[^\d]/g, ""));
     await record(page);
     await tid(page, "converter").getByRole("textbox").first().fill("500");
-    await page.waitForTimeout(1200);
+    await page.waitForTimeout(2200);
     const rec = await seen(page);
     const after = Number(((await board.getAttribute("aria-label")) ?? "").replace(/[^\d]/g, ""));
     expect(after).toBeGreaterThan(before * 4.9);
-    expect(rec[rec.length - 1]).toBe(((await board.getAttribute("aria-label")) ?? "").replace(/\s+/g, ""));
-    const nums = rec.map((t) => Number(t.replace(/[^\d]/g, ""))).filter((n) => n > 0);
-    expect(nums.some((n) => n > before && n < after), `중간 값을 거침: ${rec.join(" ")}`).toBe(true);
+    expect(rec[rec.length - 1]).toBe((await board.getAttribute("aria-label")) ?? "");
+    expect(await moved(page), "굴러가는 칸이 한 번은 있음").toBeGreaterThan(0);
+    expect(rec.length, `중간 글을 거침: ${rec.join(" ")}`).toBeGreaterThan(2);
     await tid(page, "converter").getByRole("textbox").first().fill("100");
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(2200);
     expect(Number(((await board.getAttribute("aria-label")) ?? "").replace(/[^\d]/g, ""))).toBe(before); // 같은 입력 → 같은 값
+    expect(await shown(page)).toBe((await board.getAttribute("aria-label")) ?? "");
   });
 
   test("틀린 입력은 '—' · 화면 읽기(aria-label)는 늘 최종 값 한 문장", async ({ page }) => {
@@ -220,7 +231,7 @@ test.describe("새 통화 상세 — 계산 결과 글자판 카운트업 (작�
     await page.goto("/currencies/USD");
     const board = page.locator('[data-testid="converter-board"] [data-testid="flap-board"]');
     await expect(board).toHaveAttribute("aria-label", /^[\d,]+원$/);
-    expect(((await board.textContent()) ?? "").replace(/\s+/g, "")).toBe(await board.getAttribute("aria-label"));
+    expect(await page.evaluate(VISIBLE)).toBe(await board.getAttribute("aria-label"));
     await ctx.close();
   });
 });
