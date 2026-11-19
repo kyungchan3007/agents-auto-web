@@ -14,6 +14,7 @@ import { cheapMonthsCard, flightsHeadline, yoyCard } from "../lib/flights-copy";
 import { flightsBoard, latestNumbers, stripStats } from "../lib/flights-view";
 import { FlightsGraph } from "./flights-graph";
 import { MiniBoard } from "./mini-board";
+import { WindowMonths } from "./window-months";
 
 export type TravelItem = { key: string; name: string; points: IndexPoint[] | null };
 
@@ -72,6 +73,8 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
             )}
           </div>
         </section>
+        {/* hero 바로 아래 새 구역 — 창밖으로 보는 12달 (작업 0229 · 모션 1번) · 지수가 없으면 구역 없음 */}
+        <WindowMonths points={air} />
         {/* 표 뒤 구간 — 옅은 면(surface-2) · 절취선 끝 동그라미(홈)는 없고 점선만 (작업 0218 사용자 지적 "동그라미가 없어야 하는거 아냐?") */}
         <div data-testid="flights-back" className="bg-surface-2 px-4 pt-10 pb-10 sm:px-8 sm:pt-14">
           <div className="mx-auto max-w-page">
