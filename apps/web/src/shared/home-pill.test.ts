@@ -20,7 +20,7 @@ describe("destinations-pill — 알약 부품", () => {
     expect(table() + pill()).toContain("data-state");
   });
   it("움직임 줄이기 · 서버 첫 그림은 펼친 최종 모양 · 타이머로 값을 바꾸지 않음", () => {
-    const s = code(pill() + table() + read("../features/home/hooks/use-stagger-reveal.ts"));
+    const s = code(pill() + table() + read("../features/home/hooks/use-destinations-pill.ts"));
     expect(s).toMatch(/useReducedMotion|prefers-reduced-motion/);
     expect(s).not.toMatch(/setInterval/);
   });

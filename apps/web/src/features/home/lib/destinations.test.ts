@@ -81,7 +81,7 @@ describe("destinationRows", () => {
   it("destinations 와 같은 순서 · 도시 · 통화 · 환율 · 신호 · 눈금 위치 · 링크", () => {
     const rows = destinationRows(SIGNALS, RATES, DEST);
     expect(rows.map((r) => r.id)).toEqual(["tokyo", "bangkok", "paris", "newyork"]);
-    expect(rows[0]).toEqual({ id: "tokyo", city: "도쿄", currency: "JPY", flag: "JP", flagLabel: "일본 국기", currencyLabel: "엔 100", rateText: "912원", rateValue: 912.34, rateDigits: 0, signal: "cheap", position: 0.12, percentile: 0.12, pinText: "하위 12% · 쌈", note: null, href: "/currencies/JPY" });
+    expect(rows[0]).toEqual({ id: "tokyo", city: "도쿄", currency: "JPY", flag: "JP", flagLabel: "일본 국기", currencyLabel: "엔 100", rateText: "912원", rateValue: 912.34, rateDigits: 0, rateStart: null /* 작업 0228: 신호 줄에 median 이 없으면 null */, signal: "cheap", position: 0.12, percentile: 0.12, pinText: "하위 12% · 쌈", note: null, href: "/currencies/JPY" });
     expect(rows.map((r) => r.currencyLabel)).toEqual(["엔 100", "바트", "유로", "달러"]);
     expect(rows.map((r) => r.rateText)).toEqual(["912원", "39.8원", "1,486원", "1,383원"]);
     expect(rows.map((r) => r.signal)).toEqual(["cheap", "cheap", "normal", "expensive"]);
