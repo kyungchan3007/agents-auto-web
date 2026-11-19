@@ -3,7 +3,7 @@
 import type { GeoReport } from "@hav/shared/geo";
 import { DataTable } from "@hav/ui/data/data-table";
 import type { ReactNode } from "react";
-import { barRows, dayColumns } from "../lib/geo-bars";
+import { barRows, botPagesView, dayColumns } from "../lib/geo-bars";
 import { GEO_EDITION_NOTES, KIND_TEXT, geoDetail } from "../lib/geo-view";
 import { BarList, DayBars } from "./geo-bars";
 
@@ -36,6 +36,7 @@ export function GeoDetail({ report }: { report: GeoReport }) {
   const ai = report.bots.filter((b) => b.kind !== "engine");
   const engines = report.bots.filter((b) => b.kind === "engine");
   const byHits = <T extends { hits: number }>(list: T[]) => [...list].sort((a, b) => b.hits - a.hits);
+  const botPages = botPagesView(report.botPages);
   return (
     <div data-testid="geo-grid" className="mt-6 grid gap-4 min-[701px]:grid-cols-2">
       <Card id="geo-answers" title="AI 답변 인용">
@@ -88,6 +89,30 @@ export function GeoDetail({ report }: { report: GeoReport }) {
         <Sub title="페이지별 횟수" empty={report.pages.length === 0}>
           <BarList rows={barRows(report.pages.map((p) => ({ label: p.path, value: p.hits })))} />
         </Sub>
+      </Card>
+
+      <Card id="geo-bot-pages" title="봇별 읽은 페이지">
+        <p className="mt-1 text-small text-fg-2">봇마다 어떤 페이지를 몇 번 읽었는지 (Googlebot · bingbot 같은 검색 엔진 봇 포함 · 사람 유입 · 운영 확인 제외 · 많이 읽은 상위 5곳)</p>
+        {botPages.length === 0 ? (
+          <div className="mt-5">
+            <p className="rounded-card border-2 border-dashed border-line px-3 py-3 text-small text-fg-2">{EMPTY}</p>
+          </div>
+        ) : (
+          botPages.map((b) => (
+            <div key={b.name} data-testid="bot-pages-bot" data-bot={b.name} className="mt-5">
+              <h3 className="text-small font-semibold">
+                {b.name} <span className="font-normal text-fg-2">· {KIND_TEXT[b.kind]}</span>
+              </h3>
+              <p className="mt-0.5 text-small text-fg-2 tabular-nums">{b.text}</p>
+              <BarList tone={b.kind === "engine" ? "accent" : "cheap"} rows={b.rows} />
+              {b.rest && (
+                <p data-testid="bot-pages-rest" className="mt-1.5 text-small text-fg-2 tabular-nums">
+                  {b.rest.text}
+                </p>
+              )}
+            </div>
+          ))
+        )}
       </Card>
 
       <Card id="geo-search" title="구글 검색 노출 (Search Console)">

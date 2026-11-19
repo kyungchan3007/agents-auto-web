@@ -16,6 +16,8 @@ export function geoReport(
   const referrals = new Map<string, GeoReport["referrals"][number]>();
   const pages = new Map<string, number>();
   const daily = new Map<string, NonNullable<GeoReport["daily"]>[number]>();
+  // 봇별 읽은 경로 (작업 0226) — 이미 읽은 같은 행을 봇 이름 · 경로로 다시 묶기만 함 (새 쿼리 없음 · referral 제외 · test 는 위에서 이미 제외)
+  const botPages = new Map<string, { name: string; kind: NonNullable<GeoReport["botPages"]>[number]["kind"]; hits: number; paths: Map<string, number> }>();
   for (const r of real) {
     // 날짜별 집계 (작업 0205) — 이미 읽은 행을 일 · 종류 · 이름으로 합침 (경로는 뺌)
     const dk = `${r.day}|${r.kind}|${r.name}`;
@@ -29,6 +31,10 @@ export function geoReport(
       const x = bots.get(r.name);
       bots.set(r.name, { name: r.name, kind: r.kind, hits: (x?.hits ?? 0) + r.hits, lastDay: x && x.lastDay > r.day ? x.lastDay : r.day });
       if (r.kind !== "engine") pages.set(r.path, (pages.get(r.path) ?? 0) + r.hits);
+      const bp = botPages.get(r.name) ?? { name: r.name, kind: r.kind, hits: 0, paths: new Map<string, number>() };
+      bp.hits += r.hits;
+      bp.paths.set(r.path, (bp.paths.get(r.path) ?? 0) + r.hits);
+      botPages.set(r.name, bp);
     }
   }
   const byHits = <T extends { hits: number }>(a: T, b: T) => b.hits - a.hits;
@@ -45,6 +51,9 @@ export function geoReport(
     answers,
     daily: [...daily.values()].sort((a, b) => a.day.localeCompare(b.day) || a.name.localeCompare(b.name)),
     answerDays: answerDayList,
+    botPages: [...botPages.values()]
+      .map((b) => ({ name: b.name, kind: b.kind, hits: b.hits, paths: [...b.paths].map(([path, hits]) => ({ path, hits })).sort((a, b) => b.hits - a.hits || a.path.localeCompare(b.path)) }))
+      .sort((a, b) => b.hits - a.hits || a.name.localeCompare(b.name)),
   };
 }
 
