@@ -61,6 +61,8 @@ async function snap(root: Locator) {
 /** 멈출 때까지 기다린 뒤 최종 값과 정확히 같은지 */
 async function expectSettled(root: Locator, value: number, label: string) {
   await expect.poll(async () => { const s = await snap(root); return s.moving === 0 && s.state === "idle"; }, { message: `${label} 멈춤`, timeout: 4000 }).toBe(true);
+  // 값이 바뀐 바로 그 프레임에 띠 위치가 아직 안 맞을 수 있어(한 프레임) 보이는 숫자는 잠깐 기다려 확인
+  await expect.poll(async () => (await snap(root)).visible, { message: `${label} 보이는 숫자`, timeout: 1000 }).toBe(en(value));
   const s = await snap(root);
   const slot = await root.getAttribute("data-slot");
   const unit = slot === "usd" ? "" : "원";
