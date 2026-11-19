@@ -13,7 +13,8 @@ describe("calc-result — 굴러가는 숫자", () => {
     expect(code(result())).toMatch(/import \{ RollingNumber \} from "@hav\/ui\/motion\/rolling-number"/);
   });
   it("자리 일곱 곳 slot — big · usd · price · taxable · duty · vat · total", () => {
-    for (const slot of ["big", "usd", "price", "taxable", "duty", "vat", "total"]) expect(code(result()), slot).toMatch(new RegExp(`slot=["{]+${slot}`));
+    for (const slot of ["big", "usd", "price", "taxable", "duty", "vat", "total"]) expect(code(result()), slot).toMatch(new RegExp(`["']${slot}["']`)); // slot="big" 또는 won(값, "price") 처럼 이름 문자열이 들어감
+    expect(code(result())).toMatch(/slot=/);
   });
   it("계산 결과는 카운트업하지 않음(CountUp 아님) · 단위 '원'은 부품 suffix 로", () => {
     expect(code(result())).not.toMatch(/<CountUp/);
