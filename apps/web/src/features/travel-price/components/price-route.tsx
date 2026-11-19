@@ -9,9 +9,9 @@ import type { Signal } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import { Eyebrow, SectionTitle } from "@hav/ui/text/heading";
 import type { CSSProperties } from "react";
-import { useCountTween, usePriceRoute, useRouteTiles } from "../hooks/use-price-route";
+import { useCountTween, usePriceRoute, useRouteStep, useRouteTiles } from "../hooks/use-price-route";
 import { type PriceBand, rateBadgeText } from "../lib/bands";
-import { type RouteBand, type RouteStop, routeCardText, routeHop, routeStops, routeValue } from "../lib/price-route";
+import { type RouteBand, type RouteStop, isMoving, routeActive, routeCardText, routeFrame, routeHop, routeStops, routeValue } from "../lib/price-route";
 import { rulerScale, rulerX } from "../lib/ruler";
 
 const COLOR: Record<RouteBand, string> = {
@@ -52,7 +52,7 @@ function SignalCell({ stop, extra, signalOf, percentileOf, small }: { stop: Rout
 }
 
 /** 카드 한 장 — 정거장 하나의 모습 (움직이는 카드 · 정적 카드가 같은 틀) */
-function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live }: { stop: RouteStop; n: number; extra: Extra; latestYear?: number; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"]; live: boolean }) {
+function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap = 0 }: { swap?: number; stop: RouteStop; n: number; extra: Extra; latestYear?: number; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"]; live: boolean }) {
   const t = routeCardText(stop, stop.index, n);
   const pctN = useCountTween(Math.abs(100 - stop.value));
   const budN = useCountTween(stop.value * 1000);
@@ -64,8 +64,8 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live }: { st
   return (
     <>
       <div className="flex flex-wrap items-center gap-x-[1.125rem] gap-y-2 max-[760px]:gap-x-3.5">
-        <span className="relative size-[4.75rem] flex-none max-[760px]:size-14" data-swap={live ? stop.index : undefined}>
-          <span className="absolute inset-0 grid place-items-center overflow-hidden rounded-full bg-surface-2 ring-[3px] ring-card ring-offset-[1px] ring-offset-line">
+        <span className="relative size-[4.75rem] flex-none max-[760px]:size-14">
+          <span key={swap} className={`absolute inset-0 grid ${live && swap > 0 ? "animate-[route-pop_.45s_cubic-bezier(.3,1.5,.5,1)]" : ""} place-items-center overflow-hidden rounded-full bg-surface-2 ring-[3px] ring-card ring-offset-[1px] ring-offset-line`}>
             <Flag country={TRAVEL_COUNTRIES[stop.country]?.flag ?? (stop.country === "KR" ? "KR" : null)} label={`${stop.name} 국기`} className="h-full w-[150%] max-w-none shrink-0 rounded-none" />
           </span>
         </span>
@@ -74,7 +74,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live }: { st
             {t.meta}
           </p>
           <p className="h-[2.5625rem] overflow-hidden text-[2.125rem] leading-[1.2] font-extrabold tracking-display max-[760px]:h-8 max-[760px]:text-[1.625rem]">
-            <span data-testid="route-card-name" className="block">
+            <span key={swap} data-testid="route-card-name" className={`block ${live && swap > 0 ? "animate-[route-up_.42s_cubic-bezier(.2,.9,.3,1)]" : ""}`}>
               {stop.name}
             </span>
           </p>
@@ -136,7 +136,10 @@ export function PriceRoute({ bands, signalOf, percentileOf, latestYear }: Props)
 
 function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: RouteStop[]; extras: Record<string, Extra>; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"]; latestYear?: number }) {
   const n = stops.length;
-  const { armed, fr, active, dir, swap, moving, sec, stage, ruler, vp, goto } = usePriceRoute(n);
+  const { armed, progress, dir, sec, stage, ruler, vp, goto } = usePriceRoute(n);
+  const fr = routeFrame(progress, n);
+  const { value: active, swap } = useRouteStep(fr, routeActive);
+  const moving = isMoving(fr.m);
   const scale = rulerScale(stops.map((s) => s.value));
   const x = (v: number) => rulerX(v, scale);
   const noExtra: Extra = { currency: null, year: null };
@@ -296,7 +299,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
             style={{ "--c": COLOR[cur.band] } as CSSProperties}
           >
             <div className={moving ? "opacity-55 transition-opacity duration-200" : "transition-opacity duration-[250ms]"}>
-              <Card stop={cur} n={n} extra={extras[cur.country] ?? noExtra} latestYear={latestYear} signalOf={signalOf} percentileOf={percentileOf} live />
+              <Card stop={cur} n={n} extra={extras[cur.country] ?? noExtra} latestYear={latestYear} signalOf={signalOf} percentileOf={percentileOf} live swap={swap} />
             </div>
             <p data-testid="route-next" className={`absolute right-7 bottom-3.5 text-[0.75rem] text-fg-2 transition-opacity duration-200 max-[760px]:hidden ${moving ? "opacity-100" : "opacity-0"}`}>
               {moving ? `다음 정거장 → ${nextName}` : ""}
