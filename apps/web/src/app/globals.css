@@ -67,3 +67,18 @@ main:focus {
     opacity: 0;
   }
 }
+
+/* 여행 타이밍 "창밖 12달" — 서버가 그린 첫 그림부터 덮개가 닫힘 (작업 0229)
+   스크립트가 켜져 있고 움직임을 줄이지 않았을 때만 닫힌 모양 · 자바스크립트 꺼짐 · 움직임 줄이기는 서버 그림부터 열린 모양
+   data-state 가 closed 인 동안(서버 그림 · 클라이언트 이동 첫 그림 · 다시 보기) 덮개가 내려와 있고, opening · open 이면 올라감 — 움직임은 transform 으로 */
+[data-testid="window-shade"] {
+  transform: translateY(-96%);
+}
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  [data-testid="window-shade"] {
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  [data-testid="window-view"][data-state="closed"] [data-testid="window-shade"] {
+    transform: translateY(0);
+  }
+}
