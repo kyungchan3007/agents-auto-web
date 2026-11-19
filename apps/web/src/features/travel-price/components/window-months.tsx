@@ -7,8 +7,6 @@
 import { useFlapChar, useWindowMonths } from "../hooks/use-window-months";
 import { type IndexPoint, flapChars, periodRange, windowMonths } from "../lib/window-months";
 
-const TONE = { high: "bg-pin-expensive", low: "bg-sun" } as const;
-
 function FlapCell({ char }: { char: string }) {
   const { ref, shown } = useFlapChar(char);
   return (
@@ -74,8 +72,6 @@ function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof wi
                   style={{ background: "linear-gradient(#F4F6FA,#E4E9F1)" }}
                 />
               </div>
-              {/* 서버 그림 · 자바스크립트 꺼짐: 움직임 줄이기를 쓰는 사람은 서버 그림부터 열린 모양 (스크립트가 켜지기 전에 바로 맞춤 — 덮개가 닫힌 채 한 프레임도 안 보이게) */}
-              <script dangerouslySetInnerHTML={{ __html: 'var s=document.currentScript,v=s&&s.previousElementSibling;if(v&&matchMedia("(prefers-reduced-motion: reduce)").matches)v.setAttribute("data-state","open");' }} />
             </div>
           </div>
           <div className="relative flex min-w-0 flex-col px-11 pt-[2.375rem] pb-[2.125rem] max-[760px]:px-[1.125rem] max-[760px]:pt-6 max-[760px]:pb-[1.375rem]">
