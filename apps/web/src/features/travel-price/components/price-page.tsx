@@ -11,7 +11,7 @@ import { pricesHeadline } from "../lib/prices-copy";
 import { BudgetPlanner } from "./budget-planner";
 import { Suspense } from "react";
 import { PriceBands } from "./price-bands";
-import { PriceRuler } from "./price-ruler";
+import { PriceRoute } from "./price-route";
 import { PricesHeader } from "./prices-header";
 import { PriceView } from "./price-view";
 
@@ -41,17 +41,25 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
         </div>
         <div className="px-4 pt-14 pb-10 sm:px-8 sm:pt-16 lg:pt-[calc(150px+4rem)]">
         <div className="mx-auto max-w-page">
-          {data && data.bands.length > 0 && <PriceRuler bands={data.bands} />}
-          <div>
-            {data && data.bands.length > 0 ? (
-              // 주소의 ?currency= 는 브라우저에서 읽음(정적 사이트) — 읽기 전 · 검색 · AI 가 읽는 HTML 은 전체 목록 (작업 0193)
-              <Suspense fallback={<PriceBands bands={data.bands} signalOf={signalOf} percentileOf={percentileOf} latestYear={data.years[0]} />}>
-                <PriceView bands={data.bands} missing={data.missing} signalOf={signalOf} percentileOf={percentileOf} latestYear={data.years[0]} />
-              </Suspense>
-            ) : (
+          {data && data.bands.length > 0 ? (
+            // 노선(정적 자 자리) + 세 칸 목록 — 주소의 ?currency= 는 브라우저에서 읽음(정적 사이트) — 읽기 전 · 검색 · AI 가 읽는 HTML 은 전체 목록 (작업 0193 · 0230)
+            <Suspense
+              fallback={
+                <>
+                  <PriceRoute bands={data.bands} signalOf={signalOf} percentileOf={percentileOf} latestYear={data.years[0]} />
+                  <div>
+                    <PriceBands bands={data.bands} signalOf={signalOf} percentileOf={percentileOf} latestYear={data.years[0]} />
+                  </div>
+                </>
+              }
+            >
+              <PriceView bands={data.bands} missing={data.missing} signalOf={signalOf} percentileOf={percentileOf} latestYear={data.years[0]} />
+            </Suspense>
+          ) : (
+            <div>
               <EmptyState>물가 자료를 받지 못했습니다 ({levels.ok ? "여행지 나라 자료 없음" : levels.reason})</EmptyState>
-            )}
-          </div>
+            </div>
+          )}
 
           {data && (data.missing.length > 0 || !signals.ok) && (
             <div className="mt-6 space-y-1 text-small text-fg-2">
