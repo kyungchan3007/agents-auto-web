@@ -31,7 +31,7 @@ export function useFlagFly(code: string, from: SwitchSnapshot | null) {
       const p = arcPoint(a, b, t);
       return { offset: t, transform: `translate(${p.x - a.x}px, ${p.y - a.y}px) scale(${1 + (s - 1) * t}) rotate(${-6 * 4 * t * (1 - t)}deg)` };
     });
-    const anim = el.animate(frames, { duration: 720, easing: "cubic-bezier(.45,0,.25,1)" });
+    const anim = el.animate(frames, { duration: 720, easing: "cubic-bezier(.45,0,.25,1)", fill: "forwards" }); // 끝 위치에 붙들어 둠 — 지워지기 전 한 프레임이 칩 자리로 튀지 않게
     anim.onfinish = () => setFlying(false);
     return () => anim.cancel();
   }, [flying, code]);
