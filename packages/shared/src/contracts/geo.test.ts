@@ -27,3 +27,19 @@ describe("GeoReport 계약 (작업 0205)", () => {
     expect(GeoReport.safeParse({ ...base, answerDays: [{ day: "2026-11-17", edition: 9, engine: "claude", question: "q", group: "general", status: "ok", found: true, cited: true }] }).success).toBe(false);
   });
 });
+
+describe("GeoReport.botPages 계약 (작업 0226)", () => {
+  it("botPages 가 없는 옛 응답도 통과 (하위 호환)", () => {
+    expect(GeoReport.parse(base).botPages).toBeUndefined();
+  });
+  it("봇별 경로 모양 — 이름 · 종류 · 합계 · 경로별 횟수", () => {
+    const r = GeoReport.parse({ ...base, botPages: [{ name: "GPTBot", kind: "training", hits: 5, paths: [{ path: "/", hits: 3 }, { path: "/about", hits: 2 }] }, { name: "Googlebot", kind: "engine", hits: 0, paths: [] }] });
+    expect(r.botPages).toHaveLength(2);
+    expect(r.botPages?.[0].paths[1]).toEqual({ path: "/about", hits: 2 });
+  });
+  it("모르는 종류 · 음수 · 소수 횟수는 거부", () => {
+    expect(() => GeoReport.parse({ ...base, botPages: [{ name: "x", kind: "robot", hits: 1, paths: [] }] })).toThrow();
+    expect(() => GeoReport.parse({ ...base, botPages: [{ name: "x", kind: "training", hits: -1, paths: [] }] })).toThrow();
+    expect(() => GeoReport.parse({ ...base, botPages: [{ name: "x", kind: "training", hits: 1, paths: [{ path: "/", hits: 1.5 }] }] })).toThrow();
+  });
+});
