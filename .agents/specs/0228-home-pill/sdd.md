@@ -21,6 +21,7 @@
 - .agents/specs/0228-home-pill/**
 
 ## 계획 밖 변경 이유
+- apps/web/src/app/globals.css — 서버가 그린 첫 그림부터 접힌 알약이 되게 하는 규칙(@media (scripting: enabled) and (prefers-reduced-motion: no-preference) 안 [data-boot])을 더함 (깜빡임 고침 · lead 지시)
 - apps/web/src/features/home/hooks/use-destinations-pill.ts (새) — 펼치기 상태(pill · expanding · final)와 시간(rAF) 담당 훅. 파일 계획의 `home/**` 안
 - apps/web/src/features/home/hooks/use-stagger-reveal.ts — 도착지 표가 알약 펼침 훅으로 바뀌어 쓰는 곳이 없어 삭제함(lead 지시 · test 가 소스 검사의 참조를 먼저 뺌)
 - apps/web/src/features/home/components/destinations-pill.tsx — 휴대폰에서 '편' 한 글자만 다음 줄에 남던 것을 '최근 N일 중 싼 편' 한 덩어리(whitespace-nowrap) + text-balance 로 고침 (사용자 지적)
