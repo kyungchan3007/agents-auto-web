@@ -21,6 +21,7 @@ let last: SwitchSnapshot | null = null;
 
 export function rememberSwitch(s: SwitchSnapshot): void {
   last = s;
+  taken = null; // 다음 이동이 시작됐거나 새 페이지가 값을 적기 시작함 — 이전 이동에서 나눠 주던 값은 더 쓰지 않음
 }
 
 /** 직전에 보이던 다른 통화의 값을 한 번만 돌려주고 비움 · 같은 통화 · 기억 없음 · 10초 넘게 지난 기억은 null */
@@ -56,11 +57,6 @@ export function switchFrom(code: string, now: number = Date.now()): SwitchSnapsh
   const snap = takeSwitchFrom(code, now);
   taken = { code, snap };
   return snap;
-}
-
-/** 이동을 막 마쳤을 때(새 통화가 값을 기억에 넣기 시작할 때) 나눠 주던 값을 비움 */
-export function releaseSwitch(): void {
-  taken = null;
 }
 
 // ── 날아가는 국기의 출발 자리 (칩 국기의 화면 위치) — 칩을 누른 순간 적어 두고 새 페이지가 한 번 읽음
