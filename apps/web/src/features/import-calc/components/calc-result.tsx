@@ -4,11 +4,14 @@
 import { numberText } from "@hav/shared/format";
 import type { FxRate } from "@hav/shared/fx";
 import { Stamp } from "@hav/ui/data/stamp";
+import { RollingNumber } from "@hav/ui/motion/rolling-number";
 import { SOURCE_NAME } from "@hav/shared/currency";
+import type { ReactNode } from "react";
 import type { CalcResult as Result } from "../lib/calc";
 import type { RateSource } from "../lib/customs-rate";
 
-const won = (v: number | null) => (v == null ? "—" : `${numberText(v)}원`);
+// 원화 금액 — 값이 있으면 굴러가는 숫자(자리 이름 slot) · 없으면 "—" (작업 0227 · 값이 바뀌면 자리마다 굴러 맞춰짐 · 처음 값은 그대로)
+const won = (v: number | null, slot: string): ReactNode => (v == null ? "—" : <RollingNumber slot={slot} value={v} suffix="원" />);
 
 export function CalcResult({ result: r, rate, source, dutyRate }: { result: Result | null; rate: FxRate | undefined; source?: RateSource; dutyRate: string }) {
   const rateText = source ? source.label : rate ? `${rate.date} 기준 · ${SOURCE_NAME[rate.source]}` : "환율을 받지 못했습니다";
@@ -24,7 +27,7 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
           </div>
           <p className="mt-2 font-display text-[clamp(2.25rem,6vw,3.5rem)] leading-tight font-extrabold tracking-display text-foam tabular-nums">
             {/* 긴 금액(열두 글자 넘음)은 휴대폰에서 글자를 줄여 한 줄 — 줄이 바뀌어 카드가 커지지 않게 (작업 0208 lead 리뷰) */}
-            {r?.ok ? <span className={`${numberText(r.priceKrw)}원`.length > 12 ? "whitespace-nowrap max-sm:text-[1.75rem]" : "whitespace-nowrap"}>{numberText(r.priceKrw)}원</span> : "—원"}
+            {r?.ok ? <RollingNumber slot="big" value={r.priceKrw} suffix="원" className={`${numberText(r.priceKrw)}원`.length > 12 ? "max-sm:text-[1.75rem]" : ""} /> : "—원"}
           </p>
           {/* 한도까지 막대 — 채움 = 물건 값 ÷ 한도 (넘으면 가득) · 글은 항상 같은 한 줄 높이 */}
           <div data-testid="calc-limit-bar" data-ratio={r?.ok ? r.ratio : 0} className="mt-4 h-10">
@@ -34,7 +37,7 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
                   <div data-testid="calc-limit-fill" className={`h-full rounded-full ${r.over ? "bg-pin-expensive" : "bg-sun"}`} style={{ width: `${Math.min(1, r.ratio) * 100}%` }} />
                 </div>
                 <p className="mt-1.5 flex justify-between text-small font-semibold tabular-nums">
-                  <span>${numberText(r.priceUsd, { maximumFractionDigits: 0 })}</span>
+                  <RollingNumber slot="usd" prefix="$" value={Math.round(r.priceUsd)} />
                   <span>한도 ${r.limitUsd}</span>
                 </p>
               </>
@@ -49,12 +52,12 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
         <div data-testid="calc-tag-bottom" className="flex-1 bg-card px-6 py-5 text-fg">
           {r?.ok && (
             <dl className="text-small">
-              <Row k="물건 값 (원화)" v={won(r.priceKrw)} />
-              <Row k="과세 가격 (물건 값 + 국제 배송비)" v={r.tax ? won(r.tax.taxableKrw) : "— 한도 안이라 계산 안 함"} />
-              <Row k={`관세${r.tax && dutyRate ? ` (${dutyRate}%)` : ""}`} v={r.tax ? won(r.tax.duty) : "0원"} />
-              <Row k="부가세 10% ((과세 가격 + 관세) × 10%)" v={r.tax ? won(r.tax.vat) : "0원"} />
+              <Row k="물건 값 (원화)" v={won(r.priceKrw, "price")} />
+              <Row k="과세 가격 (물건 값 + 국제 배송비)" v={r.tax ? won(r.tax.taxableKrw, "taxable") : "— 한도 안이라 계산 안 함"} />
+              <Row k={`관세${r.tax && dutyRate ? ` (${dutyRate}%)` : ""}`} v={won(r.tax ? r.tax.duty : 0, "duty")} />
+              <Row k="부가세 10% ((과세 가격 + 관세) × 10%)" v={won(r.tax ? r.tax.vat : 0, "vat")} />
               <Row k="적용 환율" v={rateText} />
-              <Row k="모두 합쳐 예상" v={r.tax ? (r.tax.total === null ? "— 관세율을 넣으면 계산" : won(r.tax.total)) : won(r.priceKrw)} total />
+              <Row k="모두 합쳐 예상" v={r.tax ? (r.tax.total === null ? "— 관세율을 넣으면 계산" : won(r.tax.total, "total")) : won(r.priceKrw, "total")} total />
             </dl>
           )}
           <p className="mt-4 text-small text-fg-2">예상 금액입니다. 실제 세금은 통관 때 정해집니다.</p>
@@ -64,7 +67,7 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
   );
 }
 
-function Row({ k, v, total = false }: { k: string; v: string; total?: boolean }) {
+function Row({ k, v, total = false }: { k: string; v: ReactNode; total?: boolean }) {
   return (
     <div className={`flex flex-wrap items-baseline justify-between gap-x-4 py-2.5 ${total ? "mt-1 border-t-2 border-fg pt-4 text-[1rem] font-bold" : "border-b border-dashed border-line"}`}>
       <dt className={total ? "" : "text-fg-2"}>{k}</dt>
