@@ -75,9 +75,9 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
         </div>
       </div>
 
-      <div className="mt-12">
+      <SwitchFade code={code} delay={300} className="mt-12 block">
         {history.ok ? <PeriodChart rates={days} unit={rate.unit} unitText={t.unit} lastTone={s?.signal ?? null} /> : <p className="py-6 text-sm text-fg-2">1년 기록을 받지 못했습니다 ({history.reason})</p>}
-      </div>
+      </SwitchFade>
 
       {countriesOf(code).length > 0 && (
         <p className="mt-8">
