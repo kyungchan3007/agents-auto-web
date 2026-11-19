@@ -82,3 +82,36 @@ main:focus {
     transform: translateY(0);
   }
 }
+
+/* 여행 물가 "스크롤 물가 노선" — 서버가 그린 첫 그림부터 긴 스크롤 모양 (작업 0230)
+   스크립트가 켜져 있고 움직임을 줄이지 않았을 때만: 구역이 긴 칸이 되고 안의 판이 메뉴 띠 바로 아래(--hav-nav-h)에 붙음(세로 가운데 아님)
+   구역 높이 = 판 높이 + (정거장 수 − 1) × 정거장 사이 스크롤(넓은 화면 36vh · 휴대폰 30vh)
+   자바스크립트 꺼짐 · 움직임 줄이기는 고정 없이 정적 노선(정거장 카드가 모두 보임) */
+@keyframes route-ping {
+  0% { opacity: 0.9; transform: scale(0.6); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  [data-testid="route-section"] {
+    --route-step: 36vh;
+    --route-stage-h: calc(100vh - var(--hav-nav-h));
+    height: calc(var(--route-stage-h) + (var(--route-n) - 1) * var(--route-step));
+    margin-top: -1.5rem; /* 판 안 윗 여백(1.5rem)만큼 당겨, 가만히 있을 때 제목 자리는 정적 자와 같게 */
+  }
+  [data-testid="route-stage"] {
+    position: sticky;
+    top: var(--hav-nav-h);
+    height: var(--route-stage-h);
+    overflow: hidden;
+    padding-top: 1.5rem;
+  }
+  [data-testid="route-static"] {
+    display: none;
+  }
+}
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (max-width: 760px) {
+  [data-testid="route-section"] {
+    --route-step: 30vh;
+    --route-stage-h: calc(100svh - var(--hav-nav-h));
+  }
+}
