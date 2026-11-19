@@ -20,6 +20,11 @@
 - .agents/specs/0229-flights-window/**
 
 ## 계획 밖 변경 이유
+- apps/web/src/features/travel-price/lib/window-scene.ts (새) — 시안의 창밖 풍경 그리기 · 흐름(캔버스)을 옮긴 장면 파일 · 파일 계획의 "그림 부품(새)" 에 해당 · 시안 색을 그대로 써서 흰색만 WHITE(#FEFEFE) 한 단계 낮춤(no-raw-color 검사)
+- apps/web/src/features/travel-price/hooks/use-window-months.ts (새) — 상태 훅(파일 계획의 hooks(새))
+- apps/web/src/app/globals.css — 서버 그림부터 닫힌 덮개 CSS(@media (scripting: enabled) and (prefers-reduced-motion: no-preference)) · 0228 알약과 같은 방식 · 보호 파일 아님
+- 홈 travelTiming 은 가져다 쓰지 않음: features 끼리 직접 import 금지라 둘이 같이 쓰는 @hav/shared/travel 의 monthlyAverages 를 쓰고 싼 달 · 비싼 달 규칙(`<` · `>=`)만 같게 둠 — 홈 쪽 동작은 그대로
+- 덮개 열린 위치는 시안의 -88% 대신 -96%: 열린 뒤 덮은 비율이 0.05 이하여야 하는 e2e 계약 때문(위쪽 손잡이만 살짝 보임)
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (test)
@@ -29,4 +34,7 @@
 - [ ] 미리보기 /flights 에서 test 가 스크린샷 02 와 같은 구도로 확인
 
 ## 허점
--
+- 서버가 그린 처음 화면의 data-state 는 closed 라, 움직임 줄이기를 쓰는 사람은 문서 안 작은 스크립트가 바로 open 으로 맞춤(없으면 하이드레이션 전 몇 프레임 closed) — 스크립트 꺼짐은 CSS 가 열린 모양으로 보임
+- 처음 보이는 달은 가장 싼 달(서버 그림 · 움직임 줄이기와 같게) — 계획의 '오늘 달'과 다름(빌드 시점 오늘과 보는 날이 달라 서버 그림과 어긋남)
+- 장면 그리기는 시안 코드를 옮긴 것 — 휴대폰 · 사파리 성능은 직접 못 봄(캔버스 해상도 최대 2배 · 입자 수는 휴대폰에서 줄임)
+- 글자판 칸 색은 flap-cell 토큰(시안 #1B2A7E 와 약간 다름)
