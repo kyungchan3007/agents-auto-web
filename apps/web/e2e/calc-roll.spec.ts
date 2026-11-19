@@ -248,6 +248,45 @@ test.describe("직구 계산 — 숫자 굴러가기 (작업 0227 · 모션 4번
     expect(worst, "한 프레임에 건너뛴 칸 수(되감기는 수 칸)").toBeLessThan(1.5);
   });
 
+  test("숫자가 바뀐 자리는 하나도 빠짐없이 굴러감 — 갑자기 바뀌는 자리 없음 (일의 자리 · 맨 앞 자리 포함, 자리 수가 같은 값 사이)", async ({ page }) => {
+    test.skip(!(await ready(page)), "환율 자료 없음");
+    await setInputs(page, { currency: "USD", price: "100", shipping: "", duty: "" });
+    await settleAll(page, "시작");
+    const digitsByPlace = () =>
+      page.evaluate(() => {
+        const root = document.querySelector('[data-testid="calc-result"] [data-testid="rolling-number"][data-slot="big"]')!;
+        const cells = [...root.querySelectorAll('[data-testid="roll-cell"][data-kind="digit"]')].filter((c) => c.getBoundingClientRect().width >= 0.5);
+        return cells.map((c) => c.getAttribute("data-digit")).reverse(); // 0 = 일의 자리
+      });
+    for (const [from, to] of [["100", "377"], ["377", "123"], ["123", "250"]]) {
+      await page.locator("#price").fill(from);
+      await settleAll(page, `${from}달러`);
+      const old = await digitsByPlace();
+      await page.evaluate(() => {
+        const root = document.querySelector('[data-testid="calc-result"] [data-testid="rolling-number"][data-slot="big"]')!;
+        const w = window as unknown as { __moved: Record<number, boolean>; __stop: boolean };
+        w.__moved = {}; w.__stop = false;
+        const tick = () => {
+          const cells = [...root.querySelectorAll('[data-testid="roll-cell"][data-kind="digit"]')].filter((c) => c.getBoundingClientRect().width >= 0.5).reverse();
+          cells.forEach((c, place) => {
+            const strip = c.querySelector('[data-testid="roll-strip"]') as HTMLElement | null;
+            if (c.getAttribute("data-moving") === "true" || (strip && strip.getAnimations().length > 0)) w.__moved[place] = true;
+          });
+          if (!w.__stop) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+      await page.locator("#price").fill(to);
+      await settleAll(page, `${to}달러`);
+      const now = await digitsByPlace();
+      const moved = await page.evaluate(() => { const w = window as unknown as { __moved: Record<number, boolean>; __stop: boolean }; w.__stop = true; return w.__moved; });
+      if (old.length !== now.length) continue;
+      for (let place = 0; place < now.length; place++) {
+        if (old[place] !== now[place]) expect(moved[place] === true, `${from}→${to}달러: ${place}번째 자리(0 = 일의 자리) ${old[place]}→${now[place]} 가 굴러가지 않고 바로 바뀜`).toBe(true);
+      }
+    }
+  });
+
   test("움직임 줄이기 — 굴러가지 않고 바로 최종 값", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     test.skip(!(await ready(page)), "환율 자료 없음");
@@ -339,7 +378,7 @@ test.describe("직구 계산 — 숫자 굴러가기 (작업 0227 · 모션 4번
     await expect(roll(page, "total"), "관세율이 비면 합계는 글").toHaveCount(0);
     await setInputs(page, { price: "" });
     await expect(tid(page, "calc-tag-top")).toContainText("—");
-    await expect(tid(page, "calc-tag-top")).toContainText("물건 값을 넣어 주세요");
+    await expect(tid(page, "calc-tag-top")).toContainText("물건 값을 넣으면 면세 한도 안인지 바로 보여 드립니다"); // 값이 비면 위 칸 안내 글(기존)
     await expect(roll(page, "big"), "빈 값에서는 '—원'").toHaveCount(0);
     await setInputs(page, { price: "250" });
     await expect.poll(async () => await roll(page, "big").count(), { timeout: 2000 }).toBe(1);
