@@ -21,6 +21,8 @@
 - .agents/specs/0227-calc-roll/** · .agents/orchestration/TASKS.md 는 보호 파일이라 건드리지 않음
 
 ## 계획 밖 변경 이유
+- packages/ui/src/lib/rolling-number.ts (새 파일) — test 의 단위 계약(rolling-number.test.ts)이 계산 함수를 이 위치에 두도록 정함. 부품과 같은 값을 두 번 계산하지 않기 위한 순수 함수 분리
+- 부품 css 는 따로 만들지 않고 Tailwind 클래스로 부품 안에 둠 (파일 계획의 tokens.css 변경 없음 · index.ts 내보내기도 `./*` 경로로 충분해 변경 없음)
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (test 가 돌림)
@@ -30,4 +32,5 @@
 - [ ] 미리보기 주소 /calc/ 에서 test 가 스크린샷 07 과 같은 구도로 확인
 
 ## 허점
--
+- 자리 수가 줄어들 때 사라지는 칸은 폭이 부드럽게 줄지 않고 바로 없어짐 (시안은 폭 전환 0.42초)
+- 글자판형(board · 통화 0231)은 아직 받지 않음 — 칸 구성은 rollCells 와 Digit 으로 나뉘어 있어 앞 빈 칸 · 맨 끝 칸 옵션을 더하면 됨
