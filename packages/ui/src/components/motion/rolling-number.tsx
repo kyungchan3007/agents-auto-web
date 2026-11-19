@@ -5,7 +5,7 @@
 //   처음 값은 그대로 보임(서버 첫 그림도 최종 값) · 움직이는 중 새 값이 오면 지금 보이는 위치에서 이어 감(되감기 없음)
 //   움직임 줄이기면 굴리지 않고 바로 최종 값 · 화면 읽기에는 최종 값 한 번(roll-sr) · 나머지는 aria-hidden
 //   띠 움직임은 웹 애니메이션(.animate) — 타이머로 숫자를 바꾸지 않음 · 다른 곳(통화 글자판 등)에서도 쓰도록 className 으로 크기 · 색만 받음
-import { type MutableRefObject, useCallback, useLayoutEffect, useRef } from "react";
+import { type MutableRefObject, useCallback, useLayoutEffect, useRef, useState } from "react";
 import { rollCells, rollDelayMs, rollDurationMs, rollSteps, rollText } from "../../lib/rolling-number";
 
 type Props = { value: number; suffix?: string; prefix?: string; slot?: string; className?: string };
@@ -70,6 +70,8 @@ function Digit({ digit, place, value, mounted, onMove }: { digit: number; place:
   const cellRef = useRef<HTMLSpanElement>(null);
   const stripRef = useRef<HTMLSpanElement>(null);
   const st = useRef<CellState>({ pos: MID + digit, prev: value, init: false, anim: null, moving: false });
+  // 처음 그림의 위치는 한 번만 정함 — 값이 바뀔 때마다 React 가 style 을 목표로 덮으면 굴러가기 전에 끝 위치가 되어 건너뜀 (이후 위치는 효과에서만 바꿈)
+  const [startShift] = useState(() => shift(MID + digit));
   useLayoutEffect(() => {
     const s = st.current;
     const cell = cellRef.current;
@@ -109,7 +111,7 @@ function Digit({ digit, place, value, mounted, onMove }: { digit: number; place:
   );
   return (
     <span ref={cellRef} data-testid="roll-cell" data-kind="digit" data-digit={digit} className="relative inline-block h-[1.18em] w-[1ch] flex-none overflow-hidden">
-      <span ref={stripRef} data-testid="roll-strip" className="flex flex-col will-change-transform" style={{ transform: shift(MID + digit) }}>
+      <span ref={stripRef} data-testid="roll-strip" className="flex flex-col will-change-transform" style={{ transform: startShift }}>
         {Array.from({ length: REPS * 10 }, (_, k) => (
           <span key={k} className="block h-[1.18em] text-center leading-[1.18em]">
             {k % 10}
