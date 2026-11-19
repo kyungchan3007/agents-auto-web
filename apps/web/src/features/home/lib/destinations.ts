@@ -6,7 +6,7 @@ import { pinBasis } from "@hav/ui/data/signal-pin";
 
 export type Signal = "cheap" | "normal" | "expensive";
 export type Destination = { id: string; name: string; currency?: string; country?: string };
-/** median = 최근 windowDays 중간값 (선택 · 작업 0228) — 환율 baseRate 와 같은 단위 · 옛 응답 · 자료 부족이면 없음 */
+/** median = 최근 windowDays 중간값 (선택 · 작업 0228) — latest.value 와 같은 1 외화당 원 (화면 금액은 × 환율 unit) · 옛 응답 · 자료 부족이면 없음 */
 export type SignalRow = { currency: string; signal: Signal | null; reason: string; percentile: number | null; median?: number | null };
 export type RateRow = { currency: string; unit: number; baseRate: number };
 
@@ -46,7 +46,7 @@ export type DestinationRowData = {
   /** 금액 카운트업 숫자 (작업 0217) — formatCount(rateValue, rateDigits) + "원" 이 rateText 와 같음 · 환율이 없으면 null · 0 */
   rateValue: number | null;
   rateDigits: 0 | 1;
-  /** 금액 카운트업 시작 값 (작업 0228) = 최근 90일 중간값 · 없거나 쓸 수 없으면(없음 · 숫자 아님 · 0 이하 · 환율 없음) null → 오늘 값에서 시작(카운트업 없음) */
+  /** 금액 카운트업 시작 값 (작업 0228) = 최근 90일 중간값 × 환율 unit(화면 단위 · 엔은 100엔당) · 없거나 쓸 수 없으면(없음 · 숫자 아님 · 0 이하 · 환율 없음) null → 오늘 값에서 시작(카운트업 없음) */
   rateStart: number | null;
   signal: Signal | null;
   position: number | null;
@@ -75,7 +75,7 @@ export function destinationRows(signals: SignalRow[], rates: RateRow[], destinat
       rateText: rate ? wonText(rate.baseRate) : null,
       rateValue: rate ? rate.baseRate : null,
       rateDigits: rate && rate.baseRate < 100 ? 1 : 0,
-      rateStart: rate && typeof s?.median === "number" && Number.isFinite(s.median) && s.median > 0 ? s.median : null,
+      rateStart: rate && typeof s?.median === "number" && Number.isFinite(s.median) && s.median > 0 ? s.median * rate.unit : null,
       signal: hasSignal ? (s?.signal ?? null) : null,
       position: hasSignal ? (s?.percentile ?? null) : null,
       percentile: hasSignal ? (s?.percentile ?? null) : null,
