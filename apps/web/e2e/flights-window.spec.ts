@@ -178,10 +178,12 @@ test.describe("여행 타이밍 — 창밖으로 보는 12달 (작업 0229 · �
     await page.setViewportSize({ width: isPhone(page) ? 412 : 1280, height: isPhone(page) ? 3600 : 2600 });
     await page.goto("/");
     await page.waitForLoadState("networkidle");
-    test.skip((await page.locator('a[href="/flights"]').count()) === 0, "홈에 /flights 링크 없음");
+    test.skip((await tid(page, "year-link").count()) === 0, "홈 12달 구역 없음");
     await startRec(page);
-    await page.evaluate(() => (document.querySelector('a[href="/flights"]') as HTMLAnchorElement).click()); // Next 링크 = 클라이언트 이동 (새로 불러오지 않음)
+    await page.evaluate(() => { (window as unknown as { __spa: number }).__spa = 1; });
+    await tid(page, "year-link").click(); // 홈 12달의 '항공료 그래프 자세히 ›' = Next 링크 (클라이언트 이동 · 메뉴의 링크는 문서를 새로 불러옴)
     await expect(page).toHaveURL(/\/flights\/?$/);
+    expect(await page.evaluate(() => (window as unknown as { __spa?: number }).__spa), "클라이언트 이동이 아니라 문서를 새로 불러옴").toBe(1);
     await expect(page.locator("main")).toBeVisible();
     test.skip((await tid(page, "flights-ticket").count()) === 0, "지수 자료 없음"); // 자료가 없을 때만 (새 구역이 없어서가 아님)
     await page.waitForTimeout(3500);
