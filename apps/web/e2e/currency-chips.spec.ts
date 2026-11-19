@@ -120,7 +120,7 @@ test.describe("고른 통화 칩 (작업 0231)", () => {
     await tid(page, "chip-box-item").and(page.locator('[data-code="USD"]')).click();
     await expect(box).toHaveCount(0);
     await urlIs(page, "USD");
-    expect((await rowCodes(page))[0], "고른 칩이 맨 앞").toBe("USD");
+    await expect.poll(async () => (await rowCodes(page))[0], { message: "고른 칩이 맨 앞", timeout: 4000 }).toBe("USD"); // 이동 직후 칩이 아직 미끄러지는 중일 수 있어 잠깐 기다림
     expect((await stored(page))[0]).toBe("USD");
   });
 
