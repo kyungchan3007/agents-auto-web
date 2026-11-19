@@ -7,6 +7,7 @@
 //       상자에서 고르면 상자가 닫히고 그 통화로 전환(주소 · 칩 맨 앞) · Esc · 바깥 누르기로도 닫힘
 //     저장: localStorage "flapfx:recent-currencies"(JSON 배열 · 맨 앞이 가장 최근) — 다음 방문에도 같은 칩 줄 · 저장이 없으면 지금 운영 그대로(JPY · USD · EUR · THB + 지금 통화가 넷 밖이면 맨 앞)
 //     움직임 줄이기면 밀림 · 빠짐 · 상자 펼침 모두 움직임 없이 바로 최종
+//   첫 그림 깜빡임 고침(lead 결정): 저장이 있는 사람만 — 문서 앞쪽 아주 작은 인라인 스크립트가 localStorage "flapfx:recent-currencies" 가 있으면 <html data-recent-chips> 를 달고 → CSS 가 그 표시가 있고 아직 하이드레이션 전이면 칩 줄을 visibility hidden → 저장 순서로 그린 뒤 해제(밀림 모션 없이 나타남) · 저장이 없으면(처음 방문) 숨김 없이 첫 프레임부터 기본 칩 · JS 꺼짐은 기본 칩 · 저장이 깨져 있어도 영영 숨지 않음
 //   목록의 통화는 아래 둘러보기 목록 [data-testid="currency-list"] 의 링크로 고름 (받은 통화가 달라도 되게 목록에서 읽음)
 import { type Page, expect, test } from "@playwright/test";
 
@@ -217,6 +218,92 @@ test.describe("고른 통화 칩 (작업 0231)", () => {
     const bb = (await tid(page, "chip-box").boundingBox())!;
     expect(bb.x + bb.width).toBeLessThanOrEqual(page.viewportSize()!.width + 1);
     void isPhone;
+    expect(errors).toEqual([]);
+  });
+});
+
+test.describe("저장된 칩 첫 그림 깜빡임 없음 (작업 0231 · lead 결정)", () => {
+  /** 문서가 열릴 때부터 매 프레임 — 눈에 보이는 칩(visibility hidden · 투명 제외)과 위치 */
+  const INIT = `
+    window.__cf = [];
+    document.addEventListener("DOMContentLoaded", () => {
+      const t0 = performance.now();
+      const tick = () => {
+        const vis = [...document.querySelectorAll('[data-testid="chip"]')].filter((e) => {
+          let o = 1, hidden = false;
+          for (let n = e; n && n !== document.body; n = n.parentElement) { const cs = getComputedStyle(n); o *= parseFloat(cs.opacity); if (cs.visibility === "hidden" || cs.display === "none") hidden = true; }
+          const r = e.getBoundingClientRect();
+          return !hidden && o > 0.05 && r.width > 0;
+        }).map((e) => ({ c: e.getAttribute("data-code"), x: e.getBoundingClientRect().x, leaving: e.getAttribute("data-leaving") === "true" }));
+        window.__cf.push({ t: performance.now() - t0, vis, attr: document.documentElement.hasAttribute("data-recent-chips") });
+        if (performance.now() - t0 < 6000) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  `;
+  type CF = { t: number; vis: { c: string; x: number; leaving: boolean }[]; attr: boolean };
+  const frames = (page: Page) => page.evaluate(() => (window as unknown as { __cf: unknown[] }).__cf) as Promise<CF[]>;
+  const SAVED = ["GBP", "SGD", "AUD", "MYR", "CNH", "JPY", "USD"];
+
+  test("저장이 있고 CPU 가 6배 느려도 — 첫 프레임부터 틀린 칩(기본 줄)이 한 번도 안 보임 · html 에 data-recent-chips · 저장 순서로 나타남 · 밀림 모션 없음", async ({ page }) => {
+    await seed(page, SAVED);
+    await page.addInitScript(INIT);
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send("Emulation.setCPUThrottlingRate", { rate: 6 });
+    await page.goto("/currencies/GBP");
+    test.skip(!(await hasAll(page, SAVED)), "받은 통화가 모자람");
+    await page.waitForTimeout(5500);
+    const fr = await frames(page);
+    expect(fr.length).toBeGreaterThan(10);
+    const want = SAVED.slice(0, 5);
+    expect(fr[0].attr, "첫 프레임에 html 표시(data-recent-chips)").toBe(true);
+    const rowOf = (f: CF) => [...f.vis].sort((a, b) => a.x - b.x).map((v) => v.c);
+    for (const f of fr) {
+      const row = rowOf(f);
+      expect(row.length === 0 || JSON.stringify(row) === JSON.stringify(want), `틀린 칩이 보임 (t=${f.t.toFixed(0)}ms): ${row.join(" ")}`).toBe(true);
+    }
+    expect(rowOf(fr[fr.length - 1]), "끝에는 저장 순서").toEqual(want);
+    // 나타난 뒤에는 밀림(위치 이동) 없음 · 빠지는 칩 없음
+    const firstShown = fr.findIndex((f) => f.vis.length > 0);
+    expect(firstShown).toBeGreaterThanOrEqual(0);
+    const x0 = Object.fromEntries(fr[firstShown].vis.map((v) => [v.c, v.x]));
+    for (const f of fr.slice(firstShown)) for (const v of f.vis) { expect(Math.abs(v.x - x0[v.c]), `${v.c} 칩이 움직임(밀림 모션) t=${f.t.toFixed(0)}`).toBeLessThanOrEqual(1.5); expect(v.leaving).toBe(false); }
+    await expect(tid(page, "chip-more")).toHaveText("더보기 +2");
+  });
+
+  test("저장이 없으면(처음 방문) 숨김 없이 첫 프레임부터 기본 칩 · html 에 표시 없음", async ({ page }) => {
+    await page.addInitScript(INIT);
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send("Emulation.setCPUThrottlingRate", { rate: 6 });
+    await page.goto("/currencies/JPY");
+    await page.waitForTimeout(3500);
+    const fr = await frames(page);
+    expect(fr.length).toBeGreaterThan(5);
+    expect(fr.every((f) => !f.attr), "html 표시가 붙음").toBe(true);
+    const row = [...fr[0].vis].sort((a, b) => a.x - b.x).map((v) => v.c);
+    expect(row.length, "첫 프레임부터 칩이 보임").toBeGreaterThanOrEqual(3);
+    expect(row.slice(0, 4)).toEqual(DEFAULT4.filter((c) => row.includes(c)).slice(0, 4));
+  });
+
+  test("자바스크립트를 꺼도 기본 칩이 보임(저장을 읽을 수 없으니 숨기지 않음)", async ({ browser, baseURL }) => {
+    const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport: { width: 1280, height: 800 } });
+    const page = await ctx.newPage();
+    await page.goto("/currencies/JPY");
+    const vis = await tid(page, "chip").evaluateAll((els) => els.filter((e) => { for (let n: Element | null = e; n && n !== document.body; n = n.parentElement) { const cs = getComputedStyle(n); if (cs.visibility === "hidden" || cs.display === "none") return false; } return e.getBoundingClientRect().width > 0; }).map((e) => e.getAttribute("data-code")));
+    expect(vis.length).toBeGreaterThanOrEqual(3);
+    await ctx.close();
+  });
+
+  test("저장이 깨져 있어도(JSON 아님 · 코드 아님) 영영 숨지 않음 — 오류 없이 하이드레이션 뒤 기본 칩", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(String(e)));
+    await page.addInitScript(([k]) => { try { window.localStorage.setItem(k as string, "{not json"); } catch {} }, [KEY]);
+    await page.goto("/currencies/JPY");
+    await page.waitForTimeout(1500);
+    const row = await rowCodes(page);
+    expect(row.length, "깨진 저장에서도 칩이 보임").toBeGreaterThanOrEqual(3);
+    const hiddenNow = await tid(page, "currency-chips").evaluate((e) => getComputedStyle(e).visibility);
+    expect(hiddenNow).not.toBe("hidden");
     expect(errors).toEqual([]);
   });
 });
