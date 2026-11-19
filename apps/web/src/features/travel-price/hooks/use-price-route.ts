@@ -4,19 +4,15 @@
 //   서버 첫 그림 · 움직임 줄이기 · 자바스크립트 꺼짐 = 정적 노선(armed 거짓) · 움직일 수 있는 브라우저에서만 스크롤을 읽음
 //   스크롤은 requestAnimationFrame 으로 모아 한 번에 · 휴대폰은 자가 화면보다 넓어 말(동그라미)을 따라 옆으로 흐름
 import { useReducedMotion } from "motion/react";
-import { type RefObject, useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { isMoving, routeActive, routeFrame } from "../lib/price-route";
+import { type RefObject, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 
 export type RouteFrame = { i: number; f: number; m: number };
 
 type Out = {
   armed: boolean;
-  fr: RouteFrame;
-  active: number;
+  /** 스크롤 진행 0~1 (판이 메뉴 띠 아래에 붙은 뒤 구역 안에서 얼마나 내려왔는지) */
+  progress: number;
   dir: "forward" | "back";
-  /** 지금 정거장이 바뀐 횟수 — 처음 값은 0(움직임 없이 바로) */
-  swap: number;
-  moving: boolean;
   sec: RefObject<HTMLElement | null>;
   stage: RefObject<HTMLDivElement | null>;
   ruler: RefObject<HTMLDivElement | null>;
@@ -35,21 +31,16 @@ export function usePriceRoute(n: number): Out {
   const stage = useRef<HTMLDivElement>(null);
   const ruler = useRef<HTMLDivElement>(null);
   const vp = useRef<HTMLDivElement>(null);
-  const [fr, setFr] = useState<RouteFrame>(() => routeFrame(0, n));
-  const [active, setActive] = useState(0);
+  const [progress, setProgress] = useState(0);
   const [dir, setDir] = useState<"forward" | "back">("forward");
-  const [swap, setSwap] = useState(0);
-  const activeRef = useRef(0);
   const dirRef = useRef<"forward" | "back">("forward");
   const lastY = useRef(0);
-  // 진행 p — 판이 메뉴 띠 아래에 붙은 뒤 구역 안에서 얼마나 내려왔는지
-  const progress = useCallback(() => {
+  const measure = useCallback(() => {
     const s = sec.current;
     const st = stage.current;
-    if (!s || !st) return 0;
-    const span = s.getBoundingClientRect().height - st.getBoundingClientRect().height;
-    const stick = Number.parseFloat(getComputedStyle(st).top) || 0;
-    return span > 0 ? (stick - s.getBoundingClientRect().top) / span : 0;
+    if (!s || !st) return { span: 0, stick: 0, top: 0 };
+    const sr = s.getBoundingClientRect();
+    return { span: sr.height - st.getBoundingClientRect().height, stick: Number.parseFloat(getComputedStyle(st).top) || 0, top: sr.top };
   }, []);
   useEffect(() => {
     if (!armed || n < 2) return;
@@ -57,16 +48,8 @@ export function usePriceRoute(n: number): Out {
     lastY.current = window.scrollY;
     const frame = () => {
       ticking = false;
-      const next = routeFrame(progress(), n);
-      setFr(next);
-      const a = routeActive(activeRef.current, next);
-      if (a !== activeRef.current) {
-        const first = activeRef.current === 0 && swapZero.current;
-        activeRef.current = a;
-        setActive(a);
-        if (!first) setSwap((x) => x + 1);
-        swapZero.current = false;
-      }
+      const m = measure();
+      setProgress(m.span > 0 ? (m.stick - m.top) / m.span : 0);
       if (window.scrollY !== lastY.current) {
         const d = window.scrollY < lastY.current ? "back" : "forward";
         if (d !== dirRef.current) {
@@ -75,17 +58,6 @@ export function usePriceRoute(n: number): Out {
         }
       }
       lastY.current = window.scrollY;
-      // 휴대폰: 자가 화면보다 넓으면 말(동그라미)을 따라 옆으로 흐름
-      const r = ruler.current;
-      const v = vp.current;
-      if (r && v) {
-        const W = r.offsetWidth;
-        const vw = v.clientWidth;
-        if (W > vw + 2) {
-          const x = (Number.parseFloat(r.dataset.planeX ?? "0") / 100) * W;
-          r.style.transform = `translateX(${Math.min(0, Math.max(vw - W, vw * 0.5 - x))}px)`;
-        } else r.style.transform = "";
-      }
     };
     const req = () => {
       if (!ticking) {
@@ -93,7 +65,6 @@ export function usePriceRoute(n: number): Out {
         requestAnimationFrame(frame);
       }
     };
-    const swapZero = { current: true };
     window.addEventListener("scroll", req, { passive: true });
     window.addEventListener("resize", req);
     const first = requestAnimationFrame(frame);
@@ -102,20 +73,37 @@ export function usePriceRoute(n: number): Out {
       window.removeEventListener("resize", req);
       cancelAnimationFrame(first);
     };
-  }, [armed, n, progress]);
+  }, [armed, n, measure]);
+  // 휴대폰: 자가 화면보다 넓으면 말(동그라미)을 따라 옆으로 흐름 — 그릴 때마다 말 위치(data-plane-x · %)를 읽어 맞춤
+  useLayoutEffect(() => {
+    const r = ruler.current;
+    const v = vp.current;
+    if (!r || !v) return;
+    const W = r.offsetWidth;
+    const vw = v.clientWidth;
+    if (armed && W > vw + 2) {
+      const x = (Number.parseFloat(r.dataset.planeX ?? "0") / 100) * W;
+      r.style.transform = `translateX(${Math.min(0, Math.max(vw - W, vw * 0.5 - x))}px)`;
+    } else r.style.transform = "";
+  }, [armed, progress]);
   // 정거장 단추 — 그 정거장 위치로 부드럽게 스크롤
   const goto = useCallback(
     (i: number) => {
-      const s = sec.current;
-      const st = stage.current;
-      if (!s || !st || n < 2) return;
-      const span = s.getBoundingClientRect().height - st.getBoundingClientRect().height;
-      const stick = Number.parseFloat(getComputedStyle(st).top) || 0;
-      window.scrollTo({ top: window.scrollY + s.getBoundingClientRect().top - stick + span * (i / (n - 1)) + 1, behavior: "smooth" });
+      const m = measure();
+      if (n < 2) return;
+      window.scrollTo({ top: window.scrollY + m.top - m.stick + m.span * (i / (n - 1)) + 1, behavior: "smooth" });
     },
-    [n],
+    [n, measure],
   );
-  return { armed, fr, active, dir, swap, moving: isMoving(fr.m), sec, stage, ruler, vp, goto };
+  return { armed, progress, dir, sec, stage, ruler, vp, goto };
+}
+
+/** 이전 결과를 이어 받아 다음 값을 정함 — 지금 정거장처럼 "움직이는 중에는 이전 값 유지" 가 필요한 값 · 바뀐 횟수(swap)도 돌려줌(처음 값은 0 → 움직임 없이 바로) */
+export function useRouteStep<F>(frame: F, step: (prev: number, frame: F) => number): { value: number; swap: number } {
+  const [state, setState] = useState({ value: 0, swap: 0 });
+  const next = step(state.value, frame);
+  if (next !== state.value) setState({ value: next, swap: state.swap + 1 }); // 그리는 중 값 이어 받기 (공식 방식 — 같은 그림 안에서 바로 다시 그림)
+  return { value: next, swap: next !== state.value ? state.swap + 1 : state.swap };
 }
 
 /** 카드 숫자 — 정거장이 바뀌면 이전 값에서 새 값으로 약 0.75초 (ease-out) · 처음은 바로 */
