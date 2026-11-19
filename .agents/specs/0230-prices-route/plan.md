@@ -20,6 +20,10 @@
 - .agents/specs/0230-prices-route/**
 
 ## 계획 밖 변경 이유
+- apps/web/src/features/travel-price/components/price-ruler.tsx 삭제 — 노선이 자 자리를 대신해 쓰는 곳이 없어짐 (lead 결정 · @hav/ui RulerChart · lib/ruler.ts 는 그대로 둠)
+- hooks/use-price-route.ts (새) — 파일 계획의 hooks(새) · 스크롤 진행 · 카드 숫자 · 글자판 넘김
+- price-page.tsx · price-view.tsx 의 구조 변경: 노선과 세 칸 목록을 같은 Suspense 안에서(거른 목록의 정거장을 따르려고) 노선 바로 다음 형제 칸에 목록 · 서버 첫 그림(fallback)도 같은 모양
+- 정적 노선은 서버 그림 · 움직임 줄이기 · JS 꺼짐에서 정거장 카드를 모두 그림 — 움직이는 노선은 hydrate 뒤 카드 하나로 바뀜(test 가 strict 로 한 요소만 있어야 하는 검사 때문에 두 모드를 한 화면에 같이 두지 않음)
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (test)
@@ -29,4 +33,7 @@
 - [ ] 미리보기 /prices 에서 test 가 스크린샷 06 과 같은 구도로 확인
 
 ## 허점
--
+- 판 안 내용 높이(제목 · 자 300px · 카드)가 화면 − 메뉴 높이보다 크면(낮은 창) 아래가 잘림 — 시안과 같은 크기를 씀
+- 가만히 있을 때 제목 자리는 정적 자와 같게 맞추려고 구역을 판 윗 여백(1.5rem)만큼 위로 당김(margin-top −1.5rem) — 예산 카드 → 제목 140px · 100px 은 정적 자와 같은 바깥 칸을 써서 맞췄고 실측은 test
+- 움직이는 카드는 hydrate 뒤 나타나므로 그 전(서버 그림)에는 카드 자리가 빔
+- 휴대폰은 자(960px)가 화면보다 넓어 말을 따라 옆으로 흐름 · 가장자리 정거장이 잘 안 보일 수 있음(시안 방식)
