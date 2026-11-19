@@ -26,6 +26,8 @@ export const SignalResult = z.object({
   window: z.object({ from: IsoDate, to: IsoDate, count: z.number().int(), expected: z.number().int() }).nullable(),
   range: z.object({ min: z.number(), max: z.number() }).nullable(),
   method: z.string(), // SIG-02: 계산 방법을 항상 같이
+  /** 최근 windowDays 창 안 값의 중간값 (작업 0228) — latest.value 와 같은 1 외화당 원 · 값이 2개 미만이면 null · 선택: 옛 응답에는 없음 */
+  median: z.number().nullable().optional(),
 });
 export type SignalResult = z.infer<typeof SignalResult>;
 
@@ -37,7 +39,15 @@ export type CurrencySignal = z.infer<typeof CurrencySignal>;
 export const SignalList = z.object({
   rule: SignalRule,
   signals: z.array(
-    z.object({ currency: z.string().length(3), signal: Signal.nullable(), reason: SignalReason, percentile: z.number().nullable(), latest: Point.nullable() }),
+    z.object({
+      currency: z.string().length(3),
+      signal: Signal.nullable(),
+      reason: SignalReason,
+      percentile: z.number().nullable(),
+      latest: Point.nullable(),
+      /** 90일 중간값 (작업 0228 · 홈 도착지 카드의 카운트업 시작 값) — 선택 · 없으면 null */
+      median: z.number().nullable().optional(),
+    }),
   ),
 });
 export type SignalList = z.infer<typeof SignalList>;
