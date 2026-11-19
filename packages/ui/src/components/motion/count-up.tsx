@@ -6,10 +6,10 @@
 import { useCountUp } from "../../hooks/use-count-up";
 import { formatCount } from "../../lib/count-up";
 
-type Props = { value: number; digits?: number; prefix?: string; suffix?: string; className?: string };
+type Props = { value: number; digits?: number; prefix?: string; suffix?: string; className?: string; /** 직전 값에서 시작(통화를 바꿀 때 · 작업 0231) */ from?: number | null; /** 시작을 늦춤(ms) */ delayMs?: number };
 
-export function CountUp({ value, digits = 0, prefix = "", suffix = "", className = "" }: Props) {
-  const { ref, value: shown } = useCountUp<HTMLSpanElement>(value, { digits });
+export function CountUp({ value, digits = 0, prefix = "", suffix = "", className = "", from = null, delayMs = 0 }: Props) {
+  const { ref, value: shown } = useCountUp<HTMLSpanElement>(value, { digits, from, delayMs });
   const final = `${prefix}${formatCount(value, digits)}${suffix}`;
   return (
     <span ref={ref} data-testid="count-up" data-final={final} className={`tabular-nums ${className}`}>
