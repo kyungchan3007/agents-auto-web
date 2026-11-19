@@ -5,9 +5,8 @@
 //     // 알약 글의 M — 사이트 신호 규칙(하위 30% 이하 = signal "cheap", docs/domain/signal.md SIG-05)으로 센 도착지 수 · 신호 없음은 안 셈 · 숫자를 지어내지 않음
 //   pillText(total: number, cheap: number, windowDays?: number): string
 //     // `도착지 ${total}곳 중 ${cheap}곳이 최근 ${windowDays}일 중 싼 편` (windowDays 기본 90)
-//   SignalRow 에 median?: number | null 추가(최근 windowDays 중간값 · 환율 baseRate 와 같은 단위) · DestinationRowData 에 rateStart: number | null
-//     // 금액 카운트업 시작 값 = 그 도착지의 90일 중간값 · 없거나(없음 · null · 숫자 아님 · 0 이하) 환율이 없으면 null(= 오늘 값에서 시작 · 카운트업 없음)
-//     // 중간값은 api 가 /signal 목록에 실어 주거나 같은 값을 만들 다른 길로 — 지어낸 값이면 안 됨 (결정은 lead · builder)
+//   SignalRow 에 median?: number | null 추가 — api /signal 목록 줄의 median(최근 windowDays 중간값 · latest.value 와 같은 1 외화당 원 단위, 결정 3fa156a) · DestinationRowData 에 rateStart: number | null
+//     // 금액 카운트업 시작 값 = median × 환율 unit (화면 단위로 — 엔은 100엔당) · median 이 없거나(없음 · null · 숫자 아님 · 0 이하) 환율이 없으면 null(= 오늘 값에서 시작 · 카운트업 없음)
 import { describe, expect, it } from "vitest";
 import { cheapDestinationCount, destinationRows, pillText } from "./destinations";
 
@@ -58,18 +57,20 @@ describe("cheapDestinationCount — M 은 사이트 신호 규칙(하위 30% 이
 });
 
 describe("rateStart — 카운트업 시작 값 = 90일 중간값 (없으면 null)", () => {
-  it("중간값이 있으면 그대로", () => {
-    const r = rows([sig("JPY", "cheap", 0.1, 840.5), sig("USD", "normal", 0.5, 1330), sig("EUR", "normal", 0.5, 1460.7), sig("THB", "normal", 0.5, 39.2)]);
-    expect(r.map((x) => (x as { rateStart: number | null }).rateStart)).toEqual([840.5, 1330, 1460.7, 39.2]);
+  it("중간값(1 외화당 원)을 화면 단위로 — 엔은 ×100 · 나머지는 unit 1 이라 그대로", () => {
+    const r = rows([sig("JPY", "cheap", 0.1, 8.405), sig("USD", "normal", 0.5, 1330), sig("EUR", "normal", 0.5, 1460.7), sig("THB", "normal", 0.5, 39.2)]);
+    const start = r.map((x) => (x as { rateStart: number | null }).rateStart);
+    expect(start[0]).toBeCloseTo(840.5, 6);
+    expect(start.slice(1)).toEqual([1330, 1460.7, 39.2]);
   });
   it("없음 · null · 숫자 아님 · 0 이하 · 환율 없음 → null (숫자를 지어내지 않음)", () => {
     const r = destinationRows([sig("JPY", "cheap", 0.1), sig("USD", "normal", 0.5, null), sig("EUR", "normal", 0.5, Number.NaN), sig("THB", "normal", 0.5, 0)] as never, RATES, DEST);
     expect(r.map((x) => (x as { rateStart: number | null }).rateStart)).toEqual([null, null, null, null]);
-    const noRate = destinationRows([sig("JPY", "cheap", 0.1, 840)] as never, RATES.filter((x) => x.currency !== "JPY"), DEST.slice(0, 1));
+    const noRate = destinationRows([sig("JPY", "cheap", 0.1, 8.4)] as never, RATES.filter((x) => x.currency !== "JPY"), DEST.slice(0, 1));
     expect((noRate[0] as { rateStart: number | null }).rateStart).toBeNull();
   });
   it("기존 줄 값은 그대로 — rateValue · rateText · position · pinText", () => {
-    const r = rows([sig("JPY", "cheap", 0.03, 840), sig("USD", "cheap", 0.1), sig("EUR", "normal", 0.5), sig("THB", "expensive", 0.9)]);
+    const r = rows([sig("JPY", "cheap", 0.03, 8.4), sig("USD", "cheap", 0.1), sig("EUR", "normal", 0.5), sig("THB", "expensive", 0.9)]);
     expect(r[0]).toMatchObject({ city: "도쿄", rateText: "835원", rateValue: 835.23, position: 0.03, signal: "cheap" });
     expect(r[3]).toMatchObject({ city: "방콕", rateText: "39.2원", rateDigits: 1 });
   });

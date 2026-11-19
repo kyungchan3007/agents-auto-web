@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { IsoDate } from "../utils/date";
 import { CurrencyCode, FxHistoryQuery, FxLatest } from "./fx";
 import { LevelsQuery } from "./prices";
-import { CurrencySignal } from "./signal";
+import { CurrencySignal, SignalList } from "./signal";
 import { blockMarks, snagText } from "./tasks";
 
 describe("요청 검사", () => {
@@ -60,6 +60,38 @@ describe("응답 검사 (화면이 쓰는 쪽)", () => {
     expect(CurrencySignal.safeParse(ok).success).toBe(true);
     const { method: _, ...noMethod } = ok;
     expect(CurrencySignal.safeParse(noMethod).success).toBe(false);
+  });
+});
+
+// 작업 0228 — median(90일 중간값) 계약: 선택 · null 가능 · 숫자만 (예전 응답에도 호환) · 테스트 먼저
+describe("신호 median 계약 (작업 0228)", () => {
+  const result = {
+    currency: "USD", signal: "cheap", reason: "ok", percentile: 0.02,
+    latest: { date: "2026-10-28", value: 1324.3 },
+    window: { from: "2026-07-31", to: "2026-10-28", count: 59, expected: 64 },
+    range: { min: 1322.6, max: 1441.1 },
+    method: "최근 90일 중 오늘보다 낮았던 날의 비율 · 예측 아님",
+    rule: { windowDays: 90, cheapAt: 0.3, expensiveAt: 0.7, minCoverage: 0.8 },
+  };
+  const row = { currency: "USD", signal: "cheap", reason: "ok", percentile: 0.02, latest: { date: "2026-10-28", value: 1324.3 } };
+  const list = (r: object) => ({ rule: result.rule, signals: [r] });
+
+  it("SignalResult(CurrencySignal): median 숫자 · null · 없음(예전 응답) 모두 통과 · 숫자가 아니면 실패 · 값이 그대로 나옴", () => {
+    expect(CurrencySignal.safeParse({ ...result, median: 1350.5 }).success).toBe(true);
+    expect(CurrencySignal.safeParse({ ...result, median: null }).success).toBe(true);
+    expect(CurrencySignal.safeParse(result).success).toBe(true);
+    expect(CurrencySignal.safeParse({ ...result, median: "1350" }).success).toBe(false);
+    const parsed = CurrencySignal.parse({ ...result, median: 1350.5 }) as { median?: number | null };
+    expect(parsed.median).toBe(1350.5); // 계약이 모르는 필드로 알고 지우지 않음
+  });
+
+  it("SignalList 줄: median 숫자 · null · 없음 통과 · 숫자가 아니면 실패 · 값이 그대로 나옴", () => {
+    expect(SignalList.safeParse(list({ ...row, median: 1350.5 })).success).toBe(true);
+    expect(SignalList.safeParse(list({ ...row, median: null })).success).toBe(true);
+    expect(SignalList.safeParse(list(row)).success).toBe(true);
+    expect(SignalList.safeParse(list({ ...row, median: "x" })).success).toBe(false);
+    const parsed = SignalList.parse(list({ ...row, median: 8.4 })) as { signals: { median?: number | null }[] };
+    expect(parsed.signals[0].median).toBe(8.4);
   });
 });
 
