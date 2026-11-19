@@ -15,7 +15,7 @@ export function DestinationsSection({ rows, windowDays, moreCount }: { rows: Des
         <p className="mt-3 max-w-3xl text-small text-fg-2">
           가운데 선이 최근 {windowDays}일 중간입니다. 왼쪽일수록 지금 환전이 유리합니다. 예측이 아니며 투자 · 금융 조언이 아닙니다.
         </p>
-        <DestinationTable rows={rows} />
+        <DestinationTable rows={rows} windowDays={windowDays} />
         <Link href={MORE_CURRENCIES_HREF} data-testid="more-currencies" className="mt-6 inline-block border-b-2 border-cheap pb-0.5 text-body font-bold text-cheap hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
           {moreCurrenciesText(moreCount)}
         </Link>
