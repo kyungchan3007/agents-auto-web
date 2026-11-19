@@ -22,6 +22,9 @@
 - .agents/specs/0231-currency-switch/**
 
 ## 계획 밖 변경 이유
+- packages/ui/src/hooks/use-count-up.ts · components/motion/count-up.tsx — 카운트업에 직전 값(from) · 시작 늦춤(delayMs) 옵션 추가(통화를 바꿀 때 큰 환율 · 최저 · 최고가 직전 값에서 시작) · 기본 동작은 그대로 · 파일 계획의 "글자판형 옵션"과 같은 묶음
+- 새 파일: lib/recent-chips.ts · lib/switch-motion.ts · lib/switch-memory.ts · hooks/use-recent-currencies.ts · use-currency-pick.ts · use-chip-row.ts · use-chip-flip.ts · use-chip-box.ts · use-switch-from.ts · use-flag-fly.ts · use-range-motion.ts · components/chip-more-box.tsx · currency-kicker.tsx · switch-fade.tsx · big-rate-number.tsx (파일 계획의 `features/currencies/**` 안 · 화면 .tsx 가 훅을 직접 쓰지 못하는 규칙 때문에 훅 파일로 나눔)
+- 전환 기억 SwitchSnapshot 에 선택 값 won(글자판 결과)을 더함 — 테스트가 정한 모양에서 하나 더(없어도 되는 값) · switchFrom(이동 한 번에 한 번만 꺼내 부품들이 나눠 읽음)
 
 ## 위험
 - 클라이언트 이동 중 layout 은 남고 상세는 새로 그려짐 → 전환 기억이 없으면 움직임이 빠짐(틀린 값은 아님).
@@ -31,3 +34,4 @@
 - test: 단위(칩 계산 · 저장 · 전환 기억) · 소스 검사 · e2e(전환 순서 · 올라감 · 칩 · 상자 · 주소 · 새로 고침 · 움직임 줄이기) · 게이트 full(가짜 API) · 미리보기 /currencies/JPY 1280 · 390.
 
 ## 계획과 달라진 점
+- 올라감은 위로만: 환율 자리가 이미 위쪽이면 내려가지 않음(칩으로 골랐을 때 스크롤이 움직이지 않는다는 테스트 계약) · 날아가는 국기의 출발은 칩을 누른 순간의 자리(목록에서 골랐으면 맨 앞에 새로 붙은 칩 자리)
