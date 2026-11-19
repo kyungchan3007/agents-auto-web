@@ -21,6 +21,9 @@
 - .agents/specs/0228-home-pill/**
 
 ## 계획 밖 변경 이유
+- apps/web/src/features/home/hooks/use-destinations-pill.ts (새) — 펼치기 상태(pill · expanding · final)와 시간(rAF) 담당 훅. 파일 계획의 `home/**` 안
+- apps/web/src/features/home/hooks/use-stagger-reveal.ts — 이제 도착지 표가 쓰지 않음(알약 펼침의 줄 순서가 대신). test 의 소스 검사(home-pill.test.ts)가 이 파일을 읽어 지우지 않고 둠 · 정리는 lead 결정
+- apps/web/src/features/home/lib/dest-motion.ts 에 시간표(pillFrame · rateAt)를 더함 · dotPosition 은 옛 테스트(new-home.test.ts)가 쓰므로 그대로 둠
 
 ## 위험
 - 계약 변경: optional 이라 예전 API 응답에도 웹이 깨지지 않아야 함 → test 가 median 없는 응답으로도 확인.
@@ -30,3 +33,4 @@
 - test: 단위(신호 median · 알약 문구 · 개수) · 소스 검사 · e2e home-pill 20 · 게이트 full(가짜 API 에 median 추가) · 미리보기 / 1280 · 390.
 
 ## 계획과 달라진 점
+- median 단위: 계산은 1 외화당 원(latest.value 와 같음)으로 싣고 웹이 × 환율 unit 으로 화면 단위(엔 100엔당)로 바꿈 — test 의 7f42366 계약대로
