@@ -4,7 +4,7 @@
 //   DOM 계약
 //     [data-testid="route-section"] — 노선 전체(스크롤 길이를 만드는 긴 칸) · 안에 작은 제목 "한국 = 100" · h2[data-testid="route-title"] "스크롤로 떠나는 물가 노선" · 글 "내릴수록 싼 나라에서 한국을 지나 비싼 나라로 갑니다 · 올리면 거꾸로 돌아옵니다"
 //       [data-testid="route-stage"] — 화면에 붙어 있는 판(position: sticky · top = 메뉴 띠 바로 아래 · 세로 가운데 아님) · 높이 = 화면 − 메뉴 · 구역 높이 = 판 높이 + (정거장 수 − 1) × 정거장 사이 스크롤(넓은 화면 36vh · 휴대폰 30vh)
-//       [data-testid="route-stops"] 안 [data-testid="route-stop"] 단추(정거장마다 · data-country · data-value · data-active="true"(지금 정거장) · 누르면 그 정거장으로 스크롤)
+//       (휴대폰은 정거장 단추를 숨김 · 시안과 같음) [data-testid="route-stops"] 안 [data-testid="route-stop"] 단추(정거장마다 · data-country · data-value · data-active="true"(지금 정거장) · 누르면 그 정거장으로 스크롤)
 //       [data-testid="route-ruler"] — 자 · [data-testid="route-pin"](한국 뺀 정거장마다 · data-country · data-value · data-side up|down) · [data-testid="route-kr-tag"] 글 "한국 100 기준" · [data-testid="route-plane"](동그라미 말 · aria-hidden · 가운데 x = 지금 값의 자 위 위치 · data-dir="forward|back" 스크롤 방향)
 //       [data-testid="route-card"] 카드(data-moving="true" 정거장 사이를 지나는 중 · 아니면 없음/false) 안 route-card-name · route-card-meta("정거장 N / M · 띠 이름") · route-card-value(물가 숫자 글) · route-card-pct("63% 쌉니다" · "기준") · route-card-budget("약 37,000원") · route-card-signal("환율 하위 0% · 쌈" 또는 "환율 없음") · route-next("다음 정거장 → 이름" · 지나는 중에만)
 //     정거장 = 지금 자의 핀(구간마다 맨 위 두 나라 · 아래 세 칸 목록의 맨 위 줄들) + 한국, 값 오름차순(한국은 100) · 값 = 아래 목록의 "물가 N (한국 100)" 과 같음(지어내지 않음) · 단위 테스트가 계산을 확인(lib/price-route.test.ts)
@@ -122,7 +122,7 @@ test.describe("여행 물가 — 스크롤로 떠나는 물가 노선 (작업 02
       const band = e.kr ? "base" : e.value / 100 < 0.9 ? "cheap" : e.value / 100 > 1.1 ? "exp" : "mid";
       await expect(tid(page, "route-card-name"), `${i + 1}번째 이름`).toHaveText(e.name);
       await expect(tid(page, "route-card-meta")).toHaveText(`정거장 ${i + 1} / ${n} · ${BANDNAME[band]}`);
-      expect((await text(page, "route-card-value")).replace(/\s/g, ""), "물가 숫자").toBe(String(e.value));
+      expect(Number((await text(page, "route-card-value")).replace(/\s/g, "")), "물가 숫자(앞 빈 칸은 0 글자가 숨은 칸이어도 됨)").toBe(e.value);
       await expect(tid(page, "route-card-pct")).toHaveText(e.value === 100 ? /^기준/ : e.value < 100 ? `${100 - e.value}% 쌉니다` : `${e.value - 100}% 비쌉니다`);
       await expect(tid(page, "route-card-budget")).toContainText(`약 ${(e.value * 1000).toLocaleString("ko-KR")}원`);
       const signal = e.kr ? "한국 100 기준" : e.pill && /^환율 .*·/.test(e.pill) ? e.pill : "환율 없음";
@@ -174,7 +174,31 @@ test.describe("여행 물가 — 스크롤로 떠나는 물가 노선 (작업 02
     await expect(tid(page, "route-plane")).toHaveAttribute("data-dir", "forward");
   });
 
+  test("낮은 창에서도 카드 아래가 잘리지 않음 — 1280×720 · 1366×768 · 390×667 에서 판 · 카드 아래 끝이 화면 안 (처음 · 가운데 · 끝)", async ({ page }) => {
+    // 판은 화면 − 메뉴 높이라, 안쪽 내용(제목 · 자 · 카드)이 그보다 크면 아래가 잘림(builder 가 적은 한계 · 작업 0230 lead 확인 요청)
+    const sizes = isPhone(page) ? [[390, 667], [390, 844]] : [[1280, 720], [1366, 768], [1280, 900]];
+    for (const [w, h] of sizes) {
+      await page.setViewportSize({ width: w, height: h });
+      test.skip(!(await ready(page)), "물가 자료 없음");
+      for (const p of [0, 0.5, 1]) {
+        await goProgress(page, p);
+        await page.waitForTimeout(900);
+        const m = await page.evaluate(() => {
+          const stage = (document.querySelector('[data-testid="route-stage"]') as HTMLElement).getBoundingClientRect();
+          const card = document.querySelector('[data-testid="route-card"]') as HTMLElement;
+          let last = 0;
+          card.querySelectorAll("*").forEach((e) => { const r = e.getBoundingClientRect(); if (r.height > 0) last = Math.max(last, r.bottom); });
+          return { vh: window.innerHeight, stageBottom: stage.bottom, cardBottom: card.getBoundingClientRect().bottom, contentBottom: last };
+        });
+        expect(m.cardBottom, `${w}×${h} 진행 ${p}: 카드 아래 끝(${Math.round(m.cardBottom)})이 화면 높이(${m.vh}) 안`).toBeLessThanOrEqual(m.vh + 1);
+        expect(m.contentBottom, `${w}×${h} 진행 ${p}: 카드 안 글 아래 끝이 화면 안`).toBeLessThanOrEqual(m.vh + 1);
+        expect(m.cardBottom, `${w}×${h} 진행 ${p}: 카드가 판 밖으로 나가 잘림`).toBeLessThanOrEqual(m.stageBottom + 1);
+      }
+    }
+  });
+
   test("정거장 단추를 누르면 그 정거장으로 — 카드가 바뀜", async ({ page }) => {
+    test.skip(isPhone(page), "휴대폰은 정거장 단추를 숨김(시안 m-prices.css: 좁은 화면 .stops display none)");
     test.skip(!(await ready(page)), "물가 자료 없음");
     const exp = expectedStops(await listPins(page));
     await goProgress(page, 0);
