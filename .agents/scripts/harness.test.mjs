@@ -239,3 +239,212 @@ test("보안 점검: 서비스는 전부 · 개발 도구는 높음 이상만 ·
   assert.equal(auditSummary(meta, meta).count, 0);
   assert.throws(() => auditSummary({ error: "ENOTFOUND" }, meta));
 });
+
+// ───────── 작업 0243 — 게이트: Quick PR 도 CI e2e · 작업 기록 검사 먼저 (테스트 먼저 · 구현 전에는 FAIL 이 정상) ─────────
+//
+// builder 가 만들 것  ※ 이름 · 모양은 이 테스트의 가정 — 다르게 하려면 먼저 lead 에게 알림
+//   1) .agents/scripts/e2e-needed.mjs — export function e2eNeeded(files: string[]): boolean
+//        바뀐 파일이 .agents/** · docs/** · *.md(어느 폴더든) · apps/api/data/** 뿐이면 false · 하나라도 그 밖이면 true · 빈 목록은 false
+//        (.github/** · package.json · apps/** 소스 · packages/** 는 화면 · 빌드에 영향이 있을 수 있어 true — plan.md 애매한 곳)
+//   2) .agents/checks.sh 순서 — 작업 기록(spec-check) · 보호 파일 검사가 프로젝트 검사(typecheck · lint · test · build · test:e2e)보다 먼저 ·
+//        작업 기록이 실패하면 build · test:e2e 를 돌리지 않고 바로 FAIL (긴 단계를 버리지 않음)
+//   3) CI 의 PR 실행(CI=true · GITHUB_EVENT_NAME=pull_request)에서 Quick 이어도 e2eNeeded(origin/main 기준 바뀐 파일)가 참이면 build · test:e2e 를 돌림
+//        로컬(CI 없음)은 지금 그대로(Quick 은 typecheck · lint · test) · push(main) 이벤트도 지금 그대로 · Full 은 늘 build · test:e2e
+//   (checks.yml 의 라벨 조건은 YAML 이라 이 테스트 대상이 아님 — lead 가 글로 확인)
+import { spawnSync } from "node:child_process";
+import { chmodSync, copyFileSync, cpSync, existsSync as fsExists, readFileSync as fsRead, writeFileSync } from "node:fs";
+import { dirname as pathDirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const HERE = pathDirname(fileURLToPath(import.meta.url));
+const REPO = pathJoin(HERE, "..", "..");
+
+test("e2e 필요 판정: 문서 · 하네스 · 사이트 밖 자료만 바뀌면 false · 빈 목록도 false (작업 0243)", async () => {
+  const { e2eNeeded } = await import("./e2e-needed.mjs");
+  assert.equal(e2eNeeded([]), false);
+  assert.equal(e2eNeeded([".agents/checks.sh"]), false);
+  assert.equal(e2eNeeded([".agents/specs/0243-x/plan.md", ".agents/scripts/harness.test.mjs"]), false);
+  assert.equal(e2eNeeded(["docs/domain/airfare-calendar.md", "docs/marketing/2026-11-20/문구.md"]), false);
+  assert.equal(e2eNeeded(["README.md", "AGENTS.md", "apps/web/README.md"]), false); // *.md 는 어느 폴더든
+  assert.equal(e2eNeeded(["apps/api/data/geo-answers/2026-11-20.json"]), false);
+  assert.equal(e2eNeeded([".agents/orchestration/TASKS.md", "docs/a.md", "apps/api/data/x.json", "CLAUDE.md"]), false);
+});
+
+test("e2e 필요 판정: 그 밖이 하나라도 있으면 true — 화면 · API · 패키지 · 워크플로 · 설정 (작업 0243)", async () => {
+  const { e2eNeeded } = await import("./e2e-needed.mjs");
+  for (const f of ["apps/web/src/app/page.tsx", "apps/web/e2e/home.spec.ts", "apps/api/src/index.ts", "packages/ui/src/a.tsx", ".github/workflows/checks.yml", "package.json", "turbo.json", "apps/web/next.config.ts", "apps/web/public/robots.txt"]) {
+    assert.equal(e2eNeeded([f]), true, f);
+  }
+  assert.equal(e2eNeeded(["docs/a.md", "apps/web/src/a.tsx"]), true, "문서와 섞여도 화면 파일이 있으면 true");
+  assert.equal(e2eNeeded([".agents/specs/x/plan.md", ".github/workflows/checks.yml"]), true);
+});
+
+test("e2e 필요 판정: 폴더 이름이 비슷한 것은 속지 않음 · 데이터 폴더는 apps/api/data 만 (작업 0243)", async () => {
+  const { e2eNeeded } = await import("./e2e-needed.mjs");
+  assert.equal(e2eNeeded([".agentsx/a.ts"]), true);
+  assert.equal(e2eNeeded(["docsx/a.ts"]), true);
+  assert.equal(e2eNeeded(["apps/api/database.ts"]), true);
+  assert.equal(e2eNeeded(["apps/api/data-loader.ts"]), true);
+  assert.equal(e2eNeeded(["apps/web/data/x.json"]), true, "apps/web/data 는 사이트 자료라 true");
+  assert.equal(e2eNeeded(["notes.md.ts"]), true, "확장자가 .md 로 끝나는 것만 문서");
+});
+
+// 가짜 npm · 가짜 검사 스크립트로 checks.sh 를 돌려 보는 모래판 — 진짜 빌드 · e2e · 운영 자료를 건드리지 않음
+function sandbox({ changed = [], base = ["apps/web/src/seed.ts"] } = {}) {
+  const root = mkdtempSync(pathJoin(tmpdir(), "hav-gate-"));
+  const sh = (cmd, args) => spawnSync(cmd, args, { cwd: root, encoding: "utf8" });
+  mkdirSync(pathJoin(root, ".agents", "scripts"), { recursive: true });
+  mkdirSync(pathJoin(root, "bin"), { recursive: true });
+  copyFileSync(pathJoin(REPO, ".agents", "checks.sh"), pathJoin(root, ".agents", "checks.sh"));
+  cpSync(pathJoin(REPO, ".agents", "scripts"), pathJoin(root, ".agents", "scripts"), { recursive: true });
+  const stub = (name, body) => writeFileSync(pathJoin(root, ".agents", "scripts", name), `import { appendFileSync } from "node:fs";\n${body}\n`);
+  // 가짜: 부르면 기록만 남김 · 실패는 환경변수로 (진짜 검사는 이 모래판에 없음)
+  stub("spec-check.mjs", `appendFileSync(process.env.GATE_LOG, "spec-check\\n"); process.exit(process.env.SPEC_FAIL === "1" ? 1 : 0);`);
+  stub("protected-check.mjs", `appendFileSync(process.env.GATE_LOG, "protected\\n"); process.exit(0);`);
+  stub("scope-check.mjs", `appendFileSync(process.env.GATE_LOG, "scope\\n"); process.exit(0);`);
+  stub("loop-mode.mjs", `console.log(process.env.LOOP || "quick");`);
+  stub("harness.test.mjs", `appendFileSync(process.env.GATE_LOG, "harness-test\\n");`);
+  writeFileSync(pathJoin(root, "package.json"), JSON.stringify({ name: "sb", private: true, scripts: { typecheck: "x", lint: "x", test: "x", build: "x", "test:e2e": "x" } }));
+  const npm = pathJoin(root, "bin", "npm");
+  writeFileSync(npm, '#!/bin/sh\n# 가짜 npm — npm run [-s] <스크립트> 만 기록\nfor a in "$@"; do case "$a" in run|-s) ;; *) echo "npm:$a" >> "$GATE_LOG";; esac; done\nexit 0\n');
+  chmodSync(npm, 0o755);
+  for (const f of base) {
+    mkdirSync(pathJoin(root, pathDirname(f)), { recursive: true });
+    writeFileSync(pathJoin(root, f), "// base\n");
+  }
+  sh("git", ["init", "-q", "-b", "main"]);
+  sh("git", ["config", "user.email", "t@t"]);
+  sh("git", ["config", "user.name", "t"]);
+  sh("git", ["add", "-A"]);
+  sh("git", ["commit", "-q", "-m", "base"]);
+  sh("git", ["update-ref", "refs/remotes/origin/main", "HEAD"]); // CI 에서 origin/main 기준 바뀐 파일을 구하는 자리
+  sh("git", ["checkout", "-q", "-b", "task/x"]);
+  for (const f of changed) {
+    mkdirSync(pathJoin(root, pathDirname(f)), { recursive: true });
+    writeFileSync(pathJoin(root, f), `// changed ${f}\n`);
+  }
+  sh("git", ["add", "-A"]);
+  sh("git", ["commit", "-q", "--allow-empty", "-m", "change"]);
+  const logDir = mkdtempSync(pathJoin(tmpdir(), "hav-gate-log-")); // 기록은 저장소 밖에 — 안에 두면 "바뀐 파일"로 잡혀 판정이 흐려짐
+  const log = pathJoin(logDir, "gate.log");
+  writeFileSync(log, "");
+  return {
+    root,
+    run(env = {}) {
+      writeFileSync(log, ""); // 같은 모래판에서 여러 번 돌려도 기록이 섞이지 않게
+      const r = spawnSync("bash", [".agents/checks.sh"], {
+        cwd: root,
+        encoding: "utf8",
+        env: { PATH: `${pathJoin(root, "bin")}:${process.env.PATH}`, HOME: process.env.HOME ?? root, GATE_LOG: log, CLAUDE_PROJECT_DIR: root, ...env },
+      });
+      const calls = fsRead(log, "utf8").split("\n").filter(Boolean);
+      return { status: r.status, out: `${r.stdout}${r.stderr}`, calls, npm: calls.filter((c) => c.startsWith("npm:")).map((c) => c.slice(4)) };
+    },
+    done: () => {
+      rmSync(root, { recursive: true, force: true });
+      rmSync(logDir, { recursive: true, force: true });
+    },
+  };
+}
+const CI_PR = { CI: "true", GITHUB_EVENT_NAME: "pull_request" };
+
+test("모래판 점검: 지금 checks.sh 가 가짜 도구로 돎 — 로컬 Quick 은 typecheck · lint · test 만 (회귀 방지 · 0243 이전부터 통과해야 함)", () => {
+  const sb = sandbox({ changed: ["apps/web/src/a.tsx"] });
+  try {
+    const r = sb.run();
+    assert.equal(r.status, 0, r.out);
+    assert.deepEqual(r.npm, ["typecheck", "lint", "test"]);
+  } finally {
+    sb.done();
+  }
+});
+
+test("순서: 작업 기록 · 보호 파일 검사가 프로젝트 검사(npm)보다 먼저 (작업 0243)", () => {
+  const sb = sandbox({ changed: ["apps/web/src/a.tsx"] });
+  try {
+    const r = sb.run({ LOOP: "full" });
+    const firstNpm = r.calls.findIndex((c) => c.startsWith("npm:"));
+    assert.ok(firstNpm > 0, `프로젝트 검사가 돌아야 함 ${JSON.stringify(r.calls)}`);
+    assert.ok(r.calls.indexOf("spec-check") >= 0 && r.calls.indexOf("spec-check") < firstNpm, `작업 기록이 먼저 ${JSON.stringify(r.calls)}`);
+    assert.ok(r.calls.indexOf("protected") >= 0 && r.calls.indexOf("protected") < firstNpm, `보호 파일이 먼저 ${JSON.stringify(r.calls)}`);
+  } finally {
+    sb.done();
+  }
+});
+
+test("조기 실패: 작업 기록이 실패하면 build · test:e2e 를 돌리지 않고 FAIL (Full · CI Quick 모두) (작업 0243)", () => {
+  const sb = sandbox({ changed: ["apps/web/src/a.tsx"] });
+  try {
+    for (const env of [{ LOOP: "full" }, { ...CI_PR }, { LOOP: "full", ...CI_PR }]) {
+      const r = sb.run({ SPEC_FAIL: "1", ...env });
+      assert.notEqual(r.status, 0, "작업 기록 실패는 게이트 실패");
+      assert.ok(!r.npm.includes("build"), `build 를 돌리면 안 됨 ${JSON.stringify(r.npm)}`);
+      assert.ok(!r.npm.includes("test:e2e"), `test:e2e 를 돌리면 안 됨 ${JSON.stringify(r.npm)}`);
+      assert.match(r.out, /FAIL — 작업 기록/);
+      assert.match(r.out, /결과: ❌ FAIL/);
+    }
+  } finally {
+    sb.done();
+  }
+});
+
+test("작업 기록이 통과하면 Full 은 예전처럼 build · test:e2e 까지 돎 (조기 실패가 정상 실행을 줄이지 않음) (작업 0243)", () => {
+  const sb = sandbox({ changed: ["apps/web/src/a.tsx"] });
+  try {
+    const r = sb.run({ LOOP: "full" });
+    assert.equal(r.status, 0, r.out);
+    assert.deepEqual(r.npm, ["typecheck", "lint", "test", "build", "test:e2e"]);
+    assert.match(r.out, /결과: ✅ ALL PASS/);
+  } finally {
+    sb.done();
+  }
+});
+
+test("CI(PR) Quick: 화면에 영향 있는 파일이 바뀌면 build · test:e2e 도 돎 (작업 0243)", () => {
+  for (const changed of [["apps/web/src/a.tsx"], [".github/workflows/checks.yml"], ["docs/a.md", "apps/api/src/index.ts"]]) {
+    const sb = sandbox({ changed });
+    try {
+      const r = sb.run({ ...CI_PR });
+      assert.equal(r.status, 0, r.out);
+      assert.deepEqual(r.npm, ["typecheck", "lint", "test", "build", "test:e2e"], JSON.stringify(changed));
+    } finally {
+      sb.done();
+    }
+  }
+});
+
+test("CI(PR) Quick: 문서 · 하네스 · 쓰기 자료만 바뀌면 e2e 를 건너뜀 (작업 0243)", () => {
+  for (const changed of [[".agents/orchestration/TASKS.md", ".agents/specs/0243-x/plan.md"], ["docs/domain/x.md", "README.md"], ["apps/api/data/geo-answers/2026-11-20.json"], []]) {
+    const sb = sandbox({ changed });
+    try {
+      const r = sb.run({ ...CI_PR });
+      assert.equal(r.status, 0, r.out);
+      assert.deepEqual(r.npm, ["typecheck", "lint", "test"], JSON.stringify(changed));
+    } finally {
+      sb.done();
+    }
+  }
+});
+
+test("로컬 · push(main) 은 지금 그대로 — Quick 은 e2e 없음 (작업 0243)", () => {
+  const sb = sandbox({ changed: ["apps/web/src/a.tsx"] });
+  try {
+    const local = sb.run();
+    assert.deepEqual(local.npm, ["typecheck", "lint", "test"], "로컬(CI 없음)");
+    const push = sb.run({ CI: "true", GITHUB_EVENT_NAME: "push" });
+    assert.deepEqual(push.npm, ["typecheck", "lint", "test"], "main push");
+  } finally {
+    sb.done();
+  }
+});
+
+test("CI(PR) Full 은 문서만 바뀌어도 늘 build · test:e2e (Full 은 줄이지 않음) (작업 0243)", () => {
+  const sb = sandbox({ changed: ["docs/a.md"] });
+  try {
+    const r = sb.run({ ...CI_PR, LOOP: "full" });
+    assert.equal(r.status, 0, r.out);
+    assert.deepEqual(r.npm, ["typecheck", "lint", "test", "build", "test:e2e"]);
+  } finally {
+    sb.done();
+  }
+});
