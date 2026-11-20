@@ -4,7 +4,7 @@
 //   도착한 뒤: 제목이 화면 안 · 고정 메뉴(banner) 아래 · 메뉴 바로 아래(구도: 사용자 그림 2) · 카드가 접힌 알약이 아니라 펼친 상태 · 도착 위치가 밀리지 않음
 //   세 경로(다른 페이지에서 메뉴 · 홈에서 메뉴 · 주소로 바로) × 1280 · 390 — 화면 크기는 여기서 정함(기기 프로젝트는 하나만 돌려 중복 실행을 피함)
 import { type Page, expect, test } from "@playwright/test";
-import { openMenuIfCollapsed } from "./helpers";
+import { hydrated, openMenuIfCollapsed } from "./helpers";
 
 const SIZES = [
   { name: "1280", viewport: { width: 1280, height: 800 } },
@@ -24,6 +24,21 @@ const ROUTES: { name: string; go: (page: Page) => Promise<void> }[] = [
 ];
 
 const titleTop = (page: Page) => page.locator("#destinations-title").evaluate((el) => el.getBoundingClientRect().top);
+/**
+ * 제목 위치가 멈출 때까지 기다린 뒤 그 값 — 이어받기(하이드레이션) 뒤 알약이 펼쳐지며 #today 로 한 번 다시 맞춰지는데(작업 0233), 느린 기기에서는 0.3초보다 늦게 일어남
+ * 고정 0.3초 뒤를 "도착 위치"로 잡으면 다시 맞추기 전 값을 읽음(CI: 424 → 155) — 0.6초(100ms 간격 6번) 동안 1px 안에서 움직이지 않을 때를 도착으로 봄 (작업 0242)
+ */
+async function settledTitleTop(page: Page): Promise<number> {
+  const hist: number[] = [];
+  await expect
+    .poll(async () => {
+      hist.push(await titleTop(page));
+      const last = hist.slice(-6);
+      return last.length === 6 && Math.max(...last) - Math.min(...last) <= 1;
+    }, { intervals: [100], message: "제목 위치가 멈추기를 기다림" })
+    .toBe(true);
+  return hist[hist.length - 1];
+}
 
 for (const size of SIZES) {
   test.describe(`오늘 환율 도착 위치 · ${size.name}`, () => {
@@ -34,9 +49,9 @@ for (const size of SIZES) {
       test(route.name, async ({ page }) => {
         await route.go(page);
         await expect(page).toHaveURL(/\/#today$/);
-        await page.waitForTimeout(300);
-        const early = await titleTop(page);
-        await page.waitForTimeout(1700);
+        await hydrated(page.locator("#destinations-title"));
+        const early = await settledTitleTop(page); // 도착(이어받기 + 다시 맞추기 끝) 위치
+        await page.waitForTimeout(1700); // 그 뒤로 더 밀리지 않는지 보는 구간(밀림이 없음을 보는 검사라 기다림 자체가 검사)
 
         const nav = await page.getByRole("banner").boundingBox();
         const t = await page.locator("#destinations-title").boundingBox();
@@ -61,7 +76,7 @@ for (const size of SIZES) {
         expect(await pill.count() === 0 || !(await pill.first().isVisible()) || ((await pill.first().boundingBox())?.height ?? 0) === 0, "보이는 알약 없음").toBe(true);
         await expect(page.locator('[data-testid="dest-row"]').first()).toBeVisible();
 
-        // 펼치면서 도착 위치가 밀리지 않음 — 0.3초 뒤와 2초 뒤 제목 위치 차이가 작음
+        // 도착한 뒤로 위치가 밀리지 않음 — 멈춘 위치와 1.7초 뒤 제목 위치 차이가 작음
         const late = await titleTop(page);
         expect(Math.abs(late - early), `제목 위치 변화 ${early} → ${late}`).toBeLessThanOrEqual(8);
       });

@@ -121,19 +121,25 @@ test.describe("여행 물가 — 통화로 거르기 (작업 0193)", () => {
   const filtered = (page: Page) => page.getByTestId("price-filter");
   // 전체 목록은 구간마다 나라 2곳만 보이고 나머지는 "나라 더 보기" 로 펼침 — 전체 목록 확인은 펼친 뒤에
   const openAll = async (page: Page) => {
-    await bandsOf(page).getByRole("button", { name: /나라 더 보기/ }).click();
+    const more = bandsOf(page).getByRole("button", { name: /나라 더 보기/ });
+    await hydrated(more); // 이어받기 전에 누르면 눌림이 무시됨 (작업 0242)
+    await more.click();
     await expect(bandsOf(page).getByRole("button", { name: "나라 접기" })).toBeVisible();
   };
 
   test("상세 → 링크 → 그 통화 나라만 · 안내 · 전체 보기", async ({ page }) => {
     await page.goto("/currencies/JPY");
-    await tid(page, "currency-detail").getByRole("link", { name: /이 통화 쓰는 나라 물가 보기/ }).click();
+    const toPrices = tid(page, "currency-detail").getByRole("link", { name: /이 통화 쓰는 나라 물가 보기/ });
+    await hydrated(toPrices); // 이어받기 전에 누르면 눌림이 무시되어 주소가 안 바뀜 (CI: /currencies/JPY 에 머묾 · 작업 0242)
+    await toPrices.click();
     await expect(page).toHaveURL(/\/prices\/?\?currency=JPY$/);
     await expect(filtered(page)).toContainText("엔화를 쓰는 나라 1곳");
     await expect(bandsOf(page)).toContainText("일본");
     await expect(bandsOf(page)).not.toContainText("태국");
     await expect(bandsOf(page)).not.toContainText("미국");
-    await filtered(page).getByRole("link", { name: /전체 보기/ }).click();
+    const showAll = filtered(page).getByRole("link", { name: /전체 보기/ });
+    await hydrated(showAll);
+    await showAll.click();
     await expect(page).toHaveURL(/\/prices\/?$/);
     await expect(filtered(page)).toHaveCount(0);
     await openAll(page);
