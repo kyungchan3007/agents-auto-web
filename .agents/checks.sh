@@ -25,12 +25,32 @@ run "보호 파일" node .agents/scripts/protected-check.mjs
 
 # 2) 프로젝트 검사 — package.json 에 있는 것만 (없으면 건너뜀). 다른 언어면 여기에 명령 추가
 #    Quick: typecheck · lint · test   /   Full: + build · test:e2e
-#    CI 의 PR 실행은 Quick 이어도 화면에 영향 있는 파일이 바뀌었으면 build · test:e2e 도 돌림 (e2e-needed.mjs · 작업 0243)
-#    로컬 · push(main) 은 그대로. 바뀐 파일은 검사 전에 한 번만 구함 (빌드가 만드는 파일이 섞이지 않게)
+#    CI 의 PR 실행은 e2e 를 PR 의 대상 브랜치(GITHUB_BASE_REF)에 따라 고름 (e2e-select.mjs · 작업 0244)
+#      main → build + 전체 e2e(넓은 화면 + 휴대폰)   /   develop → build + 연결표로 고른 spec(넓은 화면만)
+#      조용한 파일뿐이면 none → 건너뜀 (Full 이어도) · 연결표 밖 화면 파일은 smoke + 경고 줄
+#      GITHUB_BASE_REF 가 없으면 예전 규칙(0243): Full 은 늘 · Quick 은 화면에 영향 있는 변경일 때 전체
+#    로컬 · push(main) 은 그대로(Quick 은 e2e 없음 · Full 은 전체). 바뀐 파일은 검사 전에 한 번만 구함 (빌드가 만드는 파일이 섞이지 않게)
 QUICK_SCRIPTS="typecheck lint test"
-FULL_SCRIPTS="build test:e2e"
 WITH_LONG=0
-if [ "$MODE" = "full" ]; then
+E2E_ARGS=()   # test:e2e 에 더 줄 인자 (고른 프로젝트 · spec) — 비면 전체
+if [ "${CI:-}" = "true" ] && [ "${GITHUB_EVENT_NAME:-}" = "pull_request" ] && [ -n "${GITHUB_BASE_REF:-}" ]; then
+  SEL=$(node .agents/scripts/e2e-select.mjs) || SEL=""
+  if [ -z "$SEL" ]; then
+    # 고르기가 실패하면 안전하게 전체
+    WITH_LONG=1; echo "🔁 CI PR — e2e 고르기 실패, 전체 e2e 로 돎"
+  else
+    E2E_MODE=$(SEL="$SEL" node -e 'process.stdout.write(JSON.parse(process.env.SEL).mode)')
+    SEL="$SEL" node -e 'const r = JSON.parse(process.env.SEL); if (r.warn) console.log("⚠️  " + r.warn);'
+    case "$E2E_MODE" in
+      none) echo "🔁 CI PR(대상 $GITHUB_BASE_REF) — 문서 · 하네스 · 자료만 바뀌어 e2e 건너뜀" ;;
+      full) WITH_LONG=1; echo "🔁 CI PR(대상 $GITHUB_BASE_REF) — build + 전체 e2e (넓은 화면 · 휴대폰)" ;;
+      *)
+        WITH_LONG=1
+        while IFS= read -r line; do E2E_ARGS+=("$line"); done < <(SEL="$SEL" node -e 'const r = JSON.parse(process.env.SEL); for (const p of r.projects) console.log("--project=" + p); for (const s of r.specs) console.log("e2e/" + s);')
+        echo "🔁 CI PR(대상 $GITHUB_BASE_REF) — build + 고른 e2e ($E2E_MODE · ${#E2E_ARGS[@]}개 인자)" ;;
+    esac
+  fi
+elif [ "$MODE" = "full" ]; then
   WITH_LONG=1
 elif [ "${CI:-}" = "true" ] && [ "${GITHUB_EVENT_NAME:-}" = "pull_request" ]; then
   if node --input-type=module -e '
@@ -44,7 +64,11 @@ if [ "$WITH_LONG" = "1" ]; then
   if [ "$spec_fail" -ne 0 ]; then
     echo ""; echo "▶ build · test:e2e 건너뜀 — 작업 기록이 실패해 긴 단계를 돌리지 않음"
   else
-    for s in $FULL_SCRIPTS; do has_script "$s" && run "프로젝트 $s" npm run -s "$s"; done
+    has_script build && run "프로젝트 build" npm run -s build
+    # 루트 test:e2e 는 npm -w 를 한 번 더 거쳐서 인자 앞에 -- 가 두 번 필요
+    if has_script test:e2e; then
+      if [ "${#E2E_ARGS[@]}" -gt 0 ]; then run "프로젝트 test:e2e" npm run -s test:e2e -- -- "${E2E_ARGS[@]}"; else run "프로젝트 test:e2e" npm run -s test:e2e; fi
+    fi
   fi
 fi
 
