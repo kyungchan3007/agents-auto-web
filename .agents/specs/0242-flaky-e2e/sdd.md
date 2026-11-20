@@ -15,6 +15,7 @@
 - apps/web/e2e/prices-route.spec.ts
 - apps/web/e2e/pages.spec.ts
 - apps/web/e2e/helpers.ts
+- apps/web/e2e/today-anchor.spec.ts
 - .agents/specs/0242-flaky-e2e/**
 
 ## 계획 밖 변경 이유
@@ -27,4 +28,4 @@
 - 로컬 반복 실행 결과 · CI gate 흔들림 수(0 목표)를 trace 에
 
 ## 계획과 달라진 점
--
+- (lead · CI 1차 44733240150 @08afd19 FAILURE) 대상 다섯 개는 흔들리지 않았지만 today-anchor.spec.ts:34 '다른 페이지에서 메뉴'(390 실패 · 1280 흔들림)와 pages.spec.ts:128(휴대폰 흔들림)이 남음. 둘 다 0238 측정 때도 흔들렸고 같은 계열(이어받기 전 누르기 · 읽기)로 보여 0242 범위에 더함 — 게이트를 통과시키려면 필요
