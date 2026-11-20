@@ -17,8 +17,10 @@
 - apps/web/e2e/helpers.ts
 - apps/web/e2e/today-anchor.spec.ts
 - .agents/specs/0242-flaky-e2e/**
+- .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- .agents/orchestration/TASKS.md — lead 가 0238 ~ 0241 머지됨 · 0242 줄을 이 브랜치에 함께 적음 (CI 경고)
 - apps/web/e2e/helpers.ts — 다섯 테스트가 모두 '하이드레이션(이어받기) 끝'을 기다려야 해서 공용 도움 hydrated() 를 한 곳에 둠 (test · aa1796e)
 
 ## 위험
