@@ -57,4 +57,7 @@
 | 0233 | 패치(버그) — 메뉴 "오늘 환율"이 탑승권 카드로 감 → 환전 타이밍 구역으로 | test → builder → test | 머지됨 (#281) | task/0233-today-anchor | apps/web/src/features/home/** · apps/web/e2e/** |
 | 0234 | 항공권 출발일 달력 — 여행 타이밍 새 구역 + SerpApi 수집 (Full · 보호 파일 2곳) | test → builder → test | 머지됨 (#282) | task/0234-airfare-calendar | apps/api/src/features/airfare/** · schema.ts · deploy-api.yml · features/travel-price/** |
 | 0236 | 2026-11-20 AI 답변 세션 측정 결과 (claude-desktop 측정 · Quick) | geo | 머지됨 (#284) | task/0236-geo-answers-1120 | apps/api/data/geo-answers/2026-11-20.json |
-| 0237 | 팀 구성 — geo 알리기 · 데이터 지킴이 자리(data) (Quick · 문서 · 템플릿) | builder → test | 진행 중 | task/0237-team-geo-data | .agents/orchestration/team.md · rigs/hav/rig.template.yaml |
+| 0237 | 팀 구성 — geo 알리기 · 데이터 지킴이 자리(data) (Quick · 문서 · 템플릿) | builder → test | 머지됨 (#285) | task/0237-team-geo-data | .agents/orchestration/team.md · rigs/hav/rig.template.yaml |
+| 0238 | CI e2e 병렬 — playwright workers · fullyParallel · 게이트 전후 시간 (Full) | builder → test | 진행 중 | task/0238-e2e-parallel | apps/web/playwright.config.ts |
+| 0239 | 팀 규칙 다듬기 — 실패한 것만 다시 · 새 자료 빈 화면 알림 · 공용 파일 끝 금지 · 처음부터 한국어 · 묶음 끝 새로 열기 (Quick) | builder → test | 진행 중 | task/0239-team-rules | .agents/orchestration/team.md · rigs/hav/rig.template.yaml |
+| 0240 | data · geo 첫 바퀴 — docs/data-health.md · 알림 초안 11-20 (Quick) | data · geo → test | 진행 중 | task/0240-data-geo-first | docs/data-health.md · docs/marketing/2026-11-20/** |
