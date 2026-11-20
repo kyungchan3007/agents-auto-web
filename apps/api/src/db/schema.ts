@@ -147,3 +147,17 @@ export const indicatorPoints = sqliteTable(
   },
   (t) => [primaryKey({ columns: [t.series, t.period] })],
 );
+
+/** 항공권 출발일 달력 (작업 0234) — 인천 출발 1주 왕복의 출발일별 최저가 · 받은 묶음(fetched_on)을 지우지 않고 쌓음 · 같은 (airport, fetched_on, depart) 는 덮어씀 · 받지 못한 날은 행을 만들지 않음 (AGENTS.md 7) */
+export const airfareCalendar = sqliteTable(
+  "airfare_calendar",
+  {
+    airport: text("airport").notNull(), // 도착 공항 코드 (NRT · KIX …)
+    fetchedOn: text("fetched_on").notNull(), // 받은 날 YYYY-MM-DD (한국 날짜)
+    depart: text("depart").notNull(), // 출발일 YYYY-MM-DD
+    returnDate: text("return_date").notNull(), // 돌아오는 날 YYYY-MM-DD
+    price: integer("price").notNull(), // KRW 정수
+    fetchedAt: text("fetched_at").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.airport, t.fetchedOn, t.depart] })],
+);
