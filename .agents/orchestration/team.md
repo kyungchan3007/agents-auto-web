@@ -7,6 +7,8 @@
   - 작업을 나눌 때 builder(구현)와 test(테스트)로 나눠 큐에 넣고 순서를 조율한다 (테스트 먼저 → 구현 → 확인). 단계별 커밋은 그대로 — 테스트 커밋은 test, 구현 커밋은 builder
   - 담당에게는 request.md 경로를 넘긴다 (요약해서 넘기지 않는다)
   - test 의 보고(로컬에서 무엇을 돌렸는지)를 확인하고 PR 을 연다. PR 뒤에는 최신 커밋의 CI `gate` 결과를 [verdict.md "게이트 판정 규칙"](verdict.md) 대로 확인한 뒤에만 "확인 끝" · "통과"라고 쓴다 (미리보기 빌드 통과만 보고 통과라고 쓰지 않는다)
+  - 브랜치 흐름(작업 0244): main(운영) · develop(모으는 곳) · task/NNNN(develop 에서 땀). 작업 폴더와 브랜치는 origin/develop 에서 만들고, PR 의 base 는 develop 이다(급한 버그 같은 예외만 main). e2e 는 PR 의 대상에 따라 CI 가 고른다: develop 은 연결표(.agents/e2e-map.json)로 고른 spec 만(넓은 화면), main 은 전체(넓은 화면 + 휴대폰).
+  - lead 가 여는 PR 이 둘 더 있다: 하루 마무리 PR(develop → main · fast-forward · 전체 e2e)과 data · geo 반영 PR(그날 자료 커밋만 cherry-pick → main). 머지는 사람이 "머지해" 한 뒤에만 한다.
   - 새 자료를 받는 작업(수집 · 새 API)은 PR 본문과 사용자 회신 맨 위에 쓴다: "운영에 자료가 생기기 전까지 미리보기 · 운영에 빈 상태로 보입니다. 첫 수집: 언제" + 고정 자료로 본 비교 캡처 경로. data 의 "첫 수집 미리 알림"과 같은 내용을 lead 회신에도 넣는다.
   - 작업 묶음 하나가 끝나면 자리를 새로 연다는 규칙을 지킨다. 새로 여는 일은 claude-desktop 이 하고, lead 는 "묶음 끝"을 알린다.
 - 고칠 수 있는 곳: .agents/specs/, .agents/orchestration/TASKS.md
@@ -15,6 +17,7 @@
 - 하는 일: lead가 배정한 plan 대로 기능을 만든다 (화면 · API · 수집 · 공용 로직)
   - 구현만 한다. 테스트 실행(단위 · e2e · 게이트 · 미리보기 확인 캡처)은 하지 않는다 — 모두 test 의 일
   - 구현을 마치면 커밋 · 푸시하고 lead 에게 보고한다 (확인은 test 가 이어받음)
+  - 작업 폴더(worktree)와 브랜치는 origin/develop 에서 만든다 (작업 0244)
   - 같은 공용 파일 끝에 덧붙이지 않는다. 화면 스타일은 기능 폴더 안 파일이나 tokens.css 에 둔다. globals.css 끝에 이어 쓰지 않는다.
 - 고칠 수 있는 곳:
   - apps/web/src/** (GEO 소유 파일 제외)
@@ -34,9 +37,10 @@
   - 미리보기 1280 · 390 확인과 시안 비교 캡처도 test 가 한다
   - 결과를 lead에게 보고한다
   - 빌드 · e2e 는 꼭 필요할 때만 실행한다 (D1 하루 읽기 한도)
-  - 로컬 전체 e2e · 로컬 전체 게이트는 돌리지 않는다. 전체는 CI 가 본다.
-    - Full 작업: 바뀐 화면의 spec 과 실패한 spec 만 로컬에서 돌린다(`--last-failed` · spec 이름 지정). 푸시하면 CI 가 전체를 본다. CI 에서 실패한 spec 만 로컬에서 고치고 다시 푸시한다.
-    - Quick 작업: CI 가 e2e 를 안 돌리므로, 화면을 바꿨으면 그 화면의 spec 만 로컬에서 돌린다. 단위 · typecheck · lint 는 CI 가 돈다.
+  - 로컬 전체 e2e · 로컬 전체 게이트는 돌리지 않는다. 전체 e2e 는 하루 마무리 PR(대상 main)에서 CI 가 본다. (작업 0244)
+    - 푸시 전 로컬: 단위 · typecheck · lint 전체 + 바꾼 기능의 e2e. 바꾼 기능의 e2e 는 `node .agents/scripts/e2e-select.mjs` 가 찍는 spec 목록으로 정한다(연결표 .agents/e2e-map.json 기준). CI 에서 실패한 spec 만 로컬에서 고치고 다시 푸시한다.
+    - CI(PR 대상 develop)는 연결표로 고른 spec 만 넓은 화면으로 돈다. 문서 · 하네스 · 자료 · rigs 만 바뀌면 e2e 없음.
+    - 새 기능 · 새 spec 은 연결표(.agents/e2e-map.json) 한 줄까지가 작업이다. 연결표 밖 화면 파일을 바꾸면 CI 가 smoke spec 과 경고 줄을 낸다.
 - 고칠 수 있는 곳:
   - 소스 옆의 *.test.ts · *.test.tsx
   - apps/web/e2e/** · apps/web/e2e-responsive/**
@@ -70,6 +74,7 @@
   - apps/api/src/features/geo/** · apps/api/scripts/geo-ask.ts · apps/api/scripts/gsc-sync.ts
   - apps/api/data/geo-answers/** · docs/geo-measurement.md
   - docs/marketing/** (초안 · 후보 목록 · 날짜별 폴더)
+  - 자료 반영: 그날 자료(apps/api/data/geo-answers/** · docs/marketing/**)는 develop 에 올린 PR 에 이어, lead 가 같은 날 main 으로 보내는 반영 PR 로 나간다(develop PR → 반영 PR). 반영이 됐는지 알려 달라고 lead 에게 확인한다.
 - 범위 밖이 필요하면: lead에게 제안 (예: layout.tsx 의 메타데이터 · 페이지 본문 문구)
 
 ## data (데이터 지킴이 · 세션 이름 dev-data@hav · 모델 sonnet)
@@ -87,12 +92,13 @@
   - 운영 수집을 손으로 다시 돌리지 않는다. 필요하면 lead 를 거쳐 사용자에게 알린다.
   - 받지 못한 값은 "없음"으로 적는다. 채워 넣지 않는다. 키 값은 어디에도 쓰지 않는다.
   - 수집 코드를 직접 고치지 않는다. 고칠 것은 lead 에게 요청(구현은 builder · 테스트는 test).
+- 작업 흐름: 점검 기록(docs/data-health.md)은 develop 기준 PR 로 올리고, lead 가 같은 날 main 으로 보내는 반영 PR 로 나간다(develop PR → 반영 PR). 작업 폴더는 origin/develop 에서 만든다. (작업 0244)
 - 고칠 수 있는 곳: docs/data-health.md (점검 방법 · 자료별 기준 · 기록)
 
 ## 공통
 - 커밋·PR:
-  - 1작업 = 1브랜치 (task/NNNN-이름). 각자 자기 범위 파일만 그 브랜치에 커밋한다
-  - PR 은 lead만 연다. 제목은 "작업 NNNN: 요약", 버그 · 보안 수정은 "작업 NNNN: 패치(버그|보안) — 요약"
+  - 1작업 = 1브랜치 (task/NNNN-이름). 브랜치 · 작업 폴더는 origin/develop 에서 만들고, 각자 자기 범위 파일만 그 브랜치에 커밋한다 (작업 0244)
+  - PR 은 lead만 연다. base 는 develop 이다(급한 버그 같은 예외만 main). 제목은 "작업 NNNN: 요약", 버그 · 보안 수정은 "작업 NNNN: 패치(버그|보안) — 요약"
   - 담당자는 kyungchan3007 로 지정한다
   - 머지는 사람이 "머지해" 한 뒤에만 한다. harness-approved 라벨은 붙이지 않는다
   - 완료는 PR 최신 커밋의 CI gate 가 COMPLETED + SUCCESS 일 때만 말한다. "통과"의 기준은 [verdict.md "게이트 판정 규칙"](verdict.md) 하나다. 로컬 전체 게이트 PASS 는 PR 전 조건이 아니고, 로컬에서 돌린 것(바뀐 spec · 실패한 spec 등)은 보고에 무엇을 돌렸는지 적는다. 비밀값은 코드 · 로그 · 커밋에 쓰지 않는다
