@@ -66,7 +66,7 @@ describe("airfare_calendar 저장 (R9)", () => {
 });
 
 describe("readAirfareCalendar — 도시별 가장 최근 묶음 (R9 · R10)", () => {
-  const r = (airport: string, fetched_on: string, depart: string, price: number) => ({ airport, fetched_on, depart, return_date: depart.replace(/-(\d\d)$/, (_, d) => `-${String(Number(d) + 7).padStart(2, "0")}`), price });
+  const r = (airport: string, fetched_on: string, depart: string, price: number) => ({ airport, fetched_on, depart, return_date: new Date(Date.parse(`${depart}T00:00:00Z`) + 7 * 86_400_000).toISOString().slice(0, 10), price });
   it("계약 모양으로 돌려줌 · 도시 이름 · 줄은 depart 오름차순 · 도시마다 자기 묶음 날짜", async () => {
     const { d1 } = fakeD1({ rows: [r("NRT", "2026-11-23", "2026-11-25", 300000), r("NRT", "2026-11-23", "2026-11-24", 310000), r("KIX", "2026-11-21", "2026-11-24", 250000)] });
     const cal = await readAirfareCalendar(d1);
