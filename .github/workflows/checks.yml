@@ -6,6 +6,8 @@ on:
     branches: [main]
 jobs:
   gate:
+    # 라벨을 붙이거나 뗄 때는 harness-approved 일 때만 돎 (다른 라벨로 게이트가 또 도는 낭비 방지 · 작업 0243) — 그 밖 이벤트는 그대로
+    if: ${{ !contains(fromJSON('["labeled","unlabeled"]'), github.event.action) || github.event.label.name == 'harness-approved' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
