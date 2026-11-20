@@ -31,8 +31,8 @@
 - (test) 움직임 e2e(프레임 기록)는 구현 없이 쓴 것이라 구현 뒤 임계값(프레임 수 · 시간)을 한 번 점검해야 할 수 있다.
 
 ## builder 기록 (구현 · 작업 0234)
-- 아직 안 받아 본 공항 4곳(DAD · SIN · JFK · LHR) 각 1회 실제 호출(총 4회 · 키 값 · 전체 주소는 출력하지 않음): 모두 HTTP 200 · 최상위 키 `search_metadata · search_parameters · prices` — 앞서 받아 본 NRT · KIX · BKK · CDG 와 같은 모양. 다만 이 호출에서는 줄 수 · 가격 있는 날 수를 기록하지 못했다(스크립트가 `calendar` 키만 찾아 "없음"으로 찍고 끝남) → 추가 호출은 하지 않았고, 4곳의 줄 수는 첫 예약 수집 로그(`airfare_scheduled` cities) 로 확인
-- **고정 자료와 실제 응답 모양이 다름**: 실제 응답(.tmp/serp-test/google_flights_calendar-ICN_*.json)은 `prices: [{ outbound_date, return_date, price, low_price? }]` — 테스트가 가정한 `calendar: [{ departure, return, price, has_no_flights, is_lowest_price }]` 가 아님. 그대로 두면 운영에서 모양 오류(AirfareError)로 모든 도시가 실패한다. `serpapi.ts parseCalendar` 가 실제 모양(`prices`)과 테스트 가정 모양(`calendar`)을 **둘 다** 받도록 함(테스트는 그대로 통과해야 함). `fixtures/serpapi-nrt.json` 은 실제 모양으로 바꾸는 편이 맞음 → test 가 결정
+- 아직 안 받아 본 공항 4곳(DAD · SIN · JFK · LHR) 각 1회 실제 호출(총 4회 · 키 값 · 전체 주소는 출력하지 않음): 모두 HTTP 200 · 최상위 키 `search_metadata · search_parameters · prices` — 앞서 받아 본 NRT · KIX · BKK · CDG 와 같은 모양. 다만 이 호출에서는 줄 수 · 가격 있는 날 수를 기록하지 못했다(스크립트가 `calendar` 키만 찾아 "없음"으로 찍고 끝남) → 추가 호출은 하지 않았고, 4곳의 줄 수는 추가 호출 없이 첫 예약 수집 로그(`airfare_scheduled` cities)로 확인 (lead 결정)
+- **고정 자료와 실제 응답 모양이 다름**: 실제 응답(.tmp/serp-test/google_flights_calendar-ICN_*.json)은 `prices: [{ outbound_date, return_date, price, low_price? }]` — 테스트가 가정한 `calendar: [{ departure, return, price, has_no_flights, is_lowest_price }]` 가 아님. 그대로 두면 운영에서 모양 오류(AirfareError)로 모든 도시가 실패한다. lead 결정으로 `serpapi.ts parseCalendar` 는 실제 모양(`prices`)만 받음(추측한 `calendar` 처리는 뺌). `fixtures/serpapi-nrt.json` 은 test 가 실제 모양으로 바꿈
 - 가격 없는 날: 실제 응답 4곳 42줄 모두 가격이 있음(`has_no_flights` · `price` 없는 줄 없음). 구글 "싼 날"은 `low_price`(없을 수 있음) — 계약에 넣지 않음
 - 글자판 가격: 사이트 FlapBoard(packages/ui)는 글자 칸이 정해진 안내판이라 자리마다 0~9 띠가 굴러가는 시안 모양과 달라 쓰지 않고, 시안의 굴러가기를 `lib/airfare-motion.ts` 로 옮김(색은 토큰 --hav-pin-ink · --hav-flap-cell · --hav-sun)
 - 스타일: 시안 CSS 를 `airfare-calendar.css` 로 옮기되 색 · 글꼴은 사이트 토큰(`--hav-cheap` 등)으로 — 움직임이 붙는 부분(고른 날 표시 · 비행기 · 글자판 · 탑승권)은 data 속성(`data-on` · `data-hide` · `data-land` · `data-flown`)으로 제어
