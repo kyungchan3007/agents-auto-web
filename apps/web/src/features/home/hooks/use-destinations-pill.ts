@@ -16,6 +16,30 @@ const isTodayLink = () => typeof window !== "undefined" && window.location.hash 
 
 // boot 를 떼면 문서 높이가 바뀜 — 서버 그림은 알약으로 접힌 높이라 브라우저의 첫 스크롤이 모자랄 수 있음.
 // 떼고 난 다음 프레임에 #today 구역 맨 위를 한 번만 다시 맞춤 (그새 사용자가 스크롤했으면 건드리지 않음)
+const INPUT_EVENTS = ["wheel", "touchstart", "keydown", "mousedown"] as const;
+
+// 지금부터 사용자 입력이 없을 때만 #today 맨 위로 한 번 다시 맞춤 — 높이가 바뀐 뒤 프레임에서 호출
+function realignOnce(): () => void {
+  let touched = false;
+  const mark = () => {
+    touched = true;
+  };
+  for (const e of INPUT_EVENTS) window.addEventListener(e, mark, { passive: true, once: true });
+  let r1 = 0;
+  let r2 = 0;
+  r1 = requestAnimationFrame(() => {
+    r2 = requestAnimationFrame(() => {
+      if (!touched && isTodayLink()) document.getElementById("today")?.scrollIntoView({ block: "start" });
+      for (const e of INPUT_EVENTS) window.removeEventListener(e, mark);
+    });
+  });
+  return () => {
+    cancelAnimationFrame(r1);
+    cancelAnimationFrame(r2);
+    for (const e of INPUT_EVENTS) window.removeEventListener(e, mark);
+  };
+}
+
 function releaseBootAndRealign(setBoot: (v: boolean) => void, link: boolean): () => void {
   let touched = false;
   const mark = () => {
@@ -47,6 +71,8 @@ export function useDestinationsPill<T extends HTMLElement>(count: number): { ref
   );
   const ref = useRef<T>(null);
   const [state, setState] = useState<PillState>("final");
+  const stateRef = useRef(state);
+  stateRef.current = state;
   const [full, setFull] = useState(0); // 접기 전 카드 높이(px) — 펼칠 때 끝 높이
   const [t, setT] = useState(0);
   const [boot, setBoot] = useState(true); // 서버 첫 그림 ~ 하이드레이션 (CSS 가 접어 둔 동안)
@@ -62,11 +88,14 @@ export function useDestinationsPill<T extends HTMLElement>(count: number): { ref
     }
     let io: IntersectionObserver | null = null;
     let hold = 0;
+    let stopRealign = () => {};
     const onHash = () => {
-      if (!isTodayLink()) return;
+      if (!isTodayLink() || stateRef.current !== "pill") return; // 이미 펼친 상태면 다시 맞출 필요 없음
       io?.disconnect();
       clearTimeout(hold);
-      setState((s) => (s === "pill" ? "final" : s));
+      setState("final");
+      stopRealign();
+      stopRealign = realignOnce(); // 펼쳐져 높이가 바뀐 뒤 한 번 다시 맞춤
     };
     window.addEventListener("hashchange", onHash);
     const raf = requestAnimationFrame(() => {
@@ -90,6 +119,7 @@ export function useDestinationsPill<T extends HTMLElement>(count: number): { ref
     });
     return () => {
       window.removeEventListener("hashchange", onHash);
+      stopRealign();
       cancelAnimationFrame(raf);
       io?.disconnect();
       clearTimeout(hold);
