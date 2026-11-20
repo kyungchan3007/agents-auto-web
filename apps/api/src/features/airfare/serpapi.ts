@@ -41,15 +41,21 @@ export function calendarUrl(airport: string, key: string, today: string): URL {
 
 export type CalendarDay = { depart: string; return: string; price: number };
 
-/** 가격 없는 날 · 엉뚱한 줄은 버림 · 출발일 오름차순 · 같은 출발일은 먼저 온 것 하나 */
+/**
+ * 가격 없는 날 · 엉뚱한 줄은 버림 · 출발일 오름차순 · 같은 출발일은 먼저 온 것 하나
+ * 실제 응답(2026-11-19 · 11-20 받아 봄): { prices: [{ outbound_date, return_date, price, low_price? }] } — 테스트가 가정한 { calendar: [{ departure, return, price }] } 도 같이 받음
+ */
 export function parseCalendar(json: unknown): CalendarDay[] {
-  const cal = (json as { calendar?: unknown } | null)?.calendar;
-  if (!Array.isArray(cal)) throw new AirfareError("shape", "응답 모양이 다름 (calendar 배열 없음)");
+  const body = json as { prices?: unknown; calendar?: unknown } | null;
+  const list = Array.isArray(body?.prices) ? body.prices : body?.calendar;
+  if (!Array.isArray(list)) throw new AirfareError("shape", "응답 모양이 다름 (prices 배열 없음)");
   const byDepart = new Map<string, CalendarDay>();
-  for (const raw of cal) {
-    const r = raw as { departure?: unknown; return?: unknown; price?: unknown; has_no_flights?: unknown } | null;
+  for (const raw of list) {
+    const r = raw as Record<string, unknown> | null;
     if (!r || typeof r !== "object" || r.has_no_flights) continue;
-    const { departure, return: back, price } = r;
+    const departure = r.outbound_date ?? r.departure;
+    const back = r.return_date ?? r.return;
+    const price = r.price;
     if (typeof departure !== "string" || typeof back !== "string" || !isIsoDate(departure) || !isIsoDate(back)) continue;
     if (typeof price !== "number" || !Number.isInteger(price) || price <= 0) continue;
     if (!byDepart.has(departure)) byDepart.set(departure, { depart: departure, return: back, price });
