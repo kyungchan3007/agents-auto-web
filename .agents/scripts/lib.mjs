@@ -13,20 +13,26 @@ export function git(args, cwd = ROOT) {
   }
 }
 
-/** 비교 기준: origin/main(또는 main)과의 갈림점. 기본 브랜치 위에서 작업 중이면 HEAD */
-export function baseRef(cwd = ROOT) {
+/**
+ * 비교 기준: 대상 브랜치와의 갈림점 (작업 0244)
+ *   CI(PR) — GITHUB_BASE_REF 가 있으면 origin/<그것> 과의 갈림점 (대상 main 이면 develop 에만 있던 변경도 바뀐 파일에 들어옴)
+ *   로컬 — origin/develop → origin/main 순서로 첫 갈림점 (작업 브랜치는 origin/develop 에서 땀)
+ *   가리키는 브랜치가 없으면 로컬 규칙으로 (죽지 않음) · 그 브랜치 위에서 작업 중이면 HEAD
+ */
+export function baseRef(cwd = ROOT, env = process.env) {
   const branch = git(["rev-parse", "--abbrev-ref", "HEAD"], cwd);
-  for (const main of ["origin/main", "main", "origin/master", "master"]) {
-    if (branch === main.replace("origin/", "")) return git(["rev-parse", "--verify", "-q", "HEAD"], cwd) || null;
-    const mb = git(["merge-base", "HEAD", main], cwd);
+  const wanted = env.GITHUB_BASE_REF ? [`origin/${env.GITHUB_BASE_REF}`] : [];
+  for (const ref of [...wanted, "origin/develop", "origin/main", "develop", "main", "origin/master", "master"]) {
+    if (branch === ref.replace("origin/", "")) return git(["rev-parse", "--verify", "-q", "HEAD"], cwd) || null;
+    const mb = git(["merge-base", "HEAD", ref], cwd);
     if (mb) return mb;
   }
   return git(["rev-parse", "--verify", "-q", "HEAD"], cwd) || null;
 }
 
 /** 이 작업에서 바뀐 파일 = 기준 이후 커밋 + 커밋 안 한 변경(새 파일 포함) */
-export function changedFiles(cwd = ROOT) {
-  const base = baseRef(cwd);
+export function changedFiles(cwd = ROOT, env = process.env) {
+  const base = baseRef(cwd, env);
   const committed = base ? git(["diff", "--name-only", base, "HEAD"], cwd) : "";
   const working = git(["status", "--porcelain", "--untracked-files=all"], cwd)
     .split("\n").filter(Boolean).map((l) => l.slice(3).split(" -> ").pop().replace(/^"|"$/g, ""));
