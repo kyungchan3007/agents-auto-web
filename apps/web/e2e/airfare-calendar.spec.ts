@@ -16,7 +16,8 @@
 //       범위 글 airfare-range · ‹ airfare-prev · › airfare-next · 고른 날 표시 airfare-sel (파랑 둥근 네모 · 위치 = 칸 실제 픽셀(left transform px · width px · 퍼센트 금지)) · 비행기 airfare-plane (R5 · R8)
 //     요일 막대 airfare-week-row ×7(월 → 일) · 채움 airfare-week-fill · 요약 airfare-fact ×2(이름표 dt · 큰 값 dd.big · 풀이 dd.say) · 안내 airfare-note (R6 · R7)
 //   자료: e2e/fixtures/airfare-calendar.json (도쿄 NRT · 오사카 KIX · 방콕 BKK · 파리 CDG · 각 42일 · 받은 날 2026-11-19) — 고정 자료로 빌드해야 함(e2e/fixture-api.mjs 머리말)
-//     고정 자료가 아닌 빌드(운영 API 에는 아직 airfare 가 없어 CI 도 해당)에서는 값 의존 테스트를 건너뜀 · AIRFARE_FIXTURE=1 이면 건너뛰지 않고 실패로 셈
+//     값 의존 테스트(R3 ~ R8 · 고정 자료의 날짜 · 가격을 기대)는 AIRFARE_FIXTURE=1 고정 자료 빌드에서만 돌고, 그 밖의 빌드(CI · 운영 API)에서는 건너뜀(작업 0241) — 값에 기대지 않는 검사(R1 구역 위치 · R2 제목 · R10 자료 유무)는 어느 빌드에서나 돎
+//     (CI 가 고정 자료로 빌드해 R3 ~ R8 도 CI 에서 지키는 일은 따로 — 팀 튜닝 작업)
 //     값(고정 자료): 도쿄 가장 싼 날 12-29(화) 274,873 · 오사카 12-02 227,700 · 방콕 11-24 446,200 · 파리 11-27 813,200 · 날짜 11-20 ~ 12-31(42일)
 //   칸 수: 넓은 화면(1280) 14일 · 휴대폰(390) 7일 · 화면 크기는 이 파일이 정함(기기 프로젝트의 크기를 쓰지 않음) · 넓은 화면 프로젝트만 실행(휴대폰 프로젝트는 건너뜀)
 import { type Page, expect, test } from "@playwright/test";
@@ -43,12 +44,14 @@ async function openFlights(page: Page) {
   await page.waitForLoadState("load");
 }
 const hasData = async (page: Page) => (await tid(page, "airfare-chip").count()) > 0;
-/** 값 의존 테스트 앞에서: 고정 자료가 아니면 건너뜀 (AIRFARE_FIXTURE=1 이면 실패로 셈) */
+/**
+ * 값 의존 테스트(고정 자료의 날짜 · 가격을 기대하는 R3 ~ R8) 앞에서 — 고정 자료 빌드(AIRFARE_FIXTURE=1)에서만 돌고 그 밖에서는 건너뜀 (작업 0241)
+ *   "자료가 없으면 건너뜀"만으로는 운영에 실제 가격이 생기면(2026-11-20 첫 수집) CI(운영 API 빌드)에서 실제 값으로 돌아 실패함
+ */
 async function needData(page: Page) {
+  test.skip(!FIXTURE_REQUIRED, "값 의존 테스트 — 고정 자료 빌드(AIRFARE_FIXTURE=1 · e2e/fixture-api.mjs)에서만 돎");
   await openFlights(page);
-  const ok = await hasData(page);
-  if (FIXTURE_REQUIRED) expect(ok, "고정 자료로 빌드한 사이트여야 함 (fixture-api.mjs)").toBe(true);
-  else test.skip(!ok, "고정 자료가 아닌 빌드 — 달력 자료 없음");
+  expect(await hasData(page), "고정 자료로 빌드한 사이트여야 함 (fixture-api.mjs)").toBe(true);
 }
 const scrollToSection = (page: Page) => tid(page, "airfare-section").scrollIntoViewIfNeeded();
 const chip = (page: Page, airport: string) => page.locator(`[data-testid="airfare-chip"][data-airport="${airport}"]`);
