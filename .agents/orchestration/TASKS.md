@@ -59,3 +59,4 @@
 | 0233 | 패치(버그) — 메뉴 "오늘 환율"이 탑승권 카드로 감 → 환전 타이밍 구역으로 | test → builder → test | 머지됨 (#281) | task/0233-today-anchor | apps/web/src/features/home/** · apps/web/e2e/** |
 | 0234 | 항공권 출발일 달력 — 여행 타이밍 새 구역 + SerpApi 수집 (Full · 보호 파일 2곳) | test → builder → test | 머지됨 (#282) | task/0234-airfare-calendar | apps/api/src/features/airfare/** · schema.ts · deploy-api.yml · features/travel-price/** |
 | 0236 | 2026-11-20 AI 답변 세션 측정 결과 (claude-desktop 측정 · Quick) | geo | 진행 중 | task/0236-geo-answers-1120 | apps/api/data/geo-answers/2026-11-20.json |
+| 0237 | 팀 구성 — geo 알리기 · 데이터 지킴이 자리(data) (Quick · 문서 · 템플릿) | builder → test | 진행 중 | task/0237-team-geo-data | .agents/orchestration/team.md · rigs/hav/rig.template.yaml |
