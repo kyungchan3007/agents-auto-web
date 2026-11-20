@@ -14,10 +14,11 @@
 - apps/web/e2e/detail-design.spec.ts
 - apps/web/e2e/prices-route.spec.ts
 - apps/web/e2e/pages.spec.ts
+- apps/web/e2e/helpers.ts
 - .agents/specs/0242-flaky-e2e/**
 
 ## 계획 밖 변경 이유
--
+- apps/web/e2e/helpers.ts — 다섯 테스트가 모두 '하이드레이션(이어받기) 끝'을 기다려야 해서 공용 도움 hydrated() 를 한 곳에 둠 (test · aa1796e)
 
 ## 위험
 - 기다리는 조건이 영원히 안 오면 시간 초과 — 상한은 기존 timeout 그대로
