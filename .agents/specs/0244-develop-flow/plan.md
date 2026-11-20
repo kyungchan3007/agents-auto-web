@@ -10,7 +10,7 @@
 ## 결정 (lead)
 - **Full 루프라도 대상 develop 이면 같은 규칙**(연결표 e2e · 넓은 화면만). 전체는 하루 마무리 PR 에서 본다. (작업서 권장 그대로)
 - **연결표 위치: `.agents/e2e-map.json`** — 조용한 파일이라 이 PR 에 e2e 가 돌지 않고, 연결표만 고치는 PR 도 가볍다. 형식: `{ "경로 접두어": ["spec 파일 이름", …] }` + `"smoke": [주요 페이지 spec …]` (홈 · 환율 · 여행 물가 · 여행 타이밍 · 직구 계산 — 고를 spec 은 test). 관리는 test.
-- **연결표에 없는 화면 파일이 바뀌면**: 그 PR 은 smoke spec + 경고 줄(전체는 하루 마무리).
+- **연결표에 없는 화면 파일이 바뀌면**: 그 PR 은 smoke spec + 경고 줄(전체는 하루 마무리). 연결표 안 파일과 연결표 밖 파일이 **같이** 바뀌면 '고른 spec ∪ smoke'(합집합) + 경고 — smoke 로만 바꾸면 바꾼 기능 spec 이 빠짐 (확인됨: claude-desktop 15:59Z)
 - 로컬 `checks.sh` 는 지금처럼 e2e 를 돌리지 않는다(CI 에서만 고름). 대신 `node .agents/scripts/e2e-select.mjs` 가 지금 바뀐 파일로 고른 spec 목록을 찍어 팀이 로컬에서 그것만 돌릴 수 있게 한다.
 - main push 이벤트(fast-forward 뒤)는 지금처럼 e2e 없음 — PR 에서 이미 전체를 봄.
 
