@@ -81,4 +81,6 @@
 5. lead — PR (보호 파일 두 곳 · 이유 · 승인 요청) → CI gate 확인
 
 ## 계획과 달라진 점
--
+- (lead · 테스트 먼저 뒤) CI 게이트는 운영 API 를 읽는데 운영엔 `/airfare/calendar` 가 머지 전까지 없다 → 고정 자료 e2e(R1 ~ R8)가 CI 에서 "건너뜀"이 된다. 그래서 **PR 전에 test 가 고정 자료 빌드로 한 번 확인한다**: `e2e/fixture-api.mjs` 를 켜고 `TRIPFX_API_URL=http://127.0.0.1:4398 AIRFARE_FIXTURE=1` 로 빌드 1회 + e2e(크롬 · 사파리 엔진). 결과를 PR 설명에 적고, CI gate 는 그대로 규칙 2로 본다. 머지 · 배포 뒤 첫 수집이 되면 운영 자료로 e2e 가 다시 돈다.
+- (lead) 사파리 엔진: Playwright WebKit 을 저장소 안 `.tmp/pw-browsers` 에 설치한다 (`PLAYWRIGHT_BROWSERS_PATH=.tmp/pw-browsers npx playwright install webkit`) — 작업 폴더 밖에 쓰지 않음(AGENTS.md 5).
+- 함수 · 파일 · testid 이름은 test 가 각 테스트 머리 주석에 적은 것이 계약이다 (shared exports `./airfare` · `./airfare-domain`).
