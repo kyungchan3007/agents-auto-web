@@ -1,5 +1,5 @@
 // 작업 0177 — 홈 첫 화면 출발 안내판 (실행은 lead 가 PR 직전에 — 빌드한 사이트를 읽음 · 작성만)
-// 표시: data-testid="flap-board"(판 · role=img · aria-label) · "flap-row"(data-tone dest|money) · "flap-cell"(칸 · aria-hidden) · #today (작업 0177 수정: 3D 지구 없음 · 판은 하늘 종이 위)
+// 표시: data-testid="flap-board"(판 · role=img · aria-label) · "flap-row"(data-tone dest|money) · "flap-cell"(칸 · aria-hidden) · #board (작업 0177 수정: 3D 지구 없음 · 판은 하늘 종이 위)
 // 값은 날마다 · 자료 유무에 따라 달라서 두 경우(값 있음 · 없음 "----") 모두 맞게 봄
 import { expect, test } from "@playwright/test";
 
@@ -55,13 +55,13 @@ for (const width of [375, 1440, 1920]) {
       if (/이번 주 가장 싸게 갈 수 있는 곳은 .+입니다/.test(label)) {
         expect(dest).toMatch(/^ICN→.+/);
         expect(money).toMatch(/\d.*\/.+/);
-        await expect(page.locator("#today")).toContainText(/최근 90일 중 /);
+        await expect(page.locator("#board")).toContainText(/최근 90일 중 /);
       } else {
         expect(dest).toContain("----");
         expect(money).toContain("----");
         expect(money).not.toMatch(/\d/); // 숫자를 지어내지 않음
       }
-      await expect(page.locator("#today")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
+      await expect(page.locator("#board")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
       await expect(board(page)).toBeVisible();
     });
 
@@ -81,10 +81,10 @@ for (const width of [375, 1440, 1920]) {
       }
     });
 
-    test("3D 지구가 없음 — #today 에 canvas 없음 (파랑 띠는 새 홈의 탑승권 경계 · home-redesign.spec 이 검사 · 작업 0217)", async ({ page }) => {
+    test("3D 지구가 없음 — #board 에 canvas 없음 (파랑 띠는 새 홈의 탑승권 경계 · home-redesign.spec 이 검사 · 작업 0217)", async ({ page }) => {
       await page.goto("/");
       await page.waitForLoadState("networkidle");
-      await expect(page.locator("#today canvas")).toHaveCount(0);
+      await expect(page.locator("#board canvas")).toHaveCount(0);
     });
   });
 }

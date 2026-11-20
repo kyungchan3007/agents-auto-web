@@ -60,7 +60,7 @@ test.describe("홈 첫 화면 디자인 (작업 0210 → 0217 새 디자인)", (
     await page.goto("/");
     const label = page.locator("#today-title");
     expect(await label.evaluate((el) => el.tagName)).toBe("H2");
-    await expect(page.locator("#today")).toHaveAttribute("aria-labelledby", "today-title");
+    await expect(page.locator("#board")).toHaveAttribute("aria-labelledby", "today-title");
   });
 
   test("12달 막대 각주 · '가장 쌈 / 가장 비쌈' 라벨 글자 대비 4.5:1 이상", async ({ page }) => {

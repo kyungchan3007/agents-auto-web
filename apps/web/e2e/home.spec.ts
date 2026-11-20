@@ -1,6 +1,6 @@
 // 홈 — 작업 0169 (디자인 변경 ②) · 실행은 lead 가 PR 직전에 (빌드한 사이트를 읽음)
 // 값은 날마다 · 자료 유무에 따라 달라서 동작 · 순서 · 문구만 봄 — 지수가 있을 때와 없을 때(지금 운영) 모두 맞아야 함
-//   builder 가 다는 표시: id="today"(바다 띠) · id="destinations"(도착지별 환전 타이밍) · data-testid="travel-graph" · data-testid="plane-route"
+//   builder 가 다는 표시: id="board"(탑승권 카드) · id="today"(도착지별 환전 타이밍 · 작업 0233)  · data-testid="travel-graph" · data-testid="plane-route"
 import { expect, test } from "@playwright/test";
 import { openMenuIfCollapsed } from "./helpers";
 
@@ -9,8 +9,8 @@ test("홈 구간 순서 — 여행 타이밍 → 오늘 환율(바다 띠) → �
   const y = async (loc: ReturnType<typeof page.locator>) => (await loc.boundingBox())?.y ?? Number.NaN;
   // 메뉴의 "여행 타이밍" 링크는 휴대폰에서 접혀 있어 위치가 없음 — 머리글 밖(본문)의 라벨을 찾음
   const timing = await y(page.locator('*:text-is("여행 타이밍"):not(header *)').first());
-  const today = await y(page.locator("#today"));
-  const dest = await y(page.locator("#destinations"));
+  const today = await y(page.locator("#board"));
+  const dest = await y(page.locator("#today"));
   expect(timing, "여행 타이밍").toBeLessThan(today);
   expect(today, "오늘 환율").toBeLessThan(dest);
 });
@@ -30,14 +30,14 @@ test("여행 타이밍 — 지수가 없으면 '아직 받지 못했습니다' �
 
 test("오늘 환율 띠 — 이번 주 가장 싼 곳 문장 또는 '오늘 환율을 아직 받지 못했습니다' · 숫자를 지어내지 않음", async ({ page }) => {
   await page.goto("/");
-  const band = page.locator("#today");
+  const band = page.locator("#board");
   await expect(band).toContainText("이번 주 가장 싸게 갈 수 있는 곳"); // 작업 0177: 안내판 위 작은 제목
   await expect(page.locator('[data-testid="flap-board"]')).toHaveAttribute("aria-label", /이번 주 가장 싸게 갈 수 있는 곳은 .+입니다|오늘 환율을 아직 받지 못했습니다|판단할 신호가 아직 없습니다/);
 });
 
 test("도착지별 환전 타이밍 — 네 도시 줄이 통화 상세로 연결", async ({ page }) => {
   await page.goto("/");
-  const section = page.locator("#destinations");
+  const section = page.locator("#today");
   await expect(section.getByRole("heading", { name: "도착지별 환전 타이밍" })).toBeVisible();
   for (const [city, currency] of [["도쿄", "JPY"], ["방콕", "THB"], ["파리", "EUR"], ["뉴욕", "USD"]]) {
     const link = section.getByRole("link", { name: new RegExp(city) });
@@ -45,7 +45,7 @@ test("도착지별 환전 타이밍 — 네 도시 줄이 통화 상세로 연�
   }
 });
 
-test("메뉴 '오늘 환율' → 홈의 바다 띠(#today)로", async ({ page }) => {
+test("메뉴 '오늘 환율' → 홈의 도착지별 환전 타이밍 구역(#today)으로 (작업 0233 · 자세한 위치는 today-anchor.spec)", async ({ page }) => {
   await page.goto("/currencies"); // 다른 페이지에서 시작
   await openMenuIfCollapsed(page);
   await page.getByRole("banner").getByRole("navigation").getByRole("link", { name: "오늘 환율", exact: true }).click();
@@ -127,7 +127,7 @@ test("글꼴 — 맨 위 큰 제목 · 로고는 Pretendard 800 (Gasoek One 아�
 
 test("글꼴 — 구간 제목(도착지별 환전 타이밍) · 도시 이름은 IBM Plex Sans KR 700", async ({ page }) => {
   await page.goto("/");
-  for (const loc of [page.locator("#destinations").getByRole("heading", { name: "도착지별 환전 타이밍" }), page.locator('[data-testid="dest-city"]')]) {
+  for (const loc of [page.locator("#today").getByRole("heading", { name: "도착지별 환전 타이밍" }), page.locator('[data-testid="dest-city"]')]) {
     const s = await style(loc);
     expect(s.family).toMatch(PLEX);
     expect(s.family).not.toMatch(FONT);
@@ -138,7 +138,7 @@ test("글꼴 — 구간 제목(도착지별 환전 타이밍) · 도시 이름�
 // 홈 바다 띠 문구 정리 — 작업 0174: "예측이 아닙니다 · 평일 12시" · "주말에는 고시가 없어 …" 줄이 없음 (실행은 lead)
 test("오늘 환율 띠 — '예측이 아닙니다' · '평일 12시' · 주말 고시 줄이 없고 판정 한 줄은 있음 (작업 0174)", async ({ page }) => {
   await page.goto("/");
-  const band = page.locator("#today");
+  const band = page.locator("#board");
   await expect(band).not.toContainText("예측이 아닙니다");
   await expect(band).not.toContainText("평일 12시");
   await expect(band).not.toContainText(/주말에는 고시가 없어|값 반영이 늦어지고|낮 12시경 나옵니다/);
@@ -147,7 +147,7 @@ test("오늘 환율 띠 — '예측이 아닙니다' · '평일 12시' · 주말
 
 test("홈 — 도착지 설명 줄의 '예측이 아니며 투자 · 금융 조언이 아닙니다' · 바닥 띠의 출처는 남음 (작업 0174)", async ({ page }) => {
   await page.goto("/");
-  await expect(page.locator("#destinations")).toContainText("예측이 아니며 투자 · 금융 조언이 아닙니다");
+  await expect(page.locator("#today")).toContainText("예측이 아니며 투자 · 금융 조언이 아닙니다");
   await expect(page.getByRole("contentinfo")).toContainText("한국수출입은행");
 });
 
@@ -155,12 +155,12 @@ test("홈 — 도착지 설명 줄의 '예측이 아니며 투자 · 금융 조�
 test("도착지 목록 아래 '다른 통화 N개 모두 보기 ›' — 누르면 /currencies · 휴대폰에서도 겹침 · 가로 넘침 없음", async ({ page }) => {
   await page.goto("/");
   // 작업 0228: 도착지 카드는 화면 아래에서 알약으로 접혀 있다가 들어오면 펼쳐짐 — 펼친 뒤(끝 상태)에 위치를 잼
-  await page.locator("#destinations").scrollIntoViewIfNeeded();
+  await page.locator("#today").scrollIntoViewIfNeeded();
   await expect.poll(async () => (await page.locator('[data-testid="dest-list"]').getAttribute("data-state")) ?? "final", { timeout: 5000 }).toBe("final");
-  const link = page.locator("#destinations").getByTestId("more-currencies");
+  const link = page.locator("#today").getByTestId("more-currencies");
   await expect(link).toBeVisible();
   await expect(link).toHaveText(/^(다른 통화 \d+개 모두 보기 ›|통화 모두 보기 ›)$/);
-  const lastRow = await page.locator('#destinations [data-testid="dest-city"]').last().boundingBox();
+  const lastRow = await page.locator('#today [data-testid="dest-city"]').last().boundingBox();
   const box = await link.boundingBox();
   expect(box && lastRow && box.y).toBeGreaterThan((lastRow?.y ?? 0) + (lastRow?.height ?? 0));
   const width = page.viewportSize()?.width ?? 0;
