@@ -72,7 +72,9 @@ export function useDestinationsPill<T extends HTMLElement>(count: number): { ref
   const ref = useRef<T>(null);
   const [state, setState] = useState<PillState>("final");
   const stateRef = useRef(state);
-  stateRef.current = state;
+  useEffect(() => {
+    stateRef.current = state; // hashchange 처리기가 최신 상태를 읽도록 (렌더 중에는 ref 를 쓰지 않음)
+  }, [state]);
   const [full, setFull] = useState(0); // 접기 전 카드 높이(px) — 펼칠 때 끝 높이
   const [t, setT] = useState(0);
   const [boot, setBoot] = useState(true); // 서버 첫 그림 ~ 하이드레이션 (CSS 가 접어 둔 동안)
