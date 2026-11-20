@@ -5,6 +5,9 @@ import { Hono } from "hono";
 import { dbAlive } from "./db/health";
 import type { Env } from "./env";
 import { activityRoutes } from "./features/activity/routes";
+import { collectAirfare } from "./features/airfare/collect";
+import { airfareRoutes } from "./features/airfare/routes";
+import { d1AirfareStore } from "./features/airfare/store";
 import { type DailyResult, dailyFx } from "./features/fx/collect/daily";
 import { fxRoutes } from "./features/fx/routes";
 import { d1RateStore, hasOfficialRates, hasRates } from "./features/fx/store";
@@ -30,6 +33,7 @@ export const app = new Hono<{ Bindings: Env }>()
   .route("/signal", signalRoutes)
   .route("/prices", priceRoutes)
   .route("/indicators", indicatorRoutes)
+  .route("/airfare", airfareRoutes)
   .route("/activity", activityRoutes)
   .route("/tasks", taskRoutes)
   .route("/geo", geoRoutes)
@@ -99,6 +103,11 @@ export default {
       .then(() => collectCustomsRates(d1IndicatorStore(env.DB), { key: env.KCS_KEY, today: kstDate() }))
       .then((r) => logEvent(r.status === "error" ? "warn" : "info", "kcs_scheduled", { cron: controller.cron, status: r.status, rows: r.rows, message: r.message }))
       .catch((e) => logError("kcs_scheduled_failed", e, { cron: controller.cron }));
+    // 항공권 출발일 달력 — 같은 첫 회차에서 월 · 수 · 금에만 (새 cron 없음 · wrangler.jsonc 그대로) · 그날 받은 도시는 collectAirfare 안에서 건너뜀 · 서로 따로 (던져도 나머지는 그대로 · 작업 0234)
+    await Promise.resolve()
+      .then(() => collectAirfare(d1AirfareStore(env.DB), { key: env.SERPAPI_KEY, today: kstDate() }))
+      .then((r) => logEvent(r.status === "error" ? "warn" : "info", "airfare_scheduled", { cron: controller.cron, status: r.status, rows: r.rows, cities: r.cities.length, message: r.message }))
+      .catch((e) => logError("airfare_scheduled_failed", e, { cron: controller.cron }));
     // 월간 지표(KOSIS · ECOS) — 비었거나 발표된 달보다 오래됐으면 평일 첫 회차에서 채움 · 매달 1일 회차만 쓰면 키를 넣은 직후부터 다음 달 1일까지 비어 있었음 (작업 0171)
     //   자료마다 최신 1행만 읽고(D1 읽기 하루 1행) · 서로 · 환율 · 과세환율과 따로 (읽기 · 수집이 던져도 나머지는 그대로)
     const fillMonthly = (name: string, series: string, publishDay: number, collect: () => Promise<{ status: string; rows: number; message: string | null }>) =>
