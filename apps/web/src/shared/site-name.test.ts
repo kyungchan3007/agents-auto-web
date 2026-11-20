@@ -13,8 +13,8 @@ const SKIP_PREFIX = ["apps/api/data/", ".agents/", "apps/web/wrangler.jsonc", "a
 const BINARY = /\.(png|jpe?g|webp|gif|ico|woff2?|glb|gltf|bin|jpg|mp4|pdf)$/i;
 
 function trackedTextFiles(): string[] {
-  const out = execFileSync("git", ["ls-files", "--", "apps", "packages", "docs", "README.md"], { cwd: ROOT, encoding: "utf8" });
-  return out.split("\n").filter((f) => f && !BINARY.test(f) && !SKIP_PREFIX.some((p) => f.startsWith(p)));
+  const out = execFileSync("git", ["ls-files", "-z", "--", "apps", "packages", "docs", "README.md"], { cwd: ROOT, encoding: "utf8" }); // -z: 한글 · 특수 문자 파일 이름을 따옴표 · 8진수 없이 그대로 받음 (작업 0240)
+  return out.split("\0").filter((f) => f && !BINARY.test(f) && !SKIP_PREFIX.some((p) => f.startsWith(p)));
 }
 
 describe("사이트 이름 — 한글 '플랩' 이 남지 않음", () => {

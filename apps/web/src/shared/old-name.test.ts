@@ -49,8 +49,8 @@ export function leftoverIn(line: string, file = ""): boolean {
 }
 
 function trackedTextFiles(): string[] {
-  const out = execFileSync("git", ["ls-files", "--", "apps", "packages", "docs", "README.md"], { cwd: ROOT, encoding: "utf8" });
-  return out.split("\n").filter((f) => f && !BINARY.test(f) && !Object.keys(SKIP_PREFIX).some((p) => f.startsWith(p)) && !(f in SKIP_FILES));
+  const out = execFileSync("git", ["ls-files", "-z", "--", "apps", "packages", "docs", "README.md"], { cwd: ROOT, encoding: "utf8" }); // -z: 한글 · 특수 문자 파일 이름을 따옴표 · 8진수 없이 그대로 받음 (작업 0240)
+  return out.split("\0").filter((f) => f && !BINARY.test(f) && !Object.keys(SKIP_PREFIX).some((p) => f.startsWith(p)) && !(f in SKIP_FILES));
 }
 
 describe("옛 이름 Tripfx 잔존 검사", () => {
