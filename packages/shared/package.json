@@ -22,7 +22,9 @@
     "./freshness": "./src/domain/freshness.ts",
     "./kst": "./src/utils/kst.ts",
     "./geo": "./src/contracts/geo.ts",
-    "./geo-visit": "./src/domain/geo-visit.ts"
+    "./geo-visit": "./src/domain/geo-visit.ts",
+    "./airfare": "./src/contracts/airfare.ts",
+    "./airfare-domain": "./src/domain/airfare.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
