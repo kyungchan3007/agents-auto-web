@@ -13,7 +13,7 @@ import { averageYears, cheapMonth, type IndexPoint } from "../lib/travel-index";
 import { cheapMonthsCard, flightsHeadline, yoyCard } from "../lib/flights-copy";
 import { flightsBoard, latestNumbers, stripStats } from "../lib/flights-view";
 import type { AirfareCalendar } from "@hav/shared/airfare";
-import { AirfareCalendarSection } from "./airfare-calendar/airfare-calendar";
+import { AirfareCalendarSection } from "./airfare-calendar";
 import { FlightsGraph } from "./flights-graph";
 import { MiniBoard } from "./mini-board";
 import { WindowMonths } from "./window-months";

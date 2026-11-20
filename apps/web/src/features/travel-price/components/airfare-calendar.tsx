@@ -7,9 +7,9 @@
 import type { AirfareCalendar } from "@hav/shared/airfare";
 import { formatDay, receivedNote } from "@hav/shared/airfare-domain";
 import { Flag } from "@hav/ui/data/flag";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { AIRPORT_FLAG, type CityView, cityView, dotDay, manWon, rangeText, subline, won } from "../../lib/airfare-view";
-import { type AirfareMotion, createAirfareMotion } from "../../lib/airfare-motion";
+import type { ReactNode } from "react";
+import { useAirfareCalendar, type AirfareItem } from "../hooks/use-airfare-calendar";
+import { AIRPORT_FLAG, cityView, dotDay, manWon, subline, won } from "../lib/airfare-view";
 import "./airfare-calendar.css";
 
 const PLANE = (
@@ -19,10 +19,10 @@ const PLANE = (
 );
 
 export function AirfareCalendarSection({ calendar }: { calendar: AirfareCalendar | null }) {
-  const cities = useMemo(() => (calendar?.cities ?? []).flatMap((c) => {
+  const cities: AirfareItem[] = (calendar?.cities ?? []).flatMap((c) => {
     const view = cityView(c);
     return view ? [{ city: c, view }] : [];
-  }), [calendar]);
+  });
   return (
     <section data-testid="airfare-section" aria-labelledby="airfare-title" className="af bg-surface px-4 text-fg sm:px-8">
       <div className="mx-auto max-w-page">
@@ -38,73 +38,20 @@ export function AirfareCalendarSection({ calendar }: { calendar: AirfareCalendar
   );
 }
 
-type Item = { city: AirfareCalendar["cities"][number]; view: CityView };
-
-function Calendar({ items, fetchedOn }: { items: Item[]; fetchedOn: string }) {
-  const [airport, setAirport] = useState(items[0].city.airport);
-  const item = items.find((i) => i.city.airport === airport) ?? items[0];
-  const { city, view } = item;
-  const [sel, setSel] = useState(view.bestIndex);
-  const [grown, setGrown] = useState(false);
-  const [range, setRange] = useState({ text: "", atStart: true, atEnd: false });
-  const rootRef = useRef<HTMLDivElement>(null);
-  const motion = useRef<AirfareMotion | null>(null);
-  const prevSel = useRef<number | null>(null);
-
-  // 움직임 만들기 · 지우기 — 칸이 그려진 뒤(layout) 한 번
-  useLayoutEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-    const m = createAirfareMotion(root, {
-      onRange: (text, atStart, atEnd) => setRange({ text, atStart, atEnd }),
-      onGrow: () => setGrown(true),
-      onIntroShown: () => undefined,
-      formatRange: rangeText,
-    });
-    motion.current = m;
-    m.show({ animate: false, first: true, prev: null });
-    return () => {
-      m.destroy();
-      motion.current = null;
-    };
-  }, []);
-
-  // 도시가 바뀌면 새 칸이 그려진 뒤 움직임 (처음 그림은 위에서)
-  const firstCity = useRef(true);
-  useEffect(() => {
-    if (firstCity.current) {
-      firstCity.current = false;
-      return;
-    }
-    motion.current?.show({ animate: true, first: false, prev: prevSel.current });
-  }, [airport]);
-
-  const chooseCity = useCallback(
-    (a: string) => {
-      if (a === airport) return;
-      const next = items.find((i) => i.city.airport === a);
-      if (!next) return;
-      prevSel.current = sel;
-      setAirport(a);
-      setSel(next.view.bestIndex);
-    },
-    [airport, items, sel],
+/** 숫자 · 금액(예: "(685,748원)" · "27.5만 원" · "2.5배")은 줄 중간에서 쪼개지지 않게 */
+function noBreak(text: string): ReactNode[] {
+  return text.split(/(\(?[\d,.]+(?:만 원|원|배)\)?)/).map((part, i) =>
+    i % 2 === 1 ? (
+      <span key={i} className="whitespace-nowrap">{part}</span>
+    ) : (
+      part
+    ),
   );
-  const chooseDay = useCallback((i: number) => {
-    setSel(i);
-    motion.current?.pick(i);
-  }, []);
-  const page = (dir: -1 | 1) => {
-    const sc = rootRef.current?.querySelector<HTMLElement>('[data-testid="airfare-scroll"]');
-    const first = rootRef.current?.querySelector<HTMLElement>('[data-testid="airfare-day"]');
-    if (!sc || !first) return;
-    const w = first.getBoundingClientRect().width;
-    const per = Math.max(1, Math.round(sc.clientWidth / w));
-    const max = sc.scrollWidth - sc.clientWidth;
-    const x = Math.max(0, Math.min(max, Math.round((sc.scrollLeft + dir * w * Math.min(7, per)) / w) * w));
-    sc.scrollTo({ left: x, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-  };
+}
 
+function Calendar({ items, fetchedOn }: { items: AirfareItem[]; fetchedOn: string }) {
+  const { airport, item, sel, grown, range, rootRef, chooseCity, chooseDay, page } = useAirfareCalendar(items);
+  const { city, view } = item;
   const picked = view.cells[sel] ?? view.cells[view.bestIndex];
   const isBest = picked.best;
   const [headStart, headDate, headEnd] = view.head.split(/(\d+월 \d+일\([월화수목금토일]\))/);
@@ -150,7 +97,7 @@ function Calendar({ items, fetchedOn }: { items: Item[]; fetchedOn: string }) {
             <em>{headDate}</em>
             {headEnd}
           </p>
-          <p data-testid="airfare-sub" className="af-sub">{subline(view, sel)}</p>
+          <p data-testid="airfare-sub" className="af-sub">{noBreak(subline(view, sel))}</p>
           <div className="af-stage">
             <div className="af-bar">
               <span data-testid="airfare-range" className="af-range">{range.text}</span>
@@ -212,7 +159,7 @@ function Calendar({ items, fetchedOn }: { items: Item[]; fetchedOn: string }) {
             <div key={f.label} data-testid="airfare-fact">
               <dt>{f.label}</dt>
               <dd className="big">{f.big}</dd>
-              <dd className="say">{f.say}</dd>
+              <dd className="say">{noBreak(f.say)}</dd>
             </div>
           ))}
         </dl>
