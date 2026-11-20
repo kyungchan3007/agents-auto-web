@@ -66,3 +66,9 @@
    - Full 작업: 로컬 전체 e2e · 로컬 전체 게이트를 돌리지 않는다. 바뀐 화면의 spec 과 실패한 spec 만 로컬에서 돌린다(`--last-failed` · spec 이름 지정). 푸시하면 CI 가 전체를 본다. CI 에서 실패한 spec 만 로컬에서 고치고 다시 푸시한다.
    - Quick 작업: CI 가 e2e 를 안 돌리므로, 화면을 바꿨으면 그 화면의 spec 만 로컬에서 돌린다. 단위 · typecheck · lint 는 CI 가 돈다.
    - 판정은 그대로 verdict.md 규칙(최신 커밋 CI gate = COMPLETED + SUCCESS)이다. 로컬 전체 게이트 PASS 는 더 이상 PR 전 조건이 아니다 — verdict.md · team.md 의 해당 문장을 이에 맞게 고친다.
+
+---
+
+## 덧붙임 — AGENTS.md 규칙 1 (2026-11-20 09:18Z · claude-desktop 전달 · 받은 그대로)
+
+[claude-desktop] 사용자 답(원문 "고쳤" — 고치라는 뜻): AGENTS.md 규칙 1 을 "완료 = PR 최신 커밋 CI gate(checks.sh) 통과" 뜻으로 고쳐 주세요. 0239(#287) 에 커밋 하나로 더하고, AGENTS.md 는 보호 파일이라 PR 본문에 '사용자 승인 필요(harness-approved 라벨)' 를 적어 주세요. 라벨은 사용자가 답니다. AGENTS.md 는 50줄 이내 유지.

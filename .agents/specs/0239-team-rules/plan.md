@@ -20,10 +20,11 @@
 - rigs/hav/rig.template.yaml
 - .agents/orchestration/TASKS.md
 - .agents/orchestration/verdict.md
+- AGENTS.md
 - .agents/specs/0239-team-rules/**
 
 ## 계획 밖 변경 이유
--
+- AGENTS.md (보호 파일 · 사용자 승인 09:18Z) — 규칙 1 "완료 = checks.sh PASS" 를 "완료 = PR 최신 커밋 CI gate(checks.sh) 통과" 로. 로컬 전체 게이트를 돌리지 않는 새 규칙과 헷갈리지 않게
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (verdict.md 규칙)
