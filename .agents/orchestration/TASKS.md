@@ -54,3 +54,5 @@
 | 0221 | 새 디자인 직구 계산 — 시안 A · 세관 꼬리표 결과 · 과세환율 글자판 | builder | PR 대기 | task/0221-redesign-calc | apps/web/src/features/import-calc/** |
 | 0223 | 인트로 끝 '그냥 사라지기' — 비행기가 날아 나가며 파랑 면 · 로고가 메뉴 자리로 · 새 홈 | builder | PR 대기 | task/0223-intro-end-fade | apps/web/src/features/intro/** |
 | 0222 | 사진 지우기 — 새 디자인 브랜치 합치기 → 사진 · 사진 부품 · 테스트 · 스크립트 삭제 · /about 사진 없는 머리 | builder | PR 대기 | task/0222-remove-photos | apps/web/public/images/photos/** · packages/ui photo 부품 · apps/web/src/features/about/** |
+| 0233 | 패치(버그) — 메뉴 "오늘 환율"이 탑승권 카드로 감 → 환전 타이밍 구역으로 (#today 이름 옮김 · Quick) | test → builder → test | 진행 중 (테스트 먼저) | task/0233-today-anchor | apps/web/src/features/home/{components/destinations-section,components/ticket,hooks/use-destinations-pill}.tsx · site-nav.tsx · apps/web/e2e/** · shared/*.test.ts |
+| 0234 | 항공권 출발일 달력 — 여행 타이밍 새 구역 + SerpApi 수집 (Full · 보호 파일 2곳 승인 필요) | lead | 대기 (0233 다음) | task/0234-airfare-calendar | (prd · sdd 에서 정함) |
