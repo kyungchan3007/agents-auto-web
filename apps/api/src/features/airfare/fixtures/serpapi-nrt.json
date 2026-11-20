@@ -1,0 +1,228 @@
+{
+ "search_metadata": {
+  "status": "Success"
+ },
+ "search_parameters": {
+  "engine": "google_flights_calendar",
+  "departure_id": "ICN",
+  "arrival_id": "NRT",
+  "currency": "KRW",
+  "hl": "ko",
+  "gl": "kr"
+ },
+ "calendar": [
+  {
+   "departure": "2026-11-20",
+   "return": "2026-11-27",
+   "price": 389700
+  },
+  {
+   "departure": "2026-11-21",
+   "return": "2026-11-28",
+   "price": 385012
+  },
+  {
+   "departure": "2026-11-22",
+   "return": "2026-11-29",
+   "price": 543250
+  },
+  {
+   "departure": "2026-11-23",
+   "return": "2026-11-30",
+   "has_no_flights": true
+  },
+  {
+   "departure": "2026-11-24",
+   "return": "2026-12-01",
+   "price": 516700
+  },
+  {
+   "departure": "2026-11-25",
+   "return": "2026-12-02",
+   "price": null
+  },
+  {
+   "departure": "2026-11-26",
+   "return": "2026-12-03",
+   "price": 413718
+  },
+  {
+   "departure": "2026-11-27",
+   "return": "2026-12-04",
+   "price": 418200
+  },
+  {
+   "departure": "2026-11-28",
+   "return": "2026-12-05",
+   "price": 419688
+  },
+  {
+   "departure": "2026-11-29",
+   "return": "2026-12-06",
+   "price": 442143
+  },
+  {
+   "departure": "2026-11-30",
+   "return": "2026-12-07",
+   "price": 400259
+  },
+  {
+   "departure": "2026-12-01",
+   "return": "2026-12-08",
+   "price": 315532
+  },
+  {
+   "departure": "2026-12-02",
+   "return": "2026-12-09",
+   "price": 285600,
+   "is_lowest_price": true
+  },
+  {
+   "departure": "2026-12-03",
+   "return": "2026-12-10",
+   "price": 298927
+  },
+  {
+   "departure": "2026-12-04",
+   "return": "2026-12-11",
+   "price": 363326
+  },
+  {
+   "departure": "2026-12-05",
+   "return": "2026-12-12",
+   "price": 396536
+  },
+  {
+   "departure": "2026-12-06",
+   "return": "2026-12-13",
+   "price": 404743
+  },
+  {
+   "departure": "2026-12-07",
+   "return": "2026-12-14",
+   "price": 377654
+  },
+  {
+   "departure": "2026-12-08",
+   "return": "2026-12-15",
+   "price": 297728
+  },
+  {
+   "departure": "2026-12-09",
+   "return": "2026-12-16",
+   "price": 285600,
+   "is_lowest_price": true
+  },
+  {
+   "departure": "2026-12-10",
+   "return": "2026-12-17",
+   "price": 340600
+  },
+  {
+   "departure": "2026-12-11",
+   "return": "2026-12-18",
+   "price": 391700
+  },
+  {
+   "departure": "2026-12-12",
+   "return": "2026-12-19",
+   "price": 406612
+  },
+  {
+   "departure": "2026-12-13",
+   "return": "2026-12-20",
+   "price": 404743
+  },
+  {
+   "departure": "2026-12-14",
+   "return": "2026-12-21",
+   "price": 382138
+  },
+  {
+   "departure": "2026-12-15",
+   "return": "2026-12-22",
+   "price": 338743
+  },
+  {
+   "departure": "2026-12-16",
+   "return": "2026-12-23",
+   "price": 365348
+  },
+  {
+   "departure": "2026-12-17",
+   "return": "2026-12-24",
+   "price": 439315
+  },
+  {
+   "departure": "2026-12-18",
+   "return": "2026-12-25",
+   "price": 466777
+  },
+  {
+   "departure": "2026-12-19",
+   "return": "2026-12-26",
+   "price": 585497
+  },
+  {
+   "departure": "2026-12-20",
+   "return": "2026-12-27",
+   "price": 609500
+  },
+  {
+   "departure": "2026-12-21",
+   "return": "2026-12-28",
+   "price": 519740
+  },
+  {
+   "departure": "2026-12-22",
+   "return": "2026-12-29",
+   "price": 490727
+  },
+  {
+   "departure": "2026-12-23",
+   "return": "2026-12-30",
+   "price": 444168
+  },
+  {
+   "departure": "2026-12-24",
+   "return": "2026-12-31",
+   "price": 392747
+  },
+  {
+   "departure": "2026-12-25",
+   "return": "2027-01-01",
+   "price": 326559
+  },
+  {
+   "departure": "2026-12-26",
+   "return": "2027-01-02",
+   "price": 336356
+  },
+  {
+   "departure": "2026-12-27",
+   "return": "2027-01-03",
+   "price": 404315
+  },
+  {
+   "departure": "2026-12-28",
+   "return": "2027-01-04",
+   "price": 331138
+  },
+  {
+   "departure": "2026-12-29",
+   "return": "2027-01-05",
+   "price": 274873,
+   "is_lowest_price": true
+  },
+  {
+   "departure": "2026-12-30",
+   "return": "2027-01-06",
+   "price": 299914
+  },
+  {
+   "departure": "2026-12-31",
+   "return": "2027-01-07",
+   "price": 335200
+  }
+ ]
+}
