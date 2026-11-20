@@ -62,4 +62,6 @@
 | 0239 | 팀 규칙 다듬기 — 실패한 것만 다시 · 새 자료 빈 화면 알림 · 공용 파일 끝 금지 · 처음부터 한국어 · 묶음 끝 새로 열기 (Quick) | builder → test | 머지됨 (#287) | task/0239-team-rules | .agents/orchestration/team.md · rigs/hav/rig.template.yaml |
 | 0240 | data · geo 첫 바퀴 — docs/data-health.md · 알림 초안 11-20 (Quick) | data · geo → test | 머지됨 (#288) | task/0240-data-geo-first | docs/data-health.md · docs/marketing/2026-11-20/** |
 | 0241 | 패치(버그) — 항공권 달력 e2e 가 운영 자료로 돌아 실패 → 값 의존 테스트는 고정 자료 빌드에서만 (Full) | test | 머지됨 (#289) | task/0241-airfare-e2e-fixture-only | apps/web/e2e/airfare-calendar.spec.ts |
-| 0242 | 흔들리는 e2e 고치기 — 고정 대기 대신 움직임 끝 기다리기 (Full) | test | 진행 중 | task/0242-flaky-e2e | apps/web/e2e/{currency-chart,detail-design,prices-route,pages}.spec.ts |
+| 0242 | 흔들리는 e2e 고치기 — 고정 대기 대신 움직임 끝 기다리기 (Full) | test | 머지됨 (#290) | task/0242-flaky-e2e | apps/web/e2e/{currency-chart,detail-design,prices-route,pages}.spec.ts |
+| 0243 | 게이트 — Quick PR 도 CI e2e(문서 · 측정만이면 건너뜀) · 작업 기록 검사 먼저 · 라벨 이벤트는 harness-approved 만 (Quick · 보호 파일 3곳) | test → builder | 진행 중 | task/0243-gate-quick-e2e | .agents/checks.sh · .agents/scripts/** · .github/workflows/checks.yml |
+| (후보) | 흔들리는 e2e 다음 묶음 — calc-design.spec.ts:70(휴대폰) · prices-route.spec.ts:229 (0242 · 0238 CI 에서 흔들림) | test | 다음 작업 후보 | — | apps/web/e2e/{calc-design,prices-route}.spec.ts |
