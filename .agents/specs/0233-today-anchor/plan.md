@@ -28,14 +28,22 @@
 - 탑승권 h2 id `today-title` 은 이름을 안 바꿈 (가정 · 바꿀 이유가 동작에 없음 · 테스트 손댈 곳만 늘어남)
 
 ## 파일 계획
+<!-- 한 줄에 경로 하나 (게이트가 줄 단위로 비교 · 설명은 다음 절에) -->
 - apps/web/src/features/home/components/destinations-section.tsx
 - apps/web/src/features/home/components/ticket.tsx
 - apps/web/src/features/home/hooks/use-destinations-pill.ts
-- apps/web/src/features/home/components/destinations-pill.tsx (알약 쪽에서 상태를 받아야 하면)
-- apps/web/src/shared/site-nav.tsx (주석)
-- apps/web/src/shared/*.test.ts · apps/web/src/features/home/**/*.test.ts
+- apps/web/src/features/home/components/destinations-pill.tsx
+- apps/web/src/shared/site-nav.tsx
+- apps/web/src/shared/home-flap-board.test.ts
+- apps/web/src/shared/home-redesign.test.ts
+- apps/web/src/features/home/**/*.test.ts
 - apps/web/e2e/**
-- .agents/specs/0233-today-anchor/** · .agents/orchestration/TASKS.md
+- .agents/specs/0233-today-anchor/**
+- .agents/orchestration/TASKS.md
+
+## 계획 밖 변경 이유
+- 처음 쓴 파일 계획이 한 줄에 경로 여러 개 · 괄호 설명을 붙여 게이트가 site-nav.tsx · shared/*.test.ts · TASKS.md 를 계획 밖으로 봄 → 한 줄 한 경로로 고침 (내용 변경 없음)
+- Quick 기준 10개를 넘음(17개): 구현은 4개 파일이고, 나머지는 #today · #destinations 선택자 이름을 바꾼 e2e · 단위 테스트(기계적 갱신)와 문서다. 경계 · 계약 변경이 없어 Quick 유지
 
 ## 계속 맞아야 하는 것
 - 인트로: `/#today` 로 들어오면 인트로를 띄우지 않음 (entry.ts 로직 그대로)
