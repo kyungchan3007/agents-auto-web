@@ -142,9 +142,9 @@ describe("받지 못함 — 지어내지 않음 (R10)", () => {
     expect(m.saved.some((x) => x.airport === "BKK")).toBe(false);
     expect(m.saved.filter((x) => x.airport === "NRT")).toHaveLength(40);
   });
-  it("빈 결과(calendar [])는 empty · 저장 없음 · 숫자를 만들지 않음", async () => {
+  it("빈 결과(prices [])는 empty · 저장 없음 · 숫자를 만들지 않음", async () => {
     const m = memoryStore();
-    const f = fakeFetch((u) => (u.searchParams.get("arrival_id") === "DAD" ? ok({ calendar: [] }) : ok()));
+    const f = fakeFetch((u) => (u.searchParams.get("arrival_id") === "DAD" ? ok({ prices: [] }) : ok()));
     const r = await collectAirfare(m.store, { key: KEY, today: MON, fetcher: f.fetcher, now: NOW });
     expect(r.cities.find((c) => c.airport === "DAD")).toMatchObject({ status: "empty", rows: 0 });
     expect(m.saved.some((x) => x.airport === "DAD")).toBe(false);
@@ -173,7 +173,7 @@ describe("받지 못함 — 지어내지 않음 (R10)", () => {
   });
   it("모두 빈 결과면 empty", async () => {
     const m = memoryStore();
-    const f = fakeFetch(() => ok({ calendar: [] }));
+    const f = fakeFetch(() => ok({ prices: [] }));
     expect((await collectAirfare(m.store, { key: KEY, today: MON, fetcher: f.fetcher, now: NOW })).status).toBe("empty");
   });
   it("저장이 실패해도 던지지 않고 그 도시만 error · 다음 도시 계속", async () => {

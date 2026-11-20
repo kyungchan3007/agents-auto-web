@@ -1,7 +1,7 @@
 // 작업 0234 R9 — 기존 평일 12:00 KST 회차(fxDaily)에서 월 · 수 · 금에만 항공권 달력을 받음 (테스트 먼저 · 구현 전에는 FAIL 이 정상)
 //
 // builder 가 할 것 — apps/api/src/index.ts scheduled(): controller.cron === CRON.fxDaily 이고 한국 날짜가 월 · 수 · 금일 때
-//   collectAirfare(d1AirfareStore(env.DB), { key: env.SERPAPI_KEY, today: kstDate() }) 를 환율 · 과세환율 · 월간 지표와 따로 부름 (던져도 나머지는 그대로 · 각각 catch · 로그만)
+//   collectAirfare(d1AirfareStore(env.DB), { key: env.SERPAPI_KEY, today: kstDate() }) 를 (월 · 수 · 금 판단은 index 가 하든 collectAirfare 안에서 하든 상관없음 — 화요일에 SerpApi 호출이 없으면 됨) 환율 · 과세환율 · 월간 지표와 따로 부름 (던져도 나머지는 그대로 · 각각 catch · 로그만)
 //   · 새 cron 문자열 없음(CRON 값 그대로 · wrangler.jsonc 안 바꿈) · 재시도 회차(fxRetry1 · fxRetry2)는 부르지 않음 · 매달 1일 회차도 부르지 않음
 //   · "월 · 수 · 금" 판단은 due.ts isAirfareDay 로 하고, 그날 이미 받은 도시는 collectAirfare 안에서 건너뜀
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -14,7 +14,8 @@ vi.mock("./features/airfare/collect", async (orig) => ({ ...(await orig<object>(
 import worker, { CRON } from "./index";
 import { collectAirfare } from "./features/airfare/collect";
 import { dailyFx } from "./features/fx/collect/daily";
-import { collectCustomsRates } from "./features/indicators/collect";
+import { collectCustomsRates, collectEcos, collectKosis } from "./features/indicators/collect";
+import { collectPriceLevels } from "./features/prices/collect";
 
 type Env = Parameters<NonNullable<typeof worker.scheduled>>[1];
 const env = { DB: { prepare: () => ({ bind: () => ({ all: async () => ({ results: [] }), first: async () => null, run: async () => ({}) }) }) } as unknown as D1Database, SERPAPI_KEY: "serp-key" } as unknown as Env;
@@ -42,6 +43,9 @@ beforeEach(() => {
   vi.mocked(collectAirfare).mockReset().mockResolvedValue({ status: "ok", rows: 320, message: null, cities: [] });
   vi.mocked(collectCustomsRates).mockReset().mockResolvedValue({ status: "ok", rows: 0, message: null });
   vi.mocked(dailyFx).mockReset().mockResolvedValue({ skipped: true } as never);
+  vi.mocked(collectPriceLevels).mockReset().mockResolvedValue({ status: "ok" } as never);
+  vi.mocked(collectEcos).mockReset().mockResolvedValue({ status: "ok", rows: 0, message: null });
+  vi.mocked(collectKosis).mockReset().mockResolvedValue({ status: "ok", rows: 0, message: null });
   vi.spyOn(console, "log").mockImplementation(() => undefined);
   vi.spyOn(console, "warn").mockImplementation(() => undefined);
   vi.spyOn(console, "error").mockImplementation(() => undefined);
@@ -58,9 +62,13 @@ describe("평일 첫 회차(fxDaily) — 월 · 수 · 금에만", () => {
       expect(opts.today).toBe(at.slice(0, 10));
     }
   });
-  it("화요일: 부르지 않음", async () => {
+  it("화요일: SerpApi 를 부르지 않음 (index 가 collectAirfare 를 부르더라도 그 안에서 건너뛰어 바깥 호출 없음)", async () => {
+    const actual = await vi.importActual<typeof import("./features/airfare/collect")>("./features/airfare/collect");
+    vi.mocked(collectAirfare).mockImplementation(actual.collectAirfare);
+    const spy = vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("네트워크 호출이 있으면 안 됨"));
     await fire(CRON.fxDaily, TUE);
-    expect(collectAirfare).not.toHaveBeenCalled();
+    expect(spy.mock.calls.filter(([u]) => String(u).includes("serpapi")), "화요일 SerpApi 호출").toHaveLength(0);
+    spy.mockRestore();
   });
 });
 
