@@ -29,6 +29,7 @@ jobs:
       KCS_KEY: ${{ secrets.KCS_KEY }}
       KOSIS_KEY: ${{ secrets.KOSIS_KEY }}
       ECOS_KEY: ${{ secrets.ECOS_KEY }}
+      SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
     steps:
       - name: 비밀값 확인
         id: secrets
@@ -102,11 +103,11 @@ jobs:
             printf '%s' "$PAGES_DEPLOY_HOOK" | npx wrangler secret put PAGES_DEPLOY_HOOK
             echo "PAGES_DEPLOY_HOOK 넣음 — 새 환율을 저장하면 Worker 가 사이트를 다시 빌드" >> "$GITHUB_STEP_SUMMARY"
           fi
-      - name: 공공 자료 인증키 3개를 Worker 에 (관세청 · KOSIS · ECOS · 값이 있으면 매번 덮어씀 · 값은 로그에 안 나옴)
+      - name: 인증키 4개를 Worker 에 (관세청 · KOSIS · ECOS · SerpApi · 값이 있으면 매번 덮어씀 · 값은 로그에 안 나옴)
         if: steps.changed.outputs.go == 'true'
         working-directory: apps/api
         run: |
-          for name in KCS_KEY KOSIS_KEY ECOS_KEY; do
+          for name in KCS_KEY KOSIS_KEY ECOS_KEY SERPAPI_KEY; do
             value="${!name}"
             if [ -n "$value" ]; then
               printf '%s' "$value" | npx wrangler secret put "$name" > /dev/null
