@@ -14,6 +14,30 @@ export type PillState = "final" | "pill" | "expanding";
 
 const isTodayLink = () => typeof window !== "undefined" && window.location.hash === "#today";
 
+// boot 를 떼면 문서 높이가 바뀜 — 서버 그림은 알약으로 접힌 높이라 브라우저의 첫 스크롤이 모자랄 수 있음.
+// 떼고 난 다음 프레임에 #today 구역 맨 위를 한 번만 다시 맞춤 (그새 사용자가 스크롤했으면 건드리지 않음)
+function releaseBootAndRealign(setBoot: (v: boolean) => void, link: boolean): () => void {
+  let touched = false;
+  const mark = () => {
+    touched = true;
+  };
+  const evs = ["wheel", "touchstart", "keydown", "mousedown"] as const;
+  if (link) for (const e of evs) window.addEventListener(e, mark, { passive: true, once: true });
+  let raf2 = 0;
+  const raf1 = requestAnimationFrame(() => {
+    setBoot(false);
+    if (!link) return;
+    raf2 = requestAnimationFrame(() => {
+      if (!touched && isTodayLink()) document.getElementById("today")?.scrollIntoView({ block: "start" });
+    });
+  });
+  return () => {
+    cancelAnimationFrame(raf1);
+    cancelAnimationFrame(raf2);
+    if (link) for (const e of evs) window.removeEventListener(e, mark);
+  };
+}
+
 export function useDestinationsPill<T extends HTMLElement>(count: number): { ref: RefObject<T | null>; state: PillState; t: number; full: number; boot: boolean } {
   const reduce = useReducedMotion();
   const armed = useSyncExternalStore(
@@ -30,13 +54,11 @@ export function useDestinationsPill<T extends HTMLElement>(count: number): { ref
     const el = ref.current;
     if (!el) return;
     if (!armed) {
-      const off = requestAnimationFrame(() => setBoot(false)); // 움직임 줄이기 · 하이드레이션 전 — 접지 않고 boot 만 뗌
-      return () => cancelAnimationFrame(off);
+      return releaseBootAndRealign(setBoot, isTodayLink()); // 움직임 줄이기 · 하이드레이션 전 — 접지 않고 boot 만 뗌
     }
     if (isTodayLink()) {
       // 링크로 도착 — 접지 않음(위치가 밀리지 않게) · boot 만 뗌
-      const off = requestAnimationFrame(() => setBoot(false));
-      return () => cancelAnimationFrame(off);
+      return releaseBootAndRealign(setBoot, true);
     }
     let io: IntersectionObserver | null = null;
     let hold = 0;
