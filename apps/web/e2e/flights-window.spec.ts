@@ -1,6 +1,6 @@
 // 작업 0229 모션 1번(창밖으로 넘어가는 12달) — 여행 타이밍 /flights 새 구역 e2e · 테스트 먼저
 //   기준: 스크린샷 .tmp/lead-motion-1119/02-flights-1.png · 참고 구현 .tmp/motion-pages/m-flights.js · 원본 시안 .tmp/motion-1119/window2/index.html
-//   위치: hero(flights-hero) 바로 아래 새 구역 — hero.nextElementSibling = [data-testid="window-section"] · 그 다음이 기존 flights-back · 날개 그림 없음
+//   위치: hero(flights-hero) 바로 아래 새 구역 — hero.nextElementSibling = [data-testid="window-section"] · 그 다음이 작업 0234 의 항공권 출발일 달력(airfare-section) · 그 아래가 기존 flights-back · 날개 그림 없음
 //   DOM 계약
 //     window-section 안: 작은 제목 "창밖으로 보는 12달" · h2 "계절이 바뀌는 동안 항공료 지수도 오르내립니다" · 글 "1월부터 12월까지 같은 달의 국제항공료 지수를 창밖 계절과 함께 봅니다."
 //     창 [data-testid="window-view"] role="img" aria-label="비행기 창밖 풍경. N월, 계절 · 한마디" · data-state="closed|opening|open" (서버 그림 · JS 꺼짐 · 움직임 줄이기는 처음부터 open 이어도 됨)
@@ -61,7 +61,9 @@ test.describe("여행 타이밍 — 창밖으로 보는 12달 (작업 0229 · �
     await page.goto("/flights");
     await expect(tid(page, "window-section"), "새 구역").toHaveCount(1);
     const order = await page.evaluate(() => { const h = document.querySelector('[data-testid="flights-hero"]'); return [h?.nextElementSibling?.getAttribute("data-testid") ?? null, h?.nextElementSibling?.nextElementSibling?.getAttribute("data-testid") ?? null]; });
-    expect(order, "hero 바로 아래가 새 구역 · 그 다음이 기존 표 뒤 구간").toEqual(["window-section", "flights-back"]);
+    expect(order, "hero 바로 아래가 새 구역 · 그 다음이 작업 0234 의 항공권 출발일 달력").toEqual(["window-section", "airfare-section"]);
+    const back = await page.evaluate(() => { const a = document.querySelector('[data-testid="airfare-section"]'); return a?.nextElementSibling?.getAttribute("data-testid") ?? null; });
+    expect(back, "달력 바로 아래는 기존 표 뒤 구간(flights-back)").toBe("flights-back");
     const sec = tid(page, "window-section");
     for (const t of ["창밖으로 보는 12달", "계절이 바뀌는 동안 항공료 지수도 오르내립니다", "1월부터 12월까지 같은 달의 국제항공료 지수를 창밖 계절과 함께 봅니다.", "이 달의 국제항공료 지수", "국제항공료 지수 · 같은 달 평균", "2020년 = 100", "↻ 다시 보기"]) await expect(sec, t).toContainText(t);
     await expect(sec.getByRole("heading", { level: 2 })).toHaveText("계절이 바뀌는 동안 항공료 지수도 오르내립니다");

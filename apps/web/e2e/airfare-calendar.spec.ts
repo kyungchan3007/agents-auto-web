@@ -89,7 +89,10 @@ type Fr = { t: number; scrollLeft: number; sel: { visible: boolean; cx: number; 
 const startRec = (page: Page) => page.evaluate(RECORD);
 const stopRec = (page: Page) => page.evaluate(() => { const w = window as unknown as { __af: unknown[]; __afstop: boolean }; w.__afstop = true; return w.__af; }) as Promise<Fr[]>;
 const WHITE = "rgb(255, 255, 255)";
-const overlapsSel = (f: Fr, c: Cell) => f.sel.visible && Math.abs(f.sel.cx - c.cx) <= c.w * 0.5;
+/** 파랑 표시가 그 칸에 닿음 — 두 상자가 겹침 (흰 글자는 이때부터만 · 시안 주석 "파랑이 거의 닿은 뒤") */
+const overlapsSel = (f: Fr, c: Cell) => f.sel.visible && Math.abs(f.sel.cx - c.cx) < (f.sel.w + c.w) / 2;
+/** 끝 상태 — 파랑이 칸 위에 거의 정확히 놓임 */
+const onSel = (f: Fr, c: Cell) => f.sel.visible && Math.abs(f.sel.cx - c.cx) <= 1.5;
 
 for (const size of SIZES) {
   test.describe(`항공권 출발일 달력 · ${size.name}`, () => {
@@ -181,7 +184,8 @@ for (const size of SIZES) {
     test("R5 날짜 띠 — 칸 구성 · 칸 수 · ‹ › · 가장 싼 날 · 가격 색(아래 1/4 · 위 1/4)", async ({ page }) => {
       await needData(page);
       await scrollToSection(page);
-      await page.waitForTimeout(1500);
+      await page.waitForTimeout(3800);
+      // (처음 도착 때 띠가 가장 싼 날 쪽으로 흘러가는 비행이 끝난 뒤)
       const days = tid(page, "airfare-day");
       await expect(days).toHaveCount(42);
       const first = days.first();
@@ -191,7 +195,7 @@ for (const size of SIZES) {
       // 보이는 칸 수 = 넓은 화면 14 · 휴대폰 7
       const visible = await page.evaluate(() => {
         const sc = document.querySelector('[data-testid="airfare-scroll"]')!.getBoundingClientRect();
-        return [...document.querySelectorAll('[data-testid="airfare-day"]')].filter((c) => { const r = c.getBoundingClientRect(); return r.left >= sc.left - 1 && r.right <= sc.right + 1; }).length;
+        return [...document.querySelectorAll('[data-testid="airfare-day"]')].filter((c) => { const r = c.getBoundingClientRect(); const cx = r.left + r.width / 2; return cx >= sc.left && cx <= sc.right; }).length; // 칸 가운데가 띠 안에 있는 칸(가장자리 반 칸은 세지 않음)
       });
       expect(visible).toBe(size.perView);
       // 가장 싼 날 노랑 테두리 · 가격 색 단계
@@ -215,7 +219,9 @@ for (const size of SIZES) {
       expect(lb, "싼 편은 파랑 쪽").toBeGreaterThan(lr);
       expect(hr, "비싼 편은 빨강 쪽").toBeGreaterThan(hb);
       expect(colors.mid).not.toBe(WHITE);
-      // ‹ › 버튼 · 범위 글
+      // ‹ › 버튼 · 범위 글 — 처음 도착 뒤 띠는 가장 싼 날 쪽에 가 있으므로 맨 앞으로 되돌려 놓고 확인
+      await tid(page, "airfare-scroll").evaluate((el) => { el.scrollTo({ left: 0, behavior: "instant" as ScrollBehavior }); });
+      await page.waitForTimeout(400);
       await expect(tid(page, "airfare-prev")).toBeDisabled();
       await expect(tid(page, "airfare-range")).toContainText("11월 20일");
       await tid(page, "airfare-next").click();
@@ -341,7 +347,7 @@ for (const size of SIZES) {
         const last = fr.at(-1)!;
         const bd = best(a);
         const bc = last.cells.find((c) => c.d === bd.depart)!;
-        expect(overlapsSel(last, bc), `${a} 끝: 파랑이 가장 싼 날`).toBe(true);
+        expect(onSel(last, bc), `${a} 끝: 파랑이 가장 싼 날`).toBe(true);
         expect(bc.dtColor, `${a} 끝: 고른 칸 글자 흰색`).toBe(WHITE);
         expect(last.cells.filter((c) => c.dtColor === WHITE).length, `${a} 끝: 흰 글자는 고른 칸 하나`).toBe(1);
       }
@@ -367,19 +373,22 @@ for (const size of SIZES) {
         expect(Math.abs(fr[0].scrollLeft - scrollBefore), "보던 자리에서 출발").toBeLessThan(40);
         const moved = Math.max(...fr.map((f) => f.scrollLeft)) - Math.min(...fr.map((f) => f.scrollLeft));
         expect(moved, "띠가 흘러감").toBeGreaterThan(size.perView * 5);
-        // 비행기: 흐르는 동안 보임 · 그동안 파랑 표시 없음 · 내려앉은 뒤 파랑
-        const flying = fr.filter((f) => (f.plane?.op ?? 0) > 0.5);
-        expect(flying.length, `${from}→${to} 비행기가 보인 프레임`).toBeGreaterThan(10);
-        expect(flying.every((f) => !f.sel.visible), "비행 중에는 파랑 표시 없음").toBe(true);
-        const landIdx = fr.findIndex((f, i) => i > fr.indexOf(flying[0]) && f.sel.visible);
-        expect(landIdx, "내려앉은 뒤 파랑이 나타남").toBeGreaterThan(0);
-        const lastFlight = fr.indexOf(flying.at(-1)!);
-        expect(landIdx - lastFlight, "비행기가 내려앉는 순간 파랑 (몇 프레임 안)").toBeLessThanOrEqual(8);
+        // 비행기: 띠가 흐르는 동안 보임 · 그동안 파랑 표시 없음 · 내려앉는 순간 파랑 (클릭 전 프레임 · 착륙 때 비행기가 사라지는 0.2초는 비행 구간에서 뺌)
+        const leave = fr.findIndex((f) => !f.sel.visible);
+        expect(leave, `${from}→${to} 클릭하자마자 파랑이 사라짐(떠남)`).toBeGreaterThan(-1);
+        expect(fr[leave].t, "떠남이 0.3초 안").toBeLessThan(300);
+        const landIdx = fr.findIndex((f, i) => i > leave && f.sel.visible);
+        expect(landIdx, "내려앉은 뒤 파랑이 나타남").toBeGreaterThan(leave);
+        const flight = fr.slice(leave, landIdx);
+        expect(flight.at(-1)!.t - flight[0].t, "비행(파랑 없음) 시간").toBeGreaterThan(500);
+        expect(flight.filter((f) => (f.plane?.op ?? 0) > 0.9).length / flight.length, "비행 중에는 비행기가 보임").toBeGreaterThan(0.8);
+        expect(flight.every((f) => !f.sel.visible), "비행 중에는 파랑 표시 없음").toBe(true);
+        expect(fr[landIdx].plane?.op ?? 0, "내려앉는 순간 비행기가 아직 보임(사라지기 시작)").toBeGreaterThan(0.1);
         const bd = best(to);
         const landed = fr[landIdx];
-        expect(overlapsSel(landed, landed.cells.find((c) => c.d === bd.depart)!), "파랑이 가장 싼 날 위").toBe(true);
-        // 파랑이 나타나기 전에는 흰 글자 없음
-        for (const f of fr.slice(0, landIdx)) expect(f.cells.some((c) => c.inView && (c.dtColor === WHITE || c.prColor === WHITE)), `t=${Math.round(f.t)} 파랑 없는데 흰 글자`).toBe(false);
+        expect(Math.abs(landed.sel.cx - landed.cells.find((c) => c.d === bd.depart)!.cx), "파랑이 가장 싼 날 위에 내려앉음").toBeLessThanOrEqual(1.5);
+        // 파랑이 나타나기 전(떠난 뒤)에는 흰 글자 없음
+        for (const f of flight) expect(f.cells.some((c) => c.inView && (c.dtColor === WHITE || c.prColor === WHITE)), `t=${Math.round(f.t)} 파랑 없는데 흰 글자`).toBe(false);
         // 비행기 사라짐 — 끝에는 보이지 않음
         expect(fr.at(-1)!.plane?.op ?? 0).toBeLessThan(0.05);
       }
@@ -389,9 +398,21 @@ for (const size of SIZES) {
       await needData(page);
       await scrollToSection(page);
       await page.waitForTimeout(2500);
-      await chip(page, "BKK").click(); // 방콕 → 파리: 둘 다 띠 맨 앞에 놓여 띠가 움직이지 않음
+      await chip(page, "BKK").click(); // 1280: 방콕 → 파리는 둘 다 띠 맨 앞에 놓여 띠가 움직이지 않음
       await page.waitForTimeout(3200);
       expect(await pressed(page)).toBe("BKK");
+      if (size.name === "390") {
+        // 휴대폰은 일곱 칸씩이라 방콕 → 파리에서 띠가 움직임 — 띠를 파리의 가장 싼 날이 가운데 오는 자리에 먼저 둠(시안 규칙: 가운데 · 칸 단위로 맞춤 · 끝에서 자름)
+        const ci = city("CDG").days.findIndex((d) => d.depart === best("CDG").depart);
+        await tid(page, "airfare-scroll").evaluate((el, i) => {
+          const cells = el.querySelectorAll('[data-testid="airfare-day"]');
+          const w = cells[1].getBoundingClientRect().left - cells[0].getBoundingClientRect().left;
+          const max = el.scrollWidth - el.clientWidth;
+          const x = Math.max(0, Math.min(max, (i + 0.5) * w - el.clientWidth / 2));
+          el.scrollLeft = Math.max(0, Math.min(max, Math.round(x / w) * w));
+        }, ci);
+        await page.waitForTimeout(400);
+      }
       const scrollBefore = await tid(page, "airfare-scroll").evaluate((el) => el.scrollLeft);
       await startRec(page);
       await chip(page, "CDG").click();
@@ -432,10 +453,13 @@ for (const size of SIZES) {
       expect(fr.filter((f) => f.cells.some((c) => c.inView)).length).toBeGreaterThan(20);
       // 날짜: 첫 칸이 마지막 보이는 칸보다 먼저 나타남(왼쪽부터) · 한때는 흐렸음
       const inViewIdx = (f: Fr) => f.cells.map((c, i) => (c.inView ? i : -1)).filter((i) => i >= 0);
-      const t90 = (idx: number) => fr.find((f) => f.cells[idx] && f.cells[idx].op > 0.9)?.t ?? Number.POSITIVE_INFINITY;
-      const idxs = inViewIdx(fr.at(-1)!);
-      expect(fr.some((f) => f.cells[idxs[0]].op < 0.5), "처음에는 날짜가 아직 없음").toBe(true);
-      expect(t90(idxs[0]), "왼쪽 칸이 먼저").toBeLessThan(t90(idxs[Math.min(idxs.length - 1, 8)]));
+      // 떠오름이 시작된 뒤(맨 앞 칸이 흐려진 프레임부터)에 각 칸이 거의 다 보이게 되는 때
+      const startIdx = fr.findIndex((f) => f.cells[0].op < 0.5);
+      const t90 = (idx: number) => (startIdx < 0 ? Number.NaN : fr.slice(startIdx).find((f) => f.cells[idx] && f.cells[idx].op > 0.9)?.t ?? Number.POSITIVE_INFINITY);
+      void inViewIdx; // 처음 화면의 날짜 = 띠 맨 앞 칸들(0 ~ 보이는 칸 수) — 끝에 보이는 칸(가장 싼 날 쪽으로 흘러간 뒤)이 아님
+      const lastRising = size.perView - 1;
+      expect(fr.some((f) => f.cells[0].op < 0.5), "처음에는 날짜가 아직 없음").toBe(true);
+      expect(t90(0), "왼쪽 칸이 먼저").toBeLessThan(t90(lastRising));
       // 탑승권: 왼쪽에서 들어옴(처음에는 최종 자리보다 왼쪽 · 흐림) → 제자리
       const finalX = fr.at(-1)!.passX!;
       expect(Math.min(...fr.filter((f) => f.passX !== null).map((f) => f.passX!)), "탑승권이 왼쪽에서 들어옴").toBeLessThan(finalX - 20);
