@@ -14,7 +14,7 @@ test.use({ storageState: { cookies: [], origins: [] } }); // 이 파일은 인�
 const DESKTOP = { width: 1440, height: 900 };
 const intro = (page: import("@playwright/test").Page) => page.getByTestId("intro");
 const step = (page: import("@playwright/test").Page) => page.getByTestId("intro-step");
-const board = (page: import("@playwright/test").Page) => page.locator('#today [data-testid="flap-board"]');
+const board = (page: import("@playwright/test").Page) => page.locator('#board [data-testid="flap-board"]');
 const PICKED = "flapfx:picked";
 
 /** 인트로가 닫힌 뒤 홈이 원래대로 — 페이지 잠금(html overflow hidden) 없음 · 휠로 아래로 내려감 (작업 0186) */
@@ -81,7 +81,7 @@ test.describe("데스크톱 인트로", () => {
     await expect(intro(page)).toHaveCount(0, { timeout: 60_000 });
     await expect(board(page)).toBeVisible();
     await expect(board(page)).toHaveAttribute("aria-label", /파리/);
-    await expect(page.locator("#today")).toContainText("내가 고른 여행지 · 오늘 환율");
+    await expect(page.locator("#board")).toContainText("내가 고른 여행지 · 오늘 환율");
     await expect(page.getByTestId("picked-pass")).toContainText("탑승권 보기");
     await expect(page.getByTestId("picked-pass")).toContainText("파리");
     const saved = await page.evaluate((k) => localStorage.getItem(k), PICKED);
@@ -242,8 +242,8 @@ test.describe("데스크톱 인트로", () => {
     await openIntro(page);
     await page.getByTestId("intro-skip").click();
     await expect(intro(page)).toHaveCount(0, { timeout: 10_000 });
-    await expect(page.locator("#today")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
-    await expect(page.locator("#today")).not.toContainText("내가 고른 여행지");
+    await expect(page.locator("#board")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
+    await expect(page.locator("#board")).not.toContainText("내가 고른 여행지");
     await expect(page.getByTestId("picked-pass")).toHaveCount(0);
     expect(await page.evaluate((k) => localStorage.getItem(k), PICKED)).toBeNull();
   });
@@ -257,7 +257,7 @@ test.describe("데스크톱 인트로", () => {
     await expect(step(page)).toHaveText("4 / 5 · 이륙", { timeout: 20_000 });
     await page.getByTestId("intro-skip").click();
     await expect(intro(page)).toHaveCount(0, { timeout: 10_000 });
-    await expect(page.locator("#today")).toBeVisible();
+    await expect(page.locator("#board")).toBeVisible();
   });
 
   test("매번 보여 줌 — 다시 들어오면 인트로가 또 뜨고, 저번에 고른 나라는 홈 안내판에 들어 있음", async ({ page }) => {
@@ -265,7 +265,7 @@ test.describe("데스크톱 인트로", () => {
     await openIntro(page);
     await page.getByTestId("intro-skip").click();
     await expect(intro(page)).toHaveCount(0, { timeout: 10_000 });
-    await expect(page.locator("#today")).toContainText("내가 고른 여행지 · 오늘 환율");
+    await expect(page.locator("#board")).toContainText("내가 고른 여행지 · 오늘 환율");
     await expect(board(page)).toHaveAttribute("aria-label", /도쿄/);
     await expect(page.getByTestId("picked-pass")).toContainText("도쿄");
   });
@@ -275,7 +275,7 @@ test.describe("데스크톱 인트로", () => {
     await openIntro(page);
     await page.getByTestId("intro-skip").click();
     await expect(intro(page)).toHaveCount(0, { timeout: 10_000 });
-    await expect(page.locator("#today")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
+    await expect(page.locator("#board")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
   });
 
   test("접근성 — 덮개는 dialog · 건너뛰기에 접근 이름 · 판 글자는 화면 읽기에서 숨김", async ({ page }) => {
@@ -396,9 +396,9 @@ test.describe("하나씩 다 눌러 보기 (작업 0186)", () => {
     await pass.click();
     await expectHomeScrolls(page);
     // 홈의 보이는 버튼을 하나씩 — 눌러도 인트로가 다시 뜨지 않고 홈이 스크롤됨
-    const count = await page.locator("main button:visible, #today button:visible").count();
+    const count = await page.locator("main button:visible, #board button:visible").count();
     for (let i = 0; i < count; i++) {
-      const b = page.locator("main button:visible, #today button:visible").nth(i);
+      const b = page.locator("main button:visible, #board button:visible").nth(i);
       if (!(await b.isVisible())) continue;
       await b.scrollIntoViewIfNeeded();
       await b.click({ trial: false }).catch(() => {});
@@ -417,7 +417,7 @@ test.describe("인트로가 없는 경우", () => {
     await page.waitForLoadState("networkidle");
     await expect(intro(page)).toHaveCount(0);
     await expect(board(page)).toBeVisible();
-    await expect(page.locator("#today")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
+    await expect(page.locator("#board")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
   });
 
   test("경계 — 폭 700 은 인트로 없음 · 폭 701 은 있음", async ({ page }) => {
@@ -446,6 +446,7 @@ test.describe("인트로가 없는 경우", () => {
     expect(html).not.toContain("models/intro");
     expect(html).not.toContain("내가 고른 여행지");
     expect(html).toContain("이번 주 가장 싸게 갈 수 있는 곳");
+    expect(html).toContain('id="board"');
     expect(html).toContain('id="today"');
     expect(html).not.toContain("같은 달 평균으로 비교했습니다");
   });

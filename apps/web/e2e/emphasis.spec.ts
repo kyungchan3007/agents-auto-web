@@ -57,7 +57,7 @@ test("홈 여행 타이밍 · /flights — 제목 속 달 숫자(4월 같은)가
 
 test("홈 오늘 환율 구간 — 울트라마린 띠가 없어져 숫자 강조 부품(바다 띠용 노란 글자)이 없음 (작업 0177)", async ({ page }) => {
   await page.goto("/");
-  await expect(page.locator("#today").locator('[data-testid="emph"][data-bg="sea"]')).toHaveCount(0);
+  await expect(page.locator("#board").locator('[data-testid="emph"][data-bg="sea"]')).toHaveCount(0);
 });
 
 test("작업실 · 통화 · GEO 같은 화면의 큰 제목은 숫자가 없으면 강조 부품이 없음 (없는 숫자를 칠하지 않음)", async ({ page }) => {

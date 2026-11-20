@@ -46,13 +46,15 @@ describe("홈 자료 — app/page.tsx", () => {
 });
 
 describe("홈 구성 — 순서 · 구간", () => {
-  it("오늘 환율 구간: id=\"today\" 가 한 번 (작업 0177: 울트라마린 전체 띠는 없어지고 출발 안내판으로 — home-flap-board.test.ts 가 검사)", () => {
-    expect(HOME_UI.match(/id="today"/g)?.length).toBe(1);
-    expect(HOME_UI).not.toMatch(/<(section|div)\b[^>]*(id="today"[^>]*data-surface="dark"|data-surface="dark"[^>]*id="today")/);
+  it("탑승권 구간: id=\"board\" 가 한 번 (작업 0177: 울트라마린 전체 띠는 없어지고 출발 안내판으로 — home-flap-board.test.ts 가 검사)", () => {
+    expect(HOME_UI.match(/id="board"/g)?.length).toBe(1);
+    expect(HOME_UI).not.toMatch(/<(section|div)\b[^>]*(id="board"[^>]*data-surface="dark"|data-surface="dark"[^>]*id="board")/);
   });
 
-  it("도착지별 환전 타이밍 구간: id=\"destinations\" · 제목", () => {
-    expect(HOME_UI).toMatch(/id="destinations"/);
+  it("도착지별 환전 타이밍 구간: id=\"today\"(메뉴 '오늘 환율' 도착 자리 · 작업 0233) 이 한 번 · 제목", () => {
+    expect(HOME_UI.match(/id="today"/g)?.length).toBe(1);
+    expect(HOME_UI).toMatch(/<section\b[^>]*id="today"[^>]*scroll-mt-\(--hav-nav-h\)/); // 고정 메뉴 높이만큼 스크롤 여백
+    expect(HOME_UI).not.toMatch(/id="destinations"/);
     expect(HOME_UI).toContain("도착지별 환전 타이밍");
   });
 

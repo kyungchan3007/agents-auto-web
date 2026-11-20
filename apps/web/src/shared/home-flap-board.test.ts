@@ -3,7 +3,7 @@
 //
 // builder 가 할 것 (prd B1~B9 · sdd)
 //   features/home/components/today-board.tsx — export function TodayBoard({ rates, signals, windowDays, problem }) (today-band.tsx 는 지움)
-//     <section id="today" aria-labelledby="today-title"> (data-surface · bg-surface 없음) 안에: 작은 제목(h2 id="today-title" · BOARD_TITLE) · <FlapBoard rows cols label/> · 판정 한 줄(evidence) · <GlobeLazy …지금과 같은 props/>
+//     <section id="board" aria-labelledby="today-title"> (data-surface · bg-surface 없음) 안에: 작은 제목(h2 id="today-title" · BOARD_TITLE) · <FlapBoard rows cols label/> · 판정 한 줄(evidence) · <GlobeLazy …지금과 같은 props/>
 //     자료는 lib/today-board.ts 의 todayBoard({ found: cheapestDestination(…), hasRates, windowDays, problem }) 가 만든 값 그대로 (today-board.test.ts)
 //     (옛 설명 — 사진에 걸치기 · 사진 아래 끝 막은 작업 0217 · 0222 에서 사진 머리와 함께 없어짐)
 //     지구: 판 오른쪽(lg 이상 두 칸 격자 · 판이 먼저) · 모바일은 판 아래 작게(≤ 280px) · 지구 뒤에 배경 · 띠 · data-surface 없음
@@ -28,7 +28,7 @@ function sources(dir: string): string[] {
 const HOME_COMPONENTS = sources(join(WEB_SRC, "features/home/components"));
 // 작업 0217: 서버 계산(today-board.tsx) + 탑승권 카드(ticket.tsx · 판 · 제목 · 판정 한 줄)
 const board = () => ["today-board.tsx", "ticket.tsx"].map((f) => read(join(WEB_SRC, "features/home/components", f))).join("\n");
-const sectionTag = (s: string) => /<section\b[^>]*id="today"[^>]*>|<section\b[^>]*>(?=[^<]*)/.exec(s.match(/<section\b[^>]*id="today"[^>]*>/)?.[0] ?? "")?.[0] ?? "";
+const sectionTag = (s: string) => /<section\b[^>]*id="board"[^>]*>|<section\b[^>]*>(?=[^<]*)/.exec(s.match(/<section\b[^>]*id="board"[^>]*>/)?.[0] ?? "")?.[0] ?? "";
 
 describe("울트라마린 전체 띠 없음 (B1)", () => {
   it("today-band.tsx 가 없고 홈이 TodayBoard 를 씀 (TodayBand 이름이 홈 코드에 없음)", () => {
@@ -41,8 +41,8 @@ describe("울트라마린 전체 띠 없음 (B1)", () => {
 
   it("id=\"today\" 가 한 번 · 그 구간에 data-surface · bg-surface · 울트라마린 바탕(bg-cheap · bg-[#2438A8])이 없음", () => {
     const ui = HOME_COMPONENTS.map(read).join("\n");
-    expect(ui.match(/id="today"/g)?.length).toBe(1);
-    const tag = board().match(/<section\b[^>]*id="today"[^>]*>/)?.[0] ?? "";
+    expect(ui.match(/id="board"/g)?.length).toBe(1);
+    const tag = board().match(/<section\b[^>]*id="board"[^>]*>/)?.[0] ?? "";
     expect(tag, "id=today 구간").not.toBe("");
     expect(tag).not.toMatch(/data-surface=/);
     expect(tag).not.toMatch(/\bbg-(surface|cheap|ink|\[#)/);
