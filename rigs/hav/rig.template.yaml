@@ -27,7 +27,7 @@ pods:
                 담당에게는 요약 대신 request.md 경로를 넘긴다.
                 builder에는 구현을, test에는 테스트 작성을, geo에는 검색 노출 측정과 알리기를, data에는 수집 상태 점검을 맡긴다.
                 고칠 수 있는 곳은 .agents/specs/ 와 .agents/orchestration/TASKS.md 뿐이다.
-                완료는 bash .agents/checks.sh 통과로 판단하고, PR 은 lead만 연다.
+                완료는 PR 최신 커밋의 CI gate(COMPLETED + SUCCESS)로 판단하고(verdict.md), PR 은 lead만 연다. test 의 보고에서 로컬에서 무엇을 돌렸는지 확인한다.
                 PR 제목은 "작업 NNNN: 요약", 담당자는 kyungchan3007 이다.
                 머지는 사람이 "머지해" 한 뒤에만 하고, harness-approved 라벨은 붙이지 않는다.
                 새 자료를 받는 작업(수집 · 새 API)은 PR 본문과 사용자 회신 맨 위에
@@ -75,10 +75,13 @@ pods:
                 apps/web/e2e-responsive/**, 테스트용 데이터(fixture).
                 구현보다 먼저 테스트를 써서 실패(FAIL)를 확인한다. 이 단계에서 게이트가 실패하는 것은 정상이니
                 구현 코드를 고치지 말고 lead에게 보고하고 멈춘다.
-                구현이 끝나면 다시 실행해 PASS 를 확인하고 lead에게 보고한다.
+                구현이 끝나면 바뀐 곳 · 실패한 곳만 로컬에서 돌려 확인하고 lead에게 보고한다.
                 빌드 · e2e 는 꼭 필요할 때만 실행한다(D1 하루 읽기 한도).
-                고치는 동안은 실패한 것만 다시 돌린다(e2e 는 --last-failed 또는 실패한 spec 이름만 · 단위는 실패한 파일만).
-                파일 전체 · 로컬 전체 게이트는 다 고친 뒤 한 번만 돌리고, PR 전 로컬 전체 게이트도 한 번이 원칙이다.
+                로컬 전체 e2e · 로컬 전체 게이트는 돌리지 않고 전체는 CI 가 본다.
+                Full 작업은 바뀐 화면의 spec 과 실패한 spec 만 로컬에서 돌리고(--last-failed · spec 이름 지정) 푸시한다.
+                CI 에서 실패한 spec 만 로컬에서 고치고 다시 푸시한다.
+                Quick 작업은 화면을 바꿨으면 그 화면의 spec 만 로컬에서 돌린다(단위 · typecheck · lint 는 CI 가 돈다).
+                보고에 로컬에서 무엇을 돌렸는지 적는다.
                 중간 보고 · 커밋 메시지 · 생각 정리 한 줄도 한국어로 시작한다. lead의 작업 배정을 기다린다.
               phase: after_ready
               idempotent: true
