@@ -448,3 +448,228 @@ test("CI(PR) Full 은 문서만 바뀌어도 늘 build · test:e2e (Full 은 줄
     sb.done();
   }
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 작업 0244 — develop 흐름 · 대상 브랜치별 e2e 고르기
+//
+// [계약] e2e-select.mjs (builder 가 만듦 · 이름 · 반환 모양을 바꾸려면 이 테스트 머리부터 고친다)
+//   export function selectE2e(files, { target, map })
+//     files  : 저장소 루트 기준 바뀐 파일 경로 배열
+//     target : PR 이 들어가는 브랜치 이름 — "main" 이면 full · 그 밖(develop 등)은 develop 규칙
+//     map    : .agents/e2e-map.json 을 읽은 객체 { "경로 접두어": ["spec 파일 이름"], "smoke": ["spec 파일 이름"] }
+//   반환 { mode, specs, projects, warn? }
+//     mode "none"     : 조용한 파일뿐(e2eNeeded 가 false) — specs [] · projects []
+//     mode "full"     : 대상 main — specs [](= 전부) · projects ["넓은 화면", "휴대폰"]
+//     mode "selected" : 대상 develop — 연결표로 고른 spec(중복 없이 · 이름순) · projects ["넓은 화면"]
+//     mode "smoke"    : 대상 develop 인데 연결표 밖 파일이 있음 — specs = smoke 목록 ∪ 연결표로 고른 spec(이름순) · projects ["넓은 화면"] · warn = 연결표 밖 파일 이름을 담은 한 줄
+//     warn 은 smoke 일 때만 있음 (다른 모드는 warn 없음 · undefined)
+//   규칙: 파일마다 "가장 긴 접두어" 하나가 이긴다(짧은 접두어 spec 이 섞이지 않음) · 접두어는 문자열 앞부분(startsWith) ·
+//        apps/web/e2e/<이름>.spec.ts 가 바뀌면 그 spec 자신을 고름 · 조용한 파일은 건너뜀 · "smoke" 키는 접두어가 아님
+//   CLI: node .agents/scripts/e2e-select.mjs — 바뀐 파일(changedFiles) · 대상 브랜치(GITHUB_BASE_REF 없으면 develop)로 위 결과를 JSON 한 줄로 찍음
+// [계약] lib.mjs baseRef(cwd = ROOT, env = process.env)
+//   CI(PR)에서 GITHUB_BASE_REF 가 있으면 origin/$GITHUB_BASE_REF 와의 갈림점 · 없으면(로컬) origin/develop → origin/main 순서로 첫 갈림점
+// [계약] e2e-needed.mjs — rigs/ 도 조용한 파일(폴더 경계까지 맞아야 함)
+// ─────────────────────────────────────────────────────────────────────────────
+const WIDE = "넓은 화면";
+const PHONE = "휴대폰";
+const E2E_DIR = pathJoin(REPO, "apps", "web", "e2e");
+const REAL_MAP = () => JSON.parse(fsRead(pathJoin(REPO, ".agents", "e2e-map.json"), "utf8"));
+const FAKE_MAP = {
+  smoke: ["home.spec.ts", "prices-redesign.spec.ts"],
+  "apps/web/src/features/home/": ["home.spec.ts", "home-bars.spec.ts"],
+  "apps/web/src/features/travel-price/": ["prices-redesign.spec.ts", "flights-chart.spec.ts"],
+  "apps/web/src/features/travel-price/components/flights-": ["flights-chart.spec.ts"],
+  "packages/ui/src/": ["common-design.spec.ts"],
+};
+
+test("연결표: e2e/*.spec.ts 가 모두 연결표에 있고, 표의 spec · smoke 는 모두 실제 파일 (작업 0244)", () => {
+  const map = REAL_MAP();
+  const specs = list(E2E_DIR).filter((f) => f.endsWith(".spec.ts"));
+  assert.ok(specs.length >= 45, `spec 파일이 ${specs.length}개뿐 — 위치가 바뀐 건 아닌지`);
+  const listed = new Set(Object.values(map).flat());
+  assert.deepEqual(specs.filter((f) => !listed.has(f)), [], "연결표에 없는 spec — 새 spec 은 연결표 한 줄까지가 작업");
+  assert.deepEqual([...listed].filter((f) => !specs.includes(f)), [], "연결표에 있는데 파일이 없는 spec 이름");
+});
+
+test("연결표: smoke 는 주요 확인 몇 개(3 ~ 8개) · 경로 접두어는 실제 있는 경로 · spec 목록은 비어 있지 않음 (작업 0244)", () => {
+  const map = REAL_MAP();
+  assert.ok(Array.isArray(map.smoke) && map.smoke.length >= 3 && map.smoke.length <= 8, `smoke ${map.smoke?.length}개`);
+  assert.equal(new Set(map.smoke).size, map.smoke.length, "smoke 에 같은 spec 이 두 번");
+  for (const [prefix, specs] of Object.entries(map)) {
+    assert.ok(Array.isArray(specs) && specs.length > 0, `${prefix}: spec 목록이 비어 있음`);
+    assert.equal(new Set(specs).size, specs.length, `${prefix}: 같은 spec 이 두 번`);
+    if (prefix === "smoke") continue;
+    const dir = prefix.endsWith("/") ? prefix : pathDirname(prefix);
+    const names = list(pathJoin(REPO, dir));
+    const ok = prefix.endsWith("/") ? names.length > 0 : names.some((n) => `${dir}/${n}`.startsWith(prefix));
+    assert.ok(ok, `${prefix}: 이런 경로가 저장소에 없음`);
+  }
+});
+
+test("연결표: 주요 화면(홈 · 환율 · 여행 물가 · 여행 타이밍 · 직구 계산)이 기능 폴더에 연결됨 (작업 0244)", () => {
+  const map = REAL_MAP();
+  for (const prefix of ["apps/web/src/features/home/", "apps/web/src/features/currencies/", "apps/web/src/features/travel-price/", "apps/web/src/features/import-calc/", "packages/ui/src/"]) {
+    assert.ok(map[prefix]?.length > 0, `${prefix} 가 연결표에 없음`);
+  }
+});
+
+test("고르기: 대상 main 은 전체 · 두 프로젝트 (연결표를 보지 않음) (작업 0244)", async () => {
+  const { selectE2e } = await import("./e2e-select.mjs");
+  const r = selectE2e(["apps/web/src/features/home/components/a.tsx"], { target: "main", map: FAKE_MAP });
+  assert.deepEqual(r, { mode: "full", specs: [], projects: [WIDE, PHONE] });
+  assert.equal(selectE2e(["apps/api/src/index.ts"], { target: "main", map: FAKE_MAP }).mode, "full");
+});
+
+test("고르기: 조용한 파일뿐이면 대상이 무엇이든 none (rigs 포함) (작업 0244)", async () => {
+  const { selectE2e } = await import("./e2e-select.mjs");
+  const quiet = [".agents/e2e-map.json", "docs/a.md", "README.md", "apps/api/data/x.json", "rigs/hav/rig.template.yaml"];
+  for (const target of ["main", "develop"]) {
+    assert.deepEqual(selectE2e(quiet, { target, map: FAKE_MAP }), { mode: "none", specs: [], projects: [] }, target);
+    assert.equal(selectE2e([], { target, map: FAKE_MAP }).mode, "none", `${target} · 빈 목록`);
+  }
+});
+
+test("고르기: 대상 develop 은 연결표 spec 만 · 넓은 화면만 (중복 없이 이름순) (작업 0244)", async () => {
+  const { selectE2e } = await import("./e2e-select.mjs");
+  const r = selectE2e(["apps/web/src/features/home/components/a.tsx", "apps/web/src/features/home/lib/b.ts", "docs/x.md"], { target: "develop", map: FAKE_MAP });
+  assert.deepEqual(r, { mode: "selected", specs: ["home-bars.spec.ts", "home.spec.ts"], projects: [WIDE] });
+  assert.equal("warn" in r, false, "연결표 안이면 경고 없음");
+  const two = selectE2e(["packages/ui/src/a.tsx", "apps/web/src/features/home/a.ts"], { target: "develop", map: FAKE_MAP });
+  assert.deepEqual(two.specs, ["common-design.spec.ts", "home-bars.spec.ts", "home.spec.ts"]);
+});
+
+test("고르기: 파일마다 가장 긴 접두어가 이김 — 짧은 접두어의 spec 이 섞이지 않음 (작업 0244)", async () => {
+  const { selectE2e } = await import("./e2e-select.mjs");
+  const fine = selectE2e(["apps/web/src/features/travel-price/components/flights-graph.tsx"], { target: "develop", map: FAKE_MAP });
+  assert.deepEqual(fine.specs, ["flights-chart.spec.ts"]);
+  const broad = selectE2e(["apps/web/src/features/travel-price/lib/x.ts"], { target: "develop", map: FAKE_MAP });
+  assert.deepEqual(broad.specs, ["flights-chart.spec.ts", "prices-redesign.spec.ts"]);
+});
+
+test("고르기: spec 파일 자신이 바뀌면 그 spec 을 고름 · 지원 파일(helpers 등)은 연결표 밖 (작업 0244)", async () => {
+  const { selectE2e } = await import("./e2e-select.mjs");
+  const own = selectE2e(["apps/web/e2e/pages.spec.ts"], { target: "develop", map: FAKE_MAP });
+  assert.deepEqual(own, { mode: "selected", specs: ["pages.spec.ts"], projects: [WIDE] });
+  const helper = selectE2e(["apps/web/e2e/helpers.ts"], { target: "develop", map: FAKE_MAP });
+  assert.equal(helper.mode, "smoke");
+});
+
+test("고르기: 연결표 밖 화면 파일이 있으면 smoke + 경고 · 연결표로 고른 spec 은 함께 (작업 0244)", async () => {
+  const { selectE2e } = await import("./e2e-select.mjs");
+  const out = selectE2e(["apps/web/src/features/newthing/a.tsx"], { target: "develop", map: FAKE_MAP });
+  assert.equal(out.mode, "smoke");
+  assert.deepEqual(out.specs, ["home.spec.ts", "prices-redesign.spec.ts"]);
+  assert.deepEqual(out.projects, [WIDE]);
+  assert.match(out.warn, /apps\/web\/src\/features\/newthing\/a\.tsx/, "경고에 연결표 밖 파일 이름");
+  const mixed = selectE2e(["apps/web/src/features/newthing/a.tsx", "apps/web/src/features/home/a.ts", "docs/a.md"], { target: "develop", map: FAKE_MAP });
+  assert.equal(mixed.mode, "smoke");
+  assert.deepEqual(mixed.specs, ["home-bars.spec.ts", "home.spec.ts", "prices-redesign.spec.ts"]);
+  assert.ok(!mixed.warn.includes("home/a.ts") && !mixed.warn.includes("docs/a.md"), "연결표 안 · 조용한 파일은 경고에 없음");
+  assert.equal(selectE2e([".github/workflows/checks.yml"], { target: "develop", map: FAKE_MAP }).mode, "smoke", "워크플로도 연결표 밖");
+});
+
+test("고르기: 접두어는 문자열 앞부분이라 비슷한 이름에 속지 않음 (작업 0244)", async () => {
+  const { selectE2e } = await import("./e2e-select.mjs");
+  assert.equal(selectE2e(["apps/web/src/features/home-extra/a.tsx"], { target: "develop", map: FAKE_MAP }).mode, "smoke");
+  assert.equal(selectE2e(["xapps/web/src/features/home/a.tsx"], { target: "develop", map: FAKE_MAP }).mode, "smoke");
+});
+
+test("고르기: 진짜 연결표로 — 홈 · 타이밍 파일은 맞는 spec 만, 대상 develop 이면 휴대폰 없음 (작업 0244)", async () => {
+  const { selectE2e } = await import("./e2e-select.mjs");
+  const map = REAL_MAP();
+  const home = selectE2e(["apps/web/src/features/home/components/flap-board.tsx"], { target: "develop", map });
+  assert.equal(home.mode, "selected");
+  assert.ok(home.specs.includes("home.spec.ts"));
+  assert.deepEqual(home.projects, [WIDE]);
+  const flights = selectE2e(["apps/web/src/features/travel-price/components/flights-graph.tsx"], { target: "develop", map });
+  assert.ok(flights.specs.includes("flights-chart.spec.ts") && !flights.specs.includes("prices-route.spec.ts"));
+  const ui = selectE2e(["packages/ui/src/components/text/a.tsx"], { target: "develop", map });
+  assert.equal(ui.mode, "selected", "공용 UI 는 연결표 안 — 경고 없이 공용 spec");
+  for (const s of [...home.specs, ...flights.specs, ...ui.specs]) assert.ok(list(E2E_DIR).includes(s), `${s} 파일 없음`);
+});
+
+// baseRef — 진짜 git 저장소를 만들어 확인 (origin/main ← origin/develop ← task 브랜치)
+function gitRepo() {
+  const root = mkdtempSync(pathJoin(tmpdir(), "hav-base-"));
+  const g = (...a) => spawnSync("git", a, { cwd: root, encoding: "utf8" }).stdout.trim();
+  const commit = (name) => { writeFileSync(pathJoin(root, name), name); g("add", "-A"); g("commit", "-q", "-m", name); return g("rev-parse", "HEAD"); };
+  g("init", "-q", "-b", "main");
+  g("config", "user.email", "t@t");
+  g("config", "user.name", "t");
+  const m0 = commit("m0");
+  g("update-ref", "refs/remotes/origin/main", m0);
+  g("checkout", "-q", "-b", "develop");
+  const d1 = commit("d1");
+  g("update-ref", "refs/remotes/origin/develop", d1);
+  g("checkout", "-q", "-b", "task/x");
+  commit("t1");
+  return { root, m0, d1, g, done: () => rmSync(root, { recursive: true, force: true }) };
+}
+
+test("baseRef: 로컬은 origin/develop 갈림점 (develop 에서 딴 작업 브랜치) (작업 0244)", async () => {
+  const { baseRef } = await import("./lib.mjs");
+  const r = gitRepo();
+  try {
+    assert.equal(baseRef(r.root, {}), r.d1);
+  } finally { r.done(); }
+});
+
+test("baseRef: 로컬에 origin/develop 이 없으면 origin/main 갈림점 (작업 0244)", async () => {
+  const { baseRef } = await import("./lib.mjs");
+  const r = gitRepo();
+  try {
+    r.g("update-ref", "-d", "refs/remotes/origin/develop");
+    assert.equal(baseRef(r.root, {}), r.m0);
+  } finally { r.done(); }
+});
+
+test("baseRef: CI(PR)는 GITHUB_BASE_REF 를 따름 — main 이면 main 갈림점 · develop 이면 develop 갈림점 (작업 0244)", async () => {
+  const { baseRef } = await import("./lib.mjs");
+  const r = gitRepo();
+  try {
+    assert.equal(baseRef(r.root, { GITHUB_BASE_REF: "main" }), r.m0, "대상 main 인데 develop 갈림점을 쓰면 develop 에만 있는 변경이 빠짐");
+    assert.equal(baseRef(r.root, { GITHUB_BASE_REF: "develop" }), r.d1);
+    assert.equal(baseRef(r.root, { GITHUB_BASE_REF: "" }), r.d1, "빈 값은 로컬 규칙");
+  } finally { r.done(); }
+});
+
+test("baseRef: GITHUB_BASE_REF 가 가리키는 origin 브랜치가 없으면 로컬 규칙으로 (죽지 않음) (작업 0244)", async () => {
+  const { baseRef } = await import("./lib.mjs");
+  const r = gitRepo();
+  try {
+    assert.equal(baseRef(r.root, { GITHUB_BASE_REF: "nope" }), r.d1);
+  } finally { r.done(); }
+});
+
+test("changedFiles: 대상 main 이면 develop 에만 있던 변경도 바뀐 파일에 포함 (작업 0244)", async () => {
+  const { changedFiles } = await import("./lib.mjs");
+  const r = gitRepo();
+  try {
+    assert.deepEqual(changedFiles(r.root, {}), ["t1"], "로컬 · develop 기준");
+    assert.deepEqual(changedFiles(r.root, { GITHUB_BASE_REF: "main" }), ["d1", "t1"], "대상 main 기준");
+  } finally { r.done(); }
+});
+
+test("e2e 필요 판정: rigs/ 는 조용한 파일 — 폴더 경계까지 맞아야 함 (작업 0244)", async () => {
+  const { e2eNeeded } = await import("./e2e-needed.mjs");
+  assert.equal(e2eNeeded(["rigs/hav/rig.template.yaml"]), false);
+  assert.equal(e2eNeeded(["rigs/hav/seats/test.yaml", "docs/a.md"]), false);
+  assert.equal(e2eNeeded(["rigsx/a.ts"]), true);
+  assert.equal(e2eNeeded(["apps/web/rigs/a.ts"]), true, "맨 앞 rigs/ 만");
+  assert.equal(e2eNeeded(["rigs/a.yaml", "apps/web/src/a.tsx"]), true, "화면 파일과 섞이면 true");
+});
+
+test("고르기: 연결표 안 기능 파일 + 연결표 밖 공용 파일이 같이 바뀌면 '고른 spec ∪ smoke' + 경고 — smoke 만이면 바꾼 기능 spec 이 빠짐 (작업 0244)", async () => {
+  const { selectE2e } = await import("./e2e-select.mjs");
+  const files = ["apps/web/src/features/travel-price/components/flights-graph.tsx", "apps/web/src/bff/proxy.ts"]; // 뒤 파일은 진짜 연결표에 없는 공용 파일
+  const map = REAL_MAP();
+  assert.ok(!Object.keys(map).some((p) => files[1].startsWith(p)), "시험 전제: 이 파일은 연결표 밖이어야 함 (연결표에 넣었다면 다른 연결표 밖 파일로 바꿀 것)");
+  const r = selectE2e(files, { target: "develop", map });
+  assert.equal(r.mode, "smoke");
+  const flights = selectE2e([files[0]], { target: "develop", map }).specs;
+  for (const s of [...flights, ...map.smoke]) assert.ok(r.specs.includes(s), `${s} 가 합집합에 없음`);
+  assert.deepEqual(r.specs, [...new Set([...flights, ...map.smoke])].sort(), "합집합 · 중복 없이 · 이름순");
+  assert.deepEqual(r.projects, [WIDE]);
+  assert.match(r.warn, /apps\/web\/src\/bff\/proxy\.ts/);
+  assert.ok(!r.warn.includes("flights-graph"), "연결표 안 파일은 경고에 없음");
+});
