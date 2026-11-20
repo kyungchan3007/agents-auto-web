@@ -8,12 +8,12 @@
 .af-title{font-family:var(--head);font-weight:800;font-size:clamp(26px,3.2vw,36px);letter-spacing:-.035em;line-height:1.25;margin-top:8px!important}
 .af-lede{font-size:13.5px;color:var(--sub);margin-top:10px!important}
 .af-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px}
-.af-chips button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:8px;padding:7px 15px 7px 10px;border-radius:999px;border:2px solid var(--line);background:#fff;font-weight:700;font-size:14px;transition:background .25s,color .25s,border-color .25s}
-.af-chips button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.af-chips button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:8px;padding:7px 15px 7px 10px;border-radius:999px;border:2px solid var(--line);background:var(--hav-foam);font-weight:700;font-size:14px;transition:background .25s,color .25s,border-color .25s}
+.af-chips button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--hav-foam)}
 .af-chips button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
-.af-chips .fl{display:block;width:24px;height:16px;border-radius:2px;overflow:hidden;box-shadow:0 0 0 1px rgba(22,36,110,.15)}
+.af-chips .fl{display:block;width:24px;height:16px;border-radius:2px;overflow:hidden;box-shadow:var(--shadow-af-ring)}
 .af-chips .fl svg{display:block;width:100%;height:100%;border-radius:0}
-.af-card{margin-top:22px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;border:2px solid var(--line);border-radius:24px;background:#fff;padding:28px}
+.af-card{margin-top:22px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;border:2px solid var(--line);border-radius:24px;background:var(--hav-foam);padding:28px}
 .af-head{font-family:var(--head);font-weight:800;font-size:22px;letter-spacing:-.03em;line-height:1.35}
 .af-head em{font-style:normal;color:var(--blue)}
 .af-sub{font-size:13px;color:var(--sub);margin-top:6px!important}
@@ -23,10 +23,10 @@
 .af-bar{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .af-range{font-family:var(--head);font-weight:800;font-size:14px;letter-spacing:-.02em}
 .af-nav{display:flex;gap:6px}
-.af-nav button{all:unset;cursor:pointer;width:32px;height:32px;border-radius:50%;background:#fff;color:var(--ink);font-size:20px;line-height:30px;text-align:center;font-weight:700;box-shadow:0 2px 6px -2px rgba(22,36,110,.3);transition:opacity .2s}
+.af-nav button{all:unset;cursor:pointer;width:32px;height:32px;border-radius:50%;background:var(--hav-foam);color:var(--ink);font-size:20px;line-height:30px;text-align:center;font-weight:700;box-shadow:var(--shadow-af-nav);transition:opacity .2s}
 .af-nav button:disabled{opacity:.35;cursor:default}
 .af-nav button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
-.af-strip{position:relative;margin-top:12px;background:#fff;border-radius:22px;padding:6px 8px;box-shadow:0 14px 28px -16px rgba(22,36,110,.45),0 1px 2px rgba(22,36,110,.08)}
+.af-strip{position:relative;margin-top:12px;background:var(--hav-foam);border-radius:22px;padding:6px 8px;box-shadow:var(--shadow-af-strip)}
 .af-scroll{overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;border-radius:16px}
 .af-scroll::-webkit-scrollbar{display:none}
 .af-track{--n:14;position:relative;display:flex}
@@ -39,9 +39,9 @@
 .af-d[data-tier="low"] .pr{color:var(--blue)}.af-d[data-tier="high"] .pr{color:var(--red)}
 .af-d[data-best="true"]::before{content:"";position:absolute;inset:2px 3px;border-radius:14px;border:2px solid var(--yellow);pointer-events:none}
 .af-d:focus-visible{outline:2px solid var(--blue);outline-offset:-4px;border-radius:16px}
-.af-d[data-on] .wd,.af-d[data-on] .dt,.af-d[data-on] .pr{color:#fff}
+.af-d[data-on] .wd,.af-d[data-on] .dt,.af-d[data-on] .pr{color:var(--hav-foam)}
 .af-sel{position:absolute;z-index:0;top:0;bottom:0;left:0;width:calc(100%/var(--n));transition:transform .38s cubic-bezier(.3,1.2,.4,1)}
-.af-sel::before{content:"";position:absolute;inset:2px 3px;border-radius:14px;background:var(--blue);box-shadow:0 6px 12px -6px rgba(36,56,168,.7)}
+.af-sel::before{content:"";position:absolute;inset:2px 3px;border-radius:14px;background:var(--blue);box-shadow:var(--shadow-af-sel)}
 /* 숨김은 칸 자체의 투명도로 곧바로 (비행 중에는 파랑 표시가 없어야 함) */
 .af-sel[data-hide]{opacity:0}
 .af-sel[data-land]::before{animation:af-land .5s cubic-bezier(.3,1.5,.5,1)}
@@ -56,16 +56,16 @@
 .af-row{display:grid;grid-template-columns:28px minmax(0,1fr) 64px;align-items:center;gap:10px;font-size:13px}
 .af-row .w{font-weight:700;color:var(--sub)}
 .af-row .track{display:block;height:12px;border-radius:9px;background:var(--face);overflow:hidden}
-.af-row .fill{display:block;height:100%;border-radius:9px;background:#9fb0e8;width:0;transition:width .7s cubic-bezier(.3,.9,.3,1),background-color .4s}
+.af-row .fill{display:block;height:100%;border-radius:9px;background:var(--af-bar-soft);width:0;transition:width .7s cubic-bezier(.3,.9,.3,1),background-color .4s}
 .af-row.min .fill{background:var(--blue)}.af-row.min .w{color:var(--blue)}
 .af-row .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
 @media (max-width:900px){.af-card{grid-template-columns:1fr;padding:20px;border-radius:20px}}
 @media (max-width:640px){.af{padding-top:48px;padding-bottom:64px}.af-track{--n:7}.af-stage{padding:14px 10px;border-radius:16px}.af-bar{padding:0 4px}.af-strip{padding:5px 4px;border-radius:18px}.af-d .dt{font-size:17px}.af-d .pr{font-size:11px}.af-legend{padding:0 4px}.af-head{font-size:19px}}
 
 /* 가장 싼 출발 탑승권 — 처음 한 번 왼쪽에서 미끄러져 들어옴 (사이트 탑승권 모양 · 파인 동그라미 없음) */
-.af-pass{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:stretch;border:2px solid var(--ink);border-radius:18px;overflow:hidden;background:#fff}
+.af-pass{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:stretch;border:2px solid var(--ink);border-radius:18px;overflow:hidden;background:var(--hav-foam)}
 .af-pass .main{display:flex;align-items:center;gap:22px;padding:16px 22px;min-width:0;flex-wrap:wrap}
-.af-pass .tag{font-size:11.5px;font-weight:700;color:#fff;background:var(--blue);padding:3px 10px;border-radius:999px;white-space:nowrap}
+.af-pass .tag{font-size:11.5px;font-weight:700;color:var(--hav-foam);background:var(--blue);padding:3px 10px;border-radius:999px;white-space:nowrap}
 .af-pass .route{display:flex;align-items:center;gap:12px}
 .af-pass .code{font-family:var(--head);font-weight:800;font-size:30px;letter-spacing:-.01em;line-height:1}
 .af-pass .code small{display:block;font-family:var(--font-sans);font-size:11px;font-weight:600;color:var(--sub);letter-spacing:0;margin-top:4px}
@@ -87,7 +87,7 @@
 .af-board .c.w{width:26px;font-size:18px}
 /* 비행기: 떠나는 칸에서 떠서 가장 싼 날 칸에 내려앉음 (날짜 띠가 따라 흐름) */
 .af-plane{position:absolute;left:0;top:0;width:26px;height:26px;margin:-13px 0 0 -13px;z-index:5;pointer-events:none;opacity:0}
-.af-plane svg{display:block;width:100%;height:100%;fill:var(--ink);filter:drop-shadow(0 3px 3px rgba(22,36,110,.3))}
+.af-plane svg{display:block;width:100%;height:100%;fill:var(--ink);filter:drop-shadow(0 3px 3px var(--af-plane-shadow))}
 @media (max-width:640px){
   .af-pass{grid-template-columns:1fr}
   .af-pass .stub{border-left:0;border-top:2px dashed var(--line);flex-direction:row;align-items:center;justify-content:space-between}

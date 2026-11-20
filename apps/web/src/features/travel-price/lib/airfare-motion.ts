@@ -55,7 +55,7 @@ function makeRoll() {
   };
 }
 
-export function createAirfareMotion(root: HTMLElement, cb: { onRange(text: string, atStart: boolean, atEnd: boolean): void; onGrow(): void; onIntroShown(): void; formatRange(a: string, b: string): string }): AirfareMotion {
+export function createAirfareMotion(root: HTMLElement, cb: { onRange(text: string, atStart: boolean, atEnd: boolean): void; onGrow(): void; formatRange(a: string, b: string): string }): AirfareMotion {
   const scroller = q(root, "airfare-scroll") as HTMLElement;
   const track = scroller.firstElementChild as HTMLElement;
   const strip = scroller.parentElement as HTMLElement;
@@ -135,10 +135,16 @@ export function createAirfareMotion(root: HTMLElement, cb: { onRange(text: strin
     place(i, !!o.smooth);
     const tk = ++markTick;
     if (o.smooth && !reduced()) {
-      mark(-1); // 파랑이 거의 닿은 뒤에 흰 글자 (먼저 바뀌면 흰 바탕에 흰 글자가 잠깐 보임)
-      later(() => {
-        if (tk === markTick) mark(sel);
-      }, 90);
+      mark(-1); // 파랑이 그 칸에 닿는 순간에 흰 글자 (먼저 바뀌면 흰 바탕에 흰 글자가 보임 · 늦으면 파랑 위에 짙은 글자가 보임)
+      const t0 = performance.now();
+      const watch = () => {
+        if (tk !== markTick) return;
+        const s = el.getBoundingClientRect();
+        const c = cell.getBoundingClientRect();
+        if (Math.abs(s.left + s.width / 2 - (c.left + c.width / 2)) <= c.width * 0.35 || performance.now() - t0 > 700) mark(sel);
+        else requestAnimationFrame(watch);
+      };
+      requestAnimationFrame(watch);
     } else mark(o.defer ? -1 : i);
     if (o.roll) roll(board, Number(cell.dataset.price));
     if (o.fly) {
@@ -264,7 +270,6 @@ export function createAirfareMotion(root: HTMLElement, cb: { onRange(text: strin
         pass.animate([{ opacity: 0, transform: "translateX(-48px)" }, { opacity: 1, transform: "none" }], { duration: 700, easing: "cubic-bezier(.2,.8,.2,1)", fill: "forwards" }).onfinish = () => {
           pass.style.opacity = "1";
         };
-      cb.onIntroShown();
       show({ animate: true, first: true, prev: null });
     },
     { threshold: 0.3 },
