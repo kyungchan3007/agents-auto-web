@@ -11,6 +11,7 @@
 | [signal.md](signal.md) | 지금 살 때인가 신호 | SIG |
 | [import-calc.md](import-calc.md) | 직구 계산기 | IMP |
 | [travel-price.md](travel-price.md) | 여행지 물가 비교 | TRV |
+| [airfare-calendar.md](airfare-calendar.md) | 항공권 출발일 달력 (여행 타이밍) | AIR |
 | [build-log.md](build-log.md) | 만드는 중 (작업 과정 공개) | LOG |
 
 - 공통: 대상은 여행 + 직구 (확인됨) · 통화는 API가 주는 전부 (확인됨)
