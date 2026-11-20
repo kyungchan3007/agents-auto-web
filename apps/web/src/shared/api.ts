@@ -1,5 +1,6 @@
 // API 받기 — 빌드 때 부르고 @hav/shared 스키마로 검사 · 실패해도 던지지 않고 이유를 돌려준다 (빌드가 깨지지 않게)
 import { type Fetched, type FetchOptions, fetchJson } from "@hav/shared/fetched";
+import { AirfareCalendar } from "@hav/shared/airfare";
 import { FxChanges, FxHistory, FxLatest } from "@hav/shared/fx";
 import { IndicatorSeries } from "@hav/shared/indicators";
 import { PriceLevels } from "@hav/shared/prices";
@@ -46,6 +47,8 @@ export const api = {
   priceLevels: (o?: ApiOptions) => getJson("/prices/levels?base=KOR", PriceLevels, o),
   /** 공용 시계열 (과세환율 kcs-import:USD 등) — 오래된 것부터 · 자료가 없으면 points 빈 배열 */
   indicator: (series: string, limit: number, o?: ApiOptions) => getJson(`/indicators/${series}?limit=${limit}`, IndicatorSeries, o),
+  /** 항공권 출발일 달력 (인천 출발 · 도시별 최근 묶음) — 빌드 때만 읽음 · 자료가 없으면 fetchedOn null · cities 빈 배열 (작업 0234) */
+  airfareCalendar: (o?: ApiOptions) => getJson("/airfare/calendar", AirfareCalendar, o),
   tasks: (o?: ApiOptions) => getJson("/tasks", TasksSummary, o),
   status: (o?: ApiOptions) => getJson("/status", SiteStatus, o),
   geo: (o?: ApiOptions) => getJson("/geo", GeoReport, o),

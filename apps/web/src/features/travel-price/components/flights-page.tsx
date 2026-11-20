@@ -12,6 +12,8 @@ import { Eyebrow, Title } from "@hav/ui/text/heading";
 import { averageYears, cheapMonth, type IndexPoint } from "../lib/travel-index";
 import { cheapMonthsCard, flightsHeadline, yoyCard } from "../lib/flights-copy";
 import { flightsBoard, latestNumbers, stripStats } from "../lib/flights-view";
+import type { AirfareCalendar } from "@hav/shared/airfare";
+import { AirfareCalendarSection } from "./airfare-calendar/airfare-calendar";
 import { FlightsGraph } from "./flights-graph";
 import { MiniBoard } from "./mini-board";
 import { WindowMonths } from "./window-months";
@@ -39,7 +41,7 @@ function YoyItem({ name, points }: { name: string; points: IndexPoint[] | null }
   );
 }
 
-export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMonthly: IndexPoint[] }) {
+export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: TravelItem[]; fxMonthly: IndexPoint[]; airfare?: AirfareCalendar | null }) {
   const air = travel.find((t) => t.key === "air-fare")?.points ?? null;
   const tour = travel.find((t) => t.key === "package-tour")?.points ?? null;
   const airCheap = air ? cheapMonth(air) : null;
@@ -75,6 +77,8 @@ export function FlightsPage({ travel, fxMonthly }: { travel: TravelItem[]; fxMon
         </section>
         {/* hero 바로 아래 새 구역 — 창밖으로 보는 12달 (작업 0229 · 모션 1번) · 지수가 없으면 구역 없음 */}
         <WindowMonths points={air} />
+        {/* 창밖 12달 바로 아래 새 구역 — 인천 출발 1주 왕복의 출발일별 최저가 (작업 0234) · 기존 구역은 그대로 */}
+        <AirfareCalendarSection calendar={airfare} />
         {/* 표 뒤 구간 — 옅은 면(surface-2) · 절취선 끝 동그라미(홈)는 없고 점선만 (작업 0218 사용자 지적 "동그라미가 없어야 하는거 아냐?") */}
         <div data-testid="flights-back" className="bg-surface-2 px-4 pt-10 pb-10 sm:px-8 sm:pt-14">
           <div className="mx-auto max-w-page">

@@ -11,10 +11,11 @@ export const metadata: Metadata = {
 
 // 여행 품목 지수(통계청 KOSIS)는 빌드 때 우리 API 에서 — 두 품목 5년치 + 같은 기간 원/달러 · 못 받으면 "준비 중" (숫자를 만들지 않음)
 export default async function Page() {
-  const [air, tour, usd] = await Promise.all([api.indicator("kosis-cpi:air-fare", 60), api.indicator("kosis-cpi:package-tour", 60), api.history("USD", 1000)]);
+  const [air, tour, usd, airfare] = await Promise.all([api.indicator("kosis-cpi:air-fare", 60), api.indicator("kosis-cpi:package-tour", 60), api.history("USD", 1000), api.airfareCalendar()]);
   const travel = [
     { key: "air-fare", name: "국제항공료", points: air.ok ? air.data.points : null },
     { key: "package-tour", name: "해외단체여행비", points: tour.ok ? tour.data.points : null },
   ];
-  return <FlightsPage travel={travel} fxMonthly={usd.ok ? fxMonthlyAverage(usd.data.rates) : []} />;
+  // 항공권 출발일 달력(작업 0234)은 못 받으면 구역이 "아직 받지 못했습니다"로 — 빌드를 멈추지 않음 (없어도 다른 구역은 그대로)
+  return <FlightsPage travel={travel} fxMonthly={usd.ok ? fxMonthlyAverage(usd.data.rates) : []} airfare={airfare.ok ? airfare.data : null} />;
 }
