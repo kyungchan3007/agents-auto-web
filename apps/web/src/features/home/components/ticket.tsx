@@ -40,7 +40,7 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
   const board: Board = picked && chosen ? chosen : initial;
   const pct = board.percentile;
   return (
-    <section id="today" aria-labelledby="today-title" className="text-fg">
+    <section id="board" aria-labelledby="today-title" className="text-fg">
       <div className="grid grid-cols-[minmax(1rem,1fr)_minmax(0,45rem)_minmax(1rem,1fr)] sm:grid-cols-[minmax(2rem,1fr)_minmax(0,45rem)_minmax(2rem,1fr)] lg:[@media(max-height:880px)]:grid-cols-[minmax(2rem,1fr)_minmax(0,34rem)_minmax(2rem,1fr)] lg:[@media(min-height:881px)_and_(max-height:1000px)]:grid-cols-[minmax(2rem,1fr)_minmax(0,38rem)_minmax(2rem,1fr)]">
         <div data-testid="ticket-band" aria-hidden className="col-span-3 col-start-1 row-start-1 -mb-[13px] bg-pin-cheap" />
         <div data-testid="ticket" className="relative z-10 col-start-2 row-span-2 row-start-1 grid grid-cols-[minmax(0,1fr)] grid-rows-subgrid rounded-[1.75rem] border border-line bg-card shadow-ticket">
