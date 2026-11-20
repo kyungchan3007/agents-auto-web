@@ -15,9 +15,11 @@
 - docs/data-health.md
 - docs/marketing/2026-11-20/**
 - .agents/specs/0240-data-geo-first/**
+- apps/web/src/shared/old-name.test.ts
+- apps/web/src/shared/site-name.test.ts
 
 ## 계획 밖 변경 이유
--
+- apps/web/src/shared/old-name.test.ts · site-name.test.ts — `git ls-files` 결과를 읽는데 한글 파일 이름(docs/marketing/2026-11-20/문구.md)이 따옴표 · 8진수로 감싸져 나와 ENOENT 로 CI gate 실패. geo 가 날짜별 한글 파일을 계속 만들 것이라 파일 이름 대신 테스트를 고침(test 몫)
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (verdict.md 규칙 · test 판정)
