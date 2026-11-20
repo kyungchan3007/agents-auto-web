@@ -13,6 +13,7 @@
 //   예산 카드 아래 끝 → 노선 제목(h2) 위 끝 = 넓은 화면 140px · 휴대폰 100px (지금 운영 정적 자와 같음 · 화면 높이와 상관없이)
 //   자료가 없어 정거장이 없으면 노선 없음 · 건너뜀(자료 조건) — 구현이 없어서 건너뛰지 않음(price-bands 는 지금 화면에도 있음)
 import { type Page, expect, test } from "@playwright/test";
+import { hydrated } from "./helpers";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 640;
@@ -27,6 +28,9 @@ const ready = async (page: Page, url = "/prices") => {
 type Pin = { name: string; value: number; pill: string | null };
 /** 아래 세 칸 목록(필터 반영)의 구간마다 맨 위 두 줄 — 노선 정거장이 이 나라들이어야 함 */
 async function listPins(page: Page): Promise<Pin[]> {
+  // 줄이 아직 최종 배치가 되기 전에는 innerText 첫 줄에 이름 · 물가 · 알약이 한 줄로 붙어 읽힘('인도 국기인도물가 37 (한국 100)환율 없음') — 첫 줄이 이름뿐인 최종 모양이 되기를 기다림 (작업 0242)
+  const rows = () => tid(page, "price-bands").locator("section").evaluateAll((secs) => secs.flatMap((s) => Array.from(s.querySelectorAll("li")).slice(0, 2).map((li) => (li as HTMLElement).innerText)));
+  await expect.poll(async () => (await rows()).every((t) => t.includes("\n") && !t.split("\n")[0].includes("물가") && /물가\s*\d+\s*\(한국 100\)/.test(t)), { message: "나라 줄이 최종 모양으로 그려지기를 기다림" }).toBe(true);
   const pins = await tid(page, "price-bands").locator("section").evaluateAll((secs) =>
     secs.flatMap((s) =>
       Array.from(s.querySelectorAll("li")).slice(0, 2).map((li) => {
@@ -94,19 +98,24 @@ test.describe("여행 물가 — 스크롤로 떠나는 물가 노선 (작업 02
   test("노선 화면은 메뉴 띠 바로 아래에 고정(세로 가운데 아님) · 정거장 사이 스크롤 길이 36vh(넓은 화면) · 30vh(휴대폰)", async ({ page }) => {
     if (!isPhone(page)) await page.setViewportSize({ width: 1280, height: 800 });
     test.skip(!(await ready(page)), "물가 자료 없음");
+    // 정거장 카드는 하이드레이션 뒤에 그려져 그 전에 세면 0 이 되고 (n - 1) = -1 로 나눠 값이 음수(-216 · -180)로 나왔음 — 이어받고 정거장이 그려진 뒤에 셈 (작업 0242)
+    await hydrated(tid(page, "route-stage"));
+    await expect.poll(() => tid(page, "route-stop").count(), { message: "정거장이 그려지기를 기다림" }).toBeGreaterThan(1);
     const n = await tid(page, "route-stop").count();
-    const m = await page.evaluate(() => {
-      const sec = document.querySelector('[data-testid="route-section"]') as HTMLElement, st = document.querySelector('[data-testid="route-stage"]') as HTMLElement;
-      return { sec: sec.getBoundingClientRect().height, stage: st.getBoundingClientRect().height, vh: window.innerHeight, pos: getComputedStyle(st).position };
-    });
-    expect(m.pos).toBe("sticky");
-    const step = (m.sec - m.stage) / (n - 1);
-    expect((step / m.vh) * 100, "정거장 사이 스크롤(vh)").toBeCloseTo(isPhone(page) ? 30 : 36, 0);
+    const measure = () =>
+      page.evaluate(() => {
+        const sec = document.querySelector('[data-testid="route-section"]') as HTMLElement, st = document.querySelector('[data-testid="route-stage"]') as HTMLElement;
+        return { sec: sec.getBoundingClientRect().height, stage: st.getBoundingClientRect().height, vh: window.innerHeight, pos: getComputedStyle(st).position };
+      });
+    // 구역 높이는 하이드레이션 뒤에 정해져 그 전에는 판보다 낮게(음수 스크롤 길이) 읽힘 — 최종 높이가 되기를 기다림 (작업 0242)
+    await expect.poll(async () => (await measure()).pos, { message: "판은 sticky" }).toBe("sticky");
+    await expect.poll(async () => { const m = await measure(); return ((m.sec - m.stage) / (n - 1) / m.vh) * 100; }, { message: "정거장 사이 스크롤(vh)" }).toBeCloseTo(isPhone(page) ? 30 : 36, 0);
     for (const p of [0.1, 0.5, 0.9]) {
       await goProgress(page, p);
-      await page.waitForTimeout(150);
-      const g = await page.evaluate(() => ({ stageTop: (document.querySelector('[data-testid="route-stage"]') as HTMLElement).getBoundingClientRect().top, nav: document.querySelector("header")!.getBoundingClientRect().bottom, stageH: (document.querySelector('[data-testid="route-stage"]') as HTMLElement).getBoundingClientRect().height, vh: window.innerHeight }));
-      expect(Math.abs(g.stageTop - g.nav), `진행 ${p}: 판 위 끝이 메뉴 띠 바로 아래`).toBeLessThanOrEqual(1.5);
+      // 고정 150ms 대신 판이 메뉴 띠 아래에 붙을 때까지 다시 읽음 (작업 0242)
+      const geom = () => page.evaluate(() => ({ stageTop: (document.querySelector('[data-testid="route-stage"]') as HTMLElement).getBoundingClientRect().top, nav: document.querySelector("header")!.getBoundingClientRect().bottom, stageH: (document.querySelector('[data-testid="route-stage"]') as HTMLElement).getBoundingClientRect().height, vh: window.innerHeight }));
+      await expect.poll(async () => { const g = await geom(); return Math.abs(g.stageTop - g.nav); }, { message: `진행 ${p}: 판 위 끝이 메뉴 띠 바로 아래` }).toBeLessThanOrEqual(1.5);
+      const g = await geom();
       expect(g.stageTop + g.stageH, "판이 화면 안").toBeLessThanOrEqual(g.vh + 1.5);
     }
   });

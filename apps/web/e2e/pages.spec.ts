@@ -3,7 +3,7 @@
 //   builder · geo 가 다는 표시: src/shared/pages-redesign.test.ts 머리 주석의 data-testid 목록
 //   모바일 쌓임 순서(Figma 설명)는 "휴대폰" 프로젝트에서만 · 2단 배치(입력 왼쪽 · 결과 오른쪽 등)는 "넓은 화면" 프로젝트에서만
 import { type Locator, type Page, expect, test } from "@playwright/test";
-import { openMenuIfCollapsed } from "./helpers";
+import { hydrated, openMenuIfCollapsed } from "./helpers";
 
 const box = async (loc: Locator) => {
   const b = await loc.first().boundingBox();
@@ -343,13 +343,12 @@ test.describe("여행 물가 — 나라 접기 버튼 (작업 0198)", () => {
     await page.goto("/prices");
     const btn = openBtn(page);
     await expect(btn).toBeVisible();
-    const link = await btn.evaluate((el) => {
-      const s = getComputedStyle(el);
-      return { top: parseFloat(s.borderTopWidth), bottom: parseFloat(s.borderBottomWidth), bg: s.backgroundColor };
-    });
-    expect(link.top).toBe(0); // 상자 테두리 없음
-    expect(link.bottom).toBeGreaterThanOrEqual(2); // 밑줄
-    expect(link.bg).toBe("rgba(0, 0, 0, 0)");
+    // 단추가 보인 직후에는 하이드레이션이 요소를 바꿔 끼우는 중이라 계산된 스타일이 비어(NaN) 있을 수 있어 — 다시 읽는 검사로 (작업 0242)
+    const bw = (side: "Top" | "Bottom") => btn.evaluate((el, s) => parseFloat(getComputedStyle(el)[`border${s}Width` as "borderTopWidth"]), side);
+    await expect.poll(() => bw("Top"), { message: "상자 테두리 없음" }).toBe(0);
+    await expect.poll(() => bw("Bottom"), { message: "밑줄" }).toBeGreaterThanOrEqual(2);
+    await expect(btn).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    await hydrated(btn); // 이어받기 전에 누르면 눌림이 무시됨
     await page.keyboard.press("Tab");
     await btn.focus();
     expect(await btn.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe("none");
@@ -357,12 +356,8 @@ test.describe("여행 물가 — 나라 접기 버튼 (작업 0198)", () => {
     const fold = foldBtn(page);
     await expect(fold).toBeVisible();
     expect((await box(fold)).height).toBeGreaterThanOrEqual(44);
-    const style = await fold.evaluate((el) => {
-      const s = getComputedStyle(el);
-      return { border: parseFloat(s.borderTopWidth), radius: parseFloat(s.borderTopLeftRadius) };
-    });
-    expect(style.border).toBeGreaterThanOrEqual(2);
-    expect(style.radius).toBeGreaterThanOrEqual(20);
+    await expect.poll(() => fold.evaluate((el) => parseFloat(getComputedStyle(el).borderTopWidth))).toBeGreaterThanOrEqual(2);
+    await expect.poll(() => fold.evaluate((el) => parseFloat(getComputedStyle(el).borderTopLeftRadius))).toBeGreaterThanOrEqual(20);
     await fold.focus();
     expect(await fold.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe("none");
   });

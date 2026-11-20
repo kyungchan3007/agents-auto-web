@@ -4,6 +4,7 @@
 //   선 하나: rate(매매기준율 · 면 있음 · 최고(빨강) · 최저(남색) 점) · 끝 "오늘" 큰 말풍선 = 마지막 날 실제 값 · 평균 점선 꼬리표
 //   배치는 그대로: 왼쪽 큰 제목 · 오른쪽 기간 알약 묶음 · 가로 전체 그래프 (year-flow > period-chart)
 import { type Page, expect, test } from "@playwright/test";
+import { hydrated } from "./helpers";
 import { expectInsideViewport, expectLineChartFinal, expectTextsInside, firstAbove, firstDone, reveal, scrollJustBelow, scrollTo, startRecording, stopRecording, tid } from "./chart-helpers";
 
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 640;
@@ -146,6 +147,8 @@ test.describe("통화 상세 1년 흐름 — 풍성한 2D (작업 0219 · 시안
   test("한 번만 — 위로 올라갔다 다시 와도 다시 그리지 않음", async ({ page }) => {
     await page.goto("/currencies/USD");
     const chart = chartOf(page);
+    // 서버가 그린 첫 그림이 이미 data-state="done"(최종 모양)이라 하이드레이션 전에 "끝남"을 읽으면 안 됨 — 이어받은 뒤(처음 모양으로 돌아감)부터 재생이 끝나기를 기다림 (작업 0242)
+    await hydrated(chart);
     await scrollTo(page, chart);
     await expect(chart).toHaveAttribute("data-state", "done", { timeout: 8000 });
     await page.evaluate(() => window.scrollTo(0, 0));

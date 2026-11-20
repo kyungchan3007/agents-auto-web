@@ -92,15 +92,12 @@ test.describe("여행 물가 (작업 0212)", () => {
     const cards = tid(page, "price-bands").locator("section");
     await expect(cards).toHaveCount(3);
     const frame = (i: number) => cards.nth(i).evaluate((el) => { const s = getComputedStyle(el); return [s.borderTopWidth, s.borderTopStyle, s.borderTopColor, s.borderRadius, s.backgroundColor, s.paddingTop]; }); // 작업 0220: 구간 사이 세로 선 때문에 양 끝 칸의 좌우 안쪽 여백은 다름 — 틀(테두리 · 바탕 · 위 여백)만 비교
-    const f0 = await frame(0);
-    expect(await frame(1)).toEqual(f0);
-    expect(await frame(2)).toEqual(f0);
+    // 하이드레이션 · 첫 그림이 끝나기 전 스타일은 카드마다 다를 수 있어 — 같아질 때까지 다시 읽음(끝내 다르면 시간 초과로 실패 · 작업 0242)
+    await expect.poll(async () => JSON.stringify([await frame(1), await frame(2)]) === JSON.stringify([await frame(0), await frame(0)]), { message: "세 카드는 같은 틀" }).toBe(true);
     const title = (i: number) => cards.nth(i).locator("h2").evaluate((el) => getComputedStyle(el).color);
-    const colors = [await title(0), await title(2)];
-    expect(colors[0]).not.toBe(colors[1]); // 싼 곳 · 비싼 곳 제목 색은 다름
+    await expect.poll(async () => (await title(0)) !== (await title(2)), { message: "싼 곳 · 비싼 곳 제목 색은 다름" }).toBe(true);
     await expect(tid(page, "band-mark")).toHaveCount(3);
-    const marks = await tid(page, "band-mark").evaluateAll((els) => els.map((e) => getComputedStyle(e).backgroundColor));
-    expect(new Set(marks).size).toBe(3);
+    await expect.poll(async () => new Set(await tid(page, "band-mark").evaluateAll((els) => els.map((e) => getComputedStyle(e).backgroundColor))).size, { message: "세 구분 점 색이 서로 다름" }).toBe(3);
   });
 
   test("여행 하루 예산 — 고른 나라가 있으면 그 나라로 시작 · 없으면 일본", async ({ page }) => {
