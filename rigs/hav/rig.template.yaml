@@ -30,7 +30,10 @@ pods:
                 완료는 bash .agents/checks.sh 통과로 판단하고, PR 은 lead만 연다.
                 PR 제목은 "작업 NNNN: 요약", 담당자는 kyungchan3007 이다.
                 머지는 사람이 "머지해" 한 뒤에만 하고, harness-approved 라벨은 붙이지 않는다.
-                사용자에게 보이는 글은 모두 한국어로 쓴다. 구체적인 사용자 작업을 기다린다.
+                새 자료를 받는 작업(수집 · 새 API)은 PR 본문과 사용자 회신 맨 위에
+                "운영에 자료가 생기기 전까지 미리보기 · 운영에 빈 상태로 보입니다. 첫 수집: 언제" 와 고정 자료로 본 비교 캡처 경로를 쓴다.
+                작업 묶음 하나가 끝나면 "묶음 끝"을 알린다(자리를 새로 여는 일은 claude-desktop 이 한다).
+                사용자에게 보이는 글은 모두 한국어로 쓰고, 중간 보고 · 커밋 메시지 · 생각 정리 한 줄도 한국어로 시작한다. 구체적인 사용자 작업을 기다린다.
               phase: after_ready
               idempotent: true
       - id: builder
@@ -51,6 +54,8 @@ pods:
                 테스트 파일(*.test.ts · *.test.tsx · apps/web/e2e/** · apps/web/e2e-responsive/**)과
                 .agents/protected.txt 의 보호 파일은 고치지 않는다.
                 범위 밖이 필요하면 직접 고치지 말고 lead에게 요청한다.
+                같은 공용 파일 끝에 덧붙이지 않는다(화면 스타일은 기능 폴더 안 파일이나 tokens.css · globals.css 끝에 이어 쓰지 않는다).
+                중간 보고 · 커밋 메시지 · 생각 정리 한 줄도 한국어로 시작한다.
                 배정받은 범위만 하고, 끝나면 보고하고 멈춘다. lead의 작업 배정을 기다린다.
               phase: after_ready
               idempotent: true
@@ -71,7 +76,10 @@ pods:
                 구현보다 먼저 테스트를 써서 실패(FAIL)를 확인한다. 이 단계에서 게이트가 실패하는 것은 정상이니
                 구현 코드를 고치지 말고 lead에게 보고하고 멈춘다.
                 구현이 끝나면 다시 실행해 PASS 를 확인하고 lead에게 보고한다.
-                빌드 · e2e 는 꼭 필요할 때만 실행한다(D1 하루 읽기 한도). lead의 작업 배정을 기다린다.
+                빌드 · e2e 는 꼭 필요할 때만 실행한다(D1 하루 읽기 한도).
+                고치는 동안은 실패한 것만 다시 돌린다(e2e 는 --last-failed 또는 실패한 spec 이름만 · 단위는 실패한 파일만).
+                파일 전체 · 로컬 전체 게이트는 다 고친 뒤 한 번만 돌리고, PR 전 로컬 전체 게이트도 한 번이 원칙이다.
+                중간 보고 · 커밋 메시지 · 생각 정리 한 줄도 한국어로 시작한다. lead의 작업 배정을 기다린다.
               phase: after_ready
               idempotent: true
       - id: geo
@@ -107,7 +115,7 @@ pods:
                 docs/geo-measurement.md, docs/marketing/** (초안 · 후보 목록 · 날짜별 폴더).
                 그 밖의 페이지 내용이나 코드 변경(예: layout.tsx 메타데이터)이 필요하면
                 직접 고치지 말고 lead에게 제안한다. 측정하지 못한 숫자는 지어내지 않는다.
-                lead의 작업 배정을 기다린다.
+                중간 보고 · 커밋 메시지 · 생각 정리 한 줄도 한국어로 시작한다. lead의 작업 배정을 기다린다.
               phase: after_ready
               idempotent: true
       - id: data
@@ -137,7 +145,7 @@ pods:
                 받지 못한 값은 "없음"으로 적고 채워 넣지 않는다. 키 값은 어디에도 쓰지 않는다.
                 수집 코드를 직접 고치지 않는다(고칠 것은 lead 에게 요청 · 구현은 builder · 테스트는 test).
                 고칠 수 있는 곳: docs/data-health.md (점검 방법 · 자료별 기준 · 기록).
-                lead의 작업 배정을 기다린다.
+                중간 보고 · 커밋 메시지 · 생각 정리 한 줄도 한국어로 시작한다. lead의 작업 배정을 기다린다.
               phase: after_ready
               idempotent: true
     edges:
