@@ -51,13 +51,19 @@
 - apps/api/src/db/schema.ts **(보호)** · apps/api/drizzle/migrations/0011_*.sql · apps/api/drizzle/migrations/meta/** (새 스냅숏 · 기존 파일 수정은 _journal.json 추가 줄만)
 - .github/workflows/deploy-api.yml **(보호)**
 - apps/web/src/shared/api.ts · apps/web/src/app/flights/page.tsx
-- apps/web/src/features/travel-price/components/airfare-calendar/** · flights-page.tsx · apps/web/src/features/travel-price/lib/airfare*.ts
+- apps/web/src/features/travel-price/components/airfare-calendar.tsx
+- apps/web/src/features/travel-price/components/airfare-calendar.css
+- apps/web/src/features/travel-price/components/flights-page.tsx
+- apps/web/src/features/travel-price/hooks/use-airfare-calendar.ts
+- apps/web/src/features/travel-price/lib/airfare*.ts
+- packages/ui/src/tokens.css
 - apps/web/e2e/** · *.test.ts(x) (test)
 - docs/domain/** (항공권 달력 규칙 — 받지 못한 값 · 주 3회)
 - .agents/specs/0234-airfare-calendar/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
--
+- packages/ui/src/tokens.css — 달력 CSS 의 색 · 그림자 숫자를 토큰으로 옮기며 새 토큰 6개 추가(no-raw-color 규칙 · test 판정 9f7bc8e)
+- components/airfare-calendar/ 하위 폴더 → components/ 바로 아래 + hooks/use-airfare-calendar.ts — 기능 폴더 성격별 구조 · 화면에서 훅 직접 사용 금지 규칙(role-boundary)
 
 ## 위험
 - 보호 파일 두 곳 — 승인 전에는 머지 불가. 게이트는 `ALLOW_PROTECTED` 없이 보호 파일 경고/실패를 낼 수 있음 → test 판정 보고에 그대로 적고, 승인 후 사람이 `ALLOW_PROTECTED=1` 로 확인.
