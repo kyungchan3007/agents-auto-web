@@ -6,7 +6,7 @@
 환율 · 물가 오픈 API를 하루 한 번 받아 여행 · 직구 타이밍을 보여 주는 대시보드 (Next.js 정적 사이트 · Cloudflare Pages). 에이전트가 만드는 과정은 "만드는 중" 페이지에 공개한다.
 
 ## 1. 절대 규칙
-1. **완료 = 게이트 통과.** `bash .agents/checks.sh` 가 PASS여야 "완료"라고 말한다.
+1. **완료 = PR 최신 커밋의 CI gate 통과.** CI 가 `bash .agents/checks.sh` 를 돌려 PASS 여야 "완료"라고 말한다 (판정: .agents/orchestration/verdict.md).
 2. **요청 원문을 고정한다.** 작업마다 `.agents/specs/NNNN-이름/request.md` 에 원문 그대로. 요약하지 않는다.
 3. **계획한 파일만 바꾼다.** "파일 계획"(plan.md 또는 sdd.md) 밖을 바꾸면 그 문서에 이유를 적는다.
 4. **보호 파일은 사람 승인 없이 바꾸지 않는다.** 목록: `.agents/protected.txt`
