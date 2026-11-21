@@ -75,6 +75,8 @@
 .af-pass[data-flown] .fly svg{left:calc(100% - 20px)}
 .af-pass .dates{display:grid;grid-template-columns:auto auto;gap:2px 18px;font-size:12px;color:var(--sub)}
 .af-pass .dates b{font-family:var(--head);font-size:16px;color:var(--ink);font-weight:800}
+/* 넓은 화면(901 이상): ICN 과 도착 공항 사이 점선(비행 경로)을 늘려 날짜 · 가격 칸 사이 빈 칸을 채우고 날짜를 가격 칸 쪽으로 붙임 (작업 0249 · 7번) */
+@media (min-width:901px){.af-pass .route{flex:1 1 auto;min-width:0}.af-pass .fly{flex:1 1 auto;width:auto}.af-pass .dates{gap:2px 24px;padding:0 .5rem 0 .75rem}}
 .af-pass .stub{position:relative;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:14px 20px;border-left:2px dashed var(--line);background:var(--face)}
 .af-pass .stub .lab{font-size:11.5px;font-weight:700;color:var(--sub)}
 /* 글자판 가격 — 칸마다 숫자가 굴러서 맞춰짐 (운영 출발 안내판 모양) */
