@@ -17,7 +17,6 @@ import { hydrated } from "./helpers";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 640;
-const GAP = { wide: 140, phone: 100 };
 const BANDNAME: Record<string, string> = { cheap: "한국보다 싼 곳", mid: "비슷한 곳", base: "기준", exp: "한국보다 비싼 곳" };
 
 const ready = async (page: Page, url = "/prices") => {
@@ -220,7 +219,8 @@ test.describe("여행 물가 — 스크롤로 떠나는 물가 노선 (작업 02
     await expect(tid(page, "route-card-name")).toHaveText(exp[2].name, { timeout: 6000 });
   });
 
-  test("예산 카드 아래 끝 → 노선 제목(h2) 위 끝 간격 = 지금 운영 정적 자와 같음(넓은 화면 140px · 휴대폰 100px) · 화면 높이를 바꿔도 같음 @design", async ({ page }) => {
+  // 작업 0250 — 간격의 정확한 값(넓은 화면 140px · 휴대폰 100px · 0248 · 3번 · 0249 · 6번이 바꿈)은 걷어 냄 · 남긴 것: 간격이 0 보다 큼(겹치지 않음) · 화면 높이를 바꿔도 같음
+  test("예산 카드 아래 끝 → 노선 제목(h2) 위 끝 — 겹치지 않고(간격 > 0) 화면 높이를 바꿔도 같음", async ({ page }) => {
     const heights = isPhone(page) ? [700, 844, 915] : [720, 900, 1300];
     const gaps: number[] = [];
     for (const h of heights) {
@@ -228,7 +228,7 @@ test.describe("여행 물가 — 스크롤로 떠나는 물가 노선 (작업 02
       if (!(await ready(page))) test.skip(true, "물가 자료 없음");
       const g = await page.evaluate(() => (document.querySelector('[data-testid="route-title"]') as HTMLElement).getBoundingClientRect().top - (document.querySelector('[data-testid="budget"]') as HTMLElement).getBoundingClientRect().bottom);
       gaps.push(g);
-      expect(Math.abs(g - (isPhone(page) ? GAP.phone : GAP.wide)), `높이 ${h}: 간격 ${g}px`).toBeLessThanOrEqual(2);
+      expect(g, `높이 ${h}: 간격 ${g}px`).toBeGreaterThan(0);
     }
     expect(Math.max(...gaps) - Math.min(...gaps), "화면 높이에 따라 변함").toBeLessThanOrEqual(1);
   });

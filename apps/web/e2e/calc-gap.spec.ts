@@ -13,13 +13,14 @@ const fill = async (page: Page, id: string, v: string) => {
 };
 
 test.describe("직구 입력 안내 아래 빈칸 (작업 0208 추가)", () => {
-  test("물건 값 안내 문구 아래 ~ 보내는 곳 사이 간격이 20px 이하 · 안내 자리는 한 줄 높이 @design", async ({ page }) => {
+  // 작업 0250 — 안내 아래 ~ 보내는 곳 간격의 정확한 값(20px 이하 · 0245 · 2번이 입력 카드를 늘리며 달라짐)은 걷어 냄 · 남긴 것: 안내 자리는 한 줄 높이(오류가 떠도 밀리지 않는 조건) · 보내는 곳이 안내 아래에 놓이고 겹치지 않음
+  test("물건 값 안내 문구는 한 줄 높이 자리 · 보내는 곳 이름표는 그 아래에 겹치지 않고 놓임", async ({ page }) => {
     await page.goto("/calc");
     const hint = page.locator('form[data-testid="calc-input"] label[for="price"]').locator("xpath=../..").locator("p").last();
     const hb = await box(hint);
     expect(hb.height, "안내 자리 높이").toBeLessThanOrEqual(24);
     const routeLabel = await box(page.locator("#route-label")); // 작업 0221: 보내는 곳이 두 줄 선택지(라디오 그룹)가 되어 이름표는 #route-label
-    expect(routeLabel.y - (hb.y + hb.height), "안내 아래 ~ 보내는 곳").toBeLessThanOrEqual(20);
+    expect(routeLabel.y - (hb.y + hb.height), "안내 아래 ~ 보내는 곳(겹치지 않음)").toBeGreaterThanOrEqual(0);
   });
 
   for (const width of [390, 700, 1000, 1280]) {

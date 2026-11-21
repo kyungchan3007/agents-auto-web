@@ -73,7 +73,8 @@ test.describe("새 /prices — 예산 카드 위치 · 크기 (작업 0220 사�
     expect(ruler.y, "노선 제목이 카드 아래").toBeGreaterThanOrEqual(card.y + card.height + 20);
   });
 
-  test("넓은 화면 — 카드 폭 · 제목보다 아래에서 시작 · 파랑/흰 경계를 가로지름(위 대부분 파랑 · 아래 약 110px 흰 면) @design", async ({ page }) => {
+  // 작업 0250 — 카드 위치의 정확한 값(폭 452 · 제목보다 80~140px 아래 · 파랑 안 280px 이상 · 아래 흰 면 80~160px)은 걷어 냄(0248 · 3번이 바꿈) · 남긴 것: 카드가 파랑/흰 경계에 걸침 · 제목과 겹치지 않음
+  test("넓은 화면 — 예산 카드가 파랑/흰 경계에 걸침 · 제목과 겹치지 않음", async ({ page }) => {
     test.skip(isPhone(page), "넓은 화면 전용");
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.emulateMedia({ reducedMotion: "reduce" });
@@ -83,14 +84,10 @@ test.describe("새 /prices — 예산 카드 위치 · 크기 (작업 0220 사�
     const card = await box(page, "budget");
     const band = await box(page, "prices-band");
     const h1 = await page.getByRole("heading", { level: 1 }).boundingBox();
-    expect(Math.abs(card.width - 452), `카드 폭 ${Math.round(card.width)}`).toBeLessThanOrEqual(4);
-    expect(card.y - (h1?.y ?? 0), "카드 위 끝이 제목 첫 줄 위 끝보다 아래").toBeGreaterThanOrEqual(80);
-    expect(card.y - (h1?.y ?? 0), "시안은 약 100px 아래").toBeLessThanOrEqual(140);
     const bandBottom = band.y + band.height;
-    const below = card.y + card.height - bandBottom;
-    expect(bandBottom - card.y, "카드 위 부분(파랑 안)이 큼").toBeGreaterThanOrEqual(280);
-    expect(below, `카드 아래 흰 면 부분 ${Math.round(below)}px`).toBeGreaterThanOrEqual(80);
-    expect(below).toBeLessThanOrEqual(160);
+    expect(card.y, "카드 위가 파랑 면 안").toBeLessThan(bandBottom);
+    expect(card.y + card.height, "카드 아래가 흰 면으로 나옴").toBeGreaterThan(bandBottom);
+    expect((h1?.x ?? 0) + (h1?.width ?? 0), "제목이 카드 왼쪽(겹치지 않음)").toBeLessThanOrEqual(card.x + 1);
   });
 
   test("넓은 화면 — 입력 칸 높이 약 64px · 결과 숫자 약 44px · 안쪽 여백(위 28 · 옆 30)", async ({ page }) => {
@@ -236,33 +233,24 @@ test.describe("새 /prices — 예산 · 자 · 표 (작업 0220)", () => {
     await expect(tid(page, "price-bands").getByRole("button", { name: /^나라 더 보기/ })).toBeVisible();
   });
 
-  // 작업 0248 · 4번: 펼친 뒤 접기 자리가 화면 아래에 붙어 따라오던 것(sticky)을 목록 끝으로 옮김 — 모양 검사는 디자인 테스트로 나눔
-  test("나라 더 보기 — 표 아래 왼쪽 밑줄 글자 링크 (버튼 상자 · 배경 없음) · 접기 버튼은 눈에 띄는 알약 + 화면 아래에 붙음 @design", async ({ page }) => {
+  // 작업 0250 — 링크 · 접기 모양의 정확한 값(밑줄 두께 · 알약 테두리 · sticky)은 걷어 냄(0248 · 4번이 바꿈) · 남긴 것: 더 보기가 표 아래 왼쪽에 보임 · 펴면 한 목록이 되고 접기가 보이고 눌림
+  test("나라 더 보기 — 표 아래 왼쪽 · 누르면 한 목록으로 펼침 · 나라 접기가 보이고 누르면 접힘", async ({ page }) => {
     await page.goto("/prices");
     test.skip(!(await ready(page)), "자료 없음");
     await page.waitForLoadState("networkidle");
     const more = tid(page, "price-bands").getByRole("button", { name: /^나라 더 보기 \(\d+곳\) ›$/ });
     await expect(more).toBeVisible();
-    const st = await more.evaluate((el) => {
-      const s = getComputedStyle(el);
-      return { bg: s.backgroundColor, borderTop: s.borderTopWidth, borderBottom: s.borderBottomWidth, radius: s.borderTopLeftRadius, weight: s.fontWeight };
-    });
-    expect(st.bg).toBe("rgba(0, 0, 0, 0)"); // 배경 없음
-    expect(st.borderTop).toBe("0px"); // 버튼 상자 테두리 없음 — 밑줄만
-    expect(parseFloat(st.borderBottom)).toBeGreaterThanOrEqual(2);
-    expect(Number(st.weight)).toBeGreaterThanOrEqual(700);
-    // 표 아래 왼쪽
     const table = (await tid(page, "price-bands").locator("section").first().boundingBox())!;
     const mb = (await more.boundingBox())!;
     const bands = (await tid(page, "price-bands").boundingBox())!;
-    expect(mb.y).toBeGreaterThanOrEqual(table.y + table.height - 1);
-    expect(Math.abs(mb.x - bands.x)).toBeLessThanOrEqual(2);
+    expect(mb.y, "표 아래").toBeGreaterThanOrEqual(table.y + table.height - 1);
+    expect(Math.abs(mb.x - bands.x), "왼쪽").toBeLessThanOrEqual(2);
     await more.click();
+    await expect(tid(page, "price-merged")).toBeVisible(); // 편 상태는 한 목록
     const fold = tid(page, "price-bands").getByRole("button", { name: "나라 접기" });
-    const fs = await fold.evaluate((el) => { const s = getComputedStyle(el); return { bg: s.backgroundColor, bw: s.borderTopWidth, r: s.borderTopLeftRadius }; });
-    expect(fs.bg).not.toBe("rgba(0, 0, 0, 0)");
-    expect(parseFloat(fs.bw)).toBeGreaterThanOrEqual(2);
-    expect(await tid(page, "fold-bar").evaluate((el) => getComputedStyle(el).position)).toBe("sticky");
+    await expect(fold).toBeVisible();
+    await fold.click();
+    await expect(more).toBeVisible();
   });
 
   test("자바스크립트를 꺼도 제목 · 예산 · 노선 · 표가 보임", async ({ browser, baseURL }) => {
