@@ -12,6 +12,35 @@ run() {
   echo ""; echo "▶ $name"
   if "$@"; then echo "  ✅ PASS — $name"; else echo "  ❌ FAIL — $name"; fail=1; fi
 }
+# 디자인 PR(작업 0246): 막지 않는 묶음 — 실패해도 결과를 FAIL 로 만들지 않고 실패 목록만 남김 (기능 테스트는 늘 막는 쪽 run 으로 따로 돎)
+#   실패 줄 세기: vitest 는 "FAIL " 줄 · playwright 는 "✘" 줄 · 센 줄이 없는데 실패면 1개 · "테스트 없음"은 실패가 아님
+DESIGN=0
+DESIGN_FAILS=0
+FAIL_PAT='^ *FAIL |✘'
+nonblocking_run() {
+  local name="$1"; shift
+  local log; mkdir -p .tmp; log=$(mktemp .tmp/design-XXXXXX)
+  echo ""; echo "▶ $name — 디자인 테스트(@design) · 막지 않음"
+  "$@" 2>&1 | tee "$log"; local rc=${PIPESTATUS[0]}
+  local n=0
+  if [ "$rc" -ne 0 ] && ! grep -qiE "no tests? found|no test files found" "$log"; then
+    n=$(grep -cE "$FAIL_PAT" "$log"); [ "$n" -eq 0 ] && n=1
+    echo "  ⚠️  디자인 테스트 실패 ${n}개 (막지 않음) — 실패 목록:"
+    grep -E "$FAIL_PAT" "$log" | sort -u | head -50 | sed 's/^/     /'
+  else
+    echo "  ✅ 디자인 테스트 실패 0개 (막지 않음)"
+  fi
+  DESIGN_FAILS=$((DESIGN_FAILS + n)); rm -f "$log"
+}
+# 막는 쪽인데 @design 을 빼고 나니 돌릴 테스트가 하나도 없으면(playwright "No tests found") 실패가 아님
+blocking_run() {
+  local name="$1"; shift
+  local log; mkdir -p .tmp; log=$(mktemp .tmp/design-XXXXXX)
+  echo ""; echo "▶ $name"
+  "$@" 2>&1 | tee "$log"; local rc=${PIPESTATUS[0]}
+  if [ "$rc" -eq 0 ] || grep -qiE "no tests? found" "$log"; then echo "  ✅ PASS — $name"; else echo "  ❌ FAIL — $name"; fail=1; fi
+  rm -f "$log"
+}
 has_script() { [ -f package.json ] && node -e "process.exit(require('./package.json').scripts?.['$1']?0:1)"; }
 
 MODE=$(node .agents/scripts/loop-mode.mjs)
@@ -34,6 +63,15 @@ QUICK_SCRIPTS="typecheck lint test"
 WITH_LONG=0
 E2E_ARGS=()   # test:e2e 에 더 줄 인자 (고른 프로젝트 · spec) — 비면 전체
 if [ "${CI:-}" = "true" ] && [ "${GITHUB_EVENT_NAME:-}" = "pull_request" ] && [ -n "${GITHUB_BASE_REF:-}" ]; then
+  # 디자인 PR 판정 (작업 0246) — design 라벨 그리고 바뀐 파일이 모두 화면 쪽일 때만. 판정을 못 하면 평소 PR(막는 쪽)
+  DJSON=$(node .agents/scripts/design-pr.mjs 2>/dev/null) || DJSON=""
+  if [ -n "$DJSON" ] && DESIGN=$(DJSON="$DJSON" node -e 'process.stdout.write(JSON.parse(process.env.DJSON).design ? "1" : "0")' 2>/dev/null); then
+    DREASON=$(DJSON="$DJSON" node -e 'process.stdout.write(JSON.parse(process.env.DJSON).reason)')
+    DJSON="$DJSON" node -e 'const r = JSON.parse(process.env.DJSON); if (r.warn) console.log("⚠️  " + r.warn);'
+  else
+    DESIGN=0; DREASON="판정 실패"
+  fi
+  if [ "$DESIGN" = "1" ]; then echo "🔁 디자인 PR: 예 · $DREASON"; else echo "🔁 디자인 PR: 아니오($DREASON)"; fi
   SEL=$(node .agents/scripts/e2e-select.mjs) || SEL=""
   if [ -z "$SEL" ]; then
     # 고르기가 실패하면 안전하게 전체
@@ -59,7 +97,17 @@ elif [ "${CI:-}" = "true" ] && [ "${GITHUB_EVENT_NAME:-}" = "pull_request" ]; th
     process.exit(e2eNeeded(changedFiles()) ? 0 : 1);
   '; then WITH_LONG=1; echo "🔁 CI PR — 화면에 영향 있는 변경이라 build · test:e2e 도 돎"; else echo "🔁 CI PR — 문서 · 하네스 · 자료만 바뀌어 e2e 건너뜀"; fi
 fi
-for s in $QUICK_SCRIPTS; do has_script "$s" && run "프로젝트 $s" npm run -s "$s"; done
+for s in $QUICK_SCRIPTS; do
+  if has_script "$s"; then
+    if [ "$s" = "test" ] && [ "$DESIGN" = "1" ]; then
+      # 디자인 PR: 기능(@design 제외 · 막음) + 디자인(@design 만 · 막지 않음) 두 번 — turbo 로 vitest 에 -t 를 넘김
+      run "프로젝트 test (기능)" npm run -s test -- -- -t '^(?!.*@design)'
+      nonblocking_run "프로젝트 test" npm run -s test -- -- -t '@design'
+    else
+      run "프로젝트 $s" npm run -s "$s"
+    fi
+  fi
+done
 if [ "$WITH_LONG" = "1" ]; then
   if [ "$spec_fail" -ne 0 ]; then
     echo ""; echo "▶ build · test:e2e 건너뜀 — 작업 기록이 실패해 긴 단계를 돌리지 않음"
@@ -67,10 +115,17 @@ if [ "$WITH_LONG" = "1" ]; then
     has_script build && run "프로젝트 build" npm run -s build
     # 루트 test:e2e 는 npm -w 를 한 번 더 거쳐서 인자 앞에 -- 가 두 번 필요
     if has_script test:e2e; then
-      if [ "${#E2E_ARGS[@]}" -gt 0 ]; then run "프로젝트 test:e2e" npm run -s test:e2e -- -- "${E2E_ARGS[@]}"; else run "프로젝트 test:e2e" npm run -s test:e2e; fi
+      if [ "$DESIGN" = "1" ]; then
+        # 디자인 PR: 같은 spec 을 기능(--grep-invert · 막음) · 디자인(--grep · 막지 않음) 두 번
+        blocking_run "프로젝트 test:e2e (기능)" npm run -s test:e2e -- -- ${E2E_ARGS[@]+"${E2E_ARGS[@]}"} --grep-invert=@design
+        nonblocking_run "프로젝트 test:e2e" npm run -s test:e2e -- -- ${E2E_ARGS[@]+"${E2E_ARGS[@]}"} --grep=@design
+      elif [ "${#E2E_ARGS[@]}" -gt 0 ]; then run "프로젝트 test:e2e" npm run -s test:e2e -- -- "${E2E_ARGS[@]}"; else run "프로젝트 test:e2e" npm run -s test:e2e; fi
     fi
   fi
 fi
+
+# 디자인 PR 판정 한 줄 (작업 0246)
+if [ "$DESIGN" = "1" ]; then echo ""; echo "디자인 PR: 예 · 디자인 테스트 실패 ${DESIGN_FAILS}개(막지 않음) — 목록은 docs/design-tests-pending.md 에 쌓기"; fi
 
 # 3) 하네스
 run "하네스 자체 테스트" env -u LOOP node --test .agents/scripts/harness.test.mjs
