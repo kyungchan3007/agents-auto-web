@@ -4,7 +4,7 @@
 //     (덧칸이 부모 칸의 overflow 에 잘리거나 이웃 위에 덮이면 그 부분은 눌림이 안 가므로 영역에서 빠짐)
 //   겹침 = 두 요소의 눌리는 영역(요소 상자 + ::after 상자의 합) 사이 겹치는 넓이가 있음(맞닿음 · 0.5px 이하는 겹침 아님)
 //   보이는 크기 = 요소 자신의 상자(::after 제외)가 작업서가 잰 값 ± 2px 안(키우지 않음)
-//   제외(작업서 · lead): 여행 타이밍 창밖 달 버튼(window-month) · /geo · /log · 여행 타이밍 범례 탭 3개(claude-desktop 결정 대기)
+//   제외(작업서 · lead): 여행 타이밍 창밖 달 버튼(window-month) · /geo · /log — 범례 탭 3개는 사용자 결정("4px 늘려서 맞춤")으로 대상에 넣음
 import { type Locator, type Page, expect, test } from "@playwright/test";
 
 const VIEW = { width: 390, height: 844 };
@@ -22,6 +22,8 @@ const TARGETS: Target[] = [
   { id: "달력 다음 airfare-next", page: "/flights", sel: '[data-testid="airfare-next"]', size: { w: 32, h: 32 } },
   { id: "도시 칩 airfare-chip", page: "/flights", sel: '[data-testid="airfare-chip"]', size: { h: 40 } },
   { id: "다시 보기 window-replay", page: "/flights", sel: '[data-testid="window-replay"]', size: { h: 41 } },
+  // 작업 0268 이어서(사용자 결정 "4px 늘려서 맞춤"): 그래프 범례 탭 3개 — 휴대폰에서 두 줄 · 보이는 크기(높이 32)는 그대로 · 줄 사이를 8 → 12px 로 늘려 넓힌 영역이 겹치지 않게(줄 사이 값 자체는 고정하지 않고 "겹침 없음"으로만 봄)
+  { id: "범례 탭 travel-legend", page: "/flights", sel: '[data-testid="travel-legend"] button', size: { h: 32 } },
   { id: "나라 단추 route-stop", page: "/prices", sel: '[data-testid="route-stop"]', size: { h: 31 } },
   { id: "나라 더 보기", page: "/prices", sel: 'button[aria-expanded="false"]:has-text("나라 더 보기")', size: { h: 30 } },
   { id: "통화 상세 링크", page: "/prices", sel: 'a[aria-label$="통화 상세"]', size: { h: 28 } },
@@ -63,7 +65,7 @@ test.describe("휴대폰 390px — 누르는 자리 44px 이상 (작업 0268)", 
         const loc = page.locator(t.sel);
         const n = await loc.count();
         // 자료가 없어 그려지지 않는 칸(나라 더 보기 · 통화 상세 링크 · 출발일 달력 · 12달 구역 등)은 건너뜀 — 로고 · 메뉴 · 통화 칩 · 기간 단추처럼 늘 있는 대상은 반드시 있어야 함
-        if (n === 0 && ["도시 칩 pick-chip", "year-link", "more-currencies", "통화 상세 링크", "도시 칩 airfare-chip", "다시 보기 window-replay", "달력 이전 airfare-prev", "달력 다음 airfare-next", "나라 더 보기"].includes(t.id)) continue;
+        if (n === 0 && ["도시 칩 pick-chip", "year-link", "more-currencies", "통화 상세 링크", "도시 칩 airfare-chip", "다시 보기 window-replay", "달력 이전 airfare-prev", "달력 다음 airfare-next", "나라 더 보기", "범례 탭 travel-legend"].includes(t.id)) continue;
         expect(n, `${t.id} 가 화면에 있음`).toBeGreaterThan(0);
         for (let i = 0; i < n; i++) {
           const el = loc.nth(i);
@@ -106,7 +108,7 @@ test.describe("휴대폰 390px — 누르는 자리 44px 이상 (작업 0268)", 
     for (const path of byPage) {
       await open(page, path);
       const small = await page.evaluate(() => {
-        const ex = ['[data-testid="window-month"]', '[data-testid="travel-legend"] button'];
+        const ex = ['[data-testid="window-month"]'];
         return Array.from(document.querySelectorAll<HTMLElement>("main button, main a[href], header a, header button"))
           .filter((e) => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== "hidden" && !ex.some((q) => e.matches(q)) && !e.closest("p, li > p"); })
           .map((e) => { const r = e.getBoundingClientRect(); const af = getComputedStyle(e, "::after"); const ph = af.content !== "none" ? parseFloat(af.height) || 0 : 0; return { h: Math.max(r.height, ph), w: Math.max(r.width, af.content !== "none" ? parseFloat(af.width) || 0 : 0), label: `${e.tagName.toLowerCase()}${e.dataset.testid ? `[${e.dataset.testid}]` : ""} "${(e.getAttribute("aria-label") ?? e.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 20)}"` }; })
