@@ -41,24 +41,26 @@ test.describe("통화 상세 (작업 0212)", () => {
   test("맨 아래 통화 목록 — 표로 모두 보임 (스크롤 칸 없음 · 중간에서 잘리지 않음 · 가로 넘침 없음)", async ({ page }) => {
     await page.goto("/currencies/USD");
     const cols = tid(page, "currency-list").locator('[data-testid="currency-col"]');
-    const nc = await cols.count();
-    expect(nc).toBeGreaterThan(0);
-    for (let c = 0; c < nc; c++) {
-      const ul = cols.nth(c).locator("ul");
-      expect(await ul.evaluate((el) => el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1), `${c + 1}번째 단 스크롤 칸 없음`).toBe(true);
-      const ub = await box(ul);
-      const items = cols.nth(c).locator("ul li");
-      const n = await items.count();
-      for (let i = 0; i < n; i++) {
-        const b = await box(items.nth(i));
-        expect(b.y + b.height, `${c + 1}단 ${i + 1}번째 줄`).toBeLessThanOrEqual(ub.y + ub.height + 1);
-        expect(b.x + b.width).toBeLessThanOrEqual(ub.x + ub.width + 1);
-      }
-    }
-    expect(await tid(page, "currency-list").locator("nav ul li").count()).toBeGreaterThan(3);
+    await expect(cols.first()).toBeVisible();
+    // 한 번의 읽기로 모든 상자를 함께 잼(구간 등장 움직임 도중 서로 다른 순간 값이 섞이지 않게) · 최종 배치가 될 때까지 다시 재며 기다림 (작업 0260 · CI 흔들림)
+    const measure = () =>
+      cols.evaluateAll((els) =>
+        els.map((col) => {
+          const ul = col.querySelector("ul")!;
+          const ub = ul.getBoundingClientRect();
+          const items = [...ul.querySelectorAll("li")].map((li) => li.getBoundingClientRect());
+          return {
+            noScroll: ul.scrollHeight <= ul.clientHeight + 1 && ul.scrollWidth <= ul.clientWidth + 1,
+            inside: items.every((b) => b.y + b.height <= ub.y + ub.height + 1 && b.x + b.width <= ub.x + ub.width + 1),
+            count: items.length,
+          };
+        }),
+      );
+    await expect.poll(async () => (await measure()).every((c) => c.noScroll && c.inside), { message: "표가 스크롤 칸 없이 모두 보임", timeout: 8_000 }).toBe(true);
+    const total = (await measure()).reduce((n, c) => n + c.count, 0);
+    expect(total).toBeGreaterThan(3);
   });
 
-  // 작업 0250 — 17번이 둘러보기 격자의 알약을 조용한 글자('최근 90일 중 하위 N%' · '최근 90일 최저')로 바꿈 · 남긴 것: 판정 글자가 '환율 …' 알약 글(물가 쪽)로 시작하지 않음
   test("통화 목록의 판정 글자는 '환율 …' 으로 시작하지 않음 — 물가 쪽 알약과 구분", async ({ page }) => {
     await page.goto("/currencies/USD");
     const texts = await tid(page, "currency-list").locator("nav ul li a").allInnerTexts();
