@@ -208,3 +208,20 @@
     background-size: 100% 100%;
   }
 }
+
+/* 휴대폰에서 누르는 자리 44px (작업 0268 · 시안 42 A안) — 보이는 모양 · 크기 · 위치는 그대로 두고, 보이지 않는 덧칸(::after)으로 눌리는 영역만 높이 · 폭 44px 이상으로 넓힘 · 덧칸은 가운데 기준이라 이웃과 맞닿기만 하고 겹치지 않게 간격을 맞춰 씀 */
+@utility tap-44 {
+  @media (width < 40rem) {
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: max(100%, 44px);
+      height: max(100%, 44px);
+      transform: translate(-50%, -50%);
+    }
+  }
+}
