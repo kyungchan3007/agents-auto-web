@@ -223,7 +223,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
             <div aria-hidden className="absolute top-[30px] h-[calc(var(--tt)+22px-30px)] w-0.5 -translate-x-px bg-fg" style={{ left: `${x(100)}%` }} />
             <div
               data-testid="route-kr-tag"
-              className={`absolute top-0 flex -translate-x-1/2 items-center gap-1.5 rounded-pill bg-sun py-1 pr-3 pl-[5px] text-[0.78125rem] font-bold whitespace-nowrap text-fg transition-transform duration-[350ms] ${armed && cur.country === "KR" ? "scale-[1.14]" : ""}`}
+              className={`absolute top-0 flex -translate-x-1/2 items-center gap-1.5 rounded-[6px] bg-sun py-1 pr-3 pl-[5px] text-[0.78125rem] font-bold whitespace-nowrap text-fg transition-transform duration-[350ms] ${armed && cur.country === "KR" ? "scale-[1.14]" : ""}`}
               style={{ left: `${x(100)}%` }}
             >
               <RouteFlag country="KR" name="한국" className="size-5 ring-0" />
