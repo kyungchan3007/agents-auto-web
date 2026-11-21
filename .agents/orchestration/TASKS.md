@@ -77,4 +77,6 @@
 | 0253 | 홈 탑승권 상자 3초 뒤 사라짐 (Quick · 평소 PR — hooks 변경) | builder → test | 머지됨 (#303) | task/0253-pass-auto-hide | home/components/ticket.tsx · home/hooks/use-picked-destination.ts · pass-auto-hide.spec.ts |
 | 0254 | 스크롤할 때 제목 · 글 · 카드가 페이드 업으로 나타남 (Quick · 디자인 PR · 시안 27 B안) | builder → test(깨질 때만) | 머지됨 (#304) | task/0254-motion-fade-up | packages/ui/src/components/motion/fade-up.tsx · features/*/components/** · pages-redesign.test.ts |
 | 0255 | 머리 제목 밑줄 강조가 그어지는 움직임 — 모양은 그대로 (Quick · 디자인 PR · 시안 28) | builder | 머지됨 (#305) | task/0255-emph-sweep | packages/ui/src/components/text/emph.tsx · packages/ui/src/tokens.css |
-| 0256 | 직구 계산 입력 카드 — 입력 칸 사이 간격 64px · 남는 높이는 위아래 여백 (시안 29 B안 · 0251 ㄱ 다시 · Quick · 디자인 PR) | builder → test(깨질 때만) | 진행 중 | task/0256-calc-four-rows | import-calc/components/calc-form.tsx |
+| 0256 | 직구 계산 입력 카드 — 입력 칸 사이 간격 64px · 남는 높이는 위아래 여백 (시안 29 B안 · 0251 ㄱ 다시 · Quick · 디자인 PR) | builder → test(깨질 때만) | 머지됨 (#306) | task/0256-calc-four-rows | import-calc/components/calc-form.tsx |
+| 0257 | 여행 물가 머리 숫자에 가는 노란 밑줄 강조 + 그어지는 움직임 (Quick · 디자인 PR · 시안 30 B안) | builder → test(깨질 때만) | 머지됨 (#307) | task/0257-prices-emph-underline | packages/ui/src/components/text/emph.tsx · travel-price/components/prices-header.tsx · emphasis.spec.ts |
+| 0258 | 패치(버그) — 아이폰(WebKit)에서 창밖 풍경이 둥근 창 모양으로 잘리지 않음 (Quick) | builder · test(WebKit 확인) | 머지됨 (#308) · 아이폰 실기기 확인은 사용자 | task/0258-window-clip-ios | travel-price/components/window-months.tsx |
