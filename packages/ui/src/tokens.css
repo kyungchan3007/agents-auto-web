@@ -235,6 +235,13 @@
 /* 칸 전체가 눌리는 라벨 안의 숨은 입력(라디오 등)은 보이지 않으니 라벨(data-ring-host)이 고리를 그림 */
 /* @layer base 안에 둠 — 잘리는 곳의 안쪽 간격(focus-visible:outline-offset-[-4px]) 같은 유틸리티가 이긴다 */
 @layer base {
+  /* 고리 색을 늘 미리 정해 둠 — transition-colors 가 outline-color 도 바꿔서 기본값(글자색)에서 파랑으로 넘어가는 중간 색이 보이던 것을 막음 (작업 0271) */
+  *,
+  ::before,
+  ::after {
+    outline-color: var(--hav-ring);
+  }
+
   :focus-visible,
   [data-ring-host]:has(:focus-visible) {
     outline: 2px solid var(--hav-ring);
