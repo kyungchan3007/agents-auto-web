@@ -127,7 +127,7 @@ describe("작업실 /log (P5 · SR-LOG-01)", () => {
 });
 
 describe("소개 /about (P7 · SR-ABT-01)", () => {
-  it("큰 제목 · 기준 카드 6개(ABOUT_CARDS) 표시", () => {
+  it("큰 제목 · 기준 카드 8개(ABOUT_CARDS) 표시", () => {
     expect(T.about).toContain("어떤 자료를, 어떤 기준으로 보여 주나요");
     expect(T.about).toMatch(/\bABOUT_CARDS\b/);
     expect(T.about).toMatch(/data-testid="criteria-card"/);
