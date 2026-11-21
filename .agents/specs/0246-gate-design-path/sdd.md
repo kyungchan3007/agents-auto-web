@@ -54,3 +54,6 @@
 - lead: 로컬 `checks.sh`(Full) · PR 최신 커밋 CI gate · harness-approved 뒤 재실행 결과.
 
 ## 계획과 달라진 점
+- lib.mjs 는 바꾸지 않음(baseRef · changedFiles 그대로 씀).
+- 홈 spec 세 개(home · home-redesign · home-fix-0217)는 0247 되돌리기와 겹쳐 @design 표시에서 뺌 — 이후 디자인 작업에서 깨질 때 표시.
+- fonts.spec 첫 테스트는 가로 넘침(기능)과 글꼴 · 자간(디자인)으로 둘로 나눔.
