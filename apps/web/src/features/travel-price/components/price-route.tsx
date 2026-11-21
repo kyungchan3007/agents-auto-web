@@ -173,7 +173,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
                   data-value={s.value}
                   data-active={s.index === active ? "true" : "false"}
                   onClick={() => goto(s.index)}
-                  className={`tap-44 max-[760px]:focus-visible:outline-offset-[-4px] flex cursor-pointer items-center gap-1.5 rounded-pill border py-[0.3125rem] pr-2.5 pl-1.5 text-[0.78125rem] whitespace-nowrap transition-colors duration-[250ms] ${s.index === active ? "border-fg bg-fg font-bold text-card max-[760px]:[--hav-ring:#fff]" : s.index < active ? "border-fg/40 text-fg" : "border-line text-fg-2"}`}
+                  className={`tap-44 max-[760px]:focus-visible:outline-offset-[-4px] flex cursor-pointer items-center gap-1.5 rounded-pill border py-[0.3125rem] pr-2.5 pl-1.5 text-[0.78125rem] whitespace-nowrap transition-colors duration-[250ms] ${s.index === active ? "border-fg bg-fg font-bold text-card max-[760px]:[--hav-ring:var(--hav-ring-on-dark)]" : s.index < active ? "border-fg/40 text-fg" : "border-line text-fg-2"}`}
                 >
                   <RouteFlag country={s.country} name={s.name} className="size-4 ring-0" />
                   {s.name}
