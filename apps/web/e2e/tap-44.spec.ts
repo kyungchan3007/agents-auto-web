@@ -40,11 +40,7 @@ async function measure(loc: Locator) {
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
     const hit = (x: number, y: number) => { const h = document.elementFromPoint(x, y); return !!h && (el === h || el.contains(h)); };
     const scan = (dx: number, dy: number) => { let d = 0; while (d < 40 && hit(cx + dx * (d + 0.5), cy + dy * (d + 0.5))) d += 0.5; return d; };
-    const af = getComputedStyle(el, "::after");
-    const pw = af.content !== "none" && af.content !== "normal" ? parseFloat(af.width) || 0 : 0;
-    const ph = af.content !== "none" && af.content !== "normal" ? parseFloat(af.height) || 0 : 0;
-    const reach = { x1: Math.min(r.left, cx - pw / 2), x2: Math.max(r.right, cx + pw / 2), y1: Math.min(r.top, cy - ph / 2), y2: Math.max(r.bottom, cy + ph / 2) };
-    return { up: scan(0, -1), down: scan(0, 1), left: scan(-1, 0), right: scan(1, 0), w: r.width, h: r.height, centerHit: hit(cx, cy), reach, text: (el.getAttribute("aria-label") ?? el.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 24) };
+    return { up: scan(0, -1), down: scan(0, 1), left: scan(-1, 0), right: scan(1, 0), w: r.width, h: r.height, centerHit: hit(cx, cy), text: (el.getAttribute("aria-label") ?? el.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 24) };
   });
 }
 
@@ -81,13 +77,27 @@ test.describe("휴대폰 390px — 누르는 자리 44px 이상 (작업 0268)", 
           if (t.size?.w) expect(Math.abs(m.w - t.size.w), `${name}: 보이는 폭 ${m.w.toFixed(1)}px (작업서 ${t.size.w}px)`).toBeLessThanOrEqual(2);
         }
       }
-      // 넓힌 영역끼리 겹치지 않음(맞닿음 0.5px 까지는 됨) — 모든 쌍
-      const rects = found.map((f) => f.m.reach);
+      // 넓힌 영역끼리 겹치지 않음(맞닿음 0.5px 까지는 됨) — 모든 대상의 영역(요소 상자 + ::after 상자)을 한 번의 읽기로 함께 잼(대상마다 스크롤하며 재면 좌표가 서로 달라 쌍 비교가 틀림)
+      const rects = await page.evaluate((sels) => {
+        const out: { id: string; text: string; x1: number; x2: number; y1: number; y2: number }[] = [];
+        for (const { id, sel } of sels) {
+          for (const el of Array.from(document.querySelectorAll(sel))) {
+            const r = el.getBoundingClientRect();
+            if (r.width === 0 || r.height === 0) continue;
+            const af = getComputedStyle(el, "::after");
+            const has = af.content !== "none" && af.content !== "normal";
+            const pw = has ? parseFloat(af.width) || 0 : 0, ph = has ? parseFloat(af.height) || 0 : 0;
+            const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+            out.push({ id, text: (el.getAttribute("aria-label") ?? el.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 24), x1: Math.min(r.left, cx - pw / 2), x2: Math.max(r.right, cx + pw / 2), y1: Math.min(r.top, cy - ph / 2), y2: Math.max(r.bottom, cy + ph / 2) });
+          }
+        }
+        return out;
+      }, TARGETS.filter((x) => x.page === path).map((x) => ({ id: x.id, sel: x.sel })));
       for (let a = 0; a < rects.length; a++)
         for (let b = a + 1; b < rects.length; b++) {
           const ox = Math.min(rects[a].x2, rects[b].x2) - Math.max(rects[a].x1, rects[b].x1);
           const oy = Math.min(rects[a].y2, rects[b].y2) - Math.max(rects[a].y1, rects[b].y1);
-          expect(ox > 0.5 && oy > 0.5, `겹침: ${found[a].t.id} "${found[a].m.text}" 와 ${found[b].t.id} "${found[b].m.text}" (겹친 폭 ${ox.toFixed(1)} · 높이 ${oy.toFixed(1)}px)`).toBe(false);
+          expect(ox > 0.5 && oy > 0.5, `겹침: ${rects[a].id} "${rects[a].text}" 와 ${rects[b].id} "${rects[b].text}" (겹친 폭 ${ox.toFixed(1)} · 높이 ${oy.toFixed(1)}px)`).toBe(false);
         }
       expect(found.length, "잰 대상 수").toBeGreaterThan(0);
     });
