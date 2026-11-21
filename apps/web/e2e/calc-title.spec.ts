@@ -91,7 +91,7 @@ for (const w of [1280, 1024, 768, 640, 428, 412, 390, 360, 320]) {
   });
 }
 
-test("넓은 화면 — 설명 아래 ~ 카드 위 끝 여백이 약 46px(시안 C/calc-blue · A/calc 의 적당한 여백)", async ({ page }) => {
+test("넓은 화면 — 설명 아래 ~ 카드 위 끝 여백이 약 46px(시안 C/calc-blue · A/calc 의 적당한 여백) @design", async ({ page }) => {
   test.skip((page.viewportSize()?.width ?? 0) < 640, "넓은 화면 프로젝트에서만");
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.emulateMedia({ reducedMotion: "reduce" });

@@ -10,7 +10,7 @@ const box = async (loc: Locator) => {
 };
 
 test.describe("/geo 시안 B (작업 0214)", () => {
-  test("맨 위 전후 비교 · 수치 카드 4개는 그대로 위에 있고 · 그 아래가 카드 격자", async ({ page }) => {
+  test("맨 위 전후 비교 · 수치 카드 4개는 그대로 위에 있고 · 그 아래가 카드 격자 @design", async ({ page }) => {
     await page.goto("/geo");
     await expect(tid(page, "rename-compare")).toBeVisible();
     await expect(tid(page, "geo-cards").locator("> div")).toHaveCount(4);
@@ -19,7 +19,7 @@ test.describe("/geo 시안 B (작업 0214)", () => {
     expect(c.y + c.height).toBeLessThanOrEqual(g.y + 1);
   });
 
-  test("카드 4장(AI 답변 · 봇 방문 · 읽은 페이지 · 검색 노출) — 넓은 화면 2열 · 휴대폰 1열 · 같은 모양", async ({ page }) => {
+  test("카드 4장(AI 답변 · 봇 방문 · 읽은 페이지 · 검색 노출) — 넓은 화면 2열 · 휴대폰 1열 · 같은 모양 @design", async ({ page }) => {
     await page.goto("/geo");
     // 작업 0226: 새 카드 '봇별 읽은 페이지'(geo-bot-pages)는 기존 네 장의 짝(답변 · 봇 / 페이지 · 검색)을 깨지 않게 그 아래 한 줄 전체 폭
     const ids = ["geo-answers", "geo-bots", "geo-pages", "geo-search", "geo-bot-pages"];
@@ -89,7 +89,7 @@ test.describe("/geo 시안 B (작업 0214)", () => {
     expect(errors.filter((e) => !/Failed to load resource|favicon/.test(e))).toEqual([]);
   });
 
-  test("제목 위 초록 라벨(GEO 측정)은 그대로 · h1 보다 위", async ({ page }) => {
+  test("제목 위 초록 라벨(GEO 측정)은 그대로 · h1 보다 위 @design", async ({ page }) => {
     await page.goto("/geo");
     const eyebrow = page.locator("main p").first();
     await expect(eyebrow).toHaveText("GEO 측정");

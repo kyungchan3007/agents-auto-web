@@ -11,18 +11,18 @@ const code = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/
 const src = () => code(read("./nav-bar.tsx"));
 
 describe("띠 색", () => {
-  it("header 가 바다 띠(data-surface=dark) 바탕 — bg-surface · 흰 하늘 종이 아님", () => {
+  it("header 가 바다 띠(data-surface=dark) 바탕 — bg-surface · 흰 하늘 종이 아님 @design", () => {
     const header = /<header[^>]*>/.exec(src())?.[0] ?? "";
     expect(header).toMatch(/data-surface="dark"/);
     expect(header).toMatch(/bg-surface/);
   });
-  it("로고 — 'flap' 은 흰(text-foam) · 끝 글자(accent)는 노랑(text-sun) · 배지(네모 칸) 없음", () => {
+  it("로고 — 'flap' 은 흰(text-foam) · 끝 글자(accent)는 노랑(text-sun) · 배지(네모 칸) 없음 @design", () => {
     const s = src();
     expect(s).toMatch(/text-foam/);
     expect(s).toMatch(/text-sun/);
     expect(s).toMatch(/accent/);
   });
-  it("지금 페이지는 흰 알약 — bg-foam · 파랑 글자(text-pin-cheap) · aria-current 유지", () => {
+  it("지금 페이지는 흰 알약 — bg-foam · 파랑 글자(text-pin-cheap) · aria-current 유지 @design", () => {
     const s = src();
     expect(s).toMatch(/aria-current/);
     expect(s).toMatch(/rounded-full/);

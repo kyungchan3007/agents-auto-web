@@ -87,7 +87,7 @@ test.describe("여행 물가 (작업 0212)", () => {
     expect(first.trim()).not.toMatch(/^환율/);
   });
 
-  test("세 카드(싼 곳 · 비슷한 곳 · 비싼 곳)는 같은 틀 — 구분은 제목 색과 작은 점", async ({ page }) => {
+  test("세 카드(싼 곳 · 비슷한 곳 · 비싼 곳)는 같은 틀 — 구분은 제목 색과 작은 점 @design", async ({ page }) => {
     await page.goto("/prices");
     const cards = tid(page, "price-bands").locator("section");
     await expect(cards).toHaveCount(3);

@@ -13,7 +13,7 @@ const fill = async (page: Page, id: string, v: string) => {
 };
 
 test.describe("직구 입력 안내 아래 빈칸 (작업 0208 추가)", () => {
-  test("물건 값 안내 문구 아래 ~ 보내는 곳 사이 간격이 20px 이하 · 안내 자리는 한 줄 높이", async ({ page }) => {
+  test("물건 값 안내 문구 아래 ~ 보내는 곳 사이 간격이 20px 이하 · 안내 자리는 한 줄 높이 @design", async ({ page }) => {
     await page.goto("/calc");
     const hint = page.locator('form[data-testid="calc-input"] label[for="price"]').locator("xpath=../..").locator("p").last();
     const hb = await box(hint);
@@ -42,7 +42,7 @@ test.describe("직구 입력 안내 아래 빈칸 (작업 0208 추가)", () => {
     });
   }
 
-  test("결과 카드 최소 높이 그대로 (첫 화면 · 오류가 있어도) — 세관 꼬리표 크기 (작업 0221 · 예전 408px)", async ({ page }) => {
+  test("결과 카드 최소 높이 그대로 (첫 화면 · 오류가 있어도) — 세관 꼬리표 크기 (작업 0221 · 예전 408px) @design", async ({ page }) => {
     await page.goto("/calc");
     await page.waitForTimeout(300);
     const wide = (page.viewportSize()?.width ?? 0) >= 1024;

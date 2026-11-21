@@ -11,7 +11,7 @@ const form = readFileSync(join(WEB_SRC, "features/import-calc/components/calc-fo
 const code = (s: string) => s.replace(/\{\/\*[\s\S]*?\*\/\}/g, "").replace(/^\s*\/\/.*$/gm, "");
 
 describe("직구 계산 — 파랑 첫 면", () => {
-  it("파랑 띠는 그리드 첫 줄 전체 폭(bg-pin-cheap · col-span-3 · row-start-1) · 장식 표시 aria-hidden · data-testid=calc-band", () => {
+  it("파랑 띠는 그리드 첫 줄 전체 폭(bg-pin-cheap · col-span-3 · row-start-1) · 장식 표시 aria-hidden · data-testid=calc-band @design", () => {
     const m = /<div[^>]*data-testid="calc-band"[^>]*>/.exec(page)?.[0] ?? "";
     expect(m, "calc-band").not.toBe("");
     expect(m).toMatch(/aria-hidden/);
@@ -20,7 +20,7 @@ describe("직구 계산 — 파랑 첫 면", () => {
     expect(m).toMatch(/row-start-1/);
   });
 
-  it("머리는 data-surface=\"dark\" 안(밝은 글자 토큰) · 큰 제목은 text-cheap 이 아님 · 금액은 bg=\"sea\"(노랑) · 설명은 text-fg-2", () => {
+  it("머리는 data-surface=\"dark\" 안(밝은 글자 토큰) · 큰 제목은 text-cheap 이 아님 · 금액은 bg=\"sea\"(노랑) · 설명은 text-fg-2 @design", () => {
     const c = code(page);
     expect(c).toMatch(/data-surface="dark"/);
     expect(c).not.toMatch(/<Title[^>]*text-cheap/);
@@ -28,7 +28,7 @@ describe("직구 계산 — 파랑 첫 면", () => {
     expect(c).toMatch(/<p[^>]*text-fg-2[^>]*>물건 값을 넣으면/);
   });
 
-  it("카드 줄은 파랑 띠 아래 둘째 줄에서 위로 끌어올려 경계에 걸침(-mt-) · 위에 보이게(relative z-10)", () => {
+  it("카드 줄은 파랑 띠 아래 둘째 줄에서 위로 끌어올려 경계에 걸침(-mt-) · 위에 보이게(relative z-10) @design", () => {
     const m = /<div[^>]*row-start-2[^>]*>/.exec(page)?.[0] ?? "";
     expect(m, "카드 줄").not.toBe("");
     expect(m).toMatch(/-mt-/);
@@ -43,7 +43,7 @@ describe("직구 계산 — 파랑 첫 면", () => {
     expect(c, "휴대폰 아래 여백 12.875rem").toMatch(/pb-\[12\.875rem\]/);
   });
 
-  it("흰 카드(입력 · 결과)는 파랑 면 위에서 그림자 토큰으로 구분 · 휴대폰 요약 줄은 파랑 면 위에서도 보이게 가장자리 선(ring)", () => {
+  it("흰 카드(입력 · 결과)는 파랑 면 위에서 그림자 토큰으로 구분 · 휴대폰 요약 줄은 파랑 면 위에서도 보이게 가장자리 선(ring) @design", () => {
     expect(form).toMatch(/data-testid="calc-input"[^>]*shadow-(ticket|panel|pass)/);
     expect(readFileSync(join(WEB_SRC, "features/import-calc/components/calc-result.tsx"), "utf8")).toMatch(/data-testid="calc-result"[^>]*shadow-(ticket|panel|pass)/);
     expect(/<p[^>]*data-testid="calc-summary"[^>]*>/.exec(form)?.[0] ?? "").toMatch(/\bring-1\b/);

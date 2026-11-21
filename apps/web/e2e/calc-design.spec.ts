@@ -59,7 +59,7 @@ test.describe("직구 계산 디자인 (작업 0208)", () => {
     expect(Math.abs(outside.below - inside.below)).toBeLessThanOrEqual(1);
   });
 
-  test("휴대폰 — 결과 카드 아래에 빈칸이 남지 않음 (마지막 글 아래 여백은 카드 안쪽 여백 정도)", async ({ page }) => {
+  test("휴대폰 — 결과 카드 아래에 빈칸이 남지 않음 (마지막 글 아래 여백은 카드 안쪽 여백 정도) @design", async ({ page }) => {
     test.skip(!isPhone(page), "휴대폰 전용");
     await page.goto("/calc");
     const card = await box(tid(page, "calc-result"));
@@ -67,7 +67,7 @@ test.describe("직구 계산 디자인 (작업 0208)", () => {
     expect(card.y + card.height - (note.y + note.height)).toBeLessThanOrEqual(72); // 카드 최소 높이가 글보다 클 수 있어 안쪽 여백(24px) + 여분 한 줄(48px)까지 — 크기 안정(0208)으로 최소 높이는 '적용 환율' 글이 두 줄인 때 기준이라 실제 자료(한 줄)에서는 64px (운영 /calc 412폭 실측 64.2 · 작업 0226 gate 실패 확인)
   });
 
-  test("넓은 화면 — 과세환율 칸은 기록이 2주 미만이면 짧음 · 수입물가 그래프 높이(시안 F: 넓은 화면 380px · 휴대폰 300px — 약간의 여유를 둠)", async ({ page }) => {
+  test("넓은 화면 — 과세환율 칸은 기록이 2주 미만이면 짧음 · 수입물가 그래프 높이(시안 F: 넓은 화면 380px · 휴대폰 300px — 약간의 여유를 둠) @design", async ({ page }) => {
     await page.goto("/calc");
     const chart = await box(tid(page, "import-chart"));
     if (isPhone(page)) {

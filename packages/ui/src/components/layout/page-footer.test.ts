@@ -8,10 +8,10 @@ const code = readFileSync(new URL("./page-footer.tsx", import.meta.url), "utf8")
   .replace(/^\s*\/\/.*$/gm, "");
 
 describe("PageFooter — 흰 바탕 + 위쪽 선 (작업 0216 · 시안)", () => {
-  it("청록 띠(bg-band · text-on-band)를 쓰지 않음", () => {
+  it("청록 띠(bg-band · text-on-band)를 쓰지 않음 @design", () => {
     expect(code).not.toMatch(/bg-band|text-on-band/);
   });
-  it("페이지 바탕(bg-surface) · 위쪽 옅은 선(border-t border-line) · 보조 글자색(text-fg-2)", () => {
+  it("페이지 바탕(bg-surface) · 위쪽 옅은 선(border-t border-line) · 보조 글자색(text-fg-2) @design", () => {
     expect(code).toMatch(/bg-surface/);
     expect(code).toMatch(/border-t\b[^"]*border-line|border-line[^"]*border-t\b/);
     expect(code).toMatch(/text-fg-2/);
