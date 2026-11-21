@@ -2,6 +2,7 @@
 
 // 물가 구간 3칸 — 새 디자인(작업 0220 · 시안 B): 카드 없이 굵은 위 선 · 구간 사이 세로 선 · 나라 줄마다 가는 선 (예전 작업 0170 · Figma 04 흰 카드 3개 · 작업 0212 세 카드 틀을 하나로) · 구분은 제목 색 + 작은 점 · 칸마다 나라 2곳 · 나라 이름 + "물가 48 (한국 100)" · 판정 핀은 같은 줄 오른쪽
 // 나머지 나라는 "나라 더 보기" 로 펼침 · 핀은 사이트 신호 규칙(최근 90일 백분위) · 신호 · 환율이 없으면 글자 ("신호 없음" · "환율 없음") — 지역 칩 · 막대 · 국기는 시안에 없어 뺌
+import { FadeUpGroup } from "@hav/ui/motion/fade-up";
 import { SectionTitle } from "@hav/ui/text/heading";
 import type { Signal } from "@hav/shared/signal";
 import type { Band } from "@hav/shared/travel";
@@ -54,7 +55,7 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
   const merged = opened && !unfolded; // 펼친 상태(처음 화면의 접힌 세 칸은 그대로) = 세 묶음을 물가 낮은 순 한 목록으로 합쳐 세 단으로 흘림 (작업 0248 · 4번)
   const more = unfolded ? 0 : bands.reduce((n, b) => n + Math.max(0, b.rows.length - FOLDED), 0);
   return (
-    <div id="price-bands" data-testid="price-bands" className="scroll-mt-24">
+    <FadeUpGroup id="price-bands" testId="price-bands" className="scroll-mt-24">
       {merged ? (
         <ul data-testid="price-merged" className="border-t-[3px] border-fg pt-2 lg:columns-3 lg:gap-x-12 lg:[column-rule:1px_solid_var(--hav-line)]">
           {bands.flatMap((b) => b.rows).map((r) => (
@@ -63,8 +64,8 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
         </ul>
       ) : (
       <div className="grid items-start border-t-[3px] border-fg lg:grid-cols-3 lg:divide-x lg:divide-line">
-        {bands.map((b) => (
-          <section key={b.id} aria-labelledby={`band-${b.id}`} className="min-w-0 border-b border-line py-5 lg:border-b-0 lg:px-6 lg:first:pl-0 lg:last:pr-0">
+        {bands.map((b, bi) => (
+          <section key={b.id} data-fu={bi} aria-labelledby={`band-${b.id}`} className="min-w-0 border-b border-line py-5 lg:border-b-0 lg:px-6 lg:first:pl-0 lg:last:pr-0">
             <SectionTitle id={`band-${b.id}`} className={`flex items-center gap-3 text-[1.625rem] leading-tight ${BAND_TEXT[b.id]}`}>
               <span data-testid="band-mark" aria-hidden className={`size-3 shrink-0 rounded-pill ${BAND_MARK[b.id]}`} />
               {BAND_TITLE[b.id]}
@@ -107,6 +108,6 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
           )}
         </div>
       )}
-    </div>
+    </FadeUpGroup>
   );
 }
