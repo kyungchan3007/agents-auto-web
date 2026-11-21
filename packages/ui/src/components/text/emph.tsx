@@ -8,8 +8,8 @@ import { numberTone, splitNumbers } from "../../lib/emphasis";
 type Bg = "light" | "sea";
 type Tone = "neutral" | "expensive";
 
-// 띠는 글자 폭보다 양쪽 0.05em 안쪽 — 글자 옆 여백(자간)만큼 넓어 보이지 않게 글자 끝과 맞춤 (작업 0209)
-const LIGHT_NEUTRAL = "box-decoration-clone bg-[linear-gradient(transparent_55%,var(--hav-sun)_55%)] bg-size-[calc(100%-0.1em)_100%] bg-center bg-no-repeat";
+// 띠는 글자 폭에 맞추고(왼쪽 밖 · 아래로 삐져나오지 않게) 높이는 글자 위쪽 64% ~ 90% 구간만 (작업 0248 → 0249 · 24번 · 예전: 55% 부터 아래 끝까지 · 양쪽 0.05em 안쪽 가운데 맞춤 · 작업 0209)
+const LIGHT_NEUTRAL = "box-decoration-clone bg-[linear-gradient(transparent_64%,var(--hav-sun)_64%,var(--hav-sun)_90%,transparent_90%)] bg-size-[100%_100%] bg-position-[0_0] bg-no-repeat";
 const LIGHT_EXPENSIVE = "text-expensive";
 const SEA = "text-figure";
 
