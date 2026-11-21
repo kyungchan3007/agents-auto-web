@@ -40,7 +40,7 @@ export function CurrencyChips({ codes }: { codes: string[] }) {
             setOpen(false);
             void pick(code, e, e.currentTarget);
           }}
-          className={`${CHIP} ${on ? "border-pin-ink bg-pin-ink text-foam" : "border-line bg-card text-fg hover:bg-surface-2"}`}
+          className={`${CHIP} ${on ? "border-pin-ink bg-pin-ink text-foam [--hav-ring:#fff]" : "border-line bg-card text-fg hover:bg-surface-2"}`}
         >
           <CurrencyFlag currency={code} className="h-4 w-6 shrink-0" />
           {code}
