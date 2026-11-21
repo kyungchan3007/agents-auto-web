@@ -130,7 +130,8 @@ test.describe("여행 물가 — 스크롤로 떠나는 물가 노선 (작업 02
       const e = exp[i];
       const band = e.kr ? "base" : e.value / 100 < 0.9 ? "cheap" : e.value / 100 > 1.1 ? "exp" : "mid";
       await expect(tid(page, "route-card-name"), `${i + 1}번째 이름`).toHaveText(e.name);
-      await expect(tid(page, "route-card-meta")).toHaveText(`정거장 ${i + 1} / ${n} · ${BANDNAME[band]}`);
+      // 작업 0248 · 1번: 자료 연도("· 2024년 자료")가 아랫줄에서 이 줄 끝으로 옮겨 옴 — 있어도 없어도 됨
+      await expect(tid(page, "route-card-meta")).toHaveText(new RegExp(`^정거장 ${i + 1} / ${n} · ${BANDNAME[band]}( · \\d{4}년 자료)?$`));
       expect(Number((await text(page, "route-card-value")).replace(/\s/g, "")), "물가 숫자(앞 빈 칸은 0 글자가 숨은 칸이어도 됨)").toBe(e.value);
       await expect(tid(page, "route-card-pct")).toHaveText(e.value === 100 ? /^기준/ : e.value < 100 ? `${100 - e.value}% 쌉니다` : `${e.value - 100}% 비쌉니다`);
       await expect(tid(page, "route-card-budget")).toContainText(`약 ${(e.value * 1000).toLocaleString("ko-KR")}원`);
@@ -219,7 +220,7 @@ test.describe("여행 물가 — 스크롤로 떠나는 물가 노선 (작업 02
     await expect(tid(page, "route-card-name")).toHaveText(exp[2].name, { timeout: 6000 });
   });
 
-  test("예산 카드 아래 끝 → 노선 제목(h2) 위 끝 간격 = 지금 운영 정적 자와 같음(넓은 화면 140px · 휴대폰 100px) · 화면 높이를 바꿔도 같음", async ({ page }) => {
+  test("예산 카드 아래 끝 → 노선 제목(h2) 위 끝 간격 = 지금 운영 정적 자와 같음(넓은 화면 140px · 휴대폰 100px) · 화면 높이를 바꿔도 같음 @design", async ({ page }) => {
     const heights = isPhone(page) ? [700, 844, 915] : [720, 900, 1300];
     const gaps: number[] = [];
     for (const h of heights) {
