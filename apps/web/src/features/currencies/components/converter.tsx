@@ -37,7 +37,7 @@ export function Converter({ code, rate }: { code: string; rate: FxRate }) {
               key={p}
               type="button"
               onClick={() => pick("foreign", p)}
-              className={`rounded-pill border-2 px-1 py-1 text-center text-small font-semibold whitespace-nowrap transition-colors ${foreign && amount === p ? "border-sun bg-sun text-pin-ink" : "border-line text-fg hover:bg-card"}`}
+              className={`tap-44 rounded-pill border-2 px-1 py-1 text-center text-small font-semibold whitespace-nowrap transition-colors ${foreign && amount === p ? "border-sun bg-sun text-pin-ink" : "border-line text-fg hover:bg-card"}`}
             >
               {amountText(p, "foreign", rate)} {code}
             </button>

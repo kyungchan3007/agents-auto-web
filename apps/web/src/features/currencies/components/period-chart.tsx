@@ -38,7 +38,7 @@ export function PeriodChart({ rates, unit = 1, unitText, lastTone }: { rates: { 
               type="button"
               aria-pressed={p.id === id}
               onClick={() => setId(p.id)}
-              className={`rounded-pill px-4 py-1.5 text-small font-bold transition-colors ${p.id === id ? "bg-pin-ink text-foam" : "text-fg hover:bg-surface-2"}`}
+              className={`tap-44 rounded-pill px-4 py-1.5 text-small font-bold transition-colors ${p.id === id ? "bg-pin-ink text-foam" : "text-fg hover:bg-surface-2"}`}
             >
               {p.label}
             </button>
