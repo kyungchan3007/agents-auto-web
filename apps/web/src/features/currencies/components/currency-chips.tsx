@@ -18,7 +18,7 @@ export function commitPick(codes: string[], current: string, code: string): void
   saveRecent(pushRecent(stored.length > 0 ? stored : chipRow([], current, codes), code));
 }
 
-const CHIP = "tap-44 flex items-center gap-2 rounded-pill border-2 px-3.5 py-1.5 text-small font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cheap";
+const CHIP = "tap-44 flex focus-visible:outline-offset-[-4px] items-center gap-2 rounded-pill border-2 px-3.5 py-1.5 text-small font-bold transition-colors";
 
 export function CurrencyChips({ codes }: { codes: string[] }) {
   const { current, row, shown, more, leaving, flip, open, setOpen, ready } = useChipRow(codes);

@@ -33,6 +33,8 @@
   --hav-line: #b9cdd6;
   /* 입력 칸 옅은 선 (작업 0221 · 시안) — 흰 칸 위 도형 대비 3 이상 (3.17) · 글자 남색보다 옅고 포커스 파랑과 구분됨 */
   --hav-field-line: #8190b8;
+  /* 키보드 초점 고리 색 (작업 0269 · 시안 43) — 밝은 면 파랑 */
+  --hav-ring: #2438a8;
 }
 
 /* 바다 띠 — 울트라마린 바탕 · 글자는 종이색 · 해 노랑 포인트 */
@@ -49,6 +51,7 @@
   --hav-normal: #d3def7;
   --hav-expensive: #ff9c86;
   --hav-line: #5568c4;
+  --hav-ring: #ffffff; /* 파란 면 흰색 */
 }
 
 /* 바다 띠 안의 칸 — 바다 띠보다 한 단계 짙음 */
@@ -65,6 +68,7 @@
   --hav-normal: #d3def7;
   --hav-expensive: #ff9c86;
   --hav-line: #4558b4;
+  --hav-ring: #ffffff; /* 남색 면 흰색 */
 }
 
 /* 3D 전용 고정 색 — 어느 배경 에서도 값이 같음 (R7: 지구 · 비행기는 생김새 그대로 · 새 테마가 바뀌어도 지구 호 · 점 색이 따라 바뀌지 않음) */
@@ -223,5 +227,17 @@
       height: max(100%, 44px);
       transform: translate(-50%, -50%);
     }
+  }
+}
+
+/* 키보드 초점 고리 하나 (작업 0269 · 시안 43) — 2px 실선 · 바깥 간격 2px · 색은 면마다 --hav-ring (밝은 면 #2438A8 · 파란 · 남색 면 흰색)
+   컴포넌트마다 따로 고리 값을 적지 않음 · 마우스 · 손가락으로 누를 때는 :focus-visible 이 아니라 고리가 없음 · 잘리는 곳만 그곳에서 안쪽(outline-offset 음수)으로 덮어씀 */
+/* 칸 전체가 눌리는 라벨 안의 숨은 입력(라디오 등)은 보이지 않으니 라벨(data-ring-host)이 고리를 그림 */
+/* @layer base 안에 둠 — 잘리는 곳의 안쪽 간격(focus-visible:outline-offset-[-4px]) 같은 유틸리티가 이긴다 */
+@layer base {
+  :focus-visible,
+  [data-ring-host]:has(:focus-visible) {
+    outline: 2px solid var(--hav-ring);
+    outline-offset: 2px;
   }
 }

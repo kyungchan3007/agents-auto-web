@@ -48,7 +48,7 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
             {(Object.keys(ROUTE_LABEL) as Route[]).map((k) => {
               const on = input.route === k;
               return (
-                <label key={k} className={`relative flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-[0.875rem] border-2 bg-card px-4 text-base text-fg transition-colors focus-within:outline-3 focus-within:outline-cheap/25 ${on ? "border-fg font-semibold" : "border-field-line hover:border-cheap/60"}`}>
+                <label key={k} data-ring-host className={`relative flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-[0.875rem] border-2 bg-card px-4 text-base text-fg transition-colors ${on ? "border-fg font-semibold" : "border-field-line hover:border-cheap/60"}`}>
                   <input type="radio" name="route" value={k} checked={on} onChange={set("route")} className="absolute inset-0 size-full cursor-pointer opacity-0" />
                   <span>
                     {ROUTE_LABEL[k]} · {DUTY_FREE_USD[k]}달러

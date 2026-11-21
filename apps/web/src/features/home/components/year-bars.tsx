@@ -22,7 +22,7 @@ export function YearBars({ timing }: { timing: TravelTiming }) {
               {timing.cheapest}월 가장 쌈 · {timing.priciest}월 가장 비쌈
             </Title>
           </div>
-          <Link data-fu={3} data-testid="year-link" href="/flights" prefetch={false} className="tap-44 inline-flex items-center gap-1.5 border-b-2 border-cheap pb-0.5 font-bold text-cheap hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cheap">
+          <Link data-fu={3} data-testid="year-link" href="/flights" prefetch={false} className="tap-44 inline-flex items-center gap-1.5 border-b-2 border-cheap pb-0.5 font-bold text-cheap hover:text-fg">
             항공료 그래프 자세히 ›
           </Link>
         </div>
