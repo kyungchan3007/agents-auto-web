@@ -81,3 +81,4 @@
 | 0257 | 여행 물가 머리 숫자에 가는 노란 밑줄 강조 + 그어지는 움직임 (Quick · 디자인 PR · 시안 30 B안) | builder → test(깨질 때만) | 머지됨 (#307) | task/0257-prices-emph-underline | packages/ui/src/components/text/emph.tsx · travel-price/components/prices-header.tsx · emphasis.spec.ts |
 | 0258 | 패치(버그) — 아이폰(WebKit)에서 창밖 풍경이 둥근 창 모양으로 잘리지 않음 (Quick) | builder · test(WebKit 확인) | 머지됨 (#308) · 아이폰 실기기 확인은 사용자 | task/0258-window-clip-ios | travel-price/components/window-months.tsx |
 | 0259 | 직구 계산 입력 카드를 세 구역(물건 · 보내는 곳 · 더 정확하게)으로 — 0256 의 64px 걷어 냄 (Quick · 디자인 PR · 시안 31 B안) | builder · test | 진행 중 | task/0259-calc-three-sections | import-calc/components/calc-form.tsx · e2e/calc-gap.spec.ts |
+| 0262 | 흔들리는 e2e — rename-compare 휴대폰 위치 비교를 최종 배치 기다리게 (Quick · 테스트만) | test | 진행 중 | task/0262-flaky-rename-compare | apps/web/e2e/rename-compare.spec.ts |
