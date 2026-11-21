@@ -135,11 +135,11 @@ function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof wi
                 />
               </div>
             </div>
-            <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-5">
+            <div className="mt-auto flex flex-col items-start gap-3.5 pt-5">
               <button type="button" data-testid="window-replay" onClick={replay} className="inline-flex cursor-pointer items-center gap-2 rounded-pill border-[1.5px] border-figure bg-card px-[1.125rem] py-[0.5625rem] text-[0.875rem] font-bold text-figure focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-accent">
                 ↻ 다시 보기
               </button>
-              <p data-testid="window-note" className="max-w-[26.25rem] text-[0.75rem] leading-[1.55] text-fg-2">
+              <p data-testid="window-note" className="max-w-none text-[0.75rem] leading-[1.55] text-fg-2">
                 통계청 국제항공료 지수 같은 달 평균{range ? `(${range} 받은 값 · 홈 12달 막대와 같은 계산)` : ""}. 실제 요금이 아니며, {lowest}월이 {complete ? "1년 중" : "받은 달 중"} 가장 낮고 {highest}월이 가장 높습니다.
               </p>
             </div>
