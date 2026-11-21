@@ -2,6 +2,7 @@
 
 // 실제로 바꿀 때 — 새 디자인(작업 0219 · 시안 A): 흰 탑승권 안 짙은 남색 칸 · 금액 입력 · 빠른 금액 칩 · 결과는 출발 안내판 글자판(B 모양) · 아래 매매기준율 안내
 //   계산 기능은 그대로 (같은 입력 → 같은 값 · convert.ts) · 입력은 이 화면 상태에만 (보내지 않음 · 저장하지 않음) · 기준일 · 출처를 같이 (FX-01) · 송금 환율이 있으면 그 값도
+//   빠른 금액 칩 네 개는 같은 폭 한 줄(작업 0248 · 9번)
 //   결과 글자판은 통화를 바꿀 때 직전 값에서 칸마다 굴러감(0227 굴러가는 숫자 · 작업 0231) · 넓은 화면은 스크롤해도 따라옴(sticky) · 휴대폰은 끔
 import { UnitInput } from "@hav/ui/form/field";
 import { SectionTitle } from "@hav/ui/text/heading";
@@ -30,13 +31,13 @@ export function Converter({ code, rate }: { code: string; rate: FxRate }) {
         <div data-testid="converter-board" aria-live="polite" className="mt-4 flex">
           <ResultBoard amount={invalid || !foreign || result == null ? null : Math.round(result)} label={shown} from={from?.won ?? null} />
         </div>
-        <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="빠른 금액">
+        <div className="mt-4 grid grid-cols-4 gap-2" role="group" aria-label="빠른 금액">
           {presets("foreign", rate).map((p) => (
             <button
               key={p}
               type="button"
               onClick={() => pick("foreign", p)}
-              className={`rounded-pill border-2 px-3 py-1 text-small font-semibold transition-colors ${foreign && amount === p ? "border-sun bg-sun text-pin-ink" : "border-line text-fg hover:bg-card"}`}
+              className={`rounded-pill border-2 px-1 py-1 text-center text-small font-semibold whitespace-nowrap transition-colors ${foreign && amount === p ? "border-sun bg-sun text-pin-ink" : "border-line text-fg hover:bg-card"}`}
             >
               {amountText(p, "foreign", rate)} {code}
             </button>
