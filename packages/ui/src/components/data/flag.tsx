@@ -5,5 +5,6 @@ import * as Flags from "country-flag-icons/react/3x2";
 export function Flag({ country, label, className = "h-4 w-6" }: { country: string | null; label: string; className?: string }) {
   const Svg = country ? (Flags as Record<string, (p: { title?: string; className?: string }) => React.ReactElement>)[country] : undefined;
   if (!Svg) return <span className={`inline-block rounded-sm bg-surface-2 ${className}`} aria-hidden />;
-  return <Svg title={label} className={`inline-block rounded-sm ${className}`} />;
+  // 옅은 테두리(--hav-flag-edge · 남색 22%) — 흰 바탕 위에서 일본 국기의 흰 부분 · 싱가포르 아래 절반이 사라지지 않게 (작업 0249 · 18번)
+  return <Svg title={label} className={`inline-block rounded-sm shadow-[0_0_0_1px_var(--hav-flag-edge)] ${className}`} />;
 }
