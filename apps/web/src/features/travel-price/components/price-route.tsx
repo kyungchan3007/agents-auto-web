@@ -51,6 +51,11 @@ function SignalCell({ stop, extra, signalOf, percentileOf, small }: { stop: Rout
   );
 }
 
+/** 정거장 카드 아랫줄 — 움직이는 카드는 넓은 화면에서 세 칸 가로 · 휴대폰(760 이하)은 하루 예산을 아랫줄로 */
+const ROW = "grid grid-cols-[auto_1fr_1.25fr] border-t-2 border-dashed border-line pt-(--route-row-pt) max-[760px]:grid-cols-2 max-[760px]:gap-y-(--route-row-gap) [&>div]:border-l [&>div]:border-line [&>div]:px-8 [&>div:first-child]:border-l-0 [&>div:first-child]:pl-0 max-[760px]:[&>div]:pr-0 max-[760px]:[&>div]:pl-4 max-[760px]:[&>div:first-child]:pl-0 max-[760px]:[&>div:nth-child(3)]:col-span-2 max-[760px]:[&>div:nth-child(3)]:border-t max-[760px]:[&>div:nth-child(3)]:border-l-0 max-[760px]:[&>div:nth-child(3)]:pt-(--route-row-gap) max-[760px]:[&>div:nth-child(3)]:pl-0";
+/** 정적 카드(움직임 줄이기 · 스크립트 꺼짐 · 두 단 카드)는 칸이 좁아 어느 폭에서나 휴대폰처럼 하루 예산을 아랫줄로 내려 금액이 잘리지 않게 (작업 0248 · 1번) */
+const ROW_STACKED = "grid grid-cols-2 gap-y-(--route-row-gap) border-t-2 border-dashed border-line pt-(--route-row-pt) [&>div]:border-l [&>div]:border-line [&>div]:pr-0 [&>div]:pl-4 [&>div:first-child]:border-l-0 [&>div:first-child]:pl-0 [&>div:nth-child(3)]:col-span-2 [&>div:nth-child(3)]:border-t [&>div:nth-child(3)]:border-l-0 [&>div:nth-child(3)]:pt-(--route-row-gap) [&>div:nth-child(3)]:pl-0";
+
 /** 카드 한 장 — 정거장 하나의 모습 (움직이는 카드 · 정적 카드가 같은 틀) */
 function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap = 0 }: { swap?: number; stop: RouteStop; n: number; extra: Extra; latestYear?: number; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"]; live: boolean }) {
   const t = routeCardText(stop, stop.index, n);
@@ -72,6 +77,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
         <div className="min-w-0 flex-1">
           <p data-testid="route-card-meta" className="text-[0.8125rem] text-fg-2 max-[760px]:text-[0.75rem]">
             {t.meta}
+            {year && <> · {year}</>}
           </p>
           <p className="h-(--route-name-h) overflow-hidden text-(length:--route-name) leading-[1.2] font-extrabold tracking-display">
             <span key={swap} data-testid="route-card-name" className={`block ${live && swap > 0 ? "animate-[route-up_.42s_cubic-bezier(.2,.9,.3,1)]" : ""}`}>
@@ -83,7 +89,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
           <SignalCell stop={stop} extra={extra} signalOf={signalOf} percentileOf={percentileOf} small />
         </div>
       </div>
-      <div className="mt-(--route-row-mt) grid grid-cols-[auto_1fr_1.25fr] border-t-2 border-dashed border-line pt-(--route-row-pt) max-[760px]:grid-cols-2 max-[760px]:gap-y-(--route-row-gap) [&>div]:border-l [&>div]:border-line [&>div]:px-8 [&>div:first-child]:border-l-0 [&>div:first-child]:pl-0 max-[760px]:[&>div]:pr-0 max-[760px]:[&>div]:pl-4 max-[760px]:[&>div:first-child]:pl-0 max-[760px]:[&>div:nth-child(3)]:col-span-2 max-[760px]:[&>div:nth-child(3)]:border-t max-[760px]:[&>div:nth-child(3)]:border-l-0 max-[760px]:[&>div:nth-child(3)]:pt-(--route-row-gap) max-[760px]:[&>div:nth-child(3)]:pl-0">
+      <div className={`mt-(--route-row-mt) ${live ? ROW : ROW_STACKED}`}>
         <div>
           <p className="mb-1.5 text-[0.78125rem] text-fg-2">물가 (한국 = 100)</p>
           <div className="flex items-center gap-1">
@@ -94,7 +100,6 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
                 </span>
               ))}
             </div>
-            {year && <em className="ml-2.5 text-[0.875rem] leading-snug text-fg-2 not-italic">{year}</em>}
           </div>
         </div>
         <div>
