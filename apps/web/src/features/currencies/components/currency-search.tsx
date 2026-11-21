@@ -1,6 +1,7 @@
 "use client";
 
 // 통화 검색 · 자동완성 — 목록 위 콤보박스 (작업 0192) · 코드 · 통화 이름 · 나라 · 도시로 찾고 고르면 그 통화 상세로
+// 결과 없음 안내는 검색 칸 바로 아래에 겹쳐 띄움(absolute) — 아래 내용이 밀리지 않음 (작업 0248 · 12번)
 // 화면 약속: data-testid="currency-search" · role=combobox / listbox / option · 제안은 최대 8줄
 import { Input } from "@hav/ui/form/field";
 import { useCurrencySearch } from "../hooks/use-currency-search";
@@ -57,7 +58,7 @@ export function CurrencySearch({ codes }: { codes: string[] }) {
         </ul>
       )}
       {s.empty && (
-        <p role="status" className="mt-2 text-small text-fg-2">
+        <p role="status" className="absolute top-full left-0 mt-1.5 text-small whitespace-nowrap text-fg-2">
           {emptyText(codes.length)}
         </p>
       )}
