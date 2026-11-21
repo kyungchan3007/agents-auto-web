@@ -43,9 +43,17 @@ test.describe("이름 바꾼 날 전후 비교 (작업 0205)", () => {
     await expect(sec).toBeVisible();
     await expect(sec.getByRole("heading", { name: "이름 바꾼 날 전후 비교" })).toBeVisible();
     await expect(tid(page, "rename-day")).toContainText(/이름 바꾼 날 2026-11-17 \(.+ → Flapfx/);
-    const a = await sec.boundingBox();
-    const b = await tid(page, "geo-cards").boundingBox();
-    expect(a && b && a.y + a.height <= b.y + 1).toBe(true);
+    // 작업 0262: 상자 위치를 한 번만 재면 가짜 응답이 들어와 화면이 자리 잡는 도중 값(휴대폰에서 흔들림)을 볼 수 있음 — 조건(구간 아래 끝 ≤ 수치 카드 위 끝 + 1)은 그대로 두고 최종 배치가 될 때까지 다시 재며 기다림
+    await expect
+      .poll(
+        async () => {
+          const a = await sec.boundingBox();
+          const b = await tid(page, "geo-cards").boundingBox();
+          return a && b ? b.y - (a.y + a.height) : Number.NEGATIVE_INFINITY;
+        },
+        { message: "이름 바꾼 날 구간은 수치 카드보다 위(구간 아래 끝 ≤ 카드 위 끝 + 1)", timeout: 10_000 },
+      )
+      .toBeGreaterThanOrEqual(-1);
   });
 
   test("하루 평균 — 달력 날짜 수로 나눔 · 끝 날짜는 화면의 자료 기준일(브라우저 날짜 아님) · 전 기간 날짜 표시", async ({ page }) => {
