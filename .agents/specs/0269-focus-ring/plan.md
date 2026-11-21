@@ -35,4 +35,4 @@
 - [ ] @design 테스트 깨짐은 개수를 claude-desktop 에 알림
 
 ## 허점
-- 0268: 새 e2e(tap-44)의 첫 두 CI 가 테스트 측정 오탐(스크롤 중 좌표 비교 · 덧칸 가운데 가정 · Playwright 전용 선택자)으로 실패 — 기하 측정 테스트는 한 번에 읽고 computed 상자로 계산할 것. 머지 CI 에서도 home year-link 1 flaky.
+- 0268: 새 e2e(tap-44)의 첫 두 CI 가 테스트 측정 오탐(스크롤 중 좌표 비교 · 덧칸 가운데 가정 · Playwright 전용 선택자)으로 실패 — 기하 측정 테스트는 한 번에 읽고 computed 상자로 계산할 것. 머지 CI 에서도 home year-link 1 flaky → test 수정(0fc0d172)이 #321 머지 직후 올라와 이 브랜치로 옮김(cherry-pick).
