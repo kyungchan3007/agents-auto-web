@@ -23,7 +23,7 @@ export function AboutPage(_props: { signals: Fetched<SignalList>; duty: DutyRule
             </Title>
           </div>
         </section>
-        <div className="px-4 pt-8 pb-10 sm:px-8">
+        <div className="px-4 pt-[4.5rem] pb-10 sm:px-8 sm:pt-24">
         <div className="mx-auto max-w-page">
           <ul className="grid gap-4 sm:grid-cols-2">
             {ABOUT_CARDS.map((c) => (

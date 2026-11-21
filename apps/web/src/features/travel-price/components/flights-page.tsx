@@ -80,7 +80,7 @@ export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: Tra
         {/* 창밖 12달 바로 아래 새 구역 — 인천 출발 1주 왕복의 출발일별 최저가 (작업 0234) · 기존 구역은 그대로 */}
         <AirfareCalendarSection calendar={airfare} />
         {/* 표 뒤 구간 — 옅은 면(surface-2) · 절취선 끝 동그라미(홈)는 없고 점선만 (작업 0218 사용자 지적 "동그라미가 없어야 하는거 아냐?") */}
-        <div data-testid="flights-back" className="bg-surface-2 px-4 pt-10 pb-10 sm:px-8 sm:pt-14">
+        <div data-testid="flights-back" className="bg-surface-2 px-4 pt-[4.5rem] pb-10 sm:px-8 sm:pt-24">
           <div className="mx-auto max-w-page">
             {ready && (
               <>

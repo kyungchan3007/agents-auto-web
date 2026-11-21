@@ -38,7 +38,7 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
             {children}
           </main>
           {/* 맨 아래 — 다른 통화 목록 (지금 목록 부품 · 격자) */}
-          <div data-testid="currency-list" className="mt-16 min-w-0">
+          <div data-testid="currency-list" className="mt-[4.5rem] min-w-0 sm:mt-24">
             <Eyebrow>둘러보기</Eyebrow>
             <div className="mt-4">
               <CurrencyList items={items} variant="grid" />

@@ -12,7 +12,7 @@ export function YearBars({ timing }: { timing: TravelTiming }) {
   const bars = yearBars(timing);
   const label = `1월부터 12월까지 국제항공료 지수 막대. ${timing.priciest}월이 가장 높고 ${timing.cheapest}월이 가장 낮습니다`;
   return (
-    <section data-testid="year-section" aria-labelledby="year-title" className="px-4 pt-16 text-fg sm:px-8 sm:pt-24">
+    <section data-testid="year-section" aria-labelledby="year-title" className="px-4 pt-[4.5rem] text-fg sm:px-8 sm:pt-24">
       <div className="mx-auto max-w-page">
         <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
           <div>
