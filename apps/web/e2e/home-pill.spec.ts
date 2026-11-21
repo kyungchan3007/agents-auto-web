@@ -86,7 +86,7 @@ const snapshot = (page: Page) =>
 const cheapRows = (page: Page) => tid(page, "dest-status").evaluateAll((els) => els.filter((e) => /· 쌈$/.test((e.textContent ?? "").trim())).length);
 
 test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 · 모션 13번)", () => {
-  test("카드가 화면 아래에 있으면 알약으로 접혀 있음 — 국기들 + '도착지 N곳 중 M곳이 최근 90일 중 싼 편' · M 은 줄의 '쌈' 수 · 줄은 안 보임", async ({ page }) => {
+  test("카드가 화면 아래에 있으면 알약으로 접혀 있음 — 국기들 + '도착지 N곳 중 M곳이 최근 90일 중 싼 편' · M 은 줄의 '쌈' 수 · 줄은 안 보임 @design", async ({ page }) => {
     if (!isPhone(page)) await page.setViewportSize({ width: 1280, height: 720 });
     await openHome(page);
     test.skip(!(await hasRows(page)), "도착지 자료 없음");
@@ -120,7 +120,7 @@ test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 ·
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth), "가로 넘침").toBeLessThanOrEqual(1);
   });
 
-  test("카드 윗부분이 들어오면 바로 펼침 — 반응 0.5초 안 · 높이 서서히(알약 → 끝) · 모서리 알약 → 24px · 끝은 1.9초 안 · 너무 빨리 끝나지 않음(0.7초 이상)", async ({ page }) => {
+  test("카드 윗부분이 들어오면 바로 펼침 — 반응 0.5초 안 · 높이 서서히(알약 → 끝) · 모서리 알약 → 24px · 끝은 1.9초 안 · 너무 빨리 끝나지 않음(0.7초 이상) @design", async ({ page }) => {
     if (!isPhone(page)) await page.setViewportSize({ width: 1280, height: 720 });
     await openHome(page);
     test.skip(!(await hasRows(page)), "도착지 자료 없음");
@@ -155,7 +155,7 @@ test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 ·
     expect(fr[fr.length - 1].pill, "끝에 알약이 남음").toBeNull();
   });
 
-  test("줄이 0.07초 간격으로 차례로 · 점은 가운데 → 오늘 자리(0.62초) · 금액은 같은 시간에 같이 · 신호 글은 점이 도착한 뒤 마지막", async ({ page }) => {
+  test("줄이 0.07초 간격으로 차례로 · 점은 가운데 → 오늘 자리(0.62초) · 금액은 같은 시간에 같이 · 신호 글은 점이 도착한 뒤 마지막 @design", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.setViewportSize({ width: 1280, height: 720 }); // 줄 모두를 한 화면에 — 휴대폰 프로젝트도 같은 폭으로 시간만 검사
     await openHome(page);
@@ -223,7 +223,7 @@ test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 ·
     expect(finalAt! - lastChange, "data-state=final 이 눈에 보이는 움직임이 끝나기 전에 나옴(ms)").toBeGreaterThanOrEqual(-60);
   });
 
-  test("금액은 90일 중간값 → 오늘 값 카운트업 — 중간값이 있는 줄은 data-start · 시작 방향이 점 위치와 맞음(싼 쪽이면 중간값이 더 큼) · 멈추면 최종 값", async ({ page }) => {
+  test("금액은 90일 중간값 → 오늘 값 카운트업 — 중간값이 있는 줄은 data-start · 시작 방향이 점 위치와 맞음(싼 쪽이면 중간값이 더 큼) · 멈추면 최종 값 @design", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await openHome(page);
     test.skip(!(await hasRows(page)), "도착지 자료 없음");
@@ -262,7 +262,7 @@ test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 ·
     }
   });
 
-  test("끝 상태 = 지금 운영 카드 — 움직임 줄이기로 연 같은 쪽의 카드와 높이 · 모서리 · 줄 글 · 줄 위치가 같고 · 알약 · 인라인 높이 · 투명이 남지 않음", async ({ page, browser, baseURL }) => {
+  test("끝 상태 = 지금 운영 카드 — 움직임 줄이기로 연 같은 쪽의 카드와 높이 · 모서리 · 줄 글 · 줄 위치가 같고 · 알약 · 인라인 높이 · 투명이 남지 않음 @design", async ({ page, browser, baseURL }) => {
     if (!isPhone(page)) await page.setViewportSize({ width: 1280, height: 720 });
     await openHome(page);
     test.skip(!(await hasRows(page)), "도착지 자료 없음");
@@ -315,7 +315,7 @@ test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 ·
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth), "가로 넘침").toBeLessThanOrEqual(1);
   });
 
-  test("처음 화면에서 이미 카드가 보이면 알약으로 시작해 바로 펼침 — 알약이 1.5초를 넘기지 않음(하이드레이션 포함) · 끝은 같은 모양", async ({ page }) => {
+  test("처음 화면에서 이미 카드가 보이면 알약으로 시작해 바로 펼침 — 알약이 1.5초를 넘기지 않음(하이드레이션 포함) · 끝은 같은 모양 @design", async ({ page }) => {
     await page.setViewportSize({ width: isPhone(page) ? 412 : 1280, height: 4200 });
     await page.addInitScript(RECORD.replace("(() => {", "document.addEventListener('DOMContentLoaded', () => {").replace(/\}\)\(\)\s*$/, "});"));
     await page.goto("/");
@@ -330,7 +330,7 @@ test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 ·
     expect((await snapshot(page)).pills).toBe(0);
   });
 
-  test("깜빡임 없음 — 높은 창에서 처음 그려질 때부터 알약 (펼친 카드가 한 프레임도 안 보임) · 서버 그림의 알약이 보임 · 곧 펼쳐 끝 모양", async ({ page }) => {
+  test("깜빡임 없음 — 높은 창에서 처음 그려질 때부터 알약 (펼친 카드가 한 프레임도 안 보임) · 서버 그림의 알약이 보임 · 곧 펼쳐 끝 모양 @design", async ({ page }) => {
   const INIT = RECORD.replace("(() => {", "document.addEventListener('DOMContentLoaded', () => {").replace(/\}\)\(\)\s*$/, "});");
     await page.setViewportSize({ width: isPhone(page) ? 412 : 1280, height: 4200 });
     await page.addInitScript(INIT);

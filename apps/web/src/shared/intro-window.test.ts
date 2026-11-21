@@ -64,7 +64,7 @@ describe("그리기 (intro.tsx · window-transition.tsx)", () => {
     expect(ui).toMatch(/s\.phase === 0 \? "bg-surface" : ""/);
   });
 
-  it("파랑 면은 메뉴 띠와 같은 토큰(bg-pin-cheap) · 로고는 흰 flap + 노랑 fx · e2e 표시", () => {
+  it("파랑 면은 메뉴 띠와 같은 토큰(bg-pin-cheap) · 로고는 흰 flap + 노랑 fx · e2e 표시 @design", () => {
     expect(wt).toMatch(/bg-pin-cheap/);
     expect(wt).toMatch(/text-foam/);
     expect(wt).toMatch(/text-sun/);

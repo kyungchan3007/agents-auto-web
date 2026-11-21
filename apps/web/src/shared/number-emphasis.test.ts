@@ -37,14 +37,14 @@ describe("Emph · EmphText 공통 부품", () => {
     expect(s).toMatch(/data-bg=/);
   });
 
-  it("하늘 종이 위: 해 노랑(sun) 형광펜 띠 — 그라데이션이 글자 높이 아래 40~50%(transparent 50~60% 에서 시작)", () => {
+  it("하늘 종이 위: 해 노랑(sun) 형광펜 띠 — 그라데이션이 글자 높이 아래 40~50%(transparent 50~60% 에서 시작) @design", () => {
     const s = src();
     expect(s).toMatch(/gradient/);
     expect(s).toMatch(/--hav-sun|\bsun\b/);
     expect(s).toMatch(/transparent[ _]*(5\d|60)%/);
   });
 
-  it("비쌈 뜻은 주홍 글자(text-expensive) · 바다 띠 위는 해 노랑 글자(text-figure · text-sun) — 노란 글자를 하늘 종이 위에 쓰지 않음", () => {
+  it("비쌈 뜻은 주홍 글자(text-expensive) · 바다 띠 위는 해 노랑 글자(text-figure · text-sun) — 노란 글자를 하늘 종이 위에 쓰지 않음 @design", () => {
     const s = src();
     expect(s).toMatch(/text-expensive/);
     expect(s).toMatch(/text-figure|text-sun/);

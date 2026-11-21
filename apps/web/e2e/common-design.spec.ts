@@ -13,7 +13,7 @@ const css = (loc: ReturnType<Page["locator"]>, prop: string) => loc.evaluate((el
 
 test.describe("메뉴 띠 · 로고 (작업 0216)", () => {
   for (const [path, name] of PAGES) {
-    test(`${name} (${path}) — 메뉴 띠 파랑 · 로고 flap 흰 + fx 노랑`, async ({ page }) => {
+    test(`${name} (${path}) — 메뉴 띠 파랑 · 로고 flap 흰 + fx 노랑 @design`, async ({ page }) => {
       await page.goto(path);
       const header = page.getByRole("banner");
       expect(await css(header, "background-color")).toBe(BLUE);
@@ -25,7 +25,7 @@ test.describe("메뉴 띠 · 로고 (작업 0216)", () => {
     });
   }
 
-  test("메뉴 글자 흰색 · 지금 페이지는 흰 알약(파랑 글자) · 휴대폰 펼친 메뉴도 파랑 면", async ({ page }) => {
+  test("메뉴 글자 흰색 · 지금 페이지는 흰 알약(파랑 글자) · 휴대폰 펼친 메뉴도 파랑 면 @design", async ({ page }) => {
     await page.goto("/calc");
     await openMenuIfCollapsed(page);
     const nav = page.getByRole("banner").getByRole("navigation");
@@ -126,7 +126,7 @@ test.describe("들어오기 (작업 0216)", () => {
     }
   });
 
-  test("움직임 켜짐 — 들어올 때 왼쪽에서 시작해 0.7초쯤 뒤 제자리(±1px) · 다시 들어와도 다시 움직이지 않음", async ({ page }) => {
+  test("움직임 켜짐 — 들어올 때 왼쪽에서 시작해 0.7초쯤 뒤 제자리(±1px) · 다시 들어와도 다시 움직이지 않음 @design", async ({ page }) => {
     await page.goto("/design");
     const home = (await sample(page).boundingBox())!;
     await slide(page).scrollIntoViewIfNeeded();

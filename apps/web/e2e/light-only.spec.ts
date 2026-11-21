@@ -9,7 +9,7 @@ const SEA = "rgb(36, 56, 168)"; // #2438A8 (예전 울트라마린 띠 · #board
 const INK = "rgb(22, 36, 110)"; // #16246E 안내판
 
 for (const path of ["/", "/currencies/USD", "/flights", "/prices", "/calc", "/log", "/about", "/geo"]) {
-  test(`${path} — 기기 다크 모드여도 바탕은 흰색 · color-scheme 은 light`, async ({ page }) => {
+  test(`${path} — 기기 다크 모드여도 바탕은 흰색 · color-scheme 은 light @design`, async ({ page }) => {
     await page.goto(path);
     const { body, html, scheme } = await page.evaluate(() => ({
       body: getComputedStyle(document.body).backgroundColor,
@@ -21,7 +21,7 @@ for (const path of ["/", "/currencies/USD", "/flights", "/prices", "/calc", "/lo
   });
 }
 
-test("홈 — 다크 모드에서도 오늘 환율 구간은 하늘 종이 위(전체 띠 없음) · 짙은 남색은 안내판에만 (작업 0177)", async ({ page }) => {
+test("홈 — 다크 모드에서도 오늘 환율 구간은 하늘 종이 위(전체 띠 없음) · 짙은 남색은 안내판에만 (작업 0177) @design", async ({ page }) => {
   await page.goto("/");
   const band = await page.locator("#board").evaluate((el) => getComputedStyle(el).backgroundColor);
   expect(band).not.toBe(SEA);
@@ -29,7 +29,7 @@ test("홈 — 다크 모드에서도 오늘 환율 구간은 하늘 종이 위(�
   expect(board).toBe(INK);
 });
 
-test("주소창 색(theme-color) — 흰색 하나 (다크 모드에서도 같은 값)", async ({ page }) => {
+test("주소창 색(theme-color) — 흰색 하나 (다크 모드에서도 같은 값) @design", async ({ page }) => {
   await page.goto("/");
   const colors = await page.locator('meta[name="theme-color"]').evaluateAll((els) => els.map((e) => (e.getAttribute("content") ?? "").toLowerCase()));
   expect(colors.length).toBeGreaterThan(0);
