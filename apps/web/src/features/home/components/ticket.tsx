@@ -35,7 +35,7 @@ function Evidence({ text }: { text: string }) {
 }
 
 export function Ticket({ initial, rates, signals, windowDays, notice }: { initial: Board; rates: RateRow[]; signals: SignalRow[]; windowDays: number; notice?: ReactNode }) {
-  const { picked, passOpen, togglePass } = usePickedDestination();
+  const { picked, passOpen, passLeaving, togglePass, holdPass } = usePickedDestination();
   const chosen = pickedBoard({ picked, rates, signals, windowDays });
   const board: Board = picked && chosen ? chosen : initial;
   const pct = board.percentile;
@@ -91,7 +91,13 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
       {picked && chosen && (
         <>
           {passOpen && (
-            <aside aria-label="탑승권" className="fixed bottom-20 left-6 z-40 w-[340px] rounded-2xl bg-pin-ink px-4 py-4 text-sm text-foam shadow-pass">
+            <aside
+              aria-label="탑승권"
+              data-leaving={passLeaving}
+              onPointerEnter={() => holdPass(true)}
+              onPointerLeave={() => holdPass(false)}
+              className="fixed bottom-20 left-6 z-40 w-[340px] rounded-2xl bg-pin-ink px-4 py-4 text-sm text-foam shadow-pass transition-[opacity,transform] duration-[220ms] ease-out starting:translate-y-2.5 starting:opacity-0 data-[leaving=true]:translate-y-2.5 data-[leaving=true]:opacity-0 data-[leaving=true]:duration-500 data-[leaving=true]:ease-in motion-reduce:starting:translate-y-0 motion-reduce:data-[leaving=true]:translate-y-0"
+            >
               <p className="m-0 text-xs font-bold tracking-wider text-foam/70">BOARDING PASS · 탑승권</p>
               <dl className="m-0 mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
                 {picked.budget > 0 && (
