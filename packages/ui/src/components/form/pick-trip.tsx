@@ -3,6 +3,7 @@
 // 여행지 고르기 — 버튼 + 아래에서 올라오는 시트 (작업 0201) · 휴대폰은 인트로가 없어 여기서 고름 · 홈 안내판 아래 · 여행 물가 "다른 나라 보기" 가 같이 씀
 // 시트는 늘 밝은 면(data-surface="light") — 어두운 머리(여행 물가 파랑 면) 안에서 열려도 흰 면 · 남색 글자 + 그림자로 뒤 화면과 나눔 (작업 0248 · 3번)
 // 화면 약속: data-testid="pick-trip-open"(버튼 · testId 로 바꿈) · role=dialog(이름 "어디로 떠나세요?") · combobox "여행지 검색" · "pick-chip"(자주 가는 곳)
+import { useEffect, useState } from "react";
 import { usePickTrip } from "../../hooks/use-pick-trip";
 import { Input } from "./field";
 
@@ -12,8 +13,19 @@ const BUTTON = {
   solid: "bg-pin-cheap px-6 text-body font-bold text-foam hover:bg-pin-ink focus-visible:outline-pin-cheap",
 } as const;
 
+const CLOSE_MS = 300;
+
 export function PickTrip({ label, changeLabel, testId = "pick-trip-open", className = "", variant = "outline" }: { label: string; /** 이미 골랐을 때 버튼 글 (없으면 label 그대로) */ changeLabel?: string; testId?: string; className?: string; variant?: keyof typeof BUTTON }) {
   const s = usePickTrip();
+  // 닫는 움직임(작업 0252): 닫혀도 움직임 시간(CLOSE_MS) 동안 시트를 남겼다가 지움 · 움직임 줄이기는 바로 지움 · 그동안 inert 로 초점 · 누르기를 막음
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    if (s.open) return setMounted(true);
+    const ms = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : CLOSE_MS;
+    const t = window.setTimeout(() => setMounted(false), ms);
+    return () => window.clearTimeout(t);
+  }, [s.open]);
+  const state = s.open ? "open" : "closed";
   return (
     <>
       <button
@@ -25,16 +37,16 @@ export function PickTrip({ label, changeLabel, testId = "pick-trip-open", classN
       >
         {s.picked ? (changeLabel ?? label) : label}
       </button>
-      {s.open && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center sm:justify-center">
-          <div aria-hidden onClick={s.close} className="absolute inset-0 bg-pin-ink/60" />
+      {(s.open || mounted) && (
+        <div data-state={state} inert={!s.open} className="group fixed inset-0 z-50 flex items-end sm:items-center sm:justify-center">
+          <div aria-hidden onClick={s.close} className="absolute inset-0 bg-pin-ink/60 transition-opacity duration-300 ease-out starting:opacity-0 group-data-[state=closed]:opacity-0 motion-reduce:transition-none" />
           <div
             role="dialog"
             data-surface="light"
             aria-modal="true"
             aria-labelledby={s.ids.title}
             onKeyDown={s.onDialogKey}
-            className="relative max-h-[85svh] w-full overflow-y-auto rounded-t-[1.25rem] bg-card px-5 pt-6 pb-8 text-fg shadow-[0_24px_48px_-20px_rgba(14,22,72,0.55)] transition-transform duration-300 starting:translate-y-full motion-reduce:transition-none sm:max-w-lg sm:rounded-[1.25rem]"
+            className="relative max-h-[85svh] w-full overflow-y-auto rounded-t-[1.25rem] bg-card px-5 pt-6 pb-8 text-fg shadow-[0_24px_48px_-20px_rgba(14,22,72,0.55)] transition-[transform,opacity] duration-300 ease-out starting:translate-y-full group-data-[state=closed]:translate-y-full motion-reduce:transition-none sm:max-w-lg sm:rounded-[1.25rem] sm:duration-200 sm:starting:translate-y-0 sm:starting:scale-[0.96] sm:starting:opacity-0 sm:group-data-[state=closed]:translate-y-0 sm:group-data-[state=closed]:scale-[0.96] sm:group-data-[state=closed]:opacity-0"
           >
             <div className="flex items-start justify-between gap-4">
               <h2 id={s.ids.title} className="text-[1.375rem] leading-tight font-bold text-cheap">
