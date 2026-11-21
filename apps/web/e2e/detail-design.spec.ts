@@ -81,9 +81,12 @@ test.describe("여행 물가 (작업 0212)", () => {
     const n = await pills.count();
     expect(n).toBeGreaterThan(0);
     for (let i = 0; i < n; i++) expect((await pills.nth(i).innerText()).trim()).toMatch(/^환율 /);
-    // 통화 목록 알약은 그대로
+  });
+
+  // 작업 0248 · 17번: 통화 둘러보기 격자는 알약 대신 조용한 글자로 바꿈 — 알약이 있어야 한다는 모양 검사는 디자인 테스트로 나눔
+  test("통화 목록 알약은 '환율' 로 시작하지 않음 — 물가 알약과 구분 @design", async ({ page }) => {
     await page.goto("/currencies/USD");
-    const first = await tid(page, "currency-list").locator("nav ul li a span.rounded-pill").first().innerText();
+    const first = await tid(page, "currency-list").locator("nav ul li a span.rounded-pill").first().innerText({ timeout: 5000 });
     expect(first.trim()).not.toMatch(/^환율/);
   });
 

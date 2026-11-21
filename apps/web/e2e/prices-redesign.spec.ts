@@ -61,7 +61,19 @@ test.describe("새 /prices — 첫 화면 (작업 0220)", () => {
 test.describe("새 /prices — 예산 카드 위치 · 크기 (작업 0220 사용자 지적 · 시안 B/prices.html .budget)", () => {
   // 시안(1280): 카드 폭 452px · 위 끝이 제목 첫 줄보다 약 100px 아래 · 파랑 면 아래 끝을 가로질러 아래 약 110px 가 흰 면 · 입력 칸 높이 64px · 결과 숫자 44px · 안쪽 여백 28 30 26
   //   시안은 .budget 이 translateY(150px) (자리는 그대로 두고 아래로 내림) · 파랑 면 끝 = 카드 원래 자리 아래 + 40px
-  test("넓은 화면 — 카드 폭 · 제목보다 아래에서 시작 · 파랑/흰 경계를 가로지름(위 대부분 파랑 · 아래 약 110px 흰 면)", async ({ page }) => {
+  test("넓은 화면 — 노선 제목이 예산 카드와 겹치지 않음(카드 아래에서 시작)", async ({ page }) => {
+    test.skip(isPhone(page), "넓은 화면 전용");
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/prices");
+    test.skip(!(await ready(page)), "자료 없음");
+    await page.waitForTimeout(400);
+    const card = await box(page, "budget");
+    const ruler = await box(page, "route-title");
+    expect(ruler.y, "노선 제목이 카드 아래").toBeGreaterThanOrEqual(card.y + card.height + 20);
+  });
+
+  test("넓은 화면 — 카드 폭 · 제목보다 아래에서 시작 · 파랑/흰 경계를 가로지름(위 대부분 파랑 · 아래 약 110px 흰 면) @design", async ({ page }) => {
     test.skip(isPhone(page), "넓은 화면 전용");
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.emulateMedia({ reducedMotion: "reduce" });
@@ -79,9 +91,6 @@ test.describe("새 /prices — 예산 카드 위치 · 크기 (작업 0220 사�
     expect(bandBottom - card.y, "카드 위 부분(파랑 안)이 큼").toBeGreaterThanOrEqual(280);
     expect(below, `카드 아래 흰 면 부분 ${Math.round(below)}px`).toBeGreaterThanOrEqual(80);
     expect(below).toBeLessThanOrEqual(160);
-    // 아래 구간(작업 0230: 정적 자 자리의 노선 제목)은 카드와 겹치지 않음
-    const ruler = await box(page, "route-title");
-    expect(ruler.y, "노선 제목이 카드 아래").toBeGreaterThanOrEqual(card.y + card.height + 20);
   });
 
   test("넓은 화면 — 입력 칸 높이 약 64px · 결과 숫자 약 44px · 안쪽 여백(위 28 · 옆 30)", async ({ page }) => {
@@ -214,7 +223,21 @@ test.describe("새 /prices — 예산 · 자 · 표 (작업 0220)", () => {
     expect(secBg).toBe("rgba(0, 0, 0, 0)");
   });
 
-  test("나라 더 보기 — 표 아래 왼쪽 밑줄 글자 링크 (버튼 상자 · 배경 없음) · 누르면 펼침 · 접기 버튼은 지금 모양 그대로 (작업 0220 사용자 지적)", async ({ page }) => {
+  test("나라 더 보기 — 누르면 펼침(aria-expanded) · 나라 접기를 누르면 다시 접힘 (작업 0220)", async ({ page }) => {
+    await page.goto("/prices");
+    test.skip(!(await ready(page)), "자료 없음");
+    await page.waitForLoadState("networkidle");
+    const more = tid(page, "price-bands").getByRole("button", { name: /^나라 더 보기 \(\d+곳\) ›$/ });
+    await expect(more).toBeVisible();
+    await more.click();
+    const fold = tid(page, "price-bands").getByRole("button", { name: "나라 접기" });
+    await expect(fold).toHaveAttribute("aria-expanded", "true");
+    await fold.click();
+    await expect(tid(page, "price-bands").getByRole("button", { name: /^나라 더 보기/ })).toBeVisible();
+  });
+
+  // 작업 0248 · 4번: 펼친 뒤 접기 자리가 화면 아래에 붙어 따라오던 것(sticky)을 목록 끝으로 옮김 — 모양 검사는 디자인 테스트로 나눔
+  test("나라 더 보기 — 표 아래 왼쪽 밑줄 글자 링크 (버튼 상자 · 배경 없음) · 접기 버튼은 눈에 띄는 알약 + 화면 아래에 붙음 @design", async ({ page }) => {
     await page.goto("/prices");
     test.skip(!(await ready(page)), "자료 없음");
     await page.waitForLoadState("networkidle");
@@ -234,16 +257,12 @@ test.describe("새 /prices — 예산 · 자 · 표 (작업 0220)", () => {
     const bands = (await tid(page, "price-bands").boundingBox())!;
     expect(mb.y).toBeGreaterThanOrEqual(table.y + table.height - 1);
     expect(Math.abs(mb.x - bands.x)).toBeLessThanOrEqual(2);
-    // 누르면 지금처럼 펼침 (aria-expanded) · 접기는 눈에 띄는 알약 + 화면 아래에 붙음 (#232 · #240 그대로)
     await more.click();
     const fold = tid(page, "price-bands").getByRole("button", { name: "나라 접기" });
-    await expect(fold).toHaveAttribute("aria-expanded", "true");
     const fs = await fold.evaluate((el) => { const s = getComputedStyle(el); return { bg: s.backgroundColor, bw: s.borderTopWidth, r: s.borderTopLeftRadius }; });
     expect(fs.bg).not.toBe("rgba(0, 0, 0, 0)");
     expect(parseFloat(fs.bw)).toBeGreaterThanOrEqual(2);
     expect(await tid(page, "fold-bar").evaluate((el) => getComputedStyle(el).position)).toBe("sticky");
-    await fold.click();
-    await expect(tid(page, "price-bands").getByRole("button", { name: /^나라 더 보기/ })).toBeVisible();
   });
 
   test("자바스크립트를 꺼도 제목 · 예산 · 노선 · 표가 보임", async ({ browser, baseURL }) => {
