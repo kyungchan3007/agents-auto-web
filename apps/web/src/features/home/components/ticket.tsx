@@ -44,15 +44,15 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
       <div className="grid grid-cols-[minmax(1rem,1fr)_minmax(0,45rem)_minmax(1rem,1fr)] sm:grid-cols-[minmax(2rem,1fr)_minmax(0,45rem)_minmax(2rem,1fr)] lg:block">
         <div data-testid="ticket-band" aria-hidden className="col-span-3 col-start-1 row-start-1 -mb-[13px] bg-pin-cheap lg:hidden" />
         <div data-testid="ticket" className="relative z-10 col-start-2 row-span-2 row-start-1 grid grid-cols-[minmax(0,1fr)] grid-rows-subgrid rounded-[1.75rem] lg:block border border-line bg-card shadow-ticket">
-          <div className="px-4 pt-6 pb-5 sm:px-8 sm:pt-7 sm:pb-6">
+          <div className="px-4 pt-6 pb-5 sm:px-8 sm:pt-7 sm:pb-6 lg:pt-4 lg:pb-3">
             <h2 id="today-title" className="text-[0.9375rem] font-bold text-fg">
               {board.title}
             </h2>
-            <div className="mt-4 flex justify-center">
-              <FlapBoard key={picked && chosen ? `${picked.country}-${picked.city}` : "today"} rows={board.rows} cols={BOARD_COLS} label={board.label} />
+            <div className="mt-4 flex justify-center lg:mt-2">
+              <FlapBoard key={picked && chosen ? `${picked.country}-${picked.city}` : "today"} rows={board.rows} cols={BOARD_COLS} label={board.label} className="lg:gap-2 lg:p-3 lg:**:data-[testid=flap-cell]:h-9 lg:**:data-[testid=flap-cell]:text-[1.4rem]" />
             </div>
           </div>
-          <div className="relative flex flex-col gap-5 px-4 pt-5 pb-6 sm:px-8 sm:pb-7">
+          <div className="relative flex flex-col gap-5 px-4 pt-5 pb-6 sm:px-8 sm:pb-7 lg:gap-3 lg:pt-3 lg:pb-4">
             {/* 절취선 + 가장자리 홈 (시안 B .perf) — 홈은 카드 안쪽으로 잘린 반원 · 색 = 뒤 바탕(파랑 면) · 파랑 띠가 홈 아래 끝(절취선 + 13px)까지 내려와 홈이 통째로 파랑 안에 있어 파인 것으로 보임 */}
             <div aria-hidden data-testid="ticket-hole-clip" className="pointer-events-none absolute inset-x-[-1px] -top-[15px] h-7 overflow-hidden">
               <span data-testid="ticket-hole" className="absolute top-0 -left-[14px] size-7 rounded-full bg-pin-cheap" />
