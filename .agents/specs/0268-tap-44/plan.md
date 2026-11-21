@@ -12,7 +12,7 @@
 - 넓히면 겹칠 수밖에 없는 곳이 나오면 멈추고 lead → claude-desktop 에 알린다. (작업서)
 - 공용 부품(packages/ui)을 고쳐 화면 여러 곳에 적용될 수 있어 평소 PR(design 라벨 없음)로 둔다. "누르는 자리 44px 이상"은 기능 테스트. (가정 · 작업서 "테스트" 절)
 
-- 여행 타이밍 그래프 범례 탭 3개(flights-graph.tsx)는 390px 에서 두 줄 · 줄 사이 8px 라 넓히면 4px 겹침 → 이번 작업에서 뺀다. (확인됨: claude-desktop 11-21 15:40Z "1번으로 갑니다" · 줄 간격을 바꾸는 안은 사용자에게 따로 확인)
+- 여행 타이밍 그래프 범례 탭 3개(flights-graph.tsx)는 390px 에서 두 줄 · 줄 사이 8px 라 넓히면 4px 겹침 → 처음엔 뺐다가(claude-desktop 15:40Z), 사용자가 "4px 늘려서 맞춤"으로 정함 → 휴대폰 폭에서만 줄 사이 8 → 12px · 눌리는 영역 44px · 탭 모양 · 크기 · 글자 · 넓은 화면 그대로 · 가로 간격은 겹치지 않으면 그대로. (확인됨: handoff-legend.md)
 
 ## 누가
 - builder — 사실 대조(390px 실제 크기) → 구현 · 단계별 커밋 · 푸시 → lead 보고
@@ -24,7 +24,7 @@
 - apps/web/src/shared/** (메뉴 · 머리)
 - apps/web/src/app/globals.css
 - apps/web/src/features/home/**
-- apps/web/src/features/travel-price/** (여행 타이밍 · 여행 물가)
+- apps/web/src/features/travel-price/** (여행 타이밍 · 여행 물가 · flights-graph.tsx 범례 탭)
 - apps/web/src/features/currencies/**
 - apps/web/e2e/** · apps/web/src/**/*.test.ts(x) · .agents/e2e-map.json (test)
 - .agents/specs/0268-tap-44/** · .agents/orchestration/TASKS.md
