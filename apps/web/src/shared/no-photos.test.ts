@@ -77,7 +77,7 @@ describe("/about — 사진 없는 머리", () => {
     expect(about).toMatch(/data-testid="about-head"/);
   });
 
-  it("기준 카드 6개 · 출처 줄은 그대로", () => {
+  it("기준 카드 8개(ABOUT_CARDS) · 출처 줄은 그대로", () => {
     expect(about).toMatch(/data-testid="criteria-card"/);
     expect(about).toContain("모든 숫자의 출처는 각 화면 아래에 적습니다");
   });

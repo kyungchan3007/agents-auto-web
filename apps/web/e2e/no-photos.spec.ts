@@ -30,7 +30,7 @@ test("사진 파일 주소를 직접 열면 없음(404) — 폴더가 사이트�
 });
 
 test.describe("/about 사진 없는 머리", () => {
-  test("큰 제목(h1) · 흰 면 · 제목이 화면 안 · 기준 카드 6개 · 제목 위 라벨(소개)은 없음 (작업 0265)", async ({ page }) => {
+  test("큰 제목(h1) · 흰 면 · 제목이 화면 안 · 기준 카드 8개 · 제목 위 라벨(소개)은 없음 (작업 0265 · 0267)", async ({ page }) => {
     await page.goto("/about");
     const head = page.getByTestId("about-head");
     await expect(head).toBeVisible();
@@ -42,7 +42,7 @@ test.describe("/about 사진 없는 머리", () => {
     expect(box?.x ?? -1).toBeGreaterThanOrEqual(0);
     expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(width + 1);
     expect(await head.evaluate((el) => getComputedStyle(el).backgroundImage)).toBe("none");
-    await expect(page.getByTestId("criteria-card")).toHaveCount(6);
+    await expect(page.getByTestId("criteria-card")).toHaveCount(8); // 작업 0267: 여섯 → 여덟
   });
 
   test("머리 아래에 기준 카드가 바로 이어짐 — 머리 높이가 사진 구간 때처럼 크지 않음(화면 높이의 절반 이하)", async ({ page }) => {

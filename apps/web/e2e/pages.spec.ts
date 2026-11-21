@@ -312,10 +312,15 @@ test.describe("작업실 /log (SR-LOG-01)", () => {
 });
 
 test.describe("소개 /about (SR-ABT-01)", () => {
-  test("기준 카드 6개 · 큰 제목", async ({ page }) => {
+  test("기준 카드 8개 · 큰 제목 · '작업실' 링크 → /log (작업 0267)", async ({ page }) => {
     await page.goto("/about");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("어떤 자료를, 어떤 기준으로 보여 주나요");
-    await expect(tid(page, "criteria-card")).toHaveCount(6);
+    await expect(tid(page, "criteria-card")).toHaveCount(8);
+    // 누가 만드나요 칸의 "작업실" 낱말은 /log 로 가는 링크
+    const maker = tid(page, "criteria-card").filter({ hasText: "누가 만드나요" });
+    await expect(maker).toHaveCount(1);
+    await expect(maker.getByRole("link", { name: "작업실" })).toHaveAttribute("href", "/log");
+    await expect(maker.getByRole("link")).toHaveCount(1);
   });
 });
 
