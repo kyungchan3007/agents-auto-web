@@ -6,6 +6,7 @@ import { SiteNav } from "@/shared/site-nav";
 import { FlapBoard } from "@hav/ui/data/flap-board";
 import { PageFooter } from "@hav/ui/layout/page-footer";
 import { CountUp } from "@hav/ui/motion/count-up";
+import { FadeUpGroup } from "@hav/ui/motion/fade-up";
 import { SlideIn } from "@hav/ui/motion/slide-in";
 import { EmphText } from "@hav/ui/text/emph";
 import { Eyebrow, Title } from "@hav/ui/text/heading";
@@ -116,15 +117,15 @@ export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: Tra
                   </div>
                 </SlideIn>
                 {strip && (
-                  <div data-testid="flights-strip" className="mt-8 grid border-t border-line sm:grid-cols-3 sm:divide-x sm:divide-line">
-                    <div data-testid="strip-max" className="py-5 sm:pr-6">
+                  <FadeUpGroup testId="flights-strip" className="mt-8 grid border-t border-line sm:grid-cols-3 sm:divide-x sm:divide-line">
+                    <div data-testid="strip-max" data-fu={0} className="py-5 sm:pr-6">
                       <p className="flex items-center gap-2 text-[1.125rem] font-bold text-fg">
                         <span aria-hidden className="size-2.5 rounded-full bg-pin-expensive" />
                         {strip.max.period} 최고
                       </p>
                       <p className="mt-1 text-small text-fg-2">국제항공료 지수 {strip.max.value.toFixed(1)}</p>
                     </div>
-                    <div data-testid="strip-min" className="border-t border-line py-5 sm:border-t-0 sm:px-6">
+                    <div data-testid="strip-min" data-fu={1} className="border-t border-line py-5 sm:border-t-0 sm:px-6">
                       <p className="flex items-center gap-2 text-[1.125rem] font-bold text-fg">
                         <span aria-hidden className="size-2.5 rounded-full bg-sun ring-1 ring-fg" />
                         {strip.min.period} 최저
@@ -132,7 +133,7 @@ export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: Tra
                       <p className="mt-1 text-small text-fg-2">국제항공료 지수 {strip.min.value.toFixed(1)}</p>
                     </div>
                     {strip.fx && (
-                      <div data-testid="strip-fx" className="border-t border-line py-5 sm:border-t-0 sm:pl-6">
+                      <div data-testid="strip-fx" data-fu={2} className="border-t border-line py-5 sm:border-t-0 sm:pl-6">
                         <p className="flex items-center gap-2 text-[1.125rem] font-bold text-fg">
                           <span aria-hidden className="size-2.5 rounded-full bg-pin-line" />
                           원/달러 {Math.round(strip.fx.value).toLocaleString("ko-KR")}원
@@ -140,7 +141,7 @@ export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: Tra
                         <p className="mt-1 text-small text-fg-2">{strip.fx.period} 월평균 · 한국수출입은행</p>
                       </div>
                     )}
-                  </div>
+                  </FadeUpGroup>
                 )}
               </>
             )}
