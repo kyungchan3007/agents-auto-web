@@ -9,14 +9,11 @@ import { expectInsideViewport, expectLineChartFinal, expectTextsInside, firstAbo
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 640;
 const ready = async (page: Page) => !(((await page.getByRole("heading", { level: 1 }).textContent()) ?? "").includes("준비 중"));
 const chartOf = (page: Page) => tid(page, "travel-graph").locator('[data-testid="line-chart"]');
-/** 범례 칩 글 "국제항공료 146.8" · "원/달러 월평균 1,341원" 에서 끝 값(마지막 숫자 글) */
-const legendValue = async (page: Page, name: string) => {
-  const t = (await tid(page, "travel-legend").getByText(name).first().textContent()) ?? "";
-  return t.replace(name, "").trim();
-};
+/** 작업 0261: 범례 칩은 선 이름만(숫자 없음) — 끝 값은 그래프 끝 말풍선(chart-end-value 의 data-final)에서 읽음 */
+const endValue = async (page: Page, series: string) => ((await chartOf(page).locator(`[data-testid="chart-end"][data-series="${series}"] [data-testid="chart-end-value"]`).getAttribute("data-final")) ?? "").trim();
 
 test.describe("/flights 그래프 — 풍성한 2D (작업 0218 · 시안 F)", () => {
-  test("선 3개 · 그라데이션 면(항공료 · 단체여행비) · 최고/최저 점 · 끝 말풍선 — 끝나면 최종 모양, 말풍선 숫자 = 범례의 실제 값", async ({ page }) => {
+  test("선 3개 · 그라데이션 면(항공료 · 단체여행비) · 최고/최저 점 · 끝 말풍선 — 끝나면 최종 모양, 말풍선 숫자 = 끝 값", async ({ page }) => {
     await page.goto("/flights");
     test.skip(!(await ready(page)), "자료 없음");
     const chart = chartOf(page);
@@ -28,7 +25,7 @@ test.describe("/flights 그래프 — 풍성한 2D (작업 0218 · 시안 F)", (
       series,
       areas: hasTour ? ["air", "tour"] : ["air"],
       marks: true,
-      ends: { air: await legendValue(page, "국제항공료"), fx: await legendValue(page, "원/달러 월평균") },
+      ends: { air: await endValue(page, "air"), fx: await endValue(page, "fx") },
     });
     // 원/달러(점선)는 면이 없음
     await expect(chart.locator('[data-testid="chart-series"][data-series="fx"] [data-testid="chart-area"]')).toHaveCount(0);
@@ -200,12 +197,20 @@ test.describe("/flights 그래프 — 풍성한 2D (작업 0218 · 시안 F)", (
     await ctx.close();
   });
 
-  test("범례 · 기간 안내 그대로 — 범례 칩 값이 말풍선과 같음 · '지수 · 2020년 = 100' 안내 유지", async ({ page }) => {
+  test("범례는 선 이름만(숫자 없음) · 끝 값은 말풍선에 · 기간 안내 그대로 — '지수 · 2020년 = 100' 안내 유지 (작업 0261)", async ({ page }) => {
     await page.goto("/flights");
     test.skip(!(await ready(page)), "자료 없음");
-    await expect(tid(page, "travel-legend")).toContainText("국제항공료");
+    const legend = tid(page, "travel-legend");
+    await expect(legend).toContainText("국제항공료");
+    await expect(legend).toContainText("원/달러 월평균");
+    // 범례 칩 글에 숫자가 없음 — 이름만
+    const chips = await legend.locator("button").allInnerTexts();
+    expect(chips.length, "범례 칩").toBeGreaterThanOrEqual(2);
+    for (const t of chips) expect(t, "범례 칩 글").not.toMatch(/\d/);
+    expect(chips.some((t) => t.includes("국제항공료")) && chips.some((t) => t.includes("원/달러 월평균"))).toBe(true);
     await expect(page.getByText("지수 · 2020년 = 100", { exact: false }).first()).toBeVisible();
+    // 숫자는 그래프 끝 말풍선에 그대로
     const air = chartOf(page).locator('[data-testid="chart-end"][data-series="air"] [data-testid="chart-end-value"]');
-    expect(await legendValue(page, "국제항공료")).toBe((await air.getAttribute("data-final"))?.trim());
+    await expect(air).toContainText(/\d/);
   });
 });
