@@ -12,6 +12,18 @@ const FADE = 500;
 const pass = (page: Page) => page.getByTestId("picked-pass");
 const box = (page: Page) => page.getByRole("complementary", { name: "탑승권" });
 
+/** 화면이 상태를 그리고 타이머를 새로 걸 때까지 실제 시간으로 잠깐 기다림(시계는 세워 둔 채) */
+const flush = (page: Page) => page.waitForTimeout(100);
+
+/** 머문 시간이 끝나는 지점까지 건너뛰고(남은 시간) → 사라지는 중 확인 → 사라지는 시간 건너뜀 → 없음 확인 */
+async function runUntilGone(page: Page, remaining: number, why: string) {
+  await page.clock.runFor(remaining);
+  await flush(page);
+  await expect(box(page), `${why} — 머문 시간이 끝나면 사라지는 중`).toHaveAttribute("data-leaving", "true");
+  await page.clock.runFor(FADE + 100);
+  await expect(box(page), `${why} — 사라지는 시간 뒤에는 없음`).toHaveCount(0);
+}
+
 async function openHome(page: Page) {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.addInitScript(([k, v]) => localStorage.setItem(k, v), [PICKED, JSON.stringify({ v: 1, country: "FRA", city: "파리", budget: 1000000 })] as const);
@@ -30,10 +42,10 @@ test.describe("탑승권 상자 — 3초 뒤 사라짐", () => {
     await pass(page).click();
     await expect(box(page)).toHaveCount(1);
     await expect(pass(page)).toHaveAttribute("aria-expanded", "true");
+    await flush(page);
     await page.clock.runFor(STAY - 200);
     await expect(box(page), "3초가 되기 전에는 떠 있음").toHaveCount(1);
-    await page.clock.runFor(200 + FADE + 100);
-    await expect(box(page), "3초 + 사라지는 시간 뒤에는 없음").toHaveCount(0);
+    await runUntilGone(page, 200, "처음");
     await expect(pass(page)).toHaveAttribute("aria-expanded", "false");
     await pass(page).click();
     await expect(box(page), "사라진 뒤 다시 누르면 다시 뜸").toHaveCount(1);
@@ -55,27 +67,30 @@ test.describe("탑승권 상자 — 3초 뒤 사라짐", () => {
     await pass(page).click();
     await expect(box(page)).toHaveCount(1);
     await box(page).hover();
+    await flush(page);
     await page.clock.runFor(STAY * 4);
+    await flush(page);
     await expect(box(page), "올려 두는 동안 계속 떠 있음").toHaveCount(1);
     await expect(pass(page)).toHaveAttribute("aria-expanded", "true");
     await page.mouse.move(720, 120);
+    await flush(page);
     await page.clock.runFor(STAY - 300);
     await expect(box(page), "뗀 뒤 3초가 되기 전에는 아직 떠 있음").toHaveCount(1);
-    await page.clock.runFor(300 + FADE + 100);
-    await expect(box(page), "뗀 뒤 3초 + 사라지는 시간 뒤에는 없음").toHaveCount(0);
+    await runUntilGone(page, 300, "뗀 뒤");
   });
 
   test("여행지를 바꾸면 떠 있던 상자는 그대로 두고 3초를 다시 셈", async ({ page }) => {
     await openHome(page);
     await pass(page).click();
     await expect(box(page)).toHaveCount(1);
+    await flush(page);
     await page.clock.runFor(2000);
     await page.evaluate(([name, detail]) => window.dispatchEvent(new CustomEvent(name, { detail })), [PICK_EVENT, { v: 1, country: "JPN", city: "도쿄", budget: 500000 }] as const);
     await expect(pass(page)).toContainText("도쿄");
     await expect(box(page), "상자 내용이 새 여행지(예산 500,000원)로 바뀜").toContainText("500,000원");
+    await flush(page);
     await page.clock.runFor(STAY - 300); // 처음 눌렀을 때부터 4.7초 — 다시 세지 않았다면 이미 없을 때
     await expect(box(page), "바꾼 뒤 3초가 되기 전에는 아직 떠 있음").toHaveCount(1);
-    await page.clock.runFor(300 + FADE + 100);
-    await expect(box(page), "바꾼 뒤 3초 + 사라지는 시간 뒤에는 없음").toHaveCount(0);
+    await runUntilGone(page, 300, "바꾼 뒤");
   });
 });
