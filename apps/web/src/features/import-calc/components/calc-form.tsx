@@ -18,9 +18,12 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
       <p data-testid="calc-summary" className="mb-4 flex h-14 items-center overflow-hidden rounded-card bg-pin-ink px-5 ring-1 ring-card/40 text-small leading-snug font-semibold text-sun sm:hidden">
         {summaryLine(result)}
       </p>
-      {/* 넓은 화면: 입력 카드를 결과 카드와 같은 높이로 늘리고 입력 칸 상자 네 개(① 통화 · 물건 값 ② 미국 ③ 그 밖 나라 ④ 배송비 · 관세율) 사이 세 간격을 모두 64px 로 고정하고 라벨 · 도움말은 칸 위 · 아래에 떠서(absolute) 간격 계산에 안 들어가며 남는 높이는 카드 위 · 아래 여백이 똑같이 나눔 (작업 0249 · 2번 → 0256) */}
+      {/* 입력 카드는 세 구역(물건 / 보내는 곳 / 더 정확하게 (선택)) + 구역 제목 + 구역 사이 1px 선 · 넓은 화면은 결과 카드와 같은 높이로 늘리고 남는 높이를 구역 ↔ 선 사이 네 곳에 똑같이(space-between · 최소 20px · 위아래 안쪽 여백 28px) · 구역 안 간격은 그대로 (작업 0259 · 시안 31 B안 · 0256 의 64px 방식을 바꿈) */}
       <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
-      <form data-testid="calc-input" className="grid content-start gap-4 lg:content-center lg:gap-y-16 rounded-[1.75rem] border border-line bg-card px-6 py-6 lg:py-10 shadow-ticket sm:grid-cols-2" onSubmit={(e) => e.preventDefault()} aria-label="직구 계산 입력">
+      <form data-testid="calc-input" className="flex flex-col gap-5 rounded-[1.75rem] border border-line bg-card px-6 py-7 shadow-ticket lg:justify-between" onSubmit={(e) => e.preventDefault()} aria-label="직구 계산 입력">
+        <fieldset className="m-0 min-w-0 border-0 p-0">
+          <legend className="mb-3.5 block p-0 text-[0.9375rem] font-bold text-fg">물건</legend>
+          <div className="grid gap-4 sm:grid-cols-2">
         <Field label="통화" htmlFor="currency">
           <Select id="currency" value={input.currency} onChange={set("currency")}>
             {codes.map((c) => (
@@ -33,12 +36,15 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
         <Field label="물건 값" hint="현지 세금 · 현지 배송비까지 넣은 값" htmlFor="price" error={err("price")} badge={example}>
           <UnitInput unit={input.currency} id="price" inputMode="decimal" autoComplete="off" value={input.price} onChange={set("price")} placeholder="180" />
         </Field>
+          </div>
+        </fieldset>
+        <div aria-hidden className="h-px shrink-0 bg-line" />
         {/* 보내는 곳 — 드롭다운 대신 두 줄 선택지 (시안 A · 작업 0221) — 한도 차이(200 · 150달러)가 바로 보임 · 화살표 키 · radiogroup · 고른 쪽은 짙은 테두리 + 오른쪽 동그라미 */}
-        <div className="sm:col-span-2 lg:relative">
-          <span id="route-label" aria-hidden className="text-small text-fg-2 lg:absolute lg:bottom-full lg:mb-1.5">
+        <div>
+          <p id="route-label" aria-hidden className="mb-3.5 text-[0.9375rem] font-bold text-fg">
             보내는 곳
-          </span>
-          <div role="radiogroup" aria-label="보내는 곳" className="mt-1.5 grid gap-2 lg:mt-0 lg:gap-y-16">
+          </p>
+          <div role="radiogroup" aria-label="보내는 곳" className="grid gap-2">
             {(Object.keys(ROUTE_LABEL) as Route[]).map((k) => {
               const on = input.route === k;
               return (
@@ -55,12 +61,18 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
             })}
           </div>
         </div>
+        <div aria-hidden className="h-px shrink-0 bg-line" />
+        <fieldset className="m-0 min-w-0 border-0 p-0">
+          <legend className="mb-3.5 block p-0 text-[0.9375rem] font-bold text-fg">더 정확하게 (선택)</legend>
+          <div className="grid gap-4 sm:grid-cols-2">
         <Field label="국제 배송비" hint="한도를 넘을 때만 세금에 더함 · 모르면 비워 두기" htmlFor="shipping" error={err("shipping")}>
           <Input id="shipping" inputMode="decimal" autoComplete="off" value={input.shipping} onChange={set("shipping")} placeholder="0" />
         </Field>
         <Field label="관세율 (%)" hint="품목마다 다름 · 모르면 비워 두기" htmlFor="duty" error={err("dutyRate")}>
           <Input id="duty" inputMode="decimal" autoComplete="off" value={input.dutyRate} onChange={set("dutyRate")} placeholder="모르면 비워 두기" />
         </Field>
+          </div>
+        </fieldset>
       </form>
 
       <CalcResult result={result} rate={rate} source={source} dutyRate={input.dutyRate} />
@@ -72,8 +84,8 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
 // 힌트 · 오류는 같은 자리(한 줄 높이 · 안내가 접히는 좁은 폭에서만 두 줄) — 오류 글도 한 줄 길이라 오류가 떠도 칸이 커지지 않음 (작업 0200 · 0208 에서 두 줄 자리를 줄여 아래 빈칸을 없앰) · 보내는 곳은 두 칸 폭
 function Field({ label, hint, htmlFor, error, wide, badge, children }: { label: string; hint?: string; htmlFor: string; error?: string | null; wide?: boolean; badge?: boolean; children: ReactNode }) {
   return (
-    <div className={`${wide ? "sm:col-span-2" : ""} lg:relative`}>
-      <div className="flex items-baseline justify-between gap-2 lg:absolute lg:inset-x-0 lg:bottom-full lg:mb-1.5">
+    <div className={wide ? "sm:col-span-2" : ""}>
+      <div className="flex items-baseline justify-between gap-2">
         <label htmlFor={htmlFor} className="text-small text-fg-2">
           {label}
         </label>
@@ -83,9 +95,9 @@ function Field({ label, hint, htmlFor, error, wide, badge, children }: { label: 
           </span>
         )}
       </div>
-      <div className="mt-1.5 lg:mt-0">{children}</div>
+      <div className="mt-1.5">{children}</div>
       {(hint || error) && (
-        <p className={`mt-1.5 min-h-5 text-small lg:absolute lg:inset-x-0 lg:top-full ${error ? "text-expensive" : "text-fg-2"}`}>{error ?? hint}</p>
+        <p className={`mt-1.5 min-h-5 text-small ${error ? "text-expensive" : "text-fg-2"}`}>{error ?? hint}</p>
       )}
     </div>
   );
