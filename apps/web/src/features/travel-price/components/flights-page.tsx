@@ -9,7 +9,7 @@ import { CountUp } from "@hav/ui/motion/count-up";
 import { FadeUpGroup } from "@hav/ui/motion/fade-up";
 import { SlideIn } from "@hav/ui/motion/slide-in";
 import { EmphText } from "@hav/ui/text/emph";
-import { Eyebrow, Title } from "@hav/ui/text/heading";
+import { Title } from "@hav/ui/text/heading";
 import { averageYears, cheapMonth, type IndexPoint } from "../lib/travel-index";
 import { cheapMonthsCard, flightsHeadline, yoyCard } from "../lib/flights-copy";
 import { flightsBoard, latestNumbers, stripStats } from "../lib/flights-view";
@@ -59,8 +59,7 @@ export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: Tra
         <section data-testid="flights-hero" aria-labelledby="flights-title" className="border-b border-line bg-card px-4 py-12 sm:px-8 sm:py-16">
           <div className="mx-auto grid max-w-page items-center gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-14">
             <div>
-              <Eyebrow>여행 타이밍</Eyebrow>
-              <Title as="h1" size="page" id="flights-title" className="mt-3 text-cheap">
+              <Title as="h1" size="page" id="flights-title" className="text-cheap">
                 <EmphText text={headline} />
               </Title>
               {ready ? (
