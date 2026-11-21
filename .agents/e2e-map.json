@@ -1,6 +1,6 @@
 {
   "smoke": ["home.spec.ts", "currency-switch.spec.ts", "prices-redesign.spec.ts", "flights-window.spec.ts", "calc-redesign.spec.ts"],
-  "apps/web/src/features/home/": ["home.spec.ts", "home-bars.spec.ts", "home-design.spec.ts", "home-fix-0217.spec.ts", "home-pill.spec.ts", "home-redesign.spec.ts", "flap-board.spec.ts", "today-anchor.spec.ts", "flights-window.spec.ts"],
+  "apps/web/src/features/home/": ["home.spec.ts", "home-bars.spec.ts", "home-design.spec.ts", "home-fix-0217.spec.ts", "home-pill.spec.ts", "home-redesign.spec.ts", "flap-board.spec.ts", "today-anchor.spec.ts", "flights-window.spec.ts", "pass-auto-hide.spec.ts"],
   "apps/web/src/features/intro/": ["intro.spec.ts", "today-anchor.spec.ts"],
   "apps/web/src/features/currencies/": ["currency-chart.spec.ts", "currency-chips.spec.ts", "currency-redesign.spec.ts", "currency-search.spec.ts", "currency-switch.spec.ts", "detail-design.spec.ts", "flags.spec.ts"],
   "apps/web/src/features/import-calc/": ["calc-blue.spec.ts", "calc-chart.spec.ts", "calc-design.spec.ts", "calc-gap.spec.ts", "calc-redesign.spec.ts", "calc-roll.spec.ts", "calc-title.spec.ts"],
