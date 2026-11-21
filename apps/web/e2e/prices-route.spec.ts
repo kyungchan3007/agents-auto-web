@@ -181,11 +181,13 @@ test.describe("여행 물가 — 나라 단추로 고르는 물가 노선 (작�
     await tid(page, "route-stop").nth(k).click();
     // 옮겨 가는 동안 · 끝난 뒤 모두 비행기 가운데 x 가 그대로 · 좌우로 뒤집히지 않음
     for (let i = 0; i < 8; i++) {
-      expect(Math.abs((await planeX(page)) - before), `옮겨 가는 중 ${i}`).toBeLessThanOrEqual(1.5);
+      // 옮겨 가는 순간 비행기 칸이 잠깐 다시 그려져 상자를 못 읽을 수 있음(null) — 읽힌 순간의 값만 비교(작업 0268 · CI 흔들림)
+      const b = await tid(page, "route-plane").boundingBox();
+      if (b) expect(Math.abs(b.x + b.width / 2 - before), `옮겨 가는 중 ${i}`).toBeLessThanOrEqual(1.5);
       await page.waitForTimeout(100);
     }
     await expect(tid(page, "route-card-name")).toHaveText(exp[k].name, { timeout: 8000 });
-    expect(Math.abs((await planeX(page)) - before), "끝난 뒤").toBeLessThanOrEqual(1.5);
+    await expect.poll(async () => { const b = await tid(page, "route-plane").boundingBox(); return b ? Math.abs(b.x + b.width / 2 - before) : Number.POSITIVE_INFINITY; }, { message: "끝난 뒤 비행기 위치 변화(px)", timeout: 8000 }).toBeLessThanOrEqual(1.5);
     expect(await tid(page, "route-plane").evaluate((e) => getComputedStyle(e.querySelector("svg") ?? e).transform), "좌우 뒤집힘 없음").toBe(flipBefore);
   });
 
