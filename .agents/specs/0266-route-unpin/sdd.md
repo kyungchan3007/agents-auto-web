@@ -8,6 +8,10 @@
 - `globals.css`: 쓰지 않게 된 `--route-*` 정리.
 - `lib/price-route.ts`: 스크롤용 순수 함수(routeFrame 등)는 쓰는 곳이 없어지면 지운다 — 단위 테스트도 test 가 함께 정리.
 
+### 6번 원인 (claude-desktop 확인 · 13:42Z)
+- 카드를 감싼 `route-stage` 가 overflow hidden 이고 아래 끝이 카드 아래 끝과 0px 차이 → 카드 바깥 1px 에 그려진 테두리(ring)가 잘림. 감싼 칸에 아래 여유 1~2px(시안: padding-bottom 2px)를 주면 살아남. 넓은 화면 · 휴대폰 둘 다.
+- 확인: 카드 네 변 테두리가 모서리까지 이어지는지(사용자가 특히 신경 씀). 그림: `.tmp/unslop-1121/mock/out13/img/bb2-w-now.jpg` · `bb2-w-fix.jpg` · `bb2-m-now.jpg` · `bb2-m-fix.jpg`
+
 ## 대안 · 트레이드오프
 - 스크롤 고정을 유지하고 길이만 줄이기 — 사용자가 시안 40 "고정을 푼 모습"을 골라 제외.
 
