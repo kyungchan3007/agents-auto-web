@@ -24,7 +24,7 @@ export function ChipMoreBox({ id, list, current, onPick, onClose }: Props) {
     >
       <div className="mb-2.5 flex items-center justify-between text-small text-fg">
         <b>고른 통화 {list.length}개</b>
-        <button type="button" aria-label="닫기" onClick={onClose} className="grid size-7 cursor-pointer place-items-center rounded-full text-[1.125rem] text-fg-2 hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
+        <button type="button" aria-label="닫기" onClick={onClose} className="grid size-7 cursor-pointer place-items-center rounded-full text-[1.125rem] text-fg-2 hover:bg-surface-2">
           ×
         </button>
       </div>
@@ -37,7 +37,7 @@ export function ChipMoreBox({ id, list, current, onPick, onClose }: Props) {
             data-code={code}
             aria-label={`${currencyName(code)} ${code}`}
             onClick={(e) => onPick(code, e.currentTarget)}
-            className={`flex cursor-pointer items-center gap-2 rounded-pill border-2 px-3.5 py-1.5 text-small font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cheap ${code === current ? "border-pin-ink bg-pin-ink text-foam" : "border-line bg-card text-fg hover:bg-surface-2"}`}
+            className={`flex cursor-pointer items-center gap-2 rounded-pill border-2 px-3.5 py-1.5 text-small font-bold transition-colors ${code === current ? "border-pin-ink bg-pin-ink text-foam" : "border-line bg-card text-fg hover:bg-surface-2"}`}
           >
             <CurrencyFlag currency={code} className="h-4 w-6 shrink-0" />
             {code}
@@ -46,11 +46,11 @@ export function ChipMoreBox({ id, list, current, onPick, onClose }: Props) {
       </div>
       {view.pages > 1 && (
         <div className="mt-3 flex items-center justify-center gap-3 text-[0.8125rem] font-bold text-fg">
-          <button type="button" data-testid="chip-box-prev" aria-label="앞 쪽" disabled={view.page === 0} onClick={() => go(view.page - 1, -1)} className="grid size-[1.875rem] cursor-pointer place-items-center rounded-full border-2 border-line text-[1rem] leading-none disabled:cursor-default disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
+          <button type="button" data-testid="chip-box-prev" aria-label="앞 쪽" disabled={view.page === 0} onClick={() => go(view.page - 1, -1)} className="grid size-[1.875rem] cursor-pointer place-items-center rounded-full border-2 border-line text-[1rem] leading-none disabled:cursor-default disabled:opacity-35">
             ‹
           </button>
           <span data-testid="chip-box-page">{view.label}</span>
-          <button type="button" data-testid="chip-box-next" aria-label="다음 쪽" disabled={view.page >= view.pages - 1} onClick={() => go(view.page + 1, 1)} className="grid size-[1.875rem] cursor-pointer place-items-center rounded-full border-2 border-line text-[1rem] leading-none disabled:cursor-default disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
+          <button type="button" data-testid="chip-box-next" aria-label="다음 쪽" disabled={view.page >= view.pages - 1} onClick={() => go(view.page + 1, 1)} className="grid size-[1.875rem] cursor-pointer place-items-center rounded-full border-2 border-line text-[1rem] leading-none disabled:cursor-default disabled:opacity-35">
             ›
           </button>
         </div>

@@ -9,8 +9,8 @@ import { Input } from "./field";
 
 // variant: outline(기본 · 테두리 알약) · solid(파랑 면 알약 · 흰 글자 — 새 홈 탑승권 카드 · 작업 0217)
 const BUTTON = {
-  outline: "border-2 border-cheap px-5 text-body font-semibold text-cheap hover:bg-surface-2 focus-visible:outline-cheap",
-  solid: "bg-pin-cheap px-6 text-body font-bold text-foam hover:bg-pin-ink focus-visible:outline-pin-cheap",
+  outline: "border-2 border-cheap px-5 text-body font-semibold text-cheap hover:bg-surface-2",
+  solid: "bg-pin-cheap px-6 text-body font-bold text-foam hover:bg-pin-ink",
 } as const;
 
 const CLOSE_MS = 300;
@@ -33,7 +33,7 @@ export function PickTrip({ label, changeLabel, testId = "pick-trip-open", classN
         data-testid={testId}
         aria-haspopup="dialog"
         onClick={s.show}
-        className={`min-h-11 rounded-pill focus-visible:outline-2 focus-visible:outline-offset-2 ${BUTTON[variant]} ${className}`}
+        className={`min-h-11 rounded-pill ${BUTTON[variant]} ${className}`}
       >
         {s.picked ? (changeLabel ?? label) : label}
       </button>
@@ -52,7 +52,7 @@ export function PickTrip({ label, changeLabel, testId = "pick-trip-open", classN
               <h2 id={s.ids.title} className="text-[1.375rem] leading-tight font-bold text-cheap">
                 어디로 떠나세요?
               </h2>
-              <button type="button" onClick={s.close} aria-label="닫기" className="-mt-1 -mr-2 grid size-11 place-items-center rounded-pill text-[1.5rem] text-fg-2 hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-cheap">
+              <button type="button" onClick={s.close} aria-label="닫기" className="-mt-1 -mr-2 grid size-11 place-items-center rounded-pill text-[1.5rem] text-fg-2 hover:bg-surface-2">
                 ×
               </button>
             </div>
@@ -100,7 +100,7 @@ export function PickTrip({ label, changeLabel, testId = "pick-trip-open", classN
             <ul className="mt-2 flex flex-wrap gap-2">
               {s.popular.map((hit) => (
                 <li key={`${hit.country}-${hit.city}`}>
-                  <button type="button" data-testid="pick-chip" onClick={() => s.choose(hit)} className="min-h-11 rounded-pill border-2 border-cheap px-4 text-body text-cheap hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cheap">
+                  <button type="button" data-testid="pick-chip" onClick={() => s.choose(hit)} className="min-h-11 rounded-pill border-2 border-cheap px-4 text-body text-cheap hover:bg-surface-2">
                     {hit.city}
                   </button>
                 </li>

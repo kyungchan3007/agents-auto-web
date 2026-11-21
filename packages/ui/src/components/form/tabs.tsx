@@ -15,7 +15,7 @@ export function Tabs({ items, defaultValue }: { items: TabItem[]; defaultValue?:
           <BaseTabs.Tab
             key={t.value}
             value={t.value}
-            className="shrink-0 py-3 text-sm font-semibold text-fg-2 transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-accent data-active:text-fg"
+            className="shrink-0 py-3 text-sm font-semibold text-fg-2 transition-colors hover:text-fg data-active:text-fg"
           >
             {t.label}
           </BaseTabs.Tab>

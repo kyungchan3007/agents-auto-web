@@ -91,7 +91,7 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
               type="button"
               onClick={toggle}
               aria-expanded
-              className="min-h-11 rounded-pill border-2 border-cheap bg-card px-6 text-body font-semibold text-cheap hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cheap"
+              className="min-h-11 rounded-pill border-2 border-cheap bg-card px-6 text-body font-semibold text-cheap hover:bg-surface-2"
             >
               나라 접기
             </button>
@@ -101,7 +101,7 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
               type="button"
               onClick={toggle}
               aria-expanded={false}
-              className="tap-44 border-b-2 border-cheap pb-0.5 text-body font-bold text-cheap hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cheap"
+              className="tap-44 border-b-2 border-cheap pb-0.5 text-body font-bold text-cheap hover:text-fg"
             >
               {`나라 더 보기 (${more}곳) ›`}
             </button>
