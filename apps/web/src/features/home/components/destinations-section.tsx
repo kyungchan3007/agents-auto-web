@@ -8,7 +8,7 @@ import { DestinationTable } from "./destination-table";
 
 export function DestinationsSection({ rows, windowDays, moreCount }: { rows: DestinationRowData[]; windowDays: number; moreCount: number | null }) {
   return (
-    <section id="today" aria-labelledby="destinations-title" className="scroll-mt-(--hav-nav-h) bg-surface px-4 pt-16 pb-16 text-fg sm:px-8 sm:pt-24 sm:pb-20">
+    <section id="today" aria-labelledby="destinations-title" className="scroll-mt-(--hav-nav-h) bg-surface px-4 pt-[4.5rem] pb-[4.5rem] text-fg sm:px-8 sm:pt-24 sm:pb-24">
       <div className="mx-auto max-w-page">
         <Eyebrow>오늘 환율</Eyebrow>
         <SectionTitle id="destinations-title" className="mt-3 text-title text-fg">도착지별 환전 타이밍</SectionTitle>
