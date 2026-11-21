@@ -18,9 +18,9 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
       <p data-testid="calc-summary" className="mb-4 flex h-14 items-center overflow-hidden rounded-card bg-pin-ink px-5 ring-1 ring-card/40 text-small leading-snug font-semibold text-sun sm:hidden">
         {summaryLine(result)}
       </p>
-      {/* 넓은 화면: 입력 카드를 결과 카드와 같은 높이로 늘리고 입력 줄 사이 간격을 고르게 (작업 0249 · 2번) */}
+      {/* 넓은 화면: 입력 카드를 결과 카드와 같은 높이로 늘리고 첫 줄 · 마지막 줄은 안쪽 여백에 붙이고 그 사이 줄 간격만 같게 (작업 0249 · 2번 · 0251 ㄱ) */}
       <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
-      <form data-testid="calc-input" className="grid content-start gap-4 lg:content-evenly rounded-[1.75rem] border border-line bg-card px-6 py-6 shadow-ticket sm:grid-cols-2" onSubmit={(e) => e.preventDefault()} aria-label="직구 계산 입력">
+      <form data-testid="calc-input" className="grid content-start gap-4 lg:content-between rounded-[1.75rem] border border-line bg-card px-6 py-6 shadow-ticket sm:grid-cols-2" onSubmit={(e) => e.preventDefault()} aria-label="직구 계산 입력">
         <Field label="통화" htmlFor="currency">
           <Select id="currency" value={input.currency} onChange={set("currency")}>
             {codes.map((c) => (
