@@ -73,20 +73,23 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
             </div>
             {/* 여행지는 시트 · 버튼 없이 카드 안에서 바로 바꿈 — 칩을 누르면 판 · 판정 줄 · 막대가 바로 바뀜 (작업 0217 사용자 지적) */}
             <TripSwitcher />
+            {/* 떠 있던 "탑승권 보기" 단추를 카드 안 검색 칸 아래 글 링크로 (작업 0249 · 16번) — 글은 pickedChip 에서 비행기 기호만 빼고 · 뒤에 ›  */}
+            {picked && chosen && (
+              <button
+                type="button"
+                data-testid="picked-pass"
+                aria-expanded={passOpen}
+                onClick={togglePass}
+                className="self-start border-b-2 border-cheap pb-0.5 text-body font-semibold text-cheap hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cheap"
+              >
+                {`${pickedChip(picked).replace(/^✈\s*/, "").replace(" · ", " ")} ›`}
+              </button>
+            )}
           </div>
         </div>
       </div>
       {picked && chosen && (
         <>
-          <button
-            type="button"
-            data-testid="picked-pass"
-            aria-expanded={passOpen}
-            onClick={togglePass}
-            className="fixed bottom-6 left-6 z-40 rounded-xl bg-pin-ink px-4 py-2.5 text-sm font-extrabold text-sun shadow-chip"
-          >
-            {pickedChip(picked)}
-          </button>
           {passOpen && (
             <aside aria-label="탑승권" className="fixed bottom-20 left-6 z-40 w-[340px] rounded-2xl bg-pin-ink px-4 py-4 text-sm text-foam shadow-pass">
               <p className="m-0 text-xs font-bold tracking-wider text-foam/70">BOARDING PASS · 탑승권</p>
