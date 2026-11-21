@@ -306,7 +306,21 @@ function sandbox({ changed = [], base = ["apps/web/src/seed.ts"] } = {}) {
   stub("harness.test.mjs", `appendFileSync(process.env.GATE_LOG, "harness-test\\n");`);
   writeFileSync(pathJoin(root, "package.json"), JSON.stringify({ name: "sb", private: true, scripts: { typecheck: "x", lint: "x", test: "x", build: "x", "test:e2e": "x" } }));
   const npm = pathJoin(root, "bin", "npm");
-  writeFileSync(npm, '#!/bin/sh\n# 가짜 npm — npm run [-s] <스크립트> 만 기록\nfor a in "$@"; do case "$a" in run|-s) ;; *) echo "npm:$a" >> "$GATE_LOG";; esac; done\nexit 0\n');
+  writeFileSync(
+    npm,
+    [
+      "#!/bin/sh",
+      "# 가짜 npm — npm run [-s] <스크립트> 만 기록 · 실패는 환경변수로 (작업 0246)",
+      'for a in "$@"; do case "$a" in run|-s) ;; *) echo "npm:$a" >> "$GATE_LOG";; esac; done',
+      '# 막지 않는 호출 = 인자에 @design 이 있고 반전(invert · (?!)이 없는 호출 · 그 밖의 test · test:e2e 호출은 막는 호출',
+      'joined="$*"',
+      'nonblocking=0',
+      'case "$joined" in *@design*) case "$joined" in *invert*|*"(?!"*) ;; *) nonblocking=1;; esac;; esac',
+      'case "$joined" in *test*) if [ "$nonblocking" = "1" ]; then [ "${DESIGN_FAIL:-}" = "1" ] && exit 1; else [ "${FUNC_FAIL:-}" = "1" ] && exit 1; fi;; esac',
+      "exit 0",
+      "",
+    ].join("\n"),
+  );
   chmodSync(npm, 0o755);
   for (const f of base) {
     mkdirSync(pathJoin(root, pathDirname(f)), { recursive: true });
@@ -672,4 +686,238 @@ test("고르기: 연결표 안 기능 파일 + 연결표 밖 공용 파일이 �
   assert.deepEqual(r.projects, [WIDE]);
   assert.match(r.warn, /apps\/web\/src\/bff\/proxy\.ts/);
   assert.ok(!r.warn.includes("flights-graph"), "연결표 안 파일은 경고에 없음");
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 작업 0246 — 디자인 PR 판정 · 게이트 (테스트 먼저 · design-pr.mjs · checks.sh 구현 전에는 FAIL 이 정상)
+//
+// [계약] design-pr.mjs (builder 가 만듦 · 이름 · 반환 모양을 바꾸려면 이 테스트 머리부터 고친다)
+//   export function designPr(files, { labels, target })
+//     files  : 저장소 루트 기준 바뀐 파일 경로 배열
+//     labels : PR 라벨 이름 배열 ("design" 이 있어야 디자인 PR 후보)
+//     target : PR 이 들어가는 브랜치 이름 ("main" 이면 하루 마무리 · 같은 규칙 — 그 구간 바뀐 파일이 모두 허용 목록 안인지)
+//   반환 { design: boolean, reason: string, warn?: string, offending?: string[] }
+//     라벨 없음 → design false (reason 에 이유 · warn 없음)
+//     라벨 있음 + 파일이 모두 허용 목록(화면 쪽) 안 → design true
+//     라벨 있음 + 밖 파일이 하나라도 → design false · warn 에 "design 라벨인데 이 파일이 섞였다" 와 밖 파일 이름 · offending 에 밖 파일 목록
+//     빈 파일 목록 → design false (가려내지 못하면 평소 규칙)
+//   허용 목록 방식: 목록에 없으면 평소 PR (lib · hooks · api · shared · 설정 · 하네스 · 워크플로 · 보호 파일 AGENTS.md · CLAUDE.md 는 밖)
+//   export function readLabels(eventPath)  — GITHUB_EVENT_PATH 의 pull_request.labels[].name 배열 · 경로 없음 · 파일 없음 · 깨진 JSON · 라벨 칸 없음은 모두 []
+//   CLI: node .agents/scripts/design-pr.mjs → 바뀐 파일(changedFiles) · 라벨(GITHUB_EVENT_PATH) · 대상(GITHUB_BASE_REF)로 위 결과를 JSON 한 줄로
+// [계약] checks.sh — CI(PR)에서 design-pr 결과로
+//   디자인 PR: test · test:e2e 를 두 번씩 돎 — 막는 호출(@design 제외: 인자에 invert 또는 (?! 가 있음) · 막지 않는 호출(인자에 @design · invert 없음)
+//             막지 않는 호출이 실패해도 결과 PASS · 로그에 "막지 않음" 묶음 · 막는 호출(기능)이 실패하면 FAIL
+//   결과 줄: "디자인 PR: 예 · 디자인 테스트 실패 N개(막지 않음)" / "디자인 PR: 아니오(이유)"
+//   평소 PR · 라벨 읽기 실패 · 로컬: 지금 그대로(@design 인자를 쓰지 않음 · 한 번만 돎)
+// ─────────────────────────────────────────────────────────────────────────────
+const DESIGN_FILES = [
+  "apps/web/src/features/home/components/hero-section.tsx",
+  "apps/web/src/features/import-calc/components/calc-page.tsx",
+  "packages/ui/src/components/flap/flap-board.tsx",
+  "packages/ui/src/tokens.css",
+  "apps/web/src/features/travel-price/components/airfare-calendar.css",
+  "apps/web/src/app/calc/page.tsx",
+  "apps/web/e2e/home.spec.ts",
+  "apps/web/e2e-responsive/x.spec.ts",
+  "apps/web/src/shared/calc-blue.test.ts",
+  "apps/web/src/features/home/components/ticket.test.tsx",
+  ".agents/specs/0246-x/plan.md",
+  "docs/design-tests-pending.md",
+  "README.md",
+];
+
+test("디자인 PR 판정: 평소 PR — 라벨 없음이면 파일이 화면 쪽뿐이어도 평소 (작업 0246)", async () => {
+  const { designPr } = await import("./design-pr.mjs");
+  const r = designPr(DESIGN_FILES, { labels: [], target: "develop" });
+  assert.equal(r.design, false);
+  assert.equal(typeof r.reason, "string");
+  assert.ok(r.reason.length > 0, "이유가 비어 있지 않음");
+  assert.equal(r.warn, undefined, "라벨이 없으면 경고도 없음");
+  assert.equal(designPr(DESIGN_FILES, { labels: ["harness-approved"], target: "develop" }).design, false, "다른 라벨은 design 이 아님");
+});
+
+test("디자인 PR 판정: 디자인 PR — design 라벨 + 화면 쪽 파일(부품 · 스타일 · 화면 코드 · 테스트 · 작업 기록 · 문서)뿐 (작업 0246)", async () => {
+  const { designPr } = await import("./design-pr.mjs");
+  const r = designPr(DESIGN_FILES, { labels: ["design"], target: "develop" });
+  assert.equal(r.design, true, JSON.stringify(r));
+  assert.equal(r.warn, undefined);
+  assert.equal(designPr(["apps/web/src/features/home/components/ticket.tsx"], { labels: ["x", "design"], target: "develop" }).design, true, "라벨이 여럿이어도 design 이 있으면");
+});
+
+test("디자인 PR 판정: 하루 마무리(대상 main) — 그날 디자인뿐이면 디자인 PR (작업 0246)", async () => {
+  const { designPr } = await import("./design-pr.mjs");
+  assert.equal(designPr(DESIGN_FILES, { labels: ["design"], target: "main" }).design, true);
+});
+
+test("디자인 PR 판정: 하루 마무리(대상 main) — 평소 파일이 섞이면 평소 + 경고 (작업 0246)", async () => {
+  const { designPr } = await import("./design-pr.mjs");
+  const r = designPr([...DESIGN_FILES, "apps/web/src/features/home/lib/rank.ts"], { labels: ["design"], target: "main" });
+  assert.equal(r.design, false);
+  assert.deepEqual(r.offending, ["apps/web/src/features/home/lib/rank.ts"]);
+  assert.match(r.warn ?? "", /design 라벨인데 이 파일이 섞였다/);
+});
+
+test("디자인 PR 판정: 라벨 있음 + 밖 파일 → 평소 + 경고 (밖 파일 이름이 경고에 들어감) (작업 0246)", async () => {
+  const { designPr } = await import("./design-pr.mjs");
+  const outside = [
+    "apps/web/src/features/home/lib/rank.ts",
+    "apps/web/src/features/home/hooks/use-trip.ts",
+    "apps/api/src/index.ts",
+    "packages/shared/src/index.ts",
+    ".github/workflows/checks.yml",
+    ".agents/checks.sh",
+    ".agents/scripts/lib.mjs",
+    "package.json",
+    "AGENTS.md",
+    "CLAUDE.md",
+  ];
+  for (const f of outside) {
+    const r = designPr(["apps/web/src/features/home/components/ticket.tsx", f], { labels: ["design"], target: "develop" });
+    assert.equal(r.design, false, `${f} 는 화면 쪽이 아님`);
+    assert.deepEqual(r.offending, [f], f);
+    assert.ok((r.warn ?? "").includes(f), `경고에 ${f} 이름이 들어감`);
+    assert.match(r.warn ?? "", /design 라벨인데/);
+  }
+});
+
+test("디자인 PR 판정: 허용 목록 방식 — 폴더 이름이 비슷한 것 · 화면 부품 밖 폴더는 속지 않음 (작업 0246)", async () => {
+  const { designPr } = await import("./design-pr.mjs");
+  for (const f of [
+    "apps/web/src/features/home/componentsx/a.tsx",
+    "apps/web/src/features/home/lib/components/a.tsx",
+    "apps/web/src/lib/a.ts",
+    "packages/ui/src/hooks/a.ts",
+    "apps/web/next.config.ts",
+    "apps/web/src/app/api/route.ts",
+  ]) {
+    assert.equal(designPr([f], { labels: ["design"], target: "develop" }).design, false, f);
+  }
+});
+
+test("디자인 PR 판정: 빈 파일 목록은 평소 — 가려내지 못하면 막는 쪽 (작업 0246)", async () => {
+  const { designPr } = await import("./design-pr.mjs");
+  assert.equal(designPr([], { labels: ["design"], target: "develop" }).design, false);
+});
+
+test("디자인 PR 판정: 라벨 읽기 — 경로 없음 · 파일 없음 · 깨진 JSON · 라벨 칸 없음은 빈 목록, 있으면 이름만 (작업 0246)", async () => {
+  const { readLabels } = await import("./design-pr.mjs");
+  const dir = mkdtempSync(pathJoin(tmpdir(), "hav-ev-"));
+  try {
+    const ok = pathJoin(dir, "ok.json");
+    writeFileSync(ok, JSON.stringify({ pull_request: { labels: [{ name: "design" }, { name: "harness-approved" }] } }));
+    assert.deepEqual(readLabels(ok), ["design", "harness-approved"]);
+    const broken = pathJoin(dir, "broken.json");
+    writeFileSync(broken, "{ 깨진");
+    const noLabels = pathJoin(dir, "nolabels.json");
+    writeFileSync(noLabels, JSON.stringify({ pull_request: {} }));
+    const push = pathJoin(dir, "push.json");
+    writeFileSync(push, JSON.stringify({ ref: "refs/heads/main" }));
+    for (const p of [undefined, "", pathJoin(dir, "없음.json"), broken, noLabels, push]) assert.deepEqual(readLabels(p), [], String(p));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+// 게이트 — 모래판에서 checks.sh 를 가짜 npm 으로 돌려 봄
+function eventFile(labels) {
+  const dir = mkdtempSync(pathJoin(tmpdir(), "hav-ev-"));
+  const file = pathJoin(dir, "event.json");
+  writeFileSync(file, JSON.stringify({ pull_request: { labels: labels.map((name) => ({ name })) } }));
+  return { file, done: () => rmSync(dir, { recursive: true, force: true }) };
+}
+const designCalls = (npm) => npm.filter((c) => c.includes("@design"));
+function gate(changed, { labels = ["design"], target = "main", env = {} } = {}) {
+  const sb = sandbox({ changed });
+  const ev = eventFile(labels);
+  try {
+    return { ...sb.run({ ...CI_PR, GITHUB_BASE_REF: target, GITHUB_EVENT_PATH: ev.file, ...env }), changed };
+  } finally {
+    sb.done();
+    ev.done();
+  }
+}
+const SCREEN = ["apps/web/src/features/home/components/ticket.tsx", "apps/web/e2e/home.spec.ts"];
+
+test("게이트: 디자인 PR 에서 @design 실패는 막지 않음 — 결과 PASS · 로그에 막지 않음 묶음 · 판정 줄 (작업 0246)", () => {
+  const r = gate(SCREEN, { env: { DESIGN_FAIL: "1" } });
+  assert.equal(r.status, 0, r.out);
+  assert.match(r.out, /디자인 PR: 예/);
+  assert.match(r.out, /디자인 테스트 실패 \d+개/);
+  assert.match(r.out, /막지 않음/);
+  assert.ok(designCalls(r.npm).length >= 1, `@design 호출이 있음: ${r.npm}`);
+});
+
+test("게이트: 디자인 PR 에서 기능 테스트 실패는 FAIL — 막지 않는 묶음이 가리지 않음 (작업 0246)", () => {
+  const r = gate(SCREEN, { env: { FUNC_FAIL: "1" } });
+  assert.equal(r.status, 1, r.out);
+  assert.match(r.out, /FAIL/);
+  const both = gate(SCREEN, { env: { FUNC_FAIL: "1", DESIGN_FAIL: "1" } });
+  assert.equal(both.status, 1, "둘 다 실패해도 FAIL");
+});
+
+test("게이트: 디자인 PR — 기능 · 디자인 둘 다 돌림(막는 호출 + 막지 않는 호출) · 디자인 테스트를 끄지 않음 (작업 0246)", () => {
+  const r = gate(SCREEN, {});
+  assert.equal(r.status, 0, r.out);
+  const unit = r.npm.filter((c) => c === "test");
+  assert.ok(unit.length >= 1);
+  const blockingE2e = r.npm.filter((c) => c.includes("invert") || c.includes("(?!"));
+  assert.ok(blockingE2e.length >= 1, `@design 를 뺀 막는 호출이 있음: ${r.npm}`);
+  assert.ok(designCalls(r.npm).some((c) => !c.includes("invert") && !c.includes("(?!")), `@design 만 돌리는 호출이 있음: ${r.npm}`);
+});
+
+test("게이트: 평소 PR — 라벨이 없으면 @design 인자를 쓰지 않고 한 번만 돎(디자인 실패도 막음 = 구분 없음) · 판정 줄 아니오 (작업 0246)", () => {
+  const r = gate(SCREEN, { labels: [], env: { DESIGN_FAIL: "1" } });
+  assert.equal(r.status, 0, r.out);
+  assert.deepEqual(designCalls(r.npm), [], "평소 PR 은 @design 로 나누지 않음");
+  assert.match(r.out, /디자인 PR: 아니오/);
+  assert.doesNotMatch(r.out, /막지 않음/);
+});
+
+test("게이트: 하루 마무리(대상 main) — 그날 디자인뿐이면 디자인 PR · @design 실패는 막지 않음 (작업 0246)", () => {
+  const r = gate(SCREEN, { target: "main", env: { DESIGN_FAIL: "1" } });
+  assert.equal(r.status, 0, r.out);
+  assert.match(r.out, /디자인 PR: 예/);
+});
+
+test("게이트: 하루 마무리(대상 main) — 평소 PR 이 섞이면 평소 규칙(@design 로 나누지 않음) (작업 0246)", () => {
+  const r = gate([...SCREEN, "apps/api/src/index.ts"], { target: "main", env: { DESIGN_FAIL: "1" } });
+  assert.match(r.out, /디자인 PR: 아니오/);
+  assert.deepEqual(designCalls(r.npm), []);
+});
+
+test("게이트: 라벨 있음 + 밖 파일 → 평소 + 경고 줄 (밖 파일 이름) (작업 0246)", () => {
+  const r = gate([...SCREEN, "apps/web/src/features/home/lib/rank.ts"], { target: "develop" });
+  assert.match(r.out, /디자인 PR: 아니오/);
+  assert.match(r.out, /design 라벨인데 이 파일이 섞였다/);
+  assert.match(r.out, /apps\/web\/src\/features\/home\/lib\/rank\.ts/);
+  assert.deepEqual(designCalls(r.npm), []);
+});
+
+test("게이트: 라벨 읽기 실패(GITHUB_EVENT_PATH 없음 · 깨진 JSON)는 평소 — 죽지 않고 막는 쪽 (작업 0246)", () => {
+  const none = gate(SCREEN, { env: { GITHUB_EVENT_PATH: "" } });
+  assert.equal(none.status, 0, none.out);
+  assert.match(none.out, /디자인 PR: 아니오/);
+  assert.deepEqual(designCalls(none.npm), []);
+  const dir = mkdtempSync(pathJoin(tmpdir(), "hav-ev-"));
+  try {
+    const bad = pathJoin(dir, "bad.json");
+    writeFileSync(bad, "{ 깨진");
+    const broken = gate(SCREEN, { env: { GITHUB_EVENT_PATH: bad } });
+    assert.equal(broken.status, 0, broken.out);
+    assert.match(broken.out, /디자인 PR: 아니오/);
+    assert.deepEqual(designCalls(broken.npm), []);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("게이트: 로컬(CI 아님)은 라벨이 있어도 지금 그대로 — @design 로 나누지 않음 (작업 0246)", () => {
+  const sb = sandbox({ changed: SCREEN });
+  try {
+    const r = sb.run({});
+    assert.equal(r.status, 0, r.out);
+    assert.deepEqual(r.npm, ["typecheck", "lint", "test"]);
+  } finally {
+    sb.done();
+  }
 });
