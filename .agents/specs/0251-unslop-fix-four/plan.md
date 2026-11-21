@@ -25,6 +25,11 @@
 - apps/web/src/features/travel-price/components/price-route.tsx
 - apps/web/src/features/travel-price/components/price-page.tsx
 - apps/web/src/features/travel-price/components/window-months.tsx
+- apps/web/src/features/travel-price/hooks/use-price-route.ts (추가 · 아래 '바뀐 것')
 - apps/web/src/features/travel-price/**/*.test.ts(x) · apps/web/e2e/** (test · 깨진 것만)
 - docs/design-tests-pending.md (미뤄 둔 디자인 테스트가 생기면)
 - .agents/specs/0251-unslop-fix-four/** · .agents/orchestration/TASKS.md
+
+## 바뀐 것 (구현 중)
+- ㄴ 의 '직전 방향 기억'을 화면 파일에서 useRef 로 하자 role-boundary 기능 테스트(화면 파일은 상태 · 효과 훅을 직접 쓰지 않음)가 실패. 순수 계산으로는 같은 값 구간에서 직전 방향을 기억할 수 없어(뒤로 스크롤할 때 한 번 뒤집힘) `hooks/use-price-route.ts` 에 `usePlaneFlip` 을 더함 — 파일 계획 밖 추가.
+- hooks 는 디자인 PR 허용 목록 밖 → **평소 PR**(design 라벨 달지 않음). @design 실패도 막으므로 깨진 @design 테스트는 test 가 이 PR 에서 맞춘다.
