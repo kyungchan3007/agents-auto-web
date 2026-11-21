@@ -13,7 +13,7 @@ async function fillCalc(page: Page, price: string, duty?: string) {
   if (duty) await input.getByLabel(/관세율/).fill(duty);
 }
 
-test("여행 물가 — 큰 문장의 퍼센트(63% 같은)는 파랑 면 위 해 노랑 글자 (작업 0220 · 형광펜 띠 아님)", async ({ page }) => {
+test("여행 물가 — 큰 문장의 퍼센트(63% 같은)는 파랑 면 위 해 노랑 글자 · 형광펜 띠 아니고 글자 아래 가는 밑줄만 (작업 0220 → 0257 · 사용자 결정 B안 노란 글자)", async ({ page }) => {
   await page.goto("/prices");
   const emph = page.getByRole("heading", { level: 1 }).locator('[data-testid="emph"]');
   if ((await emph.count()) === 0) test.skip(true, "물가 자료가 없어 큰 문장에 숫자가 없음");
@@ -21,7 +21,9 @@ test("여행 물가 — 큰 문장의 퍼센트(63% 같은)는 파랑 면 위 �
   await expect(emph.first()).toHaveAttribute("data-bg", "sea");
   const s = await css(emph);
   expect(s.color).toBe(SUN); // 파랑 면 위 노란 글자 (대비 충분)
-  expect(s.image).not.toContain("linear-gradient");
+  // 작업 0257: 사용자가 "노란 글자 + 가는 노란 밑줄"로 정함 — 띠(형광펜)가 아니라 글자 아래쪽 가는 줄이어야 함 · 줄이 시작하는 높이(%)는 글자 아래쪽(70% 이상)이기만 하면 되고 정확한 값은 고정하지 않음
+  const starts = [...s.image.matchAll(/rgb\(247, 197, 72\) (\d+(?:\.\d+)?)%/g)].map((m) => Number(m[1]));
+  if (s.image.includes("linear-gradient")) expect(Math.min(...starts), "노란 줄이 시작하는 높이(%) — 글자 아래쪽 가는 줄").toBeGreaterThanOrEqual(70);
 });
 
 // 직구 맨 위는 사진 위 울트라마린 막(흰 글자) — 어두운 바탕이라 숫자는 노란 띠가 아니라 해 노랑 글자 (작업 0175 · lead 결정)
