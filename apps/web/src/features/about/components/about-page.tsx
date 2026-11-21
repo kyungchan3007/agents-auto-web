@@ -4,7 +4,7 @@ import { SiteNav } from "@/shared/site-nav";
 import type { SignalList } from "@hav/shared/signal";
 import { FadeUpGroup } from "@hav/ui/motion/fade-up";
 import { PageFooter } from "@hav/ui/layout/page-footer";
-import { Eyebrow, SectionTitle, Title } from "@hav/ui/text/heading";
+import { SectionTitle, Title } from "@hav/ui/text/heading";
 import { ABOUT_CARDS } from "../lib/criteria";
 
 /** 직구 판단 기준 — 기능 폴더끼리 직접 가져오지 않게 라우트에서 받음 */
@@ -18,8 +18,7 @@ export function AboutPage(_props: { signals: Fetched<SignalList>; duty: DutyRule
       <main id="main" tabIndex={-1} className="bg-surface text-fg">
         <section aria-label="소개 머리" data-testid="about-head" className="px-4 pt-10 sm:px-8 sm:pt-14">
           <div className="mx-auto max-w-page">
-            <Eyebrow>소개</Eyebrow>
-            <Title as="h1" size="page" aria-label="어떤 자료를, 어떤 기준으로 보여 주나요" className="mt-3 text-cheap">
+            <Title as="h1" size="page" aria-label="어떤 자료를, 어떤 기준으로 보여 주나요" className="text-cheap">
               <span aria-hidden className="block">어떤 자료를,</span> <span aria-hidden className="block">어떤 기준으로 보여 주나요</span>
             </Title>
           </div>
