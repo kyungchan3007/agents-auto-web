@@ -23,3 +23,9 @@
 - apps/web/src/app/about/** (메타 · 구조화 자료가 본문을 쓰면)
 - apps/web/src/features/about/**/*.test.ts(x) · apps/web/e2e/** (test)
 - .agents/specs/0267-about-rewrite/** · .agents/orchestration/TASKS.md
+
+## 사실 대조 결과 (builder · 13:47Z · 구현 전)
+- 1 맞음(wrangler.jsonc crons KST 12:00 · 13:30 · 15:00 · FX-07 · ensure-fx 는 빈 날 메움) · 2 맞음(signal.ts:9-11 · SIG-05) · 3 맞음 · 4 맞음 · 5 맞음(AIR-09) · 8 맞음
+- **6 예외:** IMP-06 — 이번 주 과세환율이 없거나 지난 주 값이면 수출입은행 환율 + '예상 금액'으로 돌아감 → "과세환율을 씁니다"는 항상은 아님. 안: "우선 씁니다" 또는 "(없으면 수출입은행 환율로 어림합니다)"
+- **7 다름:** 쿠키 없음은 맞지만 사람 방문 전체를 세지 않음(track-visit.ts:2 · geo-visit.ts — AI · 검색 봇 방문과 AI 서비스에서 넘어온 방문만 날짜별 횟수). 안: "쿠키를 쓰지 않습니다. AI · 검색 봇의 방문과 AI 서비스에서 넘어온 방문만 날짜별 횟수로 셉니다. 개인 정보는 저장하지 않습니다."
+- → 사용자 확인 전 구현하지 않음.
