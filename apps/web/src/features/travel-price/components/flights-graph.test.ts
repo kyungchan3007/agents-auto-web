@@ -13,11 +13,13 @@ describe("FlightsGraph 소스", () => {
     expect(src).toMatch(/INDEX_BASE_NOTE/);
   });
 
-  it("범례 칩은 button · aria-pressed · 누르면 강조 전환 · 칩 글에 최근 값(legendText)", () => {
+  it("범례 칩은 button · aria-pressed · 누르면 강조 전환 · 칩 글은 선 이름만 — 숫자(legendText · 최근 값)를 쓰지 않음 (작업 0261 · 예전: 칩 글에 최근 값)", () => {
     expect(src).toMatch(/<button[^>]*type="button"/);
     expect(src).toMatch(/aria-pressed=\{focus === l\.id\}/);
     expect(src).toMatch(/onClick=\{\(\) => toggle\(l\.id\)\}/);
-    expect(src).toMatch(/legendText\(/);
+    expect(src).not.toMatch(/legendText\(/); // 범례 글에 값을 만드는 함수를 부르지 않음
+    for (const name of ["국제항공료", "해외단체여행비", "원/달러 월평균"]) expect(src, `범례 이름 ${name}`).toContain(name);
+    expect(src).not.toMatch(/원\/달러 월평균\s*[\d$]/); // 이름 뒤에 값이 붙지 않음
   });
 
   it("그래프 2D(시안 F): 공통 LineChart 로 그림 · 칩 강조는 focus 를 넘김 · 값이 없는 선은 목록에 넣지 않아 그리지도 라벨도 만들지도 않음", () => {
