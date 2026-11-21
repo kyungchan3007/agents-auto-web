@@ -72,3 +72,4 @@
 | 0248 | AI 티 1차 — 여행 물가 · 통화 9건(1 · 3 · 4 · 20 · 9 · 11 · 12 · 17 · 19) (Quick · 디자인 PR) | builder | 머지됨 (#297) | task/0248-unslop-prices-currency | features/{travel-price,currencies}/components/** · packages/ui components |
 | 0249 | AI 티 1차 — 그 밖 8건(2 · 6 · 7 · 8 · 14 · 16 · 18 · 24) (Quick · 디자인 PR) | builder | 머지됨 (#298) · 미뤄 둔 목록은 후속 PR | task/0249-unslop-others | features/*/components/** · app/not-found.tsx · packages/ui components · tokens.css |
 | 0250 | 미뤄 둔 디자인 테스트 8개 정리 — 크게 깨지는 것만 남기고 값 고정 걷어 냄 · 그림자 검사는 팝업 · 국기 예외 · 목록 비움 (Quick · 테스트만) | test | 진행 중 | task/0250-pending-eight | 테스트 파일 · docs/design-tests-pending.md |
+| 0251 | develop 확인 뒤 지적 네 건 — 직구 입력 줄 간격 · 물가 노선 같은 값 비행기 제자리 · 노선 위 여백과 라벨 · 창밖 막대 받침 선 (Quick · 디자인 PR) | builder → test(깨질 때만) | 진행 중 | task/0251-unslop-fix-four | import-calc/components/calc-form.tsx · travel-price/{lib/price-route.ts,components/price-route.tsx,price-page.tsx,window-months.tsx} · 관련 테스트 |
