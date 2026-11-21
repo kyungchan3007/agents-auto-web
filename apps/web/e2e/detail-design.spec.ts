@@ -12,6 +12,7 @@ const box = async (loc: Locator) => {
 test.describe("통화 상세 (작업 0212)", () => {
   test("1년 최저 · 최고 한 줄 · 글자가 칸 밖으로 안 나감 · 가로 넘침 없음 (작업 0219 · 비행 경로 카드)", async ({ page }) => {
     await page.goto("/currencies/USD");
+    await page.waitForLoadState("networkidle"); // 하이드레이션이 끝난 뒤 잼 — 주말에는 하이드레이션 뒤에 '주말에는 고시가 없어 …' 줄(24px)이 생겨 그 전에 재면 위치가 어긋남 (작업 0095 기능 · 작업 0248 CI 가 토요일에 돎)
     const [min, max] = [await box(tid(page, "route-min")), await box(tid(page, "route-max"))];
     expect(Math.abs(min.y - max.y)).toBeLessThan(1); // 휴대폰도 한 줄
     expect(min.x).toBeLessThan(max.x);
