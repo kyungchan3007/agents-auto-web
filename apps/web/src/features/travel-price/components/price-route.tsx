@@ -89,7 +89,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
           <div className="flex items-center gap-1">
             <div data-testid="route-card-value" role="img" aria-label={`물가 ${stop.value} (한국 100)`} className="flex items-center gap-1">
               {shownTiles.map((x, k) => (
-                <span key={k} aria-hidden="true" className="relative grid h-(--route-tile-h) w-(--route-tile-w) place-items-center rounded-[5px] bg-flap-cell text-(length:--route-tile) leading-none font-extrabold text-sun [perspective:200px] after:absolute after:inset-x-0 after:top-1/2 after:h-px after:bg-on-band ">
+                <span key={k} aria-hidden="true" className="relative isolate grid h-(--route-tile-h) w-(--route-tile-w) place-items-center rounded-[5px] bg-flap-cell text-(length:--route-tile) leading-none font-extrabold text-sun [perspective:200px] after:absolute after:inset-x-0 after:top-1/2 after:-z-10 after:h-px after:bg-on-band ">
                   <span className={`block origin-center transition-transform duration-[140ms] ease-in ${x.out ? "[transform:rotateX(90deg)]" : ""} ${x.ch === " " ? "opacity-0" : ""}`}>{x.ch === " " ? "0" : x.ch}</span>
                 </span>
               ))}

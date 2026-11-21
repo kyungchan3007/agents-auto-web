@@ -12,7 +12,7 @@ function FlapCell({ char }: { char: string }) {
   return (
     <span
       ref={ref}
-      className={`relative grid h-[4.625rem] w-[3.25rem] place-items-center rounded-[5px] bg-flap-cell text-[2.75rem] leading-none font-extrabold text-sun [perspective:200px] after:absolute after:inset-x-0 after:top-1/2 after:h-px after:bg-on-band max-sm:h-[3.875rem] max-sm:w-11 max-sm:text-[2.25rem]`}
+      className={`relative isolate grid h-[4.625rem] w-[3.25rem] place-items-center rounded-[5px] bg-flap-cell text-[2.75rem] leading-none font-extrabold text-sun [perspective:200px] after:absolute after:inset-x-0 after:top-1/2 after:-z-10 after:h-px after:bg-on-band max-sm:h-[3.875rem] max-sm:w-11 max-sm:text-[2.25rem]`}
     >
       {shown}
     </span>

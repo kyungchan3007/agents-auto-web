@@ -126,7 +126,7 @@ function Digit({ digit, place, value, mounted, onMove, fromDigit, fromDir, start
   const mask = "data-[moving=true]:[mask-image:linear-gradient(transparent,#000_22%,#000_78%,transparent)]";
   if (board)
     return (
-      <span ref={cellRef} data-testid="roll-cell" data-kind="digit" data-digit={digit} className={`relative inline-block flex-none overflow-hidden ${board.cell} ${mask}`}>
+      <span ref={cellRef} data-testid="roll-cell" data-kind="digit" data-digit={digit} className={`relative isolate inline-block flex-none overflow-hidden ${board.cell} ${mask}`}>
         <span ref={stripRef} data-testid="roll-strip" className="absolute inset-x-0 top-0 flex flex-col will-change-transform" style={{ transform: startShift }}>
           {rows.map((d, k) => (
             <span key={k} className={`flex items-center justify-center ${board.row}`}>
@@ -134,7 +134,7 @@ function Digit({ digit, place, value, mounted, onMove, fromDigit, fromDir, start
             </span>
           ))}
         </span>
-        <span aria-hidden className="absolute inset-x-0 top-1/2 z-[2] h-px bg-on-band" />
+        <span aria-hidden className="absolute inset-x-0 top-1/2 -z-10 h-px bg-on-band" />
       </span>
     );
   return (
@@ -174,19 +174,19 @@ export function RollingNumber({ value, suffix = "", prefix = "", slot, className
   );
   if (board) {
     const used = cells.length + (suffix ? 1 : 0);
-    const tile = "relative flex flex-none items-center justify-center";
+    const tile = "relative isolate flex flex-none items-center justify-center";
     return (
       <span ref={rootRef} data-testid="rolling-number" data-slot={slot} data-value={rounded} data-final={final} data-state="idle" className={className}>
         {Array.from({ length: Math.max(0, board.cols - used) }, (_, i) => (
           <span key={`p${i}`} aria-hidden className={`${tile} ${board.cell}`}>
-            <span className="absolute inset-x-0 top-1/2 h-px bg-on-band" />
+            <span className="absolute inset-x-0 top-1/2 -z-10 h-px bg-on-band" />
           </span>
         ))}
         {cells.map((c, i) =>
           c.kind === "comma" ? (
             <span key={`c${cells[i + 1]?.place}`} aria-hidden data-testid="roll-cell" data-kind="comma" className={`${tile} ${board.cell}`}>
               ,
-              <span className="absolute inset-x-0 top-1/2 h-px bg-on-band" />
+              <span className="absolute inset-x-0 top-1/2 -z-10 h-px bg-on-band" />
             </span>
           ) : (
             digit(c)
@@ -195,7 +195,7 @@ export function RollingNumber({ value, suffix = "", prefix = "", slot, className
         {suffix && (
           <span data-testid="roll-suffix" aria-hidden="true" className={`${tile} ${board.cell}`}>
             {suffix}
-            <span className="absolute inset-x-0 top-1/2 h-px bg-on-band" />
+            <span className="absolute inset-x-0 top-1/2 -z-10 h-px bg-on-band" />
           </span>
         )}
         <span data-testid="roll-sr" className="sr-only">
