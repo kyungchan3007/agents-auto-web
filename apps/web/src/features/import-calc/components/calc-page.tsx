@@ -6,6 +6,7 @@ import type { Fetched } from "@/shared/api";
 import { SiteNav } from "@/shared/site-nav";
 import type { FxLatest } from "@hav/shared/fx";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
+import { FadeUpGroup } from "@hav/ui/motion/fade-up";
 import { PageFooter } from "@hav/ui/layout/page-footer";
 import { EmphText } from "@hav/ui/text/emph";
 import { Eyebrow, Title } from "@hav/ui/text/heading";
@@ -50,11 +51,11 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
         <div className="px-4 pt-0 pb-10 sm:px-8 sm:pt-12">
         <div className="mx-auto max-w-page">
           {/* 가로 전체 두 칸 — 수입물가와 환율 → 이번 주 과세환율 (작업 0200 · 시안 B) */}
-          <div className="mt-[4.5rem] sm:mt-12">
+          <FadeUpGroup className="mt-[4.5rem] sm:mt-12">
             <ImportPriceSection fxRows={usdDays} price={importPrice}>
               <CustomsSection points={trend} bank={latest.ok ? latest.data.rates.find((r) => r.currency === "USD") : undefined} />
             </ImportPriceSection>
-          </div>
+          </FadeUpGroup>
         </div>
         </div>
       </main>
