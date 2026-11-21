@@ -269,7 +269,7 @@ test.describe("새 /prices — 예산 · 자 · 표 (작업 0220)", () => {
 });
 
 test.describe("새 /prices — 머리 제목과 예산 카드 위 선 (작업 0248 · 3번 사용자 조건 → 작업 0265 라벨 삭제 뒤)", () => {
-  // 사용자 조건(0248 · 3번): 넓은 화면에서 예산 카드의 위 선이 제목 첫 줄(글자 윗선)에 맞음 — 제목 위 라벨(여행 물가)을 지워 제목이 올라온 뒤에도 같음 · 정확한 px 값은 고정하지 않고 차이만 봄(±4px)
+  // 사용자 조건(0248 · 3번): 넓은 화면에서 예산 카드의 위 선이 제목 첫 줄(글자 윗선)에 맞음 — 제목 위 라벨(여행 물가)을 지워 제목이 올라온 뒤에도 같음 · 정확한 px 값은 고정하지 않고 차이만 봄(±4px · 미리보기에서 잰 실제 차이 0.5px)
   const firstLineTop = (page: Page) =>
     page.getByRole("heading", { level: 1 }).evaluate((h) => {
       const r = document.createRange();
@@ -277,11 +277,13 @@ test.describe("새 /prices — 머리 제목과 예산 카드 위 선 (작업 02
       const first = r.getClientRects()[0] ?? h.getBoundingClientRect();
       return first.top;
     });
-  for (const url of ["/prices", "/prices?currency=JPY"]) {
-    test(`넓은 화면 1280 — 예산 카드 위 선 = 제목 첫 줄 (${url})`, async ({ page }) => {
+  // 여행지를 고른 뒤 머리(내가 고른 나라 기준 제목)는 저장된 선택(flapfx:picked)으로 만듦
+  for (const [name, picked] of [["처음 머리", false], ["여행지를 고른 뒤 머리", true]] as const) {
+    test(`넓은 화면 1280 — 예산 카드 위 선 = 제목 첫 줄 (${name})`, async ({ page }) => {
       test.skip(isPhone(page), "넓은 화면 전용");
       await page.setViewportSize({ width: 1280, height: 800 });
-      await page.goto(url);
+      if (picked) await page.addInitScript(() => localStorage.setItem("flapfx:picked", JSON.stringify({ v: 1, country: "JPN", city: "도쿄", budget: 500000 })));
+      await page.goto("/prices");
       test.skip(!(await ready(page)), "자료 없음");
       await page.waitForLoadState("networkidle");
       await expect
