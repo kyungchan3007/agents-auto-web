@@ -91,7 +91,7 @@ function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof wi
               </div>
               <span
                 data-testid="window-tag"
-                className={`inline-flex h-[1.875rem] items-center rounded-pill px-3.5 text-[0.84375rem] font-bold ${cur.tone === "low" ? "bg-sun text-fg" : cur.tone === "high" ? "bg-pin-expensive text-on-accent" : "hidden"}`}
+                className={`inline-flex h-[1.875rem] items-center rounded-[6px] px-3.5 text-[0.84375rem] font-bold ${cur.tone === "low" ? "bg-sun text-fg" : cur.tone === "high" ? "bg-pin-expensive text-on-accent" : "hidden"}`}
               >
                 {cur.tag ?? ""}
               </span>
