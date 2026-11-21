@@ -53,7 +53,7 @@ describe("통화 (P1 · SR-CUR-01)", () => {
   });
 
   it("e2e 가 찾는 표시 — currency-list · currency-detail", () => {
-    expect(T.currencies).toMatch(/data-testid="currency-list"/);
+    expect(T.currencies).toMatch(/(?:data-testid|testId)="currency-list"/); // 페이드 업 부품(FadeUpGroup)의 testId 로 이어 씀 (작업 0254)
     expect(T.currencies).toMatch(/data-testid="currency-detail"/);
   });
 });
@@ -89,7 +89,7 @@ describe("여행 물가 /prices (P3 · SR-PRC-01)", () => {
   });
 
   it("e2e 가 찾는 표시 (시안 04 에 없는 /flights 링크 한 줄은 요구하지 않음 — 작업 0170 시안 맞춤)", () => {
-    expect(T.prices).toMatch(/data-testid="price-bands"/);
+    expect(T.prices).toMatch(/(?:data-testid|testId)="price-bands"/); // 페이드 업 부품(FadeUpGroup)의 testId 로 이어 씀 (작업 0254)
     expect(T.prices).toMatch(/data-testid="budget"/);
   });
 });
