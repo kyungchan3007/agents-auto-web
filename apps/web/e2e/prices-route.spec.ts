@@ -242,28 +242,40 @@ test.describe("여행 물가 — 나라 단추로 고르는 물가 노선 (작�
     expect(line, "굵은 선").toBeGreaterThanOrEqual(2.5);
   });
 
-  test("정거장 카드의 아래 테두리가 잘리지 않고 보임 — 카드를 감싼 칸이 카드 아래 끝을 자르지 않음 · 카드 아래 테두리 두께 > 0", async ({ page }) => {
+  // 사용자가 특히 신경 쓰는 부분(작업 0266 · 6번): 카드 테두리는 border 가 아니라 바깥 1px 링(box-shadow ring)이라, 카드를 감싼 칸이 overflow 로 자르면 그 선이 잘려 보임 — 위 · 아래 · 왼쪽 · 오른쪽 네 변이 모서리까지 모두 보여야 함 (넓은 화면 · 휴대폰 둘 다)
+  test("정거장 카드의 네 변 테두리(바깥 링)가 모서리까지 잘리지 않고 보임 — 카드를 자를 수 있는 모든 조상 칸이 카드 + 링 두께보다 넓음", async ({ page }) => {
     test.skip(!(await ready(page)), "물가 자료 없음");
     await stopsReady(page);
-    await tid(page, "route-card").scrollIntoViewIfNeeded();
-    await expect
-      .poll(
-        () =>
-          tid(page, "route-card").evaluate((card) => {
-            const cr = card.getBoundingClientRect();
-            const bw = parseFloat(getComputedStyle(card).borderBottomWidth);
-            // 카드 아래 끝을 자를 수 있는 조상(overflow 가 보임이 아닌 칸) — 그 아래 끝이 카드 아래 끝보다 아래여야 함
-            let clipped = false;
-            for (let e = card.parentElement; e && e !== document.body; e = e.parentElement) {
-              const st = getComputedStyle(e);
-              if (/(hidden|clip|auto|scroll)/.test(st.overflowY) && e.getBoundingClientRect().bottom < cr.bottom - 0.01) clipped = true;
-            }
-            return { bw, clipped };
-          }),
-        { message: "카드 아래 테두리가 보임", timeout: 8000 },
-      )
-      .toEqual({ bw: expect.any(Number), clipped: false });
-    expect(await tid(page, "route-card").evaluate((c) => parseFloat(getComputedStyle(c).borderBottomWidth)), "카드 아래 테두리 두께").toBeGreaterThan(0);
+    await tid(page, "route-card").first().scrollIntoViewIfNeeded();
+    const measure = () =>
+      tid(page, "route-card").first().evaluate((card) => {
+        const cr = card.getBoundingClientRect();
+        const cs = getComputedStyle(card);
+        // 테두리 두께 = border 두께 또는 box-shadow 의 퍼짐(ring) 중 큰 값 (ring-1 = 1px)
+        const spreads = (cs.boxShadow.match(/\)\s+(-?[\d.]+)px\s+(-?[\d.]+)px\s+(-?[\d.]+)px\s+(-?[\d.]+)px/g) ?? []).map((m) => Number(m.trim().split(/\s+/).pop()!.replace("px", "")));
+        const ring = Math.max(0, ...spreads, parseFloat(cs.borderTopWidth), parseFloat(cs.borderBottomWidth));
+        const clippers: { top: number; bottom: number; left: number; right: number; tag: string }[] = [];
+        for (let e = card.parentElement; e && e !== document.documentElement; e = e.parentElement) {
+          const st = getComputedStyle(e);
+          if (/(hidden|clip|auto|scroll)/.test(st.overflowX + st.overflowY)) {
+            const r = e.getBoundingClientRect();
+            clippers.push({ top: r.top - (cr.top - ring), bottom: cr.bottom + ring - r.bottom, left: r.left - (cr.left - ring), right: cr.right + ring - r.right, tag: `${e.tagName.toLowerCase()}[${e.getAttribute("data-testid") ?? e.className.toString().slice(0, 30)}]` });
+          }
+        }
+        // 값이 클수록 잘림: 조상 칸 가장자리가 (카드 가장자리 ± 링)보다 안쪽으로 들어온 길이
+        const worst = Math.max(0, ...clippers.flatMap((c) => [c.top, c.bottom, c.left, c.right].map((v) => v)));
+        return { ring, worst, clippers };
+      });
+    await expect.poll(async () => (await measure()).worst, { message: "카드 네 변 + 링이 조상 칸 안에 온전히 들어감(잘리는 길이 px = 0)", timeout: 8000 }).toBeLessThanOrEqual(0.01);
+    const m = await measure();
+    expect(m.ring, "카드 테두리(링) 두께").toBeGreaterThanOrEqual(1);
+    // 카드 아래 · 양옆 1px 여유가 실제로 있음(0px 로 딱 붙어 링이 잘리던 원인 방지)
+    for (const c of m.clippers) {
+      expect(-c.bottom, `${c.tag} 아래: 칸 아래 끝 − 카드 아래 끝(링 포함) ≥ 0`).toBeGreaterThanOrEqual(-0.01);
+      expect(-c.left, `${c.tag} 왼쪽`).toBeGreaterThanOrEqual(-0.01);
+      expect(-c.right, `${c.tag} 오른쪽`).toBeGreaterThanOrEqual(-0.01);
+      expect(-c.top, `${c.tag} 위`).toBeGreaterThanOrEqual(-0.01);
+    }
   });
 
   test("예산 카드 아래 끝 → 노선 제목(h2) 위 끝 — 겹치지 않고(간격 > 0) 화면 높이를 바꿔도 같음", async ({ page }) => {
