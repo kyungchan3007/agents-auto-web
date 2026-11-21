@@ -34,8 +34,12 @@ const TARGETS: Target[] = [
 
 /** 한 요소의 눌리는 영역(위 · 아래 · 왼 · 오른쪽 길이) · 요소 자신의 상자 · 덧칸 상자 — 화면 안 가운데로 가져온 뒤 같은 순간에 잼 */
 async function measure(loc: Locator) {
-  return loc.evaluate((el) => {
+  return loc.evaluate(async (el) => {
     (el as HTMLElement).scrollIntoView({ block: "center", inline: "center" });
+    // 화면에 들어오면 시작하는 등장 움직임(페이드 업 · 위로 28px 떠오름)이 끝난 뒤에 잼 — 움직이는 동안은 이웃 칸이 잠깐 덧칸 위를 덮을 수 있음(CI 에서 한 번 흔들림: year-link 높이 40.5)
+    const finite = () => document.getAnimations().filter((a) => a.effect && a.effect.getComputedTiming().iterations !== Number.POSITIVE_INFINITY && a.playState !== "finished");
+    await Promise.race([Promise.all(finite().map((a) => a.finished.catch(() => undefined))), new Promise((res) => setTimeout(res, 3000))]);
+    await new Promise((res) => requestAnimationFrame(() => requestAnimationFrame(res)));
     const r = el.getBoundingClientRect();
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
     const hit = (x: number, y: number) => { const h = document.elementFromPoint(x, y); return !!h && (el === h || el.contains(h)); };
