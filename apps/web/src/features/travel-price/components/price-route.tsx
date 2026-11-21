@@ -8,10 +8,10 @@ import { Flag } from "@hav/ui/data/flag";
 import type { Signal } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import { Eyebrow, SectionTitle } from "@hav/ui/text/heading";
-import type { CSSProperties } from "react";
+import { type CSSProperties, useRef } from "react";
 import { useCountTween, usePriceRoute, useRouteStep, useRouteTiles } from "../hooks/use-price-route";
 import { type PriceBand, rateBadgeText } from "../lib/bands";
-import { type RouteBand, type RouteStop, isMoving, routeActive, routeCardText, routeFrame, routeHop, routeStops, routeValue } from "../lib/price-route";
+import { type RouteBand, type RouteStop, isMoving, routeActive, routeCardText, routeFrame, routeStops, routeValue } from "../lib/price-route";
 import { rulerScale, rulerX } from "../lib/ruler";
 
 const COLOR: Record<RouteBand, string> = {
@@ -151,7 +151,11 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
   const noExtra: Extra = { currency: null, year: null };
   const planeValue = armed ? routeValue(stops, fr) : stops[0].value;
   const planeX = x(planeValue);
-  const hop = armed ? routeHop(stops, fr) : 0;
+  // 앞뒤 정거장 값이 같은 구간(스페인 111 ↔ 아랍에미리트 111)은 비행기가 가만히 — 뛰지 않고 · 고리가 다시 퍼지지 않고 · 좌우로 뒤집히지 않음 (작업 0251 ㄴ) · 바뀌는 것은 나라 쪽뿐
+  const sameSeg = n > fr.i + 1 && stops[fr.i].value === stops[fr.i + 1].value;
+  const flipRef = useRef(dir);
+  if (!sameSeg) flipRef.current = dir;
+  const flipped = flipRef.current === "back";
   const cur = stops[active] ?? stops[0];
   const nextName = moving ? (stops[active === fr.i ? fr.i + 1 : fr.i]?.name ?? "") : "";
   const ticks: number[] = [];
@@ -277,7 +281,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
               })}
             {armed && (
               <>
-                <div aria-hidden className="pointer-events-none absolute top-[calc(var(--tt)-34px)] z-[4] max-[760px]:hidden" style={{ left: `${planeX}%`, transform: `translateY(${hop}px)` }}>
+                <div aria-hidden className="pointer-events-none absolute top-[calc(var(--tt)-34px)] z-[4] max-[760px]:hidden" style={{ left: `${planeX}%` }}>
                   <span className={`block -translate-x-1/2 rounded-pill bg-fg px-2.5 py-[3px] text-[0.75rem] font-bold whitespace-nowrap text-card transition-opacity duration-200 ${moving ? "opacity-100" : "opacity-0"}`}>{moving ? `${active === fr.i ? "→" : "←"} ${nextName}` : ""}</span>
                 </div>
                 <div
@@ -285,10 +289,10 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
                   data-dir={dir}
                   aria-hidden="true"
                   key={swap}
-                  className={`absolute top-[calc(var(--tt)+11px)] z-[3] -mt-[19px] -ml-[19px] grid size-[38px] place-items-center rounded-full bg-fg shadow-[0_0_0_3px_var(--hav-sun),0_8px_18px_-6px_color-mix(in_srgb,var(--hav-pin-ink)_70%,transparent)] after:absolute after:-inset-2.5 after:rounded-full after:border-2 after:border-sun after:opacity-0 ${swap > 0 ? "after:animate-[route-ping_.8s_ease-out]" : ""}`}
-                  style={{ left: `${planeX}%`, transform: `translateY(${hop}px)` }}
+                  className={`absolute top-[calc(var(--tt)+11px)] z-[3] -mt-[19px] -ml-[19px] grid size-[38px] place-items-center rounded-full bg-fg shadow-[0_0_0_3px_var(--hav-sun),0_8px_18px_-6px_color-mix(in_srgb,var(--hav-pin-ink)_70%,transparent)] after:absolute after:-inset-2.5 after:rounded-full after:border-2 after:border-sun after:opacity-0 ${swap > 0 && !sameSeg ? "after:animate-[route-ping_.8s_ease-out]" : ""}`}
+                  style={{ left: `${planeX}%` }}
                 >
-                  <svg viewBox="0 0 24 24" className={`size-5 text-card transition-transform duration-300 ${dir === "back" ? "-scale-x-100" : ""}`}>
+                  <svg viewBox="0 0 24 24" className={`size-5 text-card transition-transform duration-300 ${flipped ? "-scale-x-100" : ""}`}>
                     <path fill="currentColor" d="M21.5 11.2 14 7.8V3.5a2 2 0 1 0-4 0v4.3l-7.5 3.4v2.1l7.5-1.6v4.6l-2.2 1.6V20l4.2-1.1 4.2 1.1v-1.9L14 16.3v-4.6l7.5 1.6z" transform="rotate(90 12 12)" />
                   </svg>
                 </div>
