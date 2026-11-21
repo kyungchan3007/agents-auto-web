@@ -154,7 +154,8 @@ export function useRouteTiles(chars: string[]): { ch: string; out: boolean }[] {
 
 /** 비행기 좌우 방향 — 값이 같은 구간(sameSeg)에서는 직전 방향을 그대로 둠 (뒤집히지 않음 · 작업 0251 ㄴ) */
 export function usePlaneFlip(dir: "forward" | "back", sameSeg: boolean): boolean {
-  const kept = useRef(dir);
-  if (!sameSeg) kept.current = dir;
-  return kept.current === "back";
+  const [kept, setKept] = useState(dir);
+  // 렌더 중 ref 대신 state 로 직전 방향을 기억 (값이 다른 구간에서만 갱신)
+  if (!sameSeg && kept !== dir) setKept(dir);
+  return (sameSeg ? kept : dir) === "back";
 }
