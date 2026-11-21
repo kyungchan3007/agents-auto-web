@@ -71,3 +71,4 @@
 | 0247 | 홈 첫 화면 두 단 되돌리기 — 0245 의 홈만 0245 이전으로 (Quick) | builder → test | 머지됨 (#295) | task/0247-home-revert | apps/web/src/features/home/components/{hero-section,home,ticket}.tsx · apps/web/e2e/{home,home-redesign,home-fix-0217}.spec.ts |
 | 0248 | AI 티 1차 — 여행 물가 · 통화 9건(1 · 3 · 4 · 20 · 9 · 11 · 12 · 17 · 19) (Quick · 디자인 PR) | builder | 머지됨 (#297) | task/0248-unslop-prices-currency | features/{travel-price,currencies}/components/** · packages/ui components |
 | 0249 | AI 티 1차 — 그 밖 8건(2 · 6 · 7 · 8 · 14 · 16 · 18 · 24) (Quick · 디자인 PR) | builder | 머지됨 (#298) · 미뤄 둔 목록은 후속 PR | task/0249-unslop-others | features/*/components/** · app/not-found.tsx · packages/ui components · tokens.css |
+| 0250 | 미뤄 둔 디자인 테스트 8개 정리 — 크게 깨지는 것만 남기고 값 고정 걷어 냄 · 그림자 검사는 팝업 · 국기 예외 · 목록 비움 (Quick · 테스트만) | test | 진행 중 | task/0250-pending-eight | 테스트 파일 · docs/design-tests-pending.md |
