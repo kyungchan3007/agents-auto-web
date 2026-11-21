@@ -33,7 +33,7 @@ export function NavBar({ title, accent = "fx", logo, links, action }: { title: s
   return (
     <header data-surface="dark" className="sticky top-0 z-50 bg-surface px-4 sm:px-8">
       <nav className="relative mx-auto flex h-14 max-w-page items-center justify-between gap-6 text-fg sm:h-18 sm:justify-start sm:gap-14">
-        <a href="/" className="flex shrink-0 items-center gap-2 font-display text-[1.375rem] font-extrabold tracking-[-0.05em] text-foam sm:text-[1.75rem]">
+        <a href="/" className="tap-44 flex shrink-0 items-center gap-2 font-display text-[1.375rem] font-extrabold tracking-[-0.05em] text-foam sm:text-[1.75rem]">
           {logo}
           <span>
             {head}
@@ -51,7 +51,7 @@ export function NavBar({ title, accent = "fx", logo, links, action }: { title: s
           aria-expanded={open}
           aria-controls={menuId}
           onClick={() => setOpen((v) => !v)}
-          className="-mr-2 inline-flex size-10 items-center justify-center rounded-field text-foam focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foam sm:hidden"
+          className="tap-44 -mr-2 inline-flex size-10 items-center justify-center rounded-field text-foam focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foam sm:hidden"
         >
           <svg aria-hidden viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
