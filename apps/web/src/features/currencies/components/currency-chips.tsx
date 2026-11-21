@@ -18,7 +18,7 @@ export function commitPick(codes: string[], current: string, code: string): void
   saveRecent(pushRecent(stored.length > 0 ? stored : chipRow([], current, codes), code));
 }
 
-const CHIP = "flex items-center gap-2 rounded-pill border-2 px-3.5 py-1.5 text-small font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cheap";
+const CHIP = "tap-44 flex items-center gap-2 rounded-pill border-2 px-3.5 py-1.5 text-small font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cheap";
 
 export function CurrencyChips({ codes }: { codes: string[] }) {
   const { current, row, shown, more, leaving, flip, open, setOpen, ready } = useChipRow(codes);
@@ -50,7 +50,7 @@ export function CurrencyChips({ codes }: { codes: string[] }) {
   };
   return (
     <nav data-testid="currency-chips" data-ready={ready ? "" : undefined} aria-label="자주 보는 통화" className="relative min-w-0">
-      <ul className="flex gap-2 overflow-x-auto pb-1">
+      <ul className="flex gap-2 overflow-x-auto pb-1 max-sm:-mt-1 max-sm:pt-1">
         {shown.map((code) => chip(code, false))}
         {leaving.map((code) => chip(code, true))}
         {more > 0 && (
