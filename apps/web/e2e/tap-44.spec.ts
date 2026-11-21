@@ -87,11 +87,23 @@ test.describe("휴대폰 390px — 누르는 자리 44px 이상 (작업 0268)", 
           for (const el of Array.from(document.querySelectorAll(base)).filter((e) => !m || (e.textContent ?? "").includes(m[2]))) {
             const r = el.getBoundingClientRect();
             if (r.width === 0 || r.height === 0) continue;
+            // ::after 의 실제 상자 = 요소(position: relative)의 안쪽 가장자리 기준 left/right/top/bottom 과 크기, 그리고 transform 이동(translate)을 모두 반영 — 가운데 기준이라고 가정하지 않음(앞 단추는 오른쪽 기준으로 왼쪽만 · 뒤 단추는 왼쪽 기준으로 오른쪽만 넓히는 경우가 있음)
             const af = getComputedStyle(el, "::after");
             const has = af.content !== "none" && af.content !== "normal";
-            const pw = has ? parseFloat(af.width) || 0 : 0, ph = has ? parseFloat(af.height) || 0 : 0;
-            const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-            out.push({ id, text: (el.getAttribute("aria-label") ?? el.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 24), x1: Math.min(r.left, cx - pw / 2), x2: Math.max(r.right, cx + pw / 2), y1: Math.min(r.top, cy - ph / 2), y2: Math.max(r.bottom, cy + ph / 2) });
+            let x1 = r.left, x2 = r.right, y1 = r.top, y2 = r.bottom;
+            if (has) {
+              const w = parseFloat(af.width) || 0, h = parseFloat(af.height) || 0;
+              const px = (v: string) => (v === "auto" ? Number.NaN : parseFloat(v));
+              const bl = (el as HTMLElement).clientLeft, bt = (el as HTMLElement).clientTop;
+              const padL = r.left + bl, padT = r.top + bt, padR = r.right - ((el as HTMLElement).offsetWidth - (el as HTMLElement).clientWidth - bl), padB = r.bottom - ((el as HTMLElement).offsetHeight - (el as HTMLElement).clientHeight - bt);
+              const left = px(af.left), right = px(af.right), top = px(af.top), bottom = px(af.bottom);
+              let bx = Number.isNaN(left) ? (Number.isNaN(right) ? padL : padR - right - w) : padL + left;
+              let by = Number.isNaN(top) ? (Number.isNaN(bottom) ? padT : padB - bottom - h) : padT + top;
+              const t = af.transform === "none" ? null : new DOMMatrixReadOnly(af.transform);
+              if (t) { bx += t.e; by += t.f; }
+              x1 = Math.min(x1, bx); x2 = Math.max(x2, bx + w); y1 = Math.min(y1, by); y2 = Math.max(y2, by + h);
+            }
+            out.push({ id, text: (el.getAttribute("aria-label") ?? el.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 24), x1, x2, y1, y2 });
           }
         }
         return out;
