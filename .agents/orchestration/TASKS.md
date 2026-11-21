@@ -66,3 +66,4 @@
 | 0243 | 게이트 — Quick PR 도 CI e2e(문서 · 측정만이면 건너뜀) · 작업 기록 검사 먼저 · 라벨 이벤트는 harness-approved 만 (Quick · 보호 파일 3곳) | test → builder | 머지됨 (#291) | task/0243-gate-quick-e2e | .agents/checks.sh · .agents/scripts/** · .github/workflows/checks.yml |
 | (후보) | 흔들리는 e2e 다음 묶음 — calc-design.spec.ts:70(휴대폰) · prices-route.spec.ts:229 (0242 · 0238 CI 에서 흔들림) | test | 다음 작업 후보 | — | apps/web/e2e/{calc-design,prices-route}.spec.ts |
 | 0244 | develop 브랜치 흐름 + e2e 줄이기 — 대상 develop 은 연결표 e2e(넓은 화면) · 대상 main 은 전체 · rigs/ 조용한 파일 (Quick · 보호 파일) | test → builder | 진행 중 | task/0244-develop-flow | .agents/checks.sh · .agents/scripts/** · .agents/e2e-map.json · team.md · rig 템플릿 |
+| 0245 | AI 티 걷어 내기 1차 선택 3건 — 홈 두 단(1024↑) · 직구 휴대폰 머리 빈 면 · 작은 글자판 이음선 뒤로 (Quick · 화면만) | builder → test | 진행 중 | task/0245-unslop-three | apps/web/src/features/{home,import-calc,currencies,travel-price}/** · packages/ui 글자판 · 깨지는 e2e |
