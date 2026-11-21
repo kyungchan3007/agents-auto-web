@@ -57,3 +57,32 @@ test.describe("직구 입력 안내 아래 빈칸 (작업 0208 추가)", () => {
     expect((await box(tid(page, "calc-result"))).height).toBeGreaterThanOrEqual(min - 0.5);
   });
 });
+
+// 작업 0256 — 사용자가 정한 조건(시안 29 B안 · 기능 테스트): 1280 폭에서 입력 칸 "상자(테두리 있는 칸)" 네 줄 사이 세 간격이 모두 64px(±1) ·
+//   카드 위 선 → ① 칸 위 선과 ④ 칸 아래 선 → 카드 아래 선이 같음(±1) · 입력 카드와 결과 카드의 아래 선이 같음.
+//   줄: ① 통화 · 물건 값 ② 미국 선택지 ③ 그 밖 나라 선택지 ④ 국제 배송비 · 관세율 · 라벨 · 도움말 글은 줄에 넣지 않음(간격 안에 들어가는 것으로 봄) · 간격 = 윗줄 상자 아래 선 → 아랫줄 상자 위 선
+test("직구 입력 카드 — 칸 상자 사이 세 간격 64px · 카드 위 · 아래 여백 같음 · 두 카드 아래 선 같음 (폭 1280 · 작업 0256)", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/calc");
+  await page.waitForTimeout(300);
+  const rowOf = async (...locs: Locator[]) => {
+    const bs = await Promise.all(locs.map(box));
+    return { top: Math.min(...bs.map((b) => b.y)), bottom: Math.max(...bs.map((b) => b.y + b.height)) };
+  };
+  const radios = page.locator('form[data-testid="calc-input"] [role="radiogroup"] > label');
+  await expect(radios).toHaveCount(2);
+  const r1 = await rowOf(page.locator("#currency"), page.locator("#price"));
+  const r2 = await rowOf(radios.nth(0));
+  const r3 = await rowOf(radios.nth(1));
+  const r4 = await rowOf(page.locator("#shipping"), page.locator("#duty"));
+  const card = await box(tid(page, "calc-input"));
+  const result = await box(tid(page, "calc-result"));
+  const gaps = [r2.top - r1.bottom, r3.top - r2.bottom, r4.top - r3.bottom];
+  const above = r1.top - card.y;
+  const below = card.y + card.height - r4.bottom;
+  const bottomDiff = Math.abs(card.y + card.height - (result.y + result.height));
+  console.log(`0256 잰 값 — 간격 ${gaps.map((g) => g.toFixed(1)).join(" · ")} · 카드 위 ${above.toFixed(1)} · 카드 아래 ${below.toFixed(1)} · 두 카드 아래 선 차이 ${bottomDiff.toFixed(1)}`);
+  gaps.forEach((g, i) => expect(Math.abs(g - 64), `간격 ${i + 1}`).toBeLessThanOrEqual(1));
+  expect(Math.abs(above - below), "카드 위 → ① 과 ④ → 카드 아래").toBeLessThanOrEqual(1);
+  expect(bottomDiff, "두 카드 아래 선").toBeLessThanOrEqual(1);
+});
