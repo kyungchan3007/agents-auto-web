@@ -239,6 +239,7 @@ test.describe("새 통화 상세 — 계산 결과 글자판 (작업 0219 사용
 test.describe("새 통화 상세 — 1년 흐름 · 아래 목록 (작업 0219)", () => {
   test("기간 탭 1개월 · 3개월 · 1년 — 누르면 aria-pressed 가 바뀜 (지금 기능 그대로)", async ({ page }) => {
     await page.goto("/currencies/USD");
+    await page.waitForLoadState("networkidle"); // 하이드레이션이 끝난 뒤 누름 — 주말에는 하이드레이션 뒤에 안내 줄(24px)이 생겨 탭이 밀리고, 하이드레이션 전 누름은 반응이 없음
     const tabs = tid(page, "year-flow").getByRole("group", { name: "기간" });
     await tabs.getByRole("button", { name: "1개월" }).click();
     await expect(tabs.getByRole("button", { name: "1개월" })).toHaveAttribute("aria-pressed", "true");

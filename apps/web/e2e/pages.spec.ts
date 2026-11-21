@@ -368,18 +368,19 @@ test.describe("여행 물가 — 나라 접기 버튼 (작업 0198)", () => {
     expect(await fold.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe("none");
   });
 
-  test("펼친 뒤 목록 중간까지 스크롤해도 나라 접기가 화면 안에 보임", async ({ page }) => {
+  // 작업 0248 · 4번 사용자 결정: 나라 접기는 화면 아래에 붙어 따라오지 않고(작업 0198 조건을 바꿈) 펼친 목록 끝 왼쪽에 둠
+  test("펼친 뒤 나라 접기는 목록 끝 왼쪽에 있고 목록 끝까지 가면 화면 안에 보임", async ({ page }) => {
     await page.goto("/prices");
     await openBtn(page).click();
     const fold = foldBtn(page);
     await expect(fold).toBeVisible();
+    await fold.scrollIntoViewIfNeeded();
+    await expect(fold).toBeInViewport();
     const bands = await box(bandsOf(page));
-    const vh = page.viewportSize()?.height ?? 0;
-    // 목록 윗부분 · 중간에서 각각 접기 버튼이 화면 안에 있는지
-    for (const frac of [0.15, 0.5]) {
-      await page.evaluate((y) => window.scrollTo(0, y), Math.max(0, bands.y + bands.height * frac - vh / 2 + (await page.evaluate(() => window.scrollY))));
-      await expect(fold).toBeInViewport();
-    }
+    const fb = await box(fold);
+    const lastRowBottom = await bandsOf(page).locator("li").evaluateAll((els) => Math.max(...els.map((e) => e.getBoundingClientRect().bottom)));
+    expect(fb.y, "나라 접기가 목록 맨 끝(모든 줄) 아래").toBeGreaterThanOrEqual(lastRowBottom - 1);
+    expect(Math.abs(fb.x - bands.x), "목록 왼쪽 끝에 맞춤").toBeLessThanOrEqual(2);
   });
 
   test("접으면 목록 머리가 화면 안에 들어오고 더 보기로 돌아감", async ({ page }) => {
