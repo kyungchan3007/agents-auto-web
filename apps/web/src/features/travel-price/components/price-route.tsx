@@ -130,7 +130,8 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
   );
 }
 
-const CARD = "relative overflow-hidden rounded-3xl bg-card px-8 pt-(--route-card-pt) pb-(--route-card-pb) ring-1 ring-line before:absolute before:inset-y-0 before:left-0 before:w-1.5 before:bg-(--c) max-[760px]:rounded-[1.25rem] max-[760px]:px-[1.125rem] max-[760px]:before:w-[5px]";
+// mx-px: 감싼 영역이 넘치는 1px 을 잘라 카드 바깥 둘레 선(ring)이 양쪽에서 잘리던 것을 안으로 들여 온전히 보이게 — 왼쪽 굵은 색 띠는 그대로 (작업 0248 · 20번)
+const CARD = "relative mx-px overflow-hidden rounded-3xl bg-card px-8 pt-(--route-card-pt) pb-(--route-card-pb) ring-1 ring-line before:absolute before:inset-y-0 before:left-0 before:w-1.5 before:bg-(--c) max-[760px]:rounded-[1.25rem] max-[760px]:px-[1.125rem] max-[760px]:before:w-[5px]";
 
 export function PriceRoute({ bands, signalOf, percentileOf, latestYear }: Props) {
   const stops = routeStops(bands);
