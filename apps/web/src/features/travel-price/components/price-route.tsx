@@ -110,7 +110,8 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
               <>
                 {pctNum}
                 <small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:text-[0.875rem]">{stop.value < 100 ? "% 쌉니다" : "% 비쌉니다"}</small>
-            </>
+              </>
+            )}
           </p>
         </div>
         <div>
