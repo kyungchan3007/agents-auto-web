@@ -12,7 +12,7 @@ export const FADE_UP_MS = 700;
 export const FADE_UP_STEP_MS = 90;
 const DISTANCE = "translateY(28px)";
 
-export function FadeUpGroup({ children, className = "", id }: { children: ReactNode; className?: string; id?: string }) {
+export function FadeUpGroup({ children, className = "", id, testId = "fade-up" }: { children: ReactNode; className?: string; id?: string; /** 기존 화면 약속(data-testid)을 이어 쓸 때 */ testId?: string }) {
   const { ref, seen } = useInViewOnce<HTMLDivElement>();
   const reduce = useReducedMotion();
   useEffect(() => {
@@ -26,7 +26,7 @@ export function FadeUpGroup({ children, className = "", id }: { children: ReactN
     }
   }, [seen, reduce, ref]);
   return (
-    <div ref={ref} id={id} data-testid="fade-up" className={className}>
+    <div ref={ref} id={id} data-testid={testId} className={className}>
       {children}
     </div>
   );
