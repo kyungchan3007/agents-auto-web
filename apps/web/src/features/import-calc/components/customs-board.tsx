@@ -4,9 +4,9 @@ export function CustomsBoard({ text, label }: { text: string; label: string }) {
   return (
     <div data-testid="flap-board" role="img" aria-label={label} className="inline-flex max-w-full gap-[3px] rounded-lg bg-pin-ink p-1.5">
       {Array.from(text).map((c, i) => (
-        <span key={i} aria-hidden className="relative grid h-9 w-6 min-w-0 shrink place-items-center rounded-[3px] bg-flap-cell font-display text-[1.25rem] leading-none font-extrabold tracking-display text-sun tabular-nums">
+        <span key={i} aria-hidden className="relative isolate grid h-9 w-6 min-w-0 shrink place-items-center rounded-[3px] bg-flap-cell font-display text-[1.25rem] leading-none font-extrabold tracking-display text-sun tabular-nums">
           {c === " " ? "" : c}
-          <span aria-hidden className="absolute inset-x-0 top-1/2 h-px bg-on-band" />
+          <span aria-hidden className="absolute inset-x-0 top-1/2 -z-10 h-px bg-on-band" />
         </span>
       ))}
     </div>

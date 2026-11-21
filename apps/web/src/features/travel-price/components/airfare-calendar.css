@@ -79,8 +79,8 @@
 .af-pass .stub .lab{font-size:11.5px;font-weight:700;color:var(--sub)}
 /* 글자판 가격 — 칸마다 숫자가 굴러서 맞춰짐 (운영 출발 안내판 모양) */
 .af-board{display:flex;gap:3px;padding:6px;border-radius:8px;background:var(--hav-pin-ink);min-height:48px;min-width:96px}
-.af-board .c{position:relative;width:24px;height:36px;border-radius:3px;background:var(--hav-flap-cell);overflow:hidden;color:var(--yellow);font-family:var(--head);font-weight:800;font-size:22px}
-.af-board .c::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--hav-on-band);z-index:2}
+.af-board .c{position:relative;isolation:isolate;width:24px;height:36px;border-radius:3px;background:var(--hav-flap-cell);overflow:hidden;color:var(--yellow);font-family:var(--head);font-weight:800;font-size:22px}
+.af-board .c::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--hav-on-band);z-index:-1}
 .af-board .c .s{display:flex;flex-direction:column;will-change:transform}
 .af-board .c .s span,.af-board .c .g{display:block;height:36px;line-height:36px;text-align:center}
 .af-board .c.k{width:12px}

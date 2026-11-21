@@ -15,9 +15,9 @@ export function ResultBoard({ amount, label, from = null }: { /** 최종 값(원
       {amount === null ? (
         <div className="flex gap-[3px] text-sun sm:gap-1">
           {Array.from({ length: cols }, (_, i) => (
-            <span key={i} aria-hidden className={`relative flex items-center justify-center ${CELL}`}>
+            <span key={i} aria-hidden className={`relative isolate flex items-center justify-center ${CELL}`}>
               {i === cols - 1 ? "—" : ""}
-              <span aria-hidden className="absolute inset-x-0 top-1/2 h-px bg-on-band" />
+              <span aria-hidden className="absolute inset-x-0 top-1/2 -z-10 h-px bg-on-band" />
             </span>
           ))}
         </div>

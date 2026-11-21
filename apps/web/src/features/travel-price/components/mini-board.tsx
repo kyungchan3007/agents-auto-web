@@ -4,9 +4,9 @@ export function MiniBoard({ text, label }: { text: string; label: string }) {
   return (
     <div data-testid="flap-board" role="img" aria-label={label} className="inline-flex max-w-full gap-[3px]">
       {Array.from(text).map((c, i) => (
-        <span key={i} aria-hidden className="relative grid h-11 w-8 min-w-0 shrink place-items-center rounded-md bg-flap-cell font-display text-[1.5rem] leading-none font-extrabold tracking-display text-sun tabular-nums">
+        <span key={i} aria-hidden className="relative isolate grid h-11 w-8 min-w-0 shrink place-items-center rounded-md bg-flap-cell font-display text-[1.5rem] leading-none font-extrabold tracking-display text-sun tabular-nums">
           {c === " " ? "" : c}
-          <span aria-hidden className="absolute inset-x-0 top-1/2 h-px bg-on-band" />
+          <span aria-hidden className="absolute inset-x-0 top-1/2 -z-10 h-px bg-on-band" />
         </span>
       ))}
     </div>
