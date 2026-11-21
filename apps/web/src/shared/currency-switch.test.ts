@@ -37,7 +37,7 @@ describe("고른 통화 칩", () => {
 
 describe("통화 바꾸기 전환", () => {
   it("전환 계산은 lib 에서 · 환율 자리까지 올라가는 스크롤 · 국기 날아감(flag-fly) · 비행기 기수", () => {
-    const files = ["components/currency-detail.tsx", "components/range-card.tsx", "components/currency-chips.tsx", "components/currency-list.tsx"].map((f) => code(read(`${F}/${f}`))).join("\n") + code(read(`${F}/lib/switch-motion.ts`));
+    const files = ["components/currency-detail.tsx", "components/range-card.tsx", "components/currency-chips.tsx", "components/currency-table.tsx"].map((f) => code(read(`${F}/${f}`))).join("\n") + code(read(`${F}/lib/switch-motion.ts`));
     for (const f of ["scrollTarget", "needsScroll", "arcPoint", "planeHeading"]) expect(files, f).toMatch(new RegExp(`\\b${f}\\b`));
     for (const id of ["flag-fly", "currency-kicker"]) expect(files, id).toContain(id);
     expect(files).toContain("data-heading");
@@ -50,7 +50,7 @@ describe("통화 바꾸기 전환", () => {
     expect(code(read(`${F}/components/result-board.tsx`))).toMatch(/@hav\/ui\/motion\/rolling-number/);
   });
   it("실행 중 API · 새 요청 없음 — 클라이언트 이동(next/link · router)만, fetch · /bff 호출 없음", () => {
-    const s = ["components/currency-chips.tsx", "components/currency-list.tsx", "components/chip-more-box.tsx"].map((f) => code(read(`${F}/${f}`))).join("\n");
+    const s = ["components/currency-chips.tsx", "components/currency-table.tsx", "components/chip-more-box.tsx"].map((f) => code(read(`${F}/${f}`))).join("\n");
     expect(s).not.toMatch(/\bfetch\(/);
     expect(s).not.toMatch(/\/bff\//);
   });
