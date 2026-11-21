@@ -15,8 +15,9 @@ const box = (page: Page) => page.getByRole("complementary", { name: "탑승권" 
 async function openHome(page: Page) {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.addInitScript(([k, v]) => localStorage.setItem(k, v), [PICKED, JSON.stringify({ v: 1, country: "FRA", city: "파리", budget: 1000000 })] as const);
-  await page.clock.install();
+  await page.clock.install({ time: new Date("2026-11-21T10:00:00Z") });
   await page.goto("/");
+  await page.clock.pauseAt(new Date("2026-11-21T10:30:00Z")); // 시계를 세워 둠 — 이후에는 runFor 로만 흐름(실제 시간에 흔들리지 않음)
   await page.clock.runFor(100); // 저장된 값을 읽는 0ms 타이머
   await expect(pass(page)).toContainText("파리");
 }
@@ -71,7 +72,7 @@ test.describe("탑승권 상자 — 3초 뒤 사라짐", () => {
     await page.clock.runFor(2000);
     await page.evaluate(([name, detail]) => window.dispatchEvent(new CustomEvent(name, { detail })), [PICK_EVENT, { v: 1, country: "JPN", city: "도쿄", budget: 500000 }] as const);
     await expect(pass(page)).toContainText("도쿄");
-    await expect(box(page)).toContainText("도쿄");
+    await expect(box(page), "상자 내용이 새 여행지(예산 500,000원)로 바뀜").toContainText("500,000원");
     await page.clock.runFor(STAY - 300); // 처음 눌렀을 때부터 4.7초 — 다시 세지 않았다면 이미 없을 때
     await expect(box(page), "바꾼 뒤 3초가 되기 전에는 아직 떠 있음").toHaveCount(1);
     await page.clock.runFor(300 + FADE + 100);
