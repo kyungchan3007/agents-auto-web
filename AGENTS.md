@@ -7,6 +7,7 @@
 
 ## 1. 절대 규칙
 1. **완료 = PR 최신 커밋의 CI gate 통과.** CI 가 `bash .agents/checks.sh` 를 돌려 PASS 여야 "완료"라고 말한다 (판정: .agents/orchestration/verdict.md).
+   - 디자인 PR 은 기능 테스트 통과로 완료 · 디자인 테스트는 목록으로 미룬다 (상세: verdict.md).
 2. **요청 원문을 고정한다.** 작업마다 `.agents/specs/NNNN-이름/request.md` 에 원문 그대로. 요약하지 않는다.
 3. **계획한 파일만 바꾼다.** "파일 계획"(plan.md 또는 sdd.md) 밖을 바꾸면 그 문서에 이유를 적는다.
 4. **보호 파일은 사람 승인 없이 바꾸지 않는다.** 목록: `.agents/protected.txt`
@@ -38,7 +39,6 @@ npm run spec:new -- cart-qty          # Quick Loop 작업 폴더
 npm run spec:new -- checkout --full   # Full Loop 작업 폴더
 bash .agents/checks.sh         # 게이트
 ```
-
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know
