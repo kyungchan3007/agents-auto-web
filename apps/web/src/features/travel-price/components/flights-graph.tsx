@@ -86,10 +86,10 @@ export function FlightsGraph({ air, tour, fx }: { air: IndexPoint[]; tour: Index
         />
       </div>
       {/* 범례 — 칩을 누르면 그 선만 강조 (다시 누르면 원래대로) · 칩에는 선 이름만 (작업 0261) */}
-      <ul data-testid="travel-legend" className="mt-3 flex flex-wrap gap-2 text-small text-fg">
+      <ul data-testid="travel-legend" className="mt-3 flex flex-wrap gap-2 text-small text-fg max-sm:gap-y-3">
         {lines.map((l) => (
           <li key={l.id}>
-            <button type="button" aria-pressed={focus === l.id} onClick={() => toggle(l.id)} className={`flex items-center gap-2 rounded-pill border-2 px-3 py-1 transition-colors ${focus === l.id ? "border-cheap bg-card font-semibold" : "border-line hover:bg-surface-2"}`}>
+            <button type="button" aria-pressed={focus === l.id} onClick={() => toggle(l.id)} className={`tap-44 flex items-center gap-2 rounded-pill border-2 px-3 py-1 transition-colors ${focus === l.id ? "border-cheap bg-card font-semibold" : "border-line hover:bg-surface-2"}`}>
               {l.id === "fx" ? <span aria-hidden className="inline-block w-5 border-t-2 border-dashed border-fg-2" /> : <span aria-hidden className={`inline-block h-1 w-5 rounded-pill ${l.id === "air" ? "bg-cheap" : "bg-band"}`} />}
               <span>{LEGEND_NAME[l.id]}</span>
             </button>
