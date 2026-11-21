@@ -83,7 +83,7 @@ main:focus {
   }
 }
 
-/* 여행 물가 "스크롤 물가 노선" — 서버가 그린 첫 그림부터 긴 스크롤 모양 (작업 0230)
+/* 여행 물가 "물가 노선" — 서버가 그린 첫 그림부터 긴 스크롤 모양 (작업 0230)
    스크립트가 켜져 있고 움직임을 줄이지 않았을 때만: 구역이 긴 칸이 되고 안의 판이 메뉴 띠 바로 아래(--hav-nav-h)에 붙음(세로 가운데 아님)
    구역 높이 = 판 높이 + (정거장 수 − 1) × 정거장 사이 스크롤(넓은 화면 36vh · 휴대폰 30vh)
    자바스크립트 꺼짐 · 움직임 줄이기는 고정 없이 정적 노선(정거장 카드가 모두 보임) */
@@ -99,9 +99,9 @@ main:focus {
   0% { opacity: 0.9; transform: scale(0.6); }
   100% { opacity: 0; transform: scale(1.5); }
 }
-/* 화면 높이 구간별 크기 — 낮은 창에서도 제목 · 자 · 카드가 판(화면 − 메뉴) 안에 들어오게 간격 · 여백 · 글자만 줄임 (글 · 숫자 · 줄은 그대로 · 0217 홈의 높이 구간 방식) */
+/* 물가 노선 크기 값 — 넓은 화면 · 휴대폰(760 이하) 두 가지 (작업 0266: 스크롤 고정을 풀어 낮은 창 높이 구간 · 고정 판 높이 값은 없앰) */
 [data-testid="route-section"] {
-  --route-pt: 1.5rem; --route-head-mb: 1.375rem; --route-title: var(--text-title);
+  --route-head-mb: 1.375rem; --route-title: var(--text-title);
   --route-rh: 18.75rem; --route-tt: 9.375rem;
   --route-card-pt: 1.5rem; --route-card-pb: 1.625rem; --route-flag: 4.75rem; --route-name: 2.125rem; --route-name-h: 2.5625rem;
   --route-row-mt: 1.25rem; --route-row-pt: 1.125rem; --route-row-gap: 1rem; --route-tile-h: 3.625rem; --route-tile-w: 2.75rem; --route-tile: 2.125rem; --route-big: 2.625rem;
@@ -113,59 +113,6 @@ main:focus {
     --route-row-mt: 0.875rem; --route-row-pt: 0.875rem; --route-tile-h: 3rem; --route-tile-w: 2.25rem; --route-tile: 1.75rem; --route-big: 1.75rem;
   }
 }
-@media (min-width: 761px) and (max-height: 810px) {
-  [data-testid="route-section"] {
-    --route-pt: 1rem; --route-head-mb: 0.875rem; --route-title: 2rem; --route-rh: 17.5rem; --route-tt: 8.5rem;
-    --route-card-pt: 1.125rem; --route-card-pb: 1.125rem; --route-flag: 3.75rem; --route-name: 1.75rem; --route-name-h: 2.125rem;
-    --route-row-mt: 0.875rem; --route-row-pt: 0.75rem; --route-tile-h: 3rem; --route-tile-w: 2.25rem; --route-tile: 1.75rem; --route-big: 2.125rem;
-  }
-}
-@media (min-width: 761px) and (max-height: 730px) {
-  [data-testid="route-section"] {
-    --route-pt: 0.75rem; --route-head-mb: 0.5rem; --route-title: 1.625rem; --route-rh: 16.4rem; --route-tt: 7.5rem;
-    --route-card-pt: 0.875rem; --route-card-pb: 0.875rem; --route-flag: 3.25rem; --route-name: 1.5rem; --route-name-h: 1.875rem;
-    --route-row-mt: 0.625rem; --route-row-pt: 0.5rem; --route-tile-h: 2.5rem; --route-tile-w: 2rem; --route-tile: 1.5rem; --route-big: 1.75rem;
-  }
-}
-@media (max-width: 760px) and (max-height: 780px) {
-  [data-testid="route-section"] {
-    --route-pt: 1rem; --route-title: 1.375rem; --route-rh: 17rem; --route-tt: 8rem;
-    --route-card-pt: 1rem; --route-card-pb: 1rem; --route-flag: 3rem; --route-name: 1.5rem; --route-name-h: 1.875rem;
-    --route-row-mt: 0.625rem; --route-row-pt: 0.625rem; --route-row-gap: 0.75rem; --route-tile-h: 2.625rem; --route-tile-w: 2rem; --route-tile: 1.5rem; --route-big: 1.5rem;
-  }
-}
-@media (max-width: 760px) and (max-height: 700px) {
-  [data-testid="route-section"] {
-    --route-pt: 0.75rem; --route-head-mb: 0.25rem; --route-title: 1.25rem; --route-rh: 15.5rem; --route-tt: 7.5rem;
-    --route-card-pt: 0.75rem; --route-card-pb: 0.75rem; --route-flag: 2.75rem; --route-name: 1.375rem; --route-name-h: 1.75rem;
-    --route-row-mt: 0.5rem; --route-row-pt: 0.5rem; --route-row-gap: 0.5rem; --route-tile-h: 2.25rem; --route-tile-w: 1.75rem; --route-tile: 1.25rem; --route-big: 1.375rem;
-  }
-}
-@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-  [data-testid="route-section"] {
-    --route-step: 36vh;
-    --route-stage-h: calc(100vh - var(--hav-nav-h));
-    height: calc(var(--route-stage-h) + (var(--route-n) - 1) * var(--route-step));
-    margin-top: calc(var(--route-pt) * -1); /* 판 안 윗 여백만큼 당겨, 가만히 있을 때 제목 자리는 정적 자와 같게 (높이 구간이 바뀌어도 같음) */
-  }
-  [data-testid="route-stage"] {
-    position: sticky;
-    top: var(--hav-nav-h);
-    height: var(--route-stage-h);
-    overflow: hidden;
-    padding-top: var(--route-pt);
-  }
-  [data-testid="route-static"] {
-    display: none;
-  }
-}
-@media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (max-width: 760px) {
-  [data-testid="route-section"] {
-    --route-step: 30vh;
-    --route-stage-h: calc(100svh - var(--hav-nav-h));
-  }
-}
-
 /* 고른 통화 칩 더보기 상자 · 쪽 넘김 (작업 0231) */
 @keyframes chip-box-in {
   from { opacity: 0; transform: translateY(-6px); }
