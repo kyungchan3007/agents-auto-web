@@ -2,12 +2,12 @@
 // 검색 · 칩 · 목록은 레이아웃이라 통화를 바꿔도 남고, 상세(children)만 바뀜 (작업 0168: 동전을 뺌)
 import type { Fetched } from "@/shared/api";
 import { SiteNav } from "@/shared/site-nav";
-import { SOURCE_NOTE } from "@hav/shared/currency";
+import { SOURCE_NOTE, rateText } from "@hav/shared/currency";
 import type { FxChanges, FxLatest } from "@hav/shared/fx";
 import type { SignalList } from "@hav/shared/signal";
 import type { ReactNode } from "react";
 import { CurrencyChips } from "./currency-chips";
-import { CurrencyList } from "./currency-list";
+import { CurrencyTable } from "./currency-table";
 import { CurrencySearch } from "./currency-search";
 import { FadeUpGroup } from "@hav/ui/motion/fade-up";
 import { Eyebrow } from "@hav/ui/text/heading";
@@ -19,7 +19,9 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
   // 지난 1개월 변화 — 못 받으면 정렬 단추 · 숫자를 뺌 (작업 0099)
   const percentile = Object.fromEntries((signals.ok ? signals.data.signals : []).map((s) => [s.currency, s.percentile]));
   const pct = Object.fromEntries((changes.ok ? changes.data.changes : []).map((c) => [c.currency, c.pct]));
-  const items = (latest.ok ? latest.data.rates : []).map((r) => ({ currency: r.currency, signal: tones[r.currency] ?? null, change: pct[r.currency] ?? null, percentile: percentile[r.currency] ?? null, unit: r.unit }));
+  // 표의 "90일 최고보다" — /signal 이 준 오늘 값 · 90일 최고(추가 요청 없음 · 없으면 "—")
+  const valueOf = Object.fromEntries((signals.ok ? signals.data.signals : []).map((s) => [s.currency, { latest: s.latest?.value ?? null, max: s.max ?? null }]));
+  const items = (latest.ok ? latest.data.rates : []).map((r) => ({ currency: r.currency, signal: tones[r.currency] ?? null, change: pct[r.currency] ?? null, percentile: percentile[r.currency] ?? null, unit: r.unit, rate: `${rateText(r).value}원`, latest: valueOf[r.currency]?.latest ?? null, max: valueOf[r.currency]?.max ?? null }));
   const windowDays = signals.ok ? signals.data.rule.windowDays : 90;
 
   return (
@@ -42,7 +44,7 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
           <FadeUpGroup data-testid="currency-list" className="mt-[4.5rem] min-w-0 sm:mt-24">
             <Eyebrow data-fu={0}>둘러보기</Eyebrow>
             <div data-fu={3} className="mt-4">
-              <CurrencyList items={items} variant="grid" />
+              <CurrencyTable items={items} />
             </div>
           </FadeUpGroup>
         </div>

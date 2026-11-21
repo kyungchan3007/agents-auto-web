@@ -4,7 +4,7 @@ import type { Signal } from "@hav/shared/signal";
 import { favoritesFirst } from "./favorites";
 import { type SortId, sortByChange } from "./sort";
 
-export type ListItem = { currency: string; signal: Signal | null; change: number | null; /** 90일 백분위(0~1) — 목록 핀의 근거 숫자 (없으면 판정 글자만) */ percentile?: number | null; /** 고시 단위 (엔 100 · 목록 이름 옆) — 환율을 못 받았으면 없음 */ unit?: number };
+export type ListItem = { currency: string; signal: Signal | null; change: number | null; /** 90일 백분위(0~1) — 목록 핀의 근거 숫자 (없으면 판정 글자만) */ percentile?: number | null; /** 고시 단위 (엔 100 · 목록 이름 옆) — 환율을 못 받았으면 없음 */ unit?: number; /** 오늘 환율 글 "1,324.3원" (표 · 고시 단위 그대로) — 환율을 못 받았으면 없음 */ rate?: string; /** 오늘 값 · 90일 최고(1 외화당 원 · /signal) — 표의 "90일 최고보다" 계산용 · 없으면 "—" */ latest?: number | null; max?: number | null };
 export type RegionFilter = Region | "all" | "fav";
 
 export function regionChips(items: ListItem[], favCount: number): { id: RegionFilter; label: string }[] {
