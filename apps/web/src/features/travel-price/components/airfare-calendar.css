@@ -30,7 +30,11 @@
 /* 휴대폰: 눌리는 자리만 44px — 보이지 않는 덧칸 · 가운데 기준 (작업 0268) */
 @media (max-width:639.98px){
   .af-chips button,.af-nav button{position:relative}
-  .af-chips button::after,.af-nav button::after{content:"";position:absolute;top:50%;left:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
+  .af-chips button::after{content:"";position:absolute;top:50%;left:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
+  /* 앞 · 뒤 단추는 사이가 6px 라 가운데로 넓히면 겹침 — 앞은 왼쪽으로만 · 뒤는 오른쪽으로만 넓힘 (보이는 위치 그대로) */
+  .af-nav button::after{content:"";position:absolute;top:50%;width:44px;height:44px;transform:translateY(-50%)}
+  .af-nav button:first-child::after{right:0}
+  .af-nav button:last-child::after{left:0}
 }
 .af-strip{position:relative;margin-top:12px;background:var(--hav-foam);border-radius:22px;padding:6px 8px;box-shadow:var(--shadow-af-strip)}
 .af-scroll{overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;border-radius:16px}
