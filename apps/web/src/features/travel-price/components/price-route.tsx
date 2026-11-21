@@ -8,8 +8,8 @@ import { Flag } from "@hav/ui/data/flag";
 import type { Signal } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import { SectionTitle } from "@hav/ui/text/heading";
-import { type CSSProperties, useRef } from "react";
-import { useCountTween, usePriceRoute, useRouteStep, useRouteTiles } from "../hooks/use-price-route";
+import type { CSSProperties } from "react";
+import { useCountTween, usePlaneFlip, usePriceRoute, useRouteStep, useRouteTiles } from "../hooks/use-price-route";
 import { type PriceBand, rateBadgeText } from "../lib/bands";
 import { type RouteBand, type RouteStop, isMoving, routeActive, routeCardText, routeFrame, routeStops, routeValue } from "../lib/price-route";
 import { rulerScale, rulerX } from "../lib/ruler";
@@ -153,9 +153,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
   const planeX = x(planeValue);
   // 앞뒤 정거장 값이 같은 구간(스페인 111 ↔ 아랍에미리트 111)은 비행기가 가만히 — 뛰지 않고 · 고리가 다시 퍼지지 않고 · 좌우로 뒤집히지 않음 (작업 0251 ㄴ) · 바뀌는 것은 나라 쪽뿐
   const sameSeg = n > fr.i + 1 && stops[fr.i].value === stops[fr.i + 1].value;
-  const flipRef = useRef(dir);
-  if (!sameSeg) flipRef.current = dir;
-  const flipped = flipRef.current === "back";
+  const flipped = usePlaneFlip(dir, sameSeg);
   const cur = stops[active] ?? stops[0];
   const nextName = moving ? (stops[active === fr.i ? fr.i + 1 : fr.i]?.name ?? "") : "";
   const ticks: number[] = [];
