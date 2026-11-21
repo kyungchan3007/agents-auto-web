@@ -27,6 +27,11 @@
 .af-nav button{all:unset;cursor:pointer;width:32px;height:32px;border-radius:50%;background:var(--hav-foam);color:var(--ink);font-size:20px;line-height:30px;text-align:center;font-weight:700;box-shadow:var(--shadow-af-nav);transition:opacity .2s}
 .af-nav button:disabled{opacity:.35;cursor:default}
 .af-nav button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+/* 휴대폰: 눌리는 자리만 44px — 보이지 않는 덧칸 · 가운데 기준 (작업 0268) */
+@media (max-width:639.98px){
+  .af-chips button,.af-nav button{position:relative}
+  .af-chips button::after,.af-nav button::after{content:"";position:absolute;top:50%;left:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
+}
 .af-strip{position:relative;margin-top:12px;background:var(--hav-foam);border-radius:22px;padding:6px 8px;box-shadow:var(--shadow-af-strip)}
 .af-scroll{overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;border-radius:16px}
 .af-scroll::-webkit-scrollbar{display:none}
