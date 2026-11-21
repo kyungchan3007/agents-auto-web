@@ -39,7 +39,7 @@ function CountryRow({ r, signalOf, percentileOf, latestYear }: { r: Row; signalO
         </span>
       </span>
       {r.currency && signal ? (
-        <Link href={`/currencies/${r.currency}`} aria-label={`${r.name} 통화 상세`} className="shrink-0">
+        <Link href={`/currencies/${r.currency}`} aria-label={`${r.name} 통화 상세`} className="tap-44 shrink-0">
           <SignalPin signal={signal} text={rateBadgeText(signal, percentileOf[r.currency] ?? null)} />
         </Link>
       ) : (
@@ -101,7 +101,7 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
               type="button"
               onClick={toggle}
               aria-expanded={false}
-              className="border-b-2 border-cheap pb-0.5 text-body font-bold text-cheap hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cheap"
+              className="tap-44 border-b-2 border-cheap pb-0.5 text-body font-bold text-cheap hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cheap"
             >
               {`나라 더 보기 (${more}곳) ›`}
             </button>

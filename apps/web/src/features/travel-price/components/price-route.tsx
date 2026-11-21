@@ -163,7 +163,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
             </SectionTitle>
             <p className="mt-1.5 text-small text-fg-2">나라 이름을 누르면 그 나라로 갑니다 · 싼 나라에서 한국을 지나 비싼 나라 순서입니다</p>
           </div>
-          <ol data-testid="route-stops" className="m-0 flex min-w-0 list-none flex-wrap justify-end gap-1 p-0 max-[760px]:flex-nowrap max-[760px]:justify-start max-[760px]:overflow-x-auto max-[760px]:pb-1">
+          <ol data-testid="route-stops" className="m-0 flex min-w-0 list-none flex-wrap justify-end gap-1 p-0 max-[760px]:flex-nowrap max-[760px]:justify-start max-[760px]:overflow-x-auto sm:max-[760px]:pb-1 max-sm:-my-2 max-sm:pt-2 max-sm:pb-3">
             {stops.map((s) => (
               <li key={s.country} className="max-[760px]:shrink-0">
                 <button
@@ -173,7 +173,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
                   data-value={s.value}
                   data-active={s.index === active ? "true" : "false"}
                   onClick={() => goto(s.index)}
-                  className={`flex cursor-pointer items-center gap-1.5 rounded-pill border py-[0.3125rem] pr-2.5 pl-1.5 text-[0.78125rem] whitespace-nowrap transition-colors duration-[250ms] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${s.index === active ? "border-fg bg-fg font-bold text-card" : s.index < active ? "border-fg/40 text-fg" : "border-line text-fg-2"}`}
+                  className={`tap-44 flex cursor-pointer items-center gap-1.5 rounded-pill border py-[0.3125rem] pr-2.5 pl-1.5 text-[0.78125rem] whitespace-nowrap transition-colors duration-[250ms] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${s.index === active ? "border-fg bg-fg font-bold text-card" : s.index < active ? "border-fg/40 text-fg" : "border-line text-fg-2"}`}
                 >
                   <RouteFlag country={s.country} name={s.name} className="size-4 ring-0" />
                   {s.name}
