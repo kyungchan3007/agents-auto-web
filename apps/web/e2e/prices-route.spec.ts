@@ -132,6 +132,9 @@ test.describe("여행 물가 — 나라 단추로 고르는 물가 노선 (작�
     await expect(tid(page, "route-card-name"), "처음 카드").toHaveText(exp[0].name);
     await expect(tid(page, "route-card-meta")).toHaveText(new RegExp(`^정거장 1 / ${exp.length} · `));
     expect((await stopsOf(page)).map((x) => x.active), "처음에는 첫 단추만 켜짐").toEqual(exp.map((_, i) => i === 0));
+    // 비행기가 자리를 잡을 때까지(연속 두 번 읽은 값이 같음) 기다린 뒤의 값을 기준으로 삼음 (하이드레이션 · 글꼴 뒤 흔들림 방지)
+    let last = Number.NaN;
+    await expect.poll(async () => { const x = await planeX(page); const same = Math.abs(x - last) < 0.5; last = x; await page.waitForTimeout(200); return same; }, { message: "비행기 위치가 자리 잡음", timeout: 8000 }).toBe(true);
     const x0 = await planeX(page);
     // 구간을 가로질러 스크롤 — 카드 · 단추 · 비행기가 그대로
     const box = (await tid(page, "route-section").boundingBox())!;
@@ -144,7 +147,7 @@ test.describe("여행 물가 — 나라 단추로 고르는 물가 노선 (작�
     }
     await page.evaluate(() => window.scrollTo(0, 0));
     await tid(page, "route-card").scrollIntoViewIfNeeded();
-    expect(Math.abs((await planeX(page)) - x0), "비행기도 그대로").toBeLessThanOrEqual(1.5);
+    await expect.poll(async () => Math.abs((await planeX(page)) - x0), { message: "비행기도 그대로(px)", timeout: 8000 }).toBeLessThanOrEqual(1.5);
   });
 
   test("나라 단추를 누르면 — 카드(이름 · 정거장 N / M · 숫자 · 비교 · 예산 · 환율 알약) · 단추 · 비행기가 그 나라로 · 마지막 · 가운데 · 처음으로 다시", async ({ page }) => {
@@ -237,12 +240,14 @@ test.describe("여행 물가 — 나라 단추로 고르는 물가 노선 (작�
       .toBeGreaterThanOrEqual(want - 1);
     const gap = await page.evaluate(() => { const s = document.querySelector('[data-testid="route-section"]') as HTMLElement; const n = s.nextElementSibling as HTMLElement; return n.getBoundingClientRect().top - s.getBoundingClientRect().bottom; });
     expect(Math.abs(gap - want), `간격 ${gap}px`).toBeLessThanOrEqual(1);
-    // 굵은 선(3px)이 아래 구간 위에 그대로 있음
-    const line = await page.evaluate(() => { const n = (document.querySelector('[data-testid="route-section"]') as HTMLElement).nextElementSibling as HTMLElement; const c = getComputedStyle(n); const first = getComputedStyle(n.firstElementChild as HTMLElement); return Math.max(parseFloat(c.borderTopWidth), parseFloat(first.borderTopWidth)); });
+    // 굵은 선(3px)이 아래 구간 위에 그대로 있음 — 다음 칸 안(그 칸 자신 · 사이에 낀 감싸는 칸 · 목록 칸)에서 위쪽 테두리가 가장 굵은 칸을 찾음(한 겹 더 있어도 됨)
+    const line = await page.evaluate(() => {
+      const n = (document.querySelector('[data-testid="route-section"]') as HTMLElement).nextElementSibling as HTMLElement;
+      return Math.max(...[n, ...Array.from(n.querySelectorAll("*"))].map((e) => parseFloat(getComputedStyle(e as HTMLElement).borderTopWidth) || 0));
+    });
     expect(line, "굵은 선").toBeGreaterThanOrEqual(2.5);
   });
 
-  // 사용자가 특히 신경 쓰는 부분(작업 0266 · 6번): 카드 테두리는 border 가 아니라 바깥 1px 링(box-shadow ring)이라, 카드를 감싼 칸이 overflow 로 자르면 그 선이 잘려 보임 — 위 · 아래 · 왼쪽 · 오른쪽 네 변이 모서리까지 모두 보여야 함 (넓은 화면 · 휴대폰 둘 다)
   test("정거장 카드의 네 변 테두리(바깥 링)가 모서리까지 잘리지 않고 보임 — 카드를 자를 수 있는 모든 조상 칸이 카드 + 링 두께보다 넓음", async ({ page }) => {
     test.skip(!(await ready(page)), "물가 자료 없음");
     await stopsReady(page);
