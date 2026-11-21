@@ -12,9 +12,6 @@ export const FADE_UP_MS = 700;
 export const FADE_UP_STEP_MS = 90;
 const DISTANCE = "translateY(28px)";
 
-/** 조각에 순서를 다는 속성 — <p {...fu(2)}> */
-export const fu = (step: number) => ({ "data-fu": step });
-
 export function FadeUpGroup({ children, className = "", id }: { children: ReactNode; className?: string; id?: string }) {
   const { ref, seen } = useInViewOnce<HTMLDivElement>();
   const reduce = useReducedMotion();
