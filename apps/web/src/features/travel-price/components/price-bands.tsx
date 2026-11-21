@@ -55,7 +55,7 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
   const merged = opened && !unfolded; // 펼친 상태(처음 화면의 접힌 세 칸은 그대로) = 세 묶음을 물가 낮은 순 한 목록으로 합쳐 세 단으로 흘림 (작업 0248 · 4번)
   const more = unfolded ? 0 : bands.reduce((n, b) => n + Math.max(0, b.rows.length - FOLDED), 0);
   return (
-    <FadeUpGroup id="price-bands" testId="price-bands" className="scroll-mt-24">
+    <FadeUpGroup id="price-bands" data-testid="price-bands" className="scroll-mt-24">
       {merged ? (
         <ul data-testid="price-merged" className="border-t-[3px] border-fg pt-2 lg:columns-3 lg:gap-x-12 lg:[column-rule:1px_solid_var(--hav-line)]">
           {bands.flatMap((b) => b.rows).map((r) => (
