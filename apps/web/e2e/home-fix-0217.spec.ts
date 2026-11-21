@@ -19,11 +19,24 @@ test.describe("홈 여백 — 설명 문장 ↔ 탑승권 카드 (시안 B 실�
     [1280, 1300], // 높이 규칙(2)이 걸리지 않을 만큼 큰 높이(구현의 가장 큰 구간 1180px 위) — 순수 폭 기준 값
     [390, 844],
   ] as const) {
-    test(`${width}px — 설명 문장 아래 끝 ~ 카드 위 끝 = ${SAMPLE_GAP[width]}px (±4)`, async ({ page }) => {
+    test(`${width}px — ${width >= 1024 ? "두 단(작업 0245): 카드 위 파랑 40px · 아래 파랑 48px (±4) · 설명 문장은 카드 왼쪽" : `설명 문장 아래 끝 ~ 카드 위 끝 = ${SAMPLE_GAP[width]}px (±4)`}`, async ({ page }) => {
       test.skip(isPhoneProject(page), "뷰포트를 직접 정하므로 넓은 화면 프로젝트에서만");
       await page.setViewportSize({ width, height });
       await page.goto("/");
       await page.waitForTimeout(400);
+      if (width >= 1024) {
+        // 작업 0245 — 1024 이상은 제목 왼쪽 · 카드 오른쪽 · 파랑 면(두 단 래퍼)이 카드를 품음 (옛 위아래 간격 50px 규칙은 이 폭에서 대체)
+        const m = await tid(page, "home-hero").evaluate((el) => {
+          const w = (el.parentElement as HTMLElement).getBoundingClientRect();
+          const c = document.querySelector('[data-testid="ticket"]')!.getBoundingClientRect();
+          const p = [...el.querySelectorAll("p")].pop()!.getBoundingClientRect();
+          return { above: c.top - w.top, below: w.bottom - c.bottom, ledeRight: p.right, cardLeft: c.left };
+        });
+        expect(Math.abs(m.above - 40), `카드 위 파랑 ${m.above.toFixed(1)}px`).toBeLessThanOrEqual(4);
+        expect(Math.abs(m.below - 48), `카드 아래 파랑 ${m.below.toFixed(1)}px`).toBeLessThanOrEqual(4);
+        expect(m.ledeRight, "설명 문장은 카드 왼쪽").toBeLessThanOrEqual(m.cardLeft);
+        return;
+      }
       const lede = await tid(page, "home-hero").locator("p").last().boundingBox();
       const card = await tid(page, "ticket").boundingBox();
       if (!lede || !card) throw new Error("설명 문장 또는 카드가 화면에 없음");
@@ -72,10 +85,11 @@ test.describe("홈 첫 화면 높이 — 안내판 · 97% 줄 · 국기 칩 · �
       const h1 = page.getByRole("heading", { level: 1 });
       await expect(h1).toBeVisible();
       expect(await h1.evaluate((el) => parseFloat(getComputedStyle(el).fontSize)), "큰 제목 글자 크기").toBeGreaterThanOrEqual(40);
+      // 작업 0245 — 두 단(1024 이상): 위아래 간격 대신 설명 문장이 카드 왼쪽에 겹치지 않고 있음 · 제목이 첫 화면 안
       const lede = (await tid(page, "home-hero").locator("p").last().boundingBox())!;
       const card = (await tid(page, "ticket").boundingBox())!;
-      expect(card.y - (lede.y + lede.height), "설명 문장과 카드 사이").toBeGreaterThanOrEqual(8);
-      expect(card.y - (lede.y + lede.height), "시안(50px)보다 넓어지지 않음").toBeLessThanOrEqual(54);
+      expect(lede.x + lede.width, "설명 문장과 카드 사이(좌우)").toBeLessThanOrEqual(card.x - 8);
+      expect(lede.y + lede.height, "설명 문장 아래 끝").toBeLessThanOrEqual(height);
     });
   }
 

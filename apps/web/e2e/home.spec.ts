@@ -8,10 +8,18 @@ test("홈 구간 순서 — 여행 타이밍 → 오늘 환율(바다 띠) → �
   await page.goto("/");
   const y = async (loc: ReturnType<typeof page.locator>) => (await loc.boundingBox())?.y ?? Number.NaN;
   // 메뉴의 "여행 타이밍" 링크는 휴대폰에서 접혀 있어 위치가 없음 — 머리글 밖(본문)의 라벨을 찾음
-  const timing = await y(page.locator('*:text-is("여행 타이밍"):not(header *)').first());
+  const timingLoc = page.locator('*:text-is("여행 타이밍"):not(header *)').first();
+  const timing = await y(timingLoc);
   const today = await y(page.locator("#board"));
   const dest = await y(page.locator("#today"));
-  expect(timing, "여행 타이밍").toBeLessThan(today);
+  if ((page.viewportSize()?.width ?? 0) >= 1024) {
+    // 작업 0245 — 1024 이상은 두 단: 여행 타이밍(제목)이 왼쪽 · 오늘 환율(카드)이 오른쪽 (위아래가 아니라 좌우 순서)
+    const tx = (await timingLoc.boundingBox())?.x ?? Number.NaN;
+    const bx = (await page.locator("#board").boundingBox())?.x ?? Number.NaN;
+    expect(tx, "여행 타이밍(왼쪽)").toBeLessThan(bx);
+  } else {
+    expect(timing, "여행 타이밍").toBeLessThan(today);
+  }
   expect(today, "오늘 환율").toBeLessThan(dest);
 });
 

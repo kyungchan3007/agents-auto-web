@@ -35,8 +35,12 @@ describe("직구 계산 — 파랑 첫 면", () => {
     expect(m).toMatch(/relative z-10/);
   });
 
-  it("제목 + 설명 덩어리의 세 줄 자리(0208 크기 고정)는 그대로 — min-h 계산식 유지", () => {
-    expect(page).toMatch(/min-h-\[calc\(4\.02\*clamp\(2\.25rem,4\.5vw,3\.5rem\)/);
+  it("제목 + 설명 덩어리의 자리(0208 크기 고정)는 640 이상만 min-h 계산식 유지 · 639 이하(휴대폰)는 미리 잡지 않음(작업 0245)", () => {
+    const c = code(page);
+    expect(c).toMatch(/sm:min-h-\[calc\(2\.68\*clamp\(2\.25rem,4\.5vw,3\.5rem\)/);
+    expect(c).toMatch(/md:min-h-\[calc\(1\.34\*clamp\(2\.25rem,4\.5vw,3\.5rem\)/);
+    expect(c, "휴대폰 기본 min-h 없음").not.toMatch(/(?<![:\w-])min-h-\[calc\(4\.02\*/);
+    expect(c, "휴대폰 아래 여백 12.875rem").toMatch(/pb-\[12\.875rem\]/);
   });
 
   it("흰 카드(입력 · 결과)는 파랑 면 위에서 그림자 토큰으로 구분 · 휴대폰 요약 줄은 파랑 면 위에서도 보이게 가장자리 선(ring)", () => {
