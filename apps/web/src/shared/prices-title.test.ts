@@ -21,14 +21,13 @@ describe("여행 물가 예산 카드 — 시안 B 위치 · 크기", () => {
   const page = readFileSync(join(WEB_SRC, "features/travel-price/components/price-page.tsx"), "utf8");
   const card = readFileSync(join(WEB_SRC, "features/travel-price/components/budget-planner.tsx"), "utf8");
 
-  it("넓은 화면 카드: 폭 28.25rem(452px) · 아래로 내림(lg:translate-y-[150px]) · 파랑 면은 카드 원래 자리 아래 40px 까지(lg:mb-10) · 아래 구간 위쪽 여백이 내려온 만큼 늘어남 @design", () => {
+  // 작업 0250 — 정확한 값(translate · mb · pt)은 걷어 냄(0248 · 3번이 바꿈) · 남긴 것: 카드 칸이 있고 폭이 정해져 있고 파랑 면 첫 줄(제목 옆)에 놓이며 아래 칸과 겹치게 늘어나지 않음
+  it("넓은 화면 카드: 폭 28.25rem · 파랑 면 첫 줄(lg:row-start-1)에 놓임 · 두 줄을 차지하지 않음(아래 구간과 겹치지 않음)", () => {
     const cell = /<div[^>]*className="[^"]*row-start-2[^"]*"[^>]*>/.exec(page)?.[0] ?? "";
     expect(cell, "카드 칸").not.toBe("");
     expect(cell).toMatch(/lg:w-\[28\.25rem\]/);
-    expect(cell).toMatch(/lg:translate-y-\[150px\]/);
-    expect(cell).toMatch(/lg:mb-10/);
+    expect(cell).toMatch(/lg:row-start-1/);
     expect(cell).not.toMatch(/lg:row-span-2/);
-    expect(page).toMatch(/lg:pt-\[calc\(150px\+/);
   });
 
   it("카드 안: 안쪽 여백 28 · 30 · 입력 칸 64px(h-16) · 결과 숫자 44px", () => {

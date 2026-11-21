@@ -36,20 +36,21 @@ test.describe("통화 상세 (작업 0212)", () => {
     expect(new Set(digits).size, values.join(" | ")).toBe(1);
   });
 
-  test("휴대폰 — 맨 아래 통화 줄의 판정 알약이 그 통화 칸 안에 있음", async ({ page }) => {
+  // 작업 0250 — 17번이 격자의 알약을 조용한 글자(span.text-right · '최근 90일 …')로 바꿈 · 남긴 것: 판정 표시(알약 또는 글자)가 그 통화 칸 밖으로 나가지 않음
+  test("휴대폰 — 맨 아래 통화 줄의 판정 표시가 그 통화 칸 안에 있음", async ({ page }) => {
     test.skip(!isPhone(page), "휴대폰 전용");
     await page.goto("/currencies/USD");
     const links = tid(page, "currency-list").locator("nav ul li a");
     let checked = 0;
     for (let i = 0; i < 3; i++) {
       const link = links.nth(i);
-      const pill = link.locator("span.rounded-pill");
+      const pill = link.locator("span.rounded-pill, span.text-right").first();
       if ((await pill.count()) === 0) continue;
       const lb = await box(link);
       const pb = await box(pill);
-      expect(pb.x, "알약 왼쪽").toBeGreaterThanOrEqual(lb.x - 0.5);
-      expect(pb.x + pb.width, "알약 오른쪽").toBeLessThanOrEqual(lb.x + lb.width + 0.5);
-      expect(pb.y + pb.height, "알약 아래").toBeLessThanOrEqual(lb.y + lb.height + 0.5);
+      expect(pb.x, "판정 표시 왼쪽").toBeGreaterThanOrEqual(lb.x - 0.5);
+      expect(pb.x + pb.width, "판정 표시 오른쪽").toBeLessThanOrEqual(lb.x + lb.width + 0.5);
+      expect(pb.y + pb.height, "판정 표시 아래").toBeLessThanOrEqual(lb.y + lb.height + 0.5);
       checked++;
     }
     expect(checked).toBeGreaterThan(0);
@@ -85,10 +86,13 @@ test.describe("여행 물가 (작업 0212)", () => {
   });
 
   // 작업 0248 · 17번: 통화 둘러보기 격자는 알약 대신 조용한 글자로 바꿈 — 알약이 있어야 한다는 모양 검사는 디자인 테스트로 나눔
-  test("통화 목록 알약은 '환율' 로 시작하지 않음 — 물가 알약과 구분 @design", async ({ page }) => {
+  // 작업 0250 — 17번이 둘러보기 격자의 알약을 조용한 글자('최근 90일 중 하위 N%' · '최근 90일 최저')로 바꿈 · 남긴 것: 판정 글자가 '환율 …' 알약 글(물가 쪽)로 시작하지 않음
+  test("통화 목록의 판정 글자는 '환율 …' 으로 시작하지 않음 — 물가 쪽 알약과 구분", async ({ page }) => {
     await page.goto("/currencies/USD");
-    const first = await tid(page, "currency-list").locator("nav ul li a span.rounded-pill").first().innerText({ timeout: 5000 });
-    expect(first.trim()).not.toMatch(/^환율/);
+    const texts = await tid(page, "currency-list").locator("nav ul li a").allInnerTexts();
+    const judged = texts.filter((t) => /최근 90일/.test(t));
+    test.skip(judged.length === 0, "판정이 있는 통화 없음");
+    for (const t of judged) expect(t, "판정 글자").not.toMatch(/환율 하위|환율 상위/);
   });
 
   test("세 카드(싼 곳 · 비슷한 곳 · 비싼 곳)는 같은 틀 — 구분은 제목 색과 작은 점 @design", async ({ page }) => {
