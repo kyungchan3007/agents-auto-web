@@ -87,3 +87,4 @@
 | 0263 | 출발일 달력 — 휴대폰에서만 바깥 테두리 카드 없앰 (Quick · 디자인 PR · 시안 34 A안) | builder → test | PR #315 · 머지 승인 | task/0263-airfare-mobile-no-outer | travel-price/components/airfare-calendar.css |
 | 0264 | 읽기 전용 꼬리표를 모서리 6px 네모로 — 창밖 · 탑승권 + 노선 한국 표시 · 정거장 카드 꼬리표 · 면세 도장 (Quick · 디자인 PR · 시안 36 A안 · 37) | builder → test | PR #316 · 머지 승인 | task/0264-tags-square | window-months.tsx · airfare-calendar.css · price-route.tsx · stamp.tsx |
 | 0265 | 머리 라벨 세 개 지우기 — 여행 타이밍 · 여행 물가 · 소개 (Quick · 디자인 PR · 시안 38) | builder → test | PR #317 · 머지 승인 | task/0265-eyebrow-three | flights-page.tsx · prices-header.tsx · price-page.tsx · about-page.tsx |
+| 0266 | 여행 물가 노선 — 스크롤 고정 풀고 나라 단추로 고르기 · 휴대폰 단추 줄 · 새 제목 · 아래 간격 · 카드 아래 테두리 (Full · 평소 PR · 시안 40) | test → builder | 진행 중 | task/0266-route-unpin | travel-price/components/price-route.tsx · hooks/use-price-route.ts · lib/price-route.ts · globals.css |
