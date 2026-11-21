@@ -19,7 +19,7 @@
 | 테스트(파일 › 이름) | 무엇이 달라졌나 |
 | --- | --- |
 | apps/web/src/shared/prices-title.test.ts › 여행 물가 예산 카드 — 시안 B 위치 · 크기 › 넓은 화면 카드: 폭 28.25rem · 아래로 내림 · … @design | 기대 `lg:translate-y-[150px]` · `lg:mb-10` · `lg:pt-[calc(150px+…)]` · 지금 `lg:translate-y-9` · `lg:-mb-20` · `lg:pt-[calc(7rem+4rem)]` (3번: 카드 위 끝을 제목 첫 줄에 맞춤) |
-| apps/web/src/shared/redesign-foundation.test.ts › 장식을 걷어 냄 (R9) › 공통 컴포넌트(packages/ui/src/components)에 그림자(shadow) · 그라데이션이 없음 @design | 기대 위반 파일 없음 · 지금 `packages/ui/src/components/form/pick-trip.tsx` 에 그림자 (3번: 여행지 고르기 팝업 그림자는 사용자가 고른 모양) |
+| apps/web/src/shared/redesign-foundation.test.ts › 장식을 걷어 냄 (R9) › 공통 컴포넌트(packages/ui/src/components)에 그림자(shadow) · 그라데이션이 없음 @design | 기대 위반 파일 없음 · 지금 `packages/ui/src/components/form/pick-trip.tsx` 에 그림자 (3번: 여행지 고르기 팝업 그림자는 사용자가 고른 모양) — 팝업 그림자는 사용자 결정으로 유지 — 정리 때 이 검사는 팝업을 예외로 |
 | apps/web/e2e/prices-redesign.spec.ts › 새 /prices — 예산 카드 위치 · 크기 › 넓은 화면 — 카드 폭 · 제목보다 아래에서 시작 · … @design | 기대 카드 위 끝이 제목 첫 줄 위 끝보다 80px 이상 아래 · 지금 −4px (카드가 제목과 같은 줄에서 시작 · 3번) |
 | apps/web/e2e/prices-redesign.spec.ts › 새 /prices — 예산 · 자 · 표 › 나라 더 보기 — 표 아래 왼쪽 밑줄 글자 링크 · … 접기 버튼은 눈에 띄는 알약 + 화면 아래에 붙음 @design | 기대 접기 띠 position `sticky` · 지금 `static` (4번: 펼친 뒤 접기를 목록 끝 왼쪽에 둠) |
 | apps/web/e2e/prices-route.spec.ts › 여행 물가 — 스크롤로 떠나는 물가 노선 › 예산 카드 아래 끝 → 노선 제목(h2) 위 끝 간격 … @design | 기대 넓은 화면 140px(±2) · 지금 높이 720 에서 약 97px (3번: 카드가 파랑 밖으로 나온 만큼 아래 여백을 줄임) |
