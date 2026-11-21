@@ -8,18 +8,13 @@
 //     // 정거장 = 지금 자의 핀(lib/ruler.ts rulerPins: 구간마다 맨 위 perBand 나라 · value = round(relative × 100) · 값 오름차순 · 핀 옆은 위(up) · 아래(down) 번갈아) + 한국(country "KR" · name "한국" · value 100 · band "base" · side "kr")
 //     // 한국은 값이 100 보다 작은 정거장들 뒤 · 100 이상인 정거장들 앞 · 나머지 순서는 핀 순서 그대로(값이 같으면 위 → 아래) · index = 순서(0부터)
 //     // band: 한국 "base" · 그 밖은 한국 대비(value/100) 가 BAND_EDGE 안: 0.9 미만 "cheap" · 1.1 초과 "exp" · 사이(0.9 · 1.1 포함) "mid" · 나라가 하나도 없으면 [] (한국만 있는 노선을 만들지 않음 · 지어내지 않음)
-//   export function routeValue(stops: { value: number }[], fr: { i: number; m: number }): number   // 두 정거장 값 사이를 m 만큼
-//   export function routeHop(stops: { value: number }[], fr: { i: number; m: number }): number     // 같은 값(111 → 111)은 제자리 뛰기 −sin(π m) × 34 (px) · 값이 다르면 0
-//   export function routeActive(prev: number, fr: { i: number; m: number }): number
-//     // m ≤ 0.06 → i · m ≥ 0.94 → i+1 · 그 사이는 prev 가 i 나 i+1 이면 prev 유지 · 아니면(처음 · 크게 건너뜀) m < 0.5 ? i : i+1
-//   export const isMoving = (m: number) => m > 0.06 && m < 0.94
 //   export function routeCardText(stop: { value: number; band: RouteBand }, index: number, n: number): { meta: string; pct: string; budget: string; tiles: string[] }
 //     // meta `정거장 ${index+1} / ${n} · ${띠 이름}` 띠 이름: cheap "한국보다 싼 곳" · mid "비슷한 곳" · base "기준" · exp "한국보다 비싼 곳"
 //     // pct: 100 → "기준" · 100 보다 작으면 `${100−v}% 쌉니다` · 크면 `${v−100}% 비쌉니다`
 //     // budget: 한국에서 하루 100,000원 쓰는 만큼 · 물가 비율로 계산 = `약 ${(v × 1000).toLocaleString("ko-KR")}원` (천 원 단위로 반올림)
 //     // tiles: 세 칸 글자판 — 값 글자를 3자리에 맞춰 앞을 비움: 37 → [" ", "3", "7"] · 100 → ["1", "0", "0"]
 import { describe, expect, it } from "vitest";
-import { isMoving, routeActive, routeCardText, routeHop, routeStops, routeValue } from "./price-route";
+import { routeCardText, routeStops } from "./price-route";
 
 const row = (country: string, name: string, relative: number) => ({ country, name, relative });
 // 시안과 같은 값: 인도 37 · 베트남 46 · 헝가리 94 · 멕시코 95 · (한국 100) · 스페인 111 · 아랍에미리트 111
@@ -63,43 +58,7 @@ describe("routeStops — 핀 + 한국", () => {
 
 // 작업 0266 — 스크롤 진행으로 정거장을 바꾸던 계산(routeFrame · ROUTE_STEP_VH · 정거장 사이 스크롤 길이)은 사용자 결정(시안 40번 "고정을 푼 모습")으로 걷어 냄:
 //   나라 단추로 정거장을 고르므로 스크롤 진행 → 위치 변환이 없음 · builder 가 쓰는 곳이 없어진 함수(routeFrame · ROUTE_STEP_VH)를 지워도 이 파일은 깨지지 않음
-//   남은 함수(routeStops · routeValue · routeCardText · routeHop · routeActive · isMoving)가 아직 쓰이는지는 builder 가 정함 — 지우면 해당 describe 도 함께 지움(test 가 정리)
-
-describe("routeValue · routeHop", () => {
-  const S = [{ value: 37 }, { value: 46 }, { value: 111 }, { value: 111 }];
-  it("두 정거장 값 사이를 m 만큼", () => {
-    expect(routeValue(S, { i: 0, m: 0 })).toBe(37);
-    expect(routeValue(S, { i: 0, m: 1 })).toBe(46);
-    expect(routeValue(S, { i: 0, m: 0.5 })).toBeCloseTo(41.5, 6);
-  });
-  it("같은 값 구간은 제자리 뛰기(위로 최대 34px) · 값이 다르면 0", () => {
-    expect(routeHop(S, { i: 0, m: 0.5 })).toBe(0);
-    expect(routeHop(S, { i: 2, m: 0.5 })).toBeCloseTo(-34, 6);
-    expect(routeHop(S, { i: 2, m: 0 }) + 0).toBeCloseTo(0, 6);
-    expect(routeHop(S, { i: 2, m: 1 })).toBeCloseTo(0, 6);
-  });
-});
-
-describe("routeActive · isMoving", () => {
-  it("멈춘 곳(m ≤ 0.06 · ≥ 0.94)은 그 정거장 · 움직이는 중에는 이전 정거장 유지", () => {
-    expect(routeActive(0, { i: 2, m: 0 })).toBe(2);
-    expect(routeActive(0, { i: 2, m: 0.06 })).toBe(2);
-    expect(routeActive(0, { i: 2, m: 1 })).toBe(3);
-    expect(routeActive(0, { i: 2, m: 0.94 })).toBe(3);
-    expect(routeActive(2, { i: 2, m: 0.5 })).toBe(2);
-    expect(routeActive(3, { i: 2, m: 0.5 })).toBe(3);
-  });
-  it("크게 건너뛴 경우 · 처음에는 가까운 쪽", () => {
-    expect(routeActive(0, { i: 4, m: 0.3 })).toBe(4);
-    expect(routeActive(0, { i: 4, m: 0.7 })).toBe(5);
-  });
-  it("움직이는 중 = 0.06 초과 0.94 미만", () => {
-    expect(isMoving(0.06)).toBe(false);
-    expect(isMoving(0.07)).toBe(true);
-    expect(isMoving(0.93)).toBe(true);
-    expect(isMoving(0.94)).toBe(false);
-  });
-});
+//   routeValue · routeHop · routeActive · isMoving 은 화면 · 훅이 안 써서 테스트에서도 뺌(작업 0266 · builder 가 lib 에서 지움)
 
 describe("routeCardText — 카드 글", () => {
   it("싼 곳(인도 37 · 7개 중 1번째)", () => {
