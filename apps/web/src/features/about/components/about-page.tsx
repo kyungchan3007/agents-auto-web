@@ -2,6 +2,7 @@
 import type { Fetched } from "@/shared/api";
 import { SiteNav } from "@/shared/site-nav";
 import type { SignalList } from "@hav/shared/signal";
+import { FadeUpGroup } from "@hav/ui/motion/fade-up";
 import { PageFooter } from "@hav/ui/layout/page-footer";
 import { Eyebrow, SectionTitle, Title } from "@hav/ui/text/heading";
 import { ABOUT_CARDS } from "../lib/criteria";
@@ -24,16 +25,16 @@ export function AboutPage(_props: { signals: Fetched<SignalList>; duty: DutyRule
           </div>
         </section>
         <div className="px-4 pt-[4.5rem] pb-10 sm:px-8 sm:pt-24">
-        <div className="mx-auto max-w-page">
+        <FadeUpGroup className="mx-auto max-w-page">
           <ul className="grid gap-4 sm:grid-cols-2">
-            {ABOUT_CARDS.map((c) => (
-              <li key={c.id} data-testid="criteria-card" className="rounded-card bg-card px-5 py-5">
+            {ABOUT_CARDS.map((c, i) => (
+              <li key={c.id} data-testid="criteria-card" data-fu={Math.floor(i / 2)} className="rounded-card bg-card px-5 py-5">
                 <SectionTitle className="text-[1.375rem] leading-tight text-cheap">{c.title}</SectionTitle>
                 <p className="mt-3 text-body text-fg-2">{c.body}</p>
               </li>
             ))}
           </ul>
-        </div>
+        </FadeUpGroup>
         </div>
       </main>
       <PageFooter width="max-w-page">모든 숫자의 출처는 각 화면 아래에 적습니다</PageFooter>

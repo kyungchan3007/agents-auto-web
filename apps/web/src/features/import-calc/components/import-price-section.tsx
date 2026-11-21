@@ -12,10 +12,10 @@ export function ImportPriceSection({ fxRows, price, children }: { fxRows: FxDay[
   return (
     <section data-testid="import-price-section" className="grid min-w-0 gap-6 lg:grid-cols-[22rem_minmax(0,1fr)] lg:gap-10" aria-labelledby="import-price-title">
       <div className="min-w-0">
-        <SectionTitle id="import-price-title" className="text-[1.875rem] leading-tight text-fg">
+        <SectionTitle id="import-price-title" data-fu={1} className="text-[1.875rem] leading-tight text-fg">
           수입물가와 환율
         </SectionTitle>
-        <p className="mt-2 max-w-md text-body text-fg-2">환율이 오르면 수입물가도 따라 오릅니다 (한국은행)</p>
+        <p data-fu={2} className="mt-2 max-w-md text-body text-fg-2">환율이 오르면 수입물가도 따라 오릅니다 (한국은행)</p>
         {v.kind === "ready" && <Kpis rows={v.rows} />}
       </div>
       <div className="min-w-0 border-t-2 border-line pt-4">
