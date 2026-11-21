@@ -5,7 +5,8 @@
 // 목록은 레이아웃에 있어 통화를 바꿔도 남음 · 휴대폰은 위에서 옆으로 넘기는 줄 — 칸마다 테두리 카드 안에 이름 · 판정 알약을 함께 (작업 0212) · 검색 · 지역 · 정렬 · 즐겨찾기는 시안에 없어 화면에서 뺌 (계산 lib · 훅은 그대로)
 import { currencyName } from "@hav/shared/currency";
 import { CurrencyFlag } from "@hav/ui/data/currency-flag";
-import { SignalPin } from "@hav/ui/data/signal-pin";
+import { SIGNAL_TEXT, SignalPin, signalLabel } from "@hav/ui/data/signal-pin";
+import type { Signal } from "@hav/ui/data/signal-pin";
 import Link from "next/link";
 import { currencyListLabel } from "../lib/detail-view";
 import type { ListItem } from "../lib/list";
@@ -15,6 +16,22 @@ import { useListFit } from "../hooks/use-list-fit";
 import { commitPick } from "./currency-chips";
 
 export type { ListItem };
+
+/**
+ * 둘러보기 격자의 판정 표시 — 배지 대신 조용한 글자 (작업 0248 · 17번)
+ *   "최근 90일 최저"(하위 0%) · "최근 90일 중 하위 N%" · 중간을 넘으면 "상위 N%" · 백분위가 없으면 판정 글자만 (숫자를 지어내지 않음)
+ *   쌈은 조용한 글자만(화면 읽기 도구에는 판정을 읽어 줌) · 보통 · 비쌈은 판정 글자를 판정 색 글자로 함께 — 색만으로 전하지 않음
+ */
+function QuietBasis({ signal, percentile }: { signal: Signal; percentile: number | null }) {
+  const ok = typeof percentile === "number" && Number.isFinite(percentile) && percentile >= 0 && percentile <= 1;
+  const text = !ok ? "" : percentile <= 0.5 ? (Math.round(percentile * 100) === 0 ? "최근 90일 최저" : `최근 90일 중 하위 ${Math.round(percentile * 100)}%`) : `최근 90일 중 상위 ${Math.round((1 - percentile) * 100)}%`;
+  return (
+    <span className="shrink-0 text-right text-[0.8125rem] font-semibold whitespace-nowrap text-fg-2 tabular-nums">
+      {text}
+      {signal === "cheap" ? <span className="sr-only">{text ? " · " : ""}{signalLabel(signal)}</span> : <span className={`${text ? "ml-1.5 " : ""}font-bold ${SIGNAL_TEXT[signal]}`}>{signalLabel(signal)}</span>}
+    </span>
+  );
+}
 
 /** variant: column(왼쪽 세로 목록 · 예전) · grid(맨 아래 가로 전체 카드 격자 · 새 디자인 작업 0219) */
 export function CurrencyList({ items, variant = "column" }: { items: ListItem[]; variant?: "column" | "grid" }) {
@@ -44,7 +61,7 @@ export function CurrencyList({ items, variant = "column" }: { items: ListItem[];
                   <span className="block truncate text-small text-fg-2">{currencyListLabel(i.currency, i.unit ?? 1)}</span>
                   </span>
                 </span>
-                {i.signal && <SignalPin signal={i.signal} percentile={i.percentile ?? null} />}
+                {i.signal && (variant === "grid" ? <QuietBasis signal={i.signal} percentile={i.percentile ?? null} /> : <SignalPin signal={i.signal} percentile={i.percentile ?? null} />)}
               </Link>
             </li>
           );
