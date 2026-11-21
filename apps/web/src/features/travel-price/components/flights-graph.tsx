@@ -6,7 +6,7 @@
 import { LineChart, type ChartMark, type ChartSeries } from "@hav/ui/data/line-chart";
 import { numberText } from "@hav/shared/format";
 import { useFlightsGraph } from "../hooks/use-flights-graph";
-import { INDEX_BASE_NOTE, type SeriesId, UNIT_NOTE, extremeTexts, legendText, monthTicks, seriesStats } from "../lib/flights-graph-view";
+import { INDEX_BASE_NOTE, type SeriesId, UNIT_NOTE, extremeTexts, monthTicks, seriesStats } from "../lib/flights-graph-view";
 import type { IndexPoint } from "../lib/travel-index";
 
 const idx = (period: string) => Number(period.slice(0, 4)) * 12 + Number(period.slice(5, 7)) - 1;
@@ -15,6 +15,8 @@ const shortPeriod = (p: string) => `${p.slice(2, 4)}.${p.slice(5, 7)}`;
 
 const COLOR = { air: "var(--hav-pin-cheap)", tour: "var(--hav-band)", fx: "color-mix(in srgb, var(--hav-pin-line) 62%, var(--hav-card))" } as const;
 const END_NAME: Record<SeriesId, string> = { air: "국제항공료", tour: "단체여행비", fx: "원/달러" };
+/** 범례는 선 이름만 — 숫자는 그래프 끝 말풍선 · 오른쪽 칸에 있음 (작업 0261 · legendText 는 lib 에 그대로 둠) */
+const LEGEND_NAME: Record<SeriesId, string> = { air: "국제항공료", tour: "해외단체여행비", fx: "원/달러 월평균" };
 
 export function FlightsGraph({ air, tour, fx }: { air: IndexPoint[]; tour: IndexPoint[] | null; fx: IndexPoint[] }) {
   const { focus, toggle } = useFlightsGraph();
@@ -83,13 +85,13 @@ export function FlightsGraph({ air, tour, fx }: { air: IndexPoint[]; tour: Index
           heightPhone={320}
         />
       </div>
-      {/* 범례 — 칩을 누르면 그 선만 강조 (다시 누르면 원래대로) · 칩에 최근 값 */}
+      {/* 범례 — 칩을 누르면 그 선만 강조 (다시 누르면 원래대로) · 칩에는 선 이름만 (작업 0261) */}
       <ul data-testid="travel-legend" className="mt-3 flex flex-wrap gap-2 text-small text-fg">
         {lines.map((l) => (
           <li key={l.id}>
             <button type="button" aria-pressed={focus === l.id} onClick={() => toggle(l.id)} className={`flex items-center gap-2 rounded-pill border-2 px-3 py-1 transition-colors ${focus === l.id ? "border-cheap bg-card font-semibold" : "border-line hover:bg-surface-2"}`}>
               {l.id === "fx" ? <span aria-hidden className="inline-block w-5 border-t-2 border-dashed border-fg-2" /> : <span aria-hidden className={`inline-block h-1 w-5 rounded-pill ${l.id === "air" ? "bg-cheap" : "bg-band"}`} />}
-              <span className="tabular-nums">{legendText(l.id, l.vals[l.vals.length - 1])}</span>
+              <span>{LEGEND_NAME[l.id]}</span>
             </button>
           </li>
         ))}
