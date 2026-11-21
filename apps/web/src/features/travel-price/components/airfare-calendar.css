@@ -16,7 +16,8 @@
 .af-card{margin-top:22px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;border:2px solid var(--line);border-radius:24px;background:var(--hav-foam);padding:28px}
 .af-head{font-family:var(--head);font-weight:800;font-size:22px;letter-spacing:-.03em;line-height:1.35}
 .af-head em{font-style:normal;color:var(--blue)}
-.af-sub{font-size:13px;color:var(--sub);margin-top:6px!important}
+/* 비교 문장은 날짜 띠 상자 맨 아래 · 범례와 옅은 선으로 나눔 (작업 0252 · 2번 · 시안 26번 B안) */
+.af-sub{font-size:13px;color:var(--sub);margin-top:14px!important;padding-top:12px;border-top:1px solid color-mix(in srgb,var(--sub) 22%,transparent)}
 /* 날짜 띠: 옅은 면 위 흰 알약 · 요일 / 날짜 / 가격 · 고른 날은 파랑 둥근 네모 */
 .af-top{grid-column:1/-1;min-width:0}
 .af-stage{margin-top:18px;background:var(--face);border-radius:20px;padding:16px 20px}

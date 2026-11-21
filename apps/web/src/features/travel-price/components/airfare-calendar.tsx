@@ -97,7 +97,6 @@ function Calendar({ items, fetchedOn }: { items: AirfareItem[]; fetchedOn: strin
             <em>{headDate}</em>
             {headEnd}
           </p>
-          <p data-testid="airfare-sub" className="af-sub">{noBreak(subline(view, sel))}</p>
           <div className="af-stage">
             <div className="af-bar">
               <span data-testid="airfare-range" className="af-range">{range.text}</span>
@@ -140,6 +139,7 @@ function Calendar({ items, fetchedOn }: { items: AirfareItem[]; fetchedOn: strin
               <span>가격은 만 원 단위</span>
               <span>날짜를 누르면 탑승권이 바뀝니다</span>
             </div>
+            <p data-testid="airfare-sub" className="af-sub">{noBreak(subline(view, sel))}</p>
           </div>
         </div>
         <div className="af-side">
