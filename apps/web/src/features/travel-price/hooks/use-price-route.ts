@@ -1,79 +1,77 @@
 "use client";
 
-// 여행 물가 스크롤 노선 상태 — 스크롤 진행 → 정거장 사이 위치 · 지금 정거장 · 방향 · 카드 숫자 (작업 0230 · 모션 3번)
-//   서버 첫 그림 · 움직임 줄이기 · 자바스크립트 꺼짐 = 정적 노선(armed 거짓) · 움직일 수 있는 브라우저에서만 스크롤을 읽음
-//   스크롤은 requestAnimationFrame 으로 모아 한 번에 · 휴대폰은 자가 화면보다 넓어 말(동그라미)을 따라 옆으로 흐름
+// 여행 물가 노선 상태 — 나라 단추로 고른 정거장 · 비행기 이동 · 방향 (작업 0230 · 모션 3번 → 작업 0266: 스크롤 고정을 풀고 나라 단추로 고르기)
+//   처음에는 첫 정거장(가장 싼 나라) · 단추를 누르면 비행기가 그 값 위치로 약 0.9초(ease) 옮겨 간 뒤 카드가 그 나라로 바뀜(움직이는 동안은 이전 나라 카드가 옅게)
+//   움직임 줄이기 · 자바스크립트 꺼짐: 움직임 없이 바로 바뀜(서버 첫 그림 = 첫 정거장) · 휴대폰은 자가 화면보다 넓어 말(동그라미)을 따라 옆으로 흐름
 import { useReducedMotion } from "motion/react";
-import { type RefObject, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import { type RefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
-export type RouteFrame = { i: number; f: number; m: number };
+/** 비행기가 정거장 사이를 옮겨 가는 시간 */
+export const ROUTE_MOVE_MS = 900;
+const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2);
 
 type Out = {
+  /** 움직임을 쓰는 브라우저인지(움직임 줄이기가 아님) */
   armed: boolean;
-  /** 스크롤 진행 0~1 (판이 메뉴 띠 아래에 붙은 뒤 구역 안에서 얼마나 내려왔는지) */
-  progress: number;
+  /** 카드에 보이는 정거장 번호 (비행기가 도착한 뒤에 바뀜) */
+  active: number;
+  /** 단추로 고른 정거장 번호 */
+  target: number;
+  /** 비행기가 옮겨 가는 중 */
+  moving: boolean;
+  /** 지금 비행기 위치의 물가 값 (자 위 x 를 정함) */
+  planeValue: number;
   dir: "forward" | "back";
-  sec: RefObject<HTMLElement | null>;
-  stage: RefObject<HTMLDivElement | null>;
+  /** 도착해 카드가 바뀐 횟수 (처음은 0 → 움직임 없이 바로) */
+  swap: number;
+  /** 이번 이동이 같은 값 사이였나(스페인 111 ↔ 아랍에미리트 111 — 비행기 제자리 · 작업 0251) */
+  sameValue: boolean;
   ruler: RefObject<HTMLDivElement | null>;
   vp: RefObject<HTMLDivElement | null>;
   goto: (i: number) => void;
 };
 
-export function usePriceRoute(n: number): Out {
+/** values = 정거장 값(물가 N) 순서대로 */
+export function usePriceRoute(values: number[]): Out {
   const reduce = useReducedMotion();
-  const armed = useSyncExternalStore(
-    () => () => {},
-    () => !reduce,
-    () => false,
-  );
-  const sec = useRef<HTMLElement>(null);
-  const stage = useRef<HTMLDivElement>(null);
+  const armed = !reduce;
+  const n = values.length;
   const ruler = useRef<HTMLDivElement>(null);
   const vp = useRef<HTMLDivElement>(null);
-  const [progress, setProgress] = useState(0);
-  const [dir, setDir] = useState<"forward" | "back">("forward");
-  const dirRef = useRef<"forward" | "back">("forward");
-  const lastY = useRef(0);
-  const measure = useCallback(() => {
-    const s = sec.current;
-    const st = stage.current;
-    if (!s || !st) return { span: 0, stick: 0, top: 0 };
-    const sr = s.getBoundingClientRect();
-    return { span: sr.height - st.getBoundingClientRect().height, stick: Number.parseFloat(getComputedStyle(st).top) || 0, top: sr.top };
-  }, []);
+  const [st, setSt] = useState({ active: 0, target: 0, from: values[0] ?? 0, t: 1, dir: "forward" as "forward" | "back", swap: 0, same: false });
+  const toValue = values[st.target] ?? values[0] ?? 0;
+  const planeValue = st.t >= 1 ? toValue : st.from + (toValue - st.from) * ease(st.t);
+  const moving = st.t < 1;
+
+  // 옮겨 가는 동안 requestAnimationFrame 으로 진행(t)을 올리고 · 끝나면 카드를 도착한 나라로
   useEffect(() => {
-    if (!armed || n < 2) return;
-    let ticking = false;
-    lastY.current = window.scrollY;
-    const frame = () => {
-      ticking = false;
-      const m = measure();
-      setProgress(m.span > 0 ? (m.stick - m.top) / m.span : 0);
-      if (window.scrollY !== lastY.current) {
-        const d = window.scrollY < lastY.current ? "back" : "forward";
-        if (d !== dirRef.current) {
-          dirRef.current = d;
-          setDir(d);
-        }
-      }
-      lastY.current = window.scrollY;
+    if (st.t >= 1) return;
+    let raf = 0;
+    const t0 = performance.now();
+    const step = (now: number) => {
+      const k = Math.min(1, (now - t0) / ROUTE_MOVE_MS);
+      setSt((s) => (k >= 1 ? { ...s, t: 1, active: s.target, swap: s.swap + 1 } : { ...s, t: k }));
+      if (k < 1) raf = requestAnimationFrame(step);
     };
-    const req = () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(frame);
-      }
-    };
-    window.addEventListener("scroll", req, { passive: true });
-    window.addEventListener("resize", req);
-    const first = requestAnimationFrame(frame);
-    return () => {
-      window.removeEventListener("scroll", req);
-      window.removeEventListener("resize", req);
-      cancelAnimationFrame(first);
-    };
-  }, [armed, n, measure]);
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [st.target, st.t >= 1]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 단추 — 그 정거장으로 (움직임 줄이기는 움직임 없이 바로)
+  const goto = useCallback(
+    (i: number) => {
+      if (i < 0 || i >= n) return;
+      setSt((s) => {
+        if (i === s.target) return s;
+        const nowValue = s.t >= 1 ? (values[s.target] ?? s.from) : s.from + ((values[s.target] ?? s.from) - s.from) * ease(s.t);
+        const dir = i > s.target ? "forward" : "back";
+        const same = nowValue === values[i];
+        return reduce ? { ...s, target: i, active: i, from: nowValue, t: 1, dir, same } : { ...s, target: i, from: nowValue, t: 0, dir, same };
+      });
+    },
+    [n, reduce, values],
+  );
+
   // 휴대폰: 자가 화면보다 넓으면 말(동그라미)을 따라 옆으로 흐름 — 그릴 때마다 말 위치(data-plane-x · %)를 읽어 맞춤
   useLayoutEffect(() => {
     const r = ruler.current;
@@ -81,29 +79,13 @@ export function usePriceRoute(n: number): Out {
     if (!r || !v) return;
     const W = r.offsetWidth;
     const vw = v.clientWidth;
-    if (armed && W > vw + 2) {
+    if (W > vw + 2) {
       const x = (Number.parseFloat(r.dataset.planeX ?? "0") / 100) * W;
       r.style.transform = `translateX(${Math.min(0, Math.max(vw - W, vw * 0.5 - x))}px)`;
     } else r.style.transform = "";
-  }, [armed, progress]);
-  // 정거장 단추 — 그 정거장 위치로 부드럽게 스크롤
-  const goto = useCallback(
-    (i: number) => {
-      const m = measure();
-      if (n < 2) return;
-      window.scrollTo({ top: window.scrollY + m.top - m.stick + m.span * (i / (n - 1)) + 1, behavior: "smooth" });
-    },
-    [n, measure],
-  );
-  return { armed, progress, dir, sec, stage, ruler, vp, goto };
-}
+  }, [planeValue]);
 
-/** 이전 결과를 이어 받아 다음 값을 정함 — 지금 정거장처럼 "움직이는 중에는 이전 값 유지" 가 필요한 값 · 바뀐 횟수(swap)도 돌려줌(처음 값은 0 → 움직임 없이 바로) */
-export function useRouteStep<F>(frame: F, step: (prev: number, frame: F) => number): { value: number; swap: number } {
-  const [state, setState] = useState({ value: 0, swap: 0 });
-  const next = step(state.value, frame);
-  if (next !== state.value) setState({ value: next, swap: state.swap + 1 }); // 그리는 중 값 이어 받기 (공식 방식 — 같은 그림 안에서 바로 다시 그림)
-  return { value: next, swap: next !== state.value ? state.swap + 1 : state.swap };
+  return { armed, active: st.active, target: st.target, moving, planeValue, dir: st.dir, swap: st.swap, sameValue: st.same, ruler, vp, goto };
 }
 
 /** 카드 숫자 — 정거장이 바뀌면 이전 값에서 새 값으로 약 0.75초 (ease-out) · 처음은 바로 */
