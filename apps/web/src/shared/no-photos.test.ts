@@ -65,9 +65,9 @@ describe("인트로 — 안 쓰는 창문 카메라 코드 정리 (작업 0223 �
 describe("/about — 사진 없는 머리", () => {
   const about = readFileSync(join(WEB_SRC, "features/about/components/about-page.tsx"), "utf8");
 
-  it("사진 부품 없이 라벨(소개) · 큰 제목(h1)이 그대로 있음", () => {
+  it("사진 부품 없이 큰 제목(h1)이 그대로 있음 · 제목 위 라벨(소개)은 작업 0265 에서 지움", () => {
     expect(about).not.toMatch(/PhotoHeader|photo-header/);
-    expect(about).toMatch(/<Eyebrow>소개<\/Eyebrow>/);
+    expect(about).not.toMatch(/<Eyebrow>소개<\/Eyebrow>/); // 메뉴 이름을 다시 적은 라벨 삭제 (작업 0265)
     expect(about).toMatch(/<Title as="h1"/);
     expect(about).toContain("어떤 자료를,");
     expect(about).toContain("어떤 기준으로 보여 주나요");

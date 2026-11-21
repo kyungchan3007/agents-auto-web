@@ -37,7 +37,9 @@ test.describe("새 /flights — 머리 (작업 0218)", () => {
     const board = await box(page, "hero-board");
     if (isPhone(page)) expect(board.y).toBeGreaterThanOrEqual((h1?.y ?? 0) + (h1?.height ?? 0) - 1);
     else expect(board.x).toBeGreaterThan((h1?.x ?? 0) + (h1?.width ?? 0) * 0.5);
-    await expect(tid(page, "flights-hero")).toContainText("여행 타이밍");
+    // 작업 0265: 메뉴 이름을 그대로 다시 적은 제목 위 작은 라벨 "여행 타이밍"은 지움(제목 h1 · 설명은 그대로)
+    await expect(tid(page, "flights-hero").getByText("여행 타이밍", { exact: true }), "제목 위 라벨 없음").toHaveCount(0);
+    await expect(tid(page, "flights-hero").getByRole("heading", { level: 1 })).toBeVisible();
     // 시안의 영문 작은 라벨은 넣지 않음 (사용자 확인 전)
     for (const en of ["FARE WATCH", "DEPARTURES", "FARE INDEX", "BOARDING PASS", "24 MONTHS"]) await expect(page.locator("main")).not.toContainText(en);
   });

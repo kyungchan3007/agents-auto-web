@@ -41,7 +41,7 @@ test.describe("새 /prices — 첫 화면 (작업 0220)", () => {
     const h1 = page.getByRole("heading", { level: 1 });
     await expect(h1).toHaveText(/는? 한국보다 물가가 \d+% (낮|높)습니다$|^.+은 한국보다 물가가 \d+% (낮|높)습니다$|한국과 물가가 비슷합니다|물가 자료를 받지 못했습니다/);
     if (/\d+%/.test((await h1.textContent()) ?? "")) expect(await h1.locator('[data-testid="emph"]').first().evaluate((el) => getComputedStyle(el).color)).toBe(SUN);
-    await expect(h1.locator("xpath=..")).toContainText("여행 물가"); // 제목 위 작은 라벨 유지
+    await expect(h1.locator("xpath=..").getByText("여행 물가", { exact: true }), "제목 위 라벨 없음(작업 0265 · 메뉴 이름을 다시 적은 라벨 삭제)").toHaveCount(0);
     await expect(h1.locator("xpath=..")).toContainText("세계은행 나라별 물가 수준(한국 = 100)");
     for (const en of ["PRICE LEVEL", "DAILY BUDGET", "SCALE"]) await expect(page.locator("main")).not.toContainText(en);
   });
@@ -265,5 +265,37 @@ test.describe("새 /prices — 예산 · 자 · 표 (작업 0220)", () => {
       await expect(tid(page, "budget-total").getByTestId("count-up")).toHaveText(/[\d,]+원/);
     }
     await ctx.close();
+  });
+});
+
+test.describe("새 /prices — 머리 제목과 예산 카드 위 선 (작업 0248 · 3번 사용자 조건 → 작업 0265 라벨 삭제 뒤)", () => {
+  // 사용자 조건(0248 · 3번): 넓은 화면에서 예산 카드의 위 선이 제목 첫 줄(글자 윗선)에 맞음 — 제목 위 라벨(여행 물가)을 지워 제목이 올라온 뒤에도 같음 · 정확한 px 값은 고정하지 않고 차이만 봄(±4px)
+  const firstLineTop = (page: Page) =>
+    page.getByRole("heading", { level: 1 }).evaluate((h) => {
+      const r = document.createRange();
+      r.selectNodeContents(h);
+      const first = r.getClientRects()[0] ?? h.getBoundingClientRect();
+      return first.top;
+    });
+  for (const url of ["/prices", "/prices?currency=JPY"]) {
+    test(`넓은 화면 1280 — 예산 카드 위 선 = 제목 첫 줄 (${url})`, async ({ page }) => {
+      test.skip(isPhone(page), "넓은 화면 전용");
+      await page.setViewportSize({ width: 1280, height: 800 });
+      await page.goto(url);
+      test.skip(!(await ready(page)), "자료 없음");
+      await page.waitForLoadState("networkidle");
+      await expect
+        .poll(async () => Math.abs((await box(page, "budget")).y - (await firstLineTop(page))), { message: "예산 카드 위 선과 제목 첫 줄의 차이(px)", timeout: 8_000 })
+        .toBeLessThanOrEqual(4);
+    });
+  }
+
+  test("제목 위 라벨 \"여행 물가\" 가 없고 제목(h1)이 하나 · 메뉴의 현재 항목이 표시됨(aria-current)", async ({ page }) => {
+    await page.goto("/prices");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    await expect(tid(page, "prices-band").getByText("여행 물가", { exact: true })).toHaveCount(0);
+    const current = page.getByRole("banner").locator('a[aria-current="page"]');
+    expect(await current.count(), "메뉴의 현재 항목").toBeGreaterThan(0); // 넓은 화면 · 휴대폰 메뉴가 둘 다 그려질 수 있어 하나 이상
+    await expect(current.first()).toHaveAttribute("href", "/prices");
   });
 });
