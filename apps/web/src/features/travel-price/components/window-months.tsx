@@ -58,8 +58,10 @@ function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof wi
                 data-state={shade}
                 role="img"
                 aria-label={`비행기 창밖 풍경. ${cur.month}월, ${cur.season} · ${cur.desc}`}
-                className="relative aspect-[3/4] w-full overflow-hidden rounded-[6.5rem] bg-[#BFD3EA] ring-[5px] ring-[#EDF1F7] max-[760px]:rounded-[5.5rem] [isolation:isolate]"
+                className="relative aspect-[3/4] w-full rounded-[6.5rem] bg-[#BFD3EA] ring-[5px] ring-[#EDF1F7] max-[760px]:rounded-[5.5rem]"
               >
+                {/* 사파리(WebKit)는 둥근 모서리 + overflow-hidden 만으로는 안쪽 합성 층(필터 · 섞기 · 움직이는 덮개)을 못 잘라 풍경이 네모로 보임 → 자르는 칸에 clip-path 로 둥근 모양을 직접 지정 (작업 0258) · 테두리 선(ring)은 바깥 칸에 둬 잘리지 않음 */}
+                <div className="absolute inset-0 overflow-hidden rounded-[inherit] [clip-path:inset(0_round_6.5rem)] [isolation:isolate] max-[760px]:[clip-path:inset(0_round_5.5rem)]">
                 <canvas ref={back} aria-hidden="true" className="absolute inset-0 block size-full" />
                 <canvas ref={near} aria-hidden="true" className="absolute inset-0 block size-full transition-[filter] duration-[400ms] [&.moving]:blur-[0.9px]" />
                 <canvas ref={front} aria-hidden="true" className="absolute inset-0 block size-full" />
@@ -71,6 +73,7 @@ function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof wi
                   className="absolute inset-x-0 top-0 z-[3] h-full after:absolute after:bottom-2.5 after:left-1/2 after:h-1.5 after:w-11 after:-translate-x-1/2 after:rounded-[3px] after:bg-[#C3CCDA]"
                   style={{ background: "linear-gradient(#F4F6FA,#E4E9F1)" }}
                 />
+                </div>
               </div>
             </div>
           </div>
