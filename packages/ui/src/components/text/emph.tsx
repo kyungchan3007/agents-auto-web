@@ -13,9 +13,11 @@ type Tone = "neutral" | "expensive";
 const LIGHT_NEUTRAL = "box-decoration-clone bg-[linear-gradient(transparent_64%,var(--hav-sun)_64%,var(--hav-sun)_90%,transparent_90%)] bg-size-[100%_100%] bg-position-[0_0] bg-no-repeat animate-[emph-sweep_0.6s_cubic-bezier(0.22,1,0.36,1)_0.35s_backwards] motion-reduce:animate-none";
 const LIGHT_EXPENSIVE = "text-expensive";
 const SEA = "text-figure";
+// 파랑 바탕 + underline: 노란 글자는 그대로 두고 글자 높이 82% ~ 90% 에 가는 노란 밑줄 · 글자 폭 · 줄마다 · 같은 emph-sweep 움직임 (작업 0257 · 여행 물가 머리만 켬)
+const SEA_UNDERLINE = "text-figure box-decoration-clone bg-[linear-gradient(transparent_82%,var(--hav-sun)_82%,var(--hav-sun)_90%,transparent_90%)] bg-size-[100%_100%] bg-position-[0_0] bg-no-repeat animate-[emph-sweep_0.6s_cubic-bezier(0.22,1,0.36,1)_0.35s_backwards] motion-reduce:animate-none";
 
-export function Emph({ children, bg = "light", tone = "neutral" }: { children: ReactNode; bg?: Bg; tone?: Tone }) {
-  const cls = bg === "sea" ? SEA : tone === "expensive" ? LIGHT_EXPENSIVE : LIGHT_NEUTRAL;
+export function Emph({ children, bg = "light", tone = "neutral", underline = false }: { children: ReactNode; bg?: Bg; tone?: Tone; /** 파랑 바탕에서 가는 노란 밑줄을 더함 (기본 꺼짐) */ underline?: boolean }) {
+  const cls = bg === "sea" ? (underline ? SEA_UNDERLINE : SEA) : tone === "expensive" ? LIGHT_EXPENSIVE : LIGHT_NEUTRAL;
   return (
     <span data-testid="emph" data-tone={tone} data-bg={bg} className={cls}>
       {children}
@@ -24,13 +26,13 @@ export function Emph({ children, bg = "light", tone = "neutral" }: { children: R
 }
 
 /** 문장을 숫자 조각으로 나눠 숫자만 Emph 로 — tone 을 안 주면 문장의 뜻(numberTone)으로 */
-export function EmphText({ text, bg = "light", tone }: { text: string; bg?: Bg; tone?: Tone }) {
+export function EmphText({ text, bg = "light", tone, underline = false }: { text: string; bg?: Bg; tone?: Tone; underline?: boolean }) {
   const t = tone ?? numberTone(text);
   return (
     <>
       {splitNumbers(text).map((p, i) =>
         p.num ? (
-          <Emph key={`${i}-${p.text}`} bg={bg} tone={t}>
+          <Emph key={underline ? i : `${i}-${p.text}`} bg={bg} tone={t} underline={underline}>
             {p.text}
           </Emph>
         ) : (
