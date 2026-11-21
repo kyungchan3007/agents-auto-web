@@ -18,8 +18,12 @@ test.describe("새 홈 — 첫 화면 (작업 0217)", () => {
     await page.goto("/");
     const header = await page.getByRole("banner").boundingBox();
     const hero = await box(page, "home-hero");
-    expect(await bg(page, "home-hero")).toBe(BLUE);
-    expect(Math.abs(hero.y - (header!.y + header!.height))).toBeLessThanOrEqual(1);
+    // 작업 0245 — 1024 이상은 파랑이 제목 칸을 품은 두 단 래퍼(제목 칸 자체는 투명) · 1023 이하는 제목 칸이 파랑
+    const wide = (page.viewportSize()?.width ?? 0) >= 1024;
+    const blue = wide ? await tid(page, "home-hero").evaluate((el) => getComputedStyle(el.parentElement as HTMLElement).backgroundColor) : await bg(page, "home-hero");
+    expect(blue).toBe(BLUE);
+    const top = wide ? (await tid(page, "home-hero").evaluate((el) => (el.parentElement as HTMLElement).getBoundingClientRect().y)) : hero.y;
+    expect(Math.abs(top - (header!.y + header!.height))).toBeLessThanOrEqual(1);
     const h1 = page.getByRole("heading", { level: 1 });
     await expect(h1).toHaveText(/^\d+월에 떠나세요$/);
     expect(await tid(page, "hero-month").evaluate((el) => getComputedStyle(el).color)).toBe(SUN);
@@ -27,28 +31,46 @@ test.describe("새 홈 — 첫 화면 (작업 0217)", () => {
     await expect(tid(page, "home-hero")).toContainText("통계청 국제항공료 지수로 보면");
   });
 
-  test("탑승권 카드가 파랑 면과 하늘 면 경계에 걸침 · 글자판은 카드 안 · 아래에 판정 한 줄 · 막대 · 고르기 버튼", async ({ page }) => {
-    await page.goto("/");
-    const band = await box(page, "ticket-band");
-    const card = await box(page, "ticket");
-    expect(await bg(page, "ticket-band")).toBe(BLUE);
-    const vw = page.viewportSize()?.width ?? 0;
-    expect(band.x, "파랑 띠가 왼쪽 끝부터").toBeLessThanOrEqual(1);
-    expect(band.x + band.width, "파랑 띠가 오른쪽 끝까지").toBeGreaterThanOrEqual(vw - 1);
-    expect(band.y + band.height).toBeGreaterThan(card.y + 20); // 파랑 띠 끝이 카드 위쪽보다 아래 ·
-    expect(band.y + band.height).toBeLessThan(card.y + card.height - 20); // 카드 아래쪽보다 위 = 경계에 걸침
-    const flap = await box(page, "flap-board");
-    expect(flap.x).toBeGreaterThanOrEqual(card.x);
-    expect(flap.x + flap.width).toBeLessThanOrEqual(card.x + card.width + 1);
-    await expect(tid(page, "ticket")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
-    await expect(tid(page, "ticket-evidence")).toContainText("최근 90일");
-    await expect(tid(page, "ticket-bar")).toBeVisible();
-    // 작업 0217 사용자 지적: "내 여행지 고르기" 버튼 · 시트 없이 카드 안에서 바로 바꿈
-    await expect(tid(page, "ticket").getByTestId("trip-switcher")).toBeVisible();
-    await expect(page.getByTestId("pick-trip-open")).toHaveCount(0);
-    // 시안의 영문 작은 라벨은 넣지 않음 (사용자 확인 전)
-    for (const en of ["DEPARTURES", "BOARDING PASS", "12 MONTHS", "EXCHANGE", "DESTINATION", "KRW", "STATUS"]) await expect(page.locator("main")).not.toContainText(en);
-  });
+  // 작업 0245 — 1024 이상: 제목 왼쪽 · 카드 오른쪽 두 단, 파랑 면이 카드를 통째로 품음(위 약 40px · 아래 약 48px · 경계에 걸치지 않음) / 1023 이하: 예전처럼 파랑 면과 하늘 면 경계에 걸침
+  for (const [vw, vh] of [[1280, 800], [768, 900], [390, 844]] as const) {
+    test(`${vw}px — 탑승권 카드 · 파랑 면 · 글자판은 카드 안 · 아래에 판정 한 줄 · 막대 · 고르기 버튼`, async ({ page }) => {
+      await page.setViewportSize({ width: vw, height: vh });
+      await page.goto("/");
+      const card = await box(page, "ticket");
+      if (vw >= 1024) {
+        const wrap = await tid(page, "home-hero").evaluate((el) => {
+          const r = (el.parentElement as HTMLElement).getBoundingClientRect();
+          return { x: r.x, y: r.y, width: r.width, height: r.height, bg: getComputedStyle(el.parentElement as HTMLElement).backgroundColor };
+        });
+        expect(wrap.bg).toBe(BLUE);
+        expect(wrap.x, "파랑 면이 왼쪽 끝부터").toBeLessThanOrEqual(1);
+        expect(wrap.x + wrap.width, "파랑 면이 오른쪽 끝까지").toBeGreaterThanOrEqual(vw - 1);
+        expect(Math.abs(card.y - wrap.y - 40), "카드 위 파랑 약 40px").toBeLessThanOrEqual(6);
+        expect(Math.abs(wrap.y + wrap.height - (card.y + card.height) - 48), "카드 아래 파랑 약 48px").toBeLessThanOrEqual(6);
+        const h1 = await box(page, "home-hero");
+        expect(h1.x + h1.width, "제목 칸은 카드 왼쪽").toBeLessThanOrEqual(card.x + 1);
+        await expect(tid(page, "ticket-band")).toBeHidden();
+      } else {
+        const band = await box(page, "ticket-band");
+        expect(await bg(page, "ticket-band")).toBe(BLUE);
+        expect(band.x, "파랑 띠가 왼쪽 끝부터").toBeLessThanOrEqual(1);
+        expect(band.x + band.width, "파랑 띠가 오른쪽 끝까지").toBeGreaterThanOrEqual(vw - 1);
+        expect(band.y + band.height).toBeGreaterThan(card.y + 20); // 파랑 띠 끝이 카드 위쪽보다 아래 ·
+        expect(band.y + band.height).toBeLessThan(card.y + card.height - 20); // 카드 아래쪽보다 위 = 경계에 걸침
+      }
+      const flap = await box(page, "flap-board");
+      expect(flap.x).toBeGreaterThanOrEqual(card.x);
+      expect(flap.x + flap.width).toBeLessThanOrEqual(card.x + card.width + 1);
+      await expect(tid(page, "ticket")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
+      await expect(tid(page, "ticket-evidence")).toContainText("최근 90일");
+      await expect(tid(page, "ticket-bar")).toBeVisible();
+      // 작업 0217 사용자 지적: "내 여행지 고르기" 버튼 · 시트 없이 카드 안에서 바로 바꿈
+      await expect(tid(page, "ticket").getByTestId("trip-switcher")).toBeVisible();
+      await expect(page.getByTestId("pick-trip-open")).toHaveCount(0);
+      // 시안의 영문 작은 라벨은 넣지 않음 (사용자 확인 전)
+      for (const en of ["DEPARTURES", "BOARDING PASS", "12 MONTHS", "EXCHANGE", "DESTINATION", "KRW", "STATUS"]) await expect(page.locator("main")).not.toContainText(en);
+    });
+  }
 
   test("가로 넘침 없음 · 콘솔 오류 없음 (1280 · 768 · 390)", async ({ page }) => {
     const errors: string[] = [];
@@ -80,12 +102,15 @@ test.describe("새 홈 — 표 가장자리 홈은 파인 홈 (작업 0217 사�
   const measure = (page: Page) =>
     page.evaluate(() => {
       const r = (id: string) => [...document.querySelectorAll(`[data-testid="${id}"]`)].map((e) => e.getBoundingClientRect());
-      const band = r("ticket-band")[0];
+      // 작업 0245 — 1024 이상은 ticket-band 가 숨겨져(크기 0) 제목 칸의 부모(파랑 두 단 래퍼)가 파랑 면
+      const hero = document.querySelector('[data-testid="home-hero"]') as HTMLElement;
+      const band = r("ticket-band")[0].height > 0 ? r("ticket-band")[0] : (hero.parentElement as HTMLElement).getBoundingClientRect();
+      const wide = r("ticket-band")[0].height === 0;
       const card = r("ticket")[0];
       const clip = r("ticket-hole-clip")[0];
       const perf = r("ticket-perf")[0];
       const holes = [...document.querySelectorAll('[data-testid="ticket-hole"]')].map((e) => ({ rect: e.getBoundingClientRect(), bg: getComputedStyle(e).backgroundColor }));
-      return { band, card, clip, perf, holes: holes.map((h) => ({ top: h.rect.top, bottom: h.rect.bottom, left: h.rect.left, right: h.rect.right, bg: h.bg })) };
+      return { wide, band, card, clip, perf, holes: holes.map((h) => ({ top: h.rect.top, bottom: h.rect.bottom, left: h.rect.left, right: h.rect.right, bg: h.bg })) };
     });
 
   for (const stage of ["처음", "여행지를 바꾼 뒤(카드 높이가 달라짐)"]) {
@@ -100,7 +125,8 @@ test.describe("새 홈 — 표 가장자리 홈은 파인 홈 (작업 0217 사�
       const m = await measure(page);
       expect(m.holes.length, "홈 두 개").toBe(2);
       for (const h of m.holes) {
-        expect(Math.abs(h.bottom - (m.band.top + m.band.height)), "홈 아래 끝 = 파랑 면 아래 끝").toBeLessThanOrEqual(1);
+        if (m.wide) expect(h.bottom, "홈 아래 끝이 파랑 면 안(두 단: 카드 아래 약 48px 파랑)").toBeLessThan(m.band.top + m.band.height);
+        else expect(Math.abs(h.bottom - (m.band.top + m.band.height)), "홈 아래 끝 = 파랑 면 아래 끝").toBeLessThanOrEqual(1);
         expect(h.top, "홈 위 끝이 파랑 면 안").toBeGreaterThan(m.band.top);
         expect(h.bg, "홈 색 = 뒤 바탕(파랑)").toBe(BLUE);
         expect(h.bottom - h.top, "지름 28px").toBeGreaterThan(26);
@@ -114,11 +140,16 @@ test.describe("새 홈 — 표 가장자리 홈은 파인 홈 (작업 0217 사�
     });
   }
 
-  test("파랑 면이 카드 위 · 아래로 걸침은 그대로 · 가로 넘침 없음", async ({ page }) => {
+  test("파랑 면 · 카드 — 1023 이하는 경계에 걸침 · 1024 이상은 카드를 품음 · 가로 넘침 없음 (작업 0245)", async ({ page }) => {
     await page.goto("/");
     const m = await measure(page);
-    expect(m.band.top + m.band.height).toBeGreaterThan(m.card.top + 20);
-    expect(m.band.top + m.band.height).toBeLessThan(m.card.top + m.card.height - 20);
+    if (m.wide) {
+      expect(m.band.top, "파랑 면이 카드 위로").toBeLessThan(m.card.top);
+      expect(m.band.top + m.band.height, "파랑 면이 카드 아래로").toBeGreaterThan(m.card.top + m.card.height);
+    } else {
+      expect(m.band.top + m.band.height).toBeGreaterThan(m.card.top + 20);
+      expect(m.band.top + m.band.height).toBeLessThan(m.card.top + m.card.height - 20);
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
   });
 });
