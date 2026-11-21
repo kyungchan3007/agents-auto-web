@@ -7,7 +7,7 @@
 import { Flag } from "@hav/ui/data/flag";
 import type { Signal } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
-import { Eyebrow, SectionTitle } from "@hav/ui/text/heading";
+import { SectionTitle } from "@hav/ui/text/heading";
 import { type CSSProperties, useRef } from "react";
 import { useCountTween, usePriceRoute, useRouteStep, useRouteTiles } from "../hooks/use-price-route";
 import { type PriceBand, rateBadgeText } from "../lib/bands";
@@ -168,8 +168,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
       <div ref={stage} data-testid="route-stage" className="w-full">
         <div className="mb-(--route-head-mb) flex items-end justify-between gap-6">
           <div>
-            <Eyebrow>한국 = 100</Eyebrow>
-            <SectionTitle data-testid="route-title" className="mt-3 text-(length:--route-title) leading-[1.125] text-fg">
+            <SectionTitle data-testid="route-title" className="text-(length:--route-title) leading-[1.125] text-fg">
               스크롤로 떠나는 물가 노선
             </SectionTitle>
             <p className="mt-1.5 text-small text-fg-2 max-[760px]:hidden">내릴수록 싼 나라에서 한국을 지나 비싼 나라로 갑니다 · 올리면 거꾸로 돌아옵니다</p>

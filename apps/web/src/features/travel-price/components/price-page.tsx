@@ -39,7 +39,7 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
             </div>
           )}
         </div>
-        <div className="px-4 pt-[4.5rem] pb-10 sm:px-8 sm:pt-24 lg:pt-[calc(7rem+6rem)]">
+        <div className="px-4 pt-14 pb-10 sm:px-8 sm:pt-16 lg:pt-[calc(7rem+4rem)]">
         <div className="mx-auto max-w-page">
           {data && data.bands.length > 0 ? (
             // 노선(정적 자 자리) + 세 칸 목록 — 주소의 ?currency= 는 브라우저에서 읽음(정적 사이트) — 읽기 전 · 검색 · AI 가 읽는 HTML 은 전체 목록 (작업 0193 · 0230)
