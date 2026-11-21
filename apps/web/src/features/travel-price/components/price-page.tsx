@@ -34,7 +34,7 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
             <PricesHeader rows={rows.map((r) => ({ country: r.country, name: r.name, relative: r.relative, year: r.year }))} title={headline ? headline.title : "여행 물가 자료를 받지 못했습니다"} />
           </div>
           {data && data.bands.length > 0 && (
-            <div className="relative z-10 col-start-2 row-start-2 -mt-24 pb-2 lg:row-start-1 lg:mt-14 lg:-mb-20 lg:ml-auto lg:w-[28.25rem] lg:translate-y-9 lg:self-start lg:pb-0">
+            <div className="relative z-10 col-start-2 row-start-2 -mt-24 pb-2 lg:row-start-1 lg:mt-[3.25rem] lg:-mb-20 lg:ml-auto lg:w-[28.25rem] lg:self-start lg:pb-0">
               <BudgetPlanner rows={rows} latestOf={latestOf} />
             </div>
           )}
