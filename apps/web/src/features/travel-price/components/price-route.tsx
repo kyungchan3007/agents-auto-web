@@ -39,13 +39,13 @@ function RouteFlag({ country, name, className }: { country: string; name: string
 }
 
 function SignalCell({ stop, extra, signalOf, percentileOf, small }: { stop: RouteStop; extra: Extra; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"]; small: boolean }) {
-  if (stop.country === "KR") return <span className="inline-flex items-center rounded-pill bg-sun px-3.5 py-[0.4375rem] text-[0.8125rem] font-bold whitespace-nowrap text-fg">한국 100 기준</span>;
+  if (stop.country === "KR") return <span className="inline-flex items-center rounded-[6px] bg-sun px-3.5 py-[0.4375rem] text-[0.8125rem] font-bold whitespace-nowrap text-fg">한국 100 기준</span>;
   const s = extra.currency ? signalOf[extra.currency] : null;
   if (!s) return <span className="inline-flex px-0 py-[0.4375rem] text-[0.8125rem] text-fg-2">환율 없음</span>;
   const tone = s === "normal" ? "bg-card text-fg ring-[1.5px] ring-fg ring-inset" : s === "expensive" ? "bg-pin-expensive text-on-accent" : "bg-pin-cheap text-on-accent";
   return (
     <>
-      <span className={`inline-flex items-center rounded-pill px-3.5 py-[0.4375rem] text-[0.8125rem] font-bold whitespace-nowrap ${tone}`}>{rateBadgeText(s, percentileOf[extra.currency ?? ""] ?? null)}</span>
+      <span className={`inline-flex items-center rounded-[6px] px-3.5 py-[0.4375rem] text-[0.8125rem] font-bold whitespace-nowrap ${tone}`}>{rateBadgeText(s, percentileOf[extra.currency ?? ""] ?? null)}</span>
       {small && <small className="mt-1 block text-[0.71875rem] text-fg-2 max-[760px]:hidden">오늘 그 나라 통화 신호</small>}
     </>
   );
