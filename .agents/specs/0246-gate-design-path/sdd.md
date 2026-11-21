@@ -13,7 +13,7 @@
    - 대상 main(하루 마무리)도 같은 함수(바뀐 파일 = main...develop 구간). 라벨은 lead 가 그날 PR 이 모두 design 일 때만 단다.
 2. **checks.sh** — CI PR 에서 design-pr 결과로
    - e2e: 평소엔 지금처럼 한 번. 디자인 PR 이면 (a) `--grep-invert @design` 로 고른 spec 을 돌려 막는 단계 (b) `--grep @design` 로 같은 spec 을 막지 않는 단계로 돌림 — 실패해도 결과를 FAIL 로 만들지 않고 "디자인 테스트 실패 N개 (막지 않음)" 묶음 + 실패 이름을 찍는다.
-   - 단위(test): 디자인 PR 이면 같은 방식으로 기능(막음) · `@design`(막지 않음) 두 번. 방법은 builder(예: vitest `-t`).
+   - 단위(test): 디자인 PR 이면 두 번 — 기능(막음) `vitest run -t '^(?!.*@design)'`(-t 는 전체 이름 정규식 · 음의 전방탐색으로 제외) · 디자인(막지 않음) `vitest run -t '@design'` 을 결과 코드 무시로 돌려 실패 이름만 묶음으로. `@design` 이 하나도 없으면 PASS. e2e 도 같게 `--grep-invert @design` / `--grep @design`, 빈 spec 은 건너뜀. (builder 결정 07:37Z)
    - 평소 PR · 로컬 · push(main) 은 지금 그대로.
    - 결과 줄에 판정을 한 줄로: `디자인 PR: 예 · 디자인 테스트 실패 N개(막지 않음)` / `디자인 PR: 아니오(이유)`.
 3. **@design 표시(test)** — 테스트 이름 끝에 ` @design`. 섞인 테스트는 둘로 나눔. 범위: handoff 6번(home-fix-0217 값 검사 · home-pill · home-design · calc-gap · light-only · tokens · fonts · *-design · 0245 에서 깨진 것) + 스타일 클래스 이름 단위 테스트. 사용자가 정한 조건(첫 화면에 듦 · 가로 넘침 없음 · 값 바뀌어도 밀리지 않음(넓은 화면))은 표시하지 않음.
