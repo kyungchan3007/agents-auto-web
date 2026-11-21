@@ -19,13 +19,17 @@
 3. lead — PR(base develop · 담당자 kyungchan3007) · CI gate 확인 · 미리보기 주소 + 볼 경로를 claude-desktop 에 회신 · 머지는 "머지해" 뒤
 
 ## 파일 계획
-- builder
-  - apps/web/src/features/home/** (홈 머리 두 단)
-  - apps/web/src/features/import-calc/** (휴대폰 머리)
-  - packages/ui/src/** 의 글자판 부품 (이음선 그리는 순서 · 작은 판 구분)
-  - 작은 판을 쓰는 곳에서 옵션을 넘겨야 하면: apps/web/src/features/{currencies,travel-price,import-calc}/**
-- test
-  - apps/web/e2e/** 중 깨지는 spec (후보: home-redesign · home-fix-0217 · home-design · home · flap-board · calc-gap · calc-title · calc-blue · calc-redesign · calc-roll · currency-redesign · detail-design · flights-redesign · airfare-calendar · prices-route)
-  - 깨지는 단위 테스트(*.test.tsx)가 있으면 그것만
-- lead
-  - .agents/specs/0245-unslop-three/** · .agents/orchestration/TASKS.md
+<!-- 한 줄 = 경로 하나(범위 검사가 읽음) · 담당: builder 화면 · test 테스트 · lead 문서 -->
+- apps/web/src/features/home/**
+- apps/web/src/features/import-calc/**
+- apps/web/src/features/currencies/**
+- apps/web/src/features/travel-price/**
+- packages/ui/src/components/motion/rolling-number.tsx
+- packages/ui/src/components/flap/**
+- apps/web/e2e/**
+- apps/web/src/shared/calc-blue.test.ts
+- .agents/orchestration/TASKS.md
+
+## 계획 밖 변경 이유
+- 파일 수(16개 · Quick 기준 10 초과): 화면 파일 11개 중 7개가 "작은 글자판 이음선" 한 줄짜리 같은 수정이고 나머지 5개는 작업 문서(request · plan · handoff · 작업표)라 계약 · 경계 변경이 없음 → Quick 유지.
+- apps/web/src/shared/calc-blue.test.ts: 직구 머리 min-height 계산식을 보는 단위 테스트 — 휴대폰 규칙을 푼 변경으로 깨져 test 가 새 동작으로 고침.
