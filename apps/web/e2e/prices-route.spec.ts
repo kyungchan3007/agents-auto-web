@@ -2,7 +2,7 @@
 //   기준: 스크린샷 .tmp/lead-motion-1119/06-prices-3.png · 참고 구현 .tmp/motion-pages/m-prices.js · m-prices.css · 원본 시안 .tmp/motion-1119/scale/index.html
 //   정적 자(제목 "한국보다 싼 곳 · 비슷한 곳 · 비싼 곳" + 자 그림) 자리에 노선 — 노선 바로 아래로 기존 세 칸 목록 → 나라 더 보기 → 자료 없어 뺀 나라 줄이 그대로
 //   DOM 계약
-//     [data-testid="route-section"] — 노선 전체(스크롤 길이를 만드는 긴 칸) · 안에 작은 제목 "한국 = 100" · h2[data-testid="route-title"] "스크롤로 떠나는 물가 노선" · 글 "내릴수록 싼 나라에서 한국을 지나 비싼 나라로 갑니다 · 올리면 거꾸로 돌아옵니다"
+//     [data-testid="route-section"] — 노선 전체(스크롤 길이를 만드는 긴 칸) · h2[data-testid="route-title"] "스크롤로 떠나는 물가 노선" · 글 "내릴수록 싼 나라에서 한국을 지나 비싼 나라로 갑니다 · 올리면 거꾸로 돌아옵니다"
 //       [data-testid="route-stage"] — 화면에 붙어 있는 판(position: sticky · top = 메뉴 띠 바로 아래 · 세로 가운데 아님) · 높이 = 화면 − 메뉴 · 구역 높이 = 판 높이 + (정거장 수 − 1) × 정거장 사이 스크롤(넓은 화면 36vh · 휴대폰 30vh)
 //       (휴대폰은 정거장 단추를 숨김 · 시안과 같음) [data-testid="route-stops"] 안 [data-testid="route-stop"] 단추(정거장마다 · data-country · data-value · data-active="true"(지금 정거장) · 누르면 그 정거장으로 스크롤)
 //       [data-testid="route-ruler"] — 자 · [data-testid="route-pin"](한국 뺀 정거장마다 · data-country · data-value · data-side up|down) · [data-testid="route-kr-tag"] 글 "한국 100 기준" · [data-testid="route-plane"](동그라미 말 · aria-hidden · 가운데 x = 지금 값의 자 위 위치 · data-dir="forward|back" 스크롤 방향)
@@ -73,8 +73,10 @@ test.describe("여행 물가 — 스크롤로 떠나는 물가 노선 (작업 02
     await expect(page.getByText("한국보다 싼 곳 · 비슷한 곳 · 비싼 곳", { exact: true })).toHaveCount(0);
     await expect(tid(page, "ruler")).toHaveCount(0);
     const sec = tid(page, "route-section");
-    for (const t of ["한국 = 100", "스크롤로 떠나는 물가 노선", "내릴수록 싼 나라에서 한국을 지나 비싼 나라로 갑니다 · 올리면 거꾸로 돌아옵니다"]) await expect(sec, t).toContainText(t);
+    for (const t of ["스크롤로 떠나는 물가 노선", "내릴수록 싼 나라에서 한국을 지나 비싼 나라로 갑니다 · 올리면 거꾸로 돌아옵니다"]) await expect(sec, t).toContainText(t);
     await expect(sec.getByRole("heading", { level: 2 })).toHaveText("스크롤로 떠나는 물가 노선");
+    // 작업 0251 ㄷ: 제목 위 작은 라벨 "한국 = 100" 은 없음(눈금 · 카드의 다른 문구는 그대로)
+    await expect(sec.getByText("한국 = 100", { exact: true }), "제목 위 라벨 없음").toHaveCount(0);
     // 머리 · 예산 카드는 그대로
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(tid(page, "budget")).toBeVisible();

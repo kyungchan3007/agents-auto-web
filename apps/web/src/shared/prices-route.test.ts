@@ -39,6 +39,9 @@ describe("price-route — 부품", () => {
     expect(s).toMatch(/ROUTE_STEP_VH|36vh|30vh|vh/);
     expect(s).not.toMatch(/justify-center[^"]*sticky|sticky[^"]*justify-center/); // 세로 가운데가 아님
   });
+  it("같은 값 구간(스페인 111 ↔ 아랍에미리트 111)은 비행기 제자리 — 뛰기(routeHop)를 화면에서 안 씀 (작업 0251 ㄴ)", () => {
+    expect(route()).not.toMatch(/routeHop|\bhop\b/);
+  });
   it("움직임 줄이기 · 서버 그림은 정적 노선(scripting + no-preference 에서만 고정 · 긴 스크롤)", () => {
     const s = route() + code(read("../app/globals.css"));
     expect(s).toMatch(/useReducedMotion|prefers-reduced-motion/);
@@ -47,7 +50,8 @@ describe("price-route — 부품", () => {
     expect(s).not.toMatch(/setInterval/);
   });
   it("문구", () => {
-    for (const t of ["스크롤로 떠나는 물가 노선", "내릴수록 싼 나라에서 한국을 지나 비싼 나라로 갑니다", "올리면 거꾸로 돌아옵니다", "한국 = 100", "한국 100 기준", "물가 (한국 = 100)", "한국과 비교", "하루 예산 예시", "한국에서 하루 100,000원 쓰는 만큼 · 물가 비율로 계산", "환율 없음"]) expect(route(), t).toContain(t);
+    for (const t of ["스크롤로 떠나는 물가 노선", "내릴수록 싼 나라에서 한국을 지나 비싼 나라로 갑니다", "올리면 거꾸로 돌아옵니다", "한국 100 기준", "물가 (한국 = 100)", "한국과 비교", "하루 예산 예시", "한국에서 하루 100,000원 쓰는 만큼 · 물가 비율로 계산", "환율 없음"]) expect(route(), t).toContain(t);
     expect(route()).not.toContain("한국보다 싼 곳 · 비슷한 곳 · 비싼 곳"); // 정적 자 제목은 없어짐
+    expect(route()).not.toMatch(/<Eyebrow>\s*한국 = 100/); // 작업 0251 ㄷ: 제목 위 라벨 없음
   });
 });
