@@ -26,8 +26,11 @@ export function Home({ latest, signals, airFare }: HomeData) {
     <>
       <SiteNav page="home" />
       <main id="main" tabIndex={-1}>
-      <HeroSection timing={timing} />
-      <TodayBoard rates={rates} signals={signalRows} windowDays={windowDays} problem={!latest.ok ? latest.reason : null} />
+      {/* 1024 이상: 제목(왼쪽) · 탑승권 카드(오른쪽) 두 단 — 파랑 면이 카드를 품음 · 1023 이하는 위아래로 쌓임 (작업 0245) */}
+      <div className="lg:grid lg:grid-cols-[minmax(2rem,1fr)_minmax(0,31rem)_minmax(0,44rem)_minmax(2rem,1fr)] lg:bg-pin-cheap">
+        <HeroSection timing={timing} />
+        <TodayBoard rates={rates} signals={signalRows} windowDays={windowDays} problem={!latest.ok ? latest.reason : null} />
+      </div>
       <YearBars timing={timing} />
       <DestinationsSection rows={destinationRows(signalRows, rates, DESTINATIONS as Destination[])} windowDays={windowDays} moreCount={moreCurrenciesCount(rates, DESTINATIONS)} />
       </main>
