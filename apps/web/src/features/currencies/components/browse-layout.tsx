@@ -9,6 +9,7 @@ import type { ReactNode } from "react";
 import { CurrencyChips } from "./currency-chips";
 import { CurrencyList } from "./currency-list";
 import { CurrencySearch } from "./currency-search";
+import { FadeUpGroup } from "@hav/ui/motion/fade-up";
 import { Eyebrow } from "@hav/ui/text/heading";
 import { TextLink } from "@hav/ui/text/text-link";
 import { PageFooter } from "@hav/ui/layout/page-footer";
@@ -38,12 +39,12 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
             {children}
           </main>
           {/* 맨 아래 — 다른 통화 목록 (지금 목록 부품 · 격자) */}
-          <div data-testid="currency-list" className="mt-[4.5rem] min-w-0 sm:mt-24">
-            <Eyebrow>둘러보기</Eyebrow>
-            <div className="mt-4">
+          <FadeUpGroup testId="currency-list" className="mt-[4.5rem] min-w-0 sm:mt-24">
+            <Eyebrow data-fu={0}>둘러보기</Eyebrow>
+            <div data-fu={3} className="mt-4">
               <CurrencyList items={items} variant="grid" />
             </div>
-          </div>
+          </FadeUpGroup>
         </div>
       </section>
       <PageFooter width="max-w-page">신호는 최근 {windowDays}일 중 오늘 값의 위치입니다. 앞으로를 예측하지 않으며, 투자 · 금융 조언이 아닙니다 · {SOURCE_NOTE} ·{" "}
