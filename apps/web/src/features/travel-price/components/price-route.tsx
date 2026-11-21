@@ -266,7 +266,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
               })}
             <>
                 <div aria-hidden className="pointer-events-none absolute top-[calc(var(--tt)-34px)] z-[4] max-[760px]:hidden" style={{ left: `${planeX}%` }}>
-                  <span className={`block -translate-x-1/2 rounded-pill bg-fg px-2.5 py-[3px] text-[0.75rem] font-bold whitespace-nowrap text-card transition-opacity duration-200 ${moving ? "opacity-100" : "opacity-0"}`}>{moving ? `${active === fr.i ? "→" : "←"} ${nextName}` : ""}</span>
+                  <span className={`block -translate-x-1/2 rounded-pill bg-fg px-2.5 py-[3px] text-[0.75rem] font-bold whitespace-nowrap text-card transition-opacity duration-200 ${moving ? "opacity-100" : "opacity-0"}`}>{moving ? `${dir === "forward" ? "→" : "←"} ${nextName}` : ""}</span>
                 </div>
                 <div
                   data-testid="route-plane"
