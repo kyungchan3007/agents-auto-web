@@ -81,7 +81,10 @@ test.describe("휴대폰 390px — 누르는 자리 44px 이상 (작업 0268)", 
       const rects = await page.evaluate((sels) => {
         const out: { id: string; text: string; x1: number; x2: number; y1: number; y2: number }[] = [];
         for (const { id, sel } of sels) {
-          for (const el of Array.from(document.querySelectorAll(sel))) {
+          // ':has-text("…")' 는 Playwright 전용 선택자라 브라우저 DOM 에서는 못 씀(SyntaxError) — 기본 선택자 + 글 포함으로 나눠 씀
+          const m = sel.match(/^(.*?):has-text\("(.*)"\)$/);
+          const base = m ? m[1] : sel;
+          for (const el of Array.from(document.querySelectorAll(base)).filter((e) => !m || (e.textContent ?? "").includes(m[2]))) {
             const r = el.getBoundingClientRect();
             if (r.width === 0 || r.height === 0) continue;
             const af = getComputedStyle(el, "::after");
