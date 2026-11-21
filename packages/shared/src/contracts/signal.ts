@@ -47,6 +47,8 @@ export const SignalList = z.object({
       latest: Point.nullable(),
       /** 90일 중간값 (작업 0228 · 홈 도착지 카드의 카운트업 시작 값) — 선택 · 없으면 null */
       median: z.number().nullable().optional(),
+      /** 90일 최고 (작업 0260 · 통화 둘러보기 표 "90일 최고보다") — 1 외화당 원 · 선택 · 옛 응답 · 기록 없음은 없음 · null */
+      max: z.number().nullable().optional(),
     }),
   ),
 });
