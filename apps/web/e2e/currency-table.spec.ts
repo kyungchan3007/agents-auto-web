@@ -80,15 +80,16 @@ test.describe("통화 둘러보기 표 (작업 0260)", () => {
     await page.goto("/currencies/USD");
     const cols = list(page).locator('[data-testid="currency-col"]');
     await expect(cols).toHaveCount(2);
-    const [c1, c2] = [await box(cols.nth(0)), await box(cols.nth(1))];
     const n1 = await cols.nth(0).locator('li[data-testid="currency-row"]').count();
     const n2 = await cols.nth(1).locator('li[data-testid="currency-row"]').count();
     expect(n1 + n2, "줄 수가 전체와 같음").toBe(await rows(page).count());
     expect(n1 - n2, "앞 단이 같거나 하나 더").toBeGreaterThanOrEqual(0);
     expect(n1 - n2).toBeLessThanOrEqual(1);
+    // 구간 등장 움직임 · 글꼴 · 자료가 자리를 잡는 도중의 값을 보지 않게 — 한 번만 재지 않고 최종 배치까지 다시 재며 기다림 (작업 0260 · CI 에서 흔들림)
+    // 두 단 상자는 한 번의 읽기로 함께 잼(따로 두 번 재면 그 사이 스크롤 · 움직임으로 서로 다른 순간 값이 섞일 수 있음)
+    const colBoxes = () => cols.evaluateAll((els) => { const r = els.map((e) => e.getBoundingClientRect()); return { c1: { x: r[0].x, y: r[0].y, width: r[0].width, height: r[0].height }, c2: { x: r[1].x, y: r[1].y, width: r[1].width, height: r[1].height } }; });
     if (isWide(page)) {
-      expect(c2.x, "둘째 단은 오른쪽").toBeGreaterThanOrEqual(c1.x + c1.width - 1);
-      expect(Math.abs(c2.y - c1.y), "두 단 위쪽이 같음").toBeLessThanOrEqual(2);
+      await expect.poll(async () => { const { c1, c2 } = await colBoxes(); return { right: c2.x >= c1.x + c1.width - 1, sameTop: Math.abs(c2.y - c1.y) <= 2 }; }, { message: "둘째 단은 오른쪽 · 두 단 위쪽이 같음", timeout: 10_000 }).toEqual({ right: true, sameTop: true });
       const heads = list(page).locator('[data-testid="currency-head"]');
       await expect(heads, "단마다 머리 줄").toHaveCount(2);
       for (const i of [0, 1]) {
@@ -98,8 +99,7 @@ test.describe("통화 둘러보기 표 (작업 0260)", () => {
         await expect(heads.nth(i)).toContainText("90일 최고보다");
       }
     } else {
-      expect(c2.y, "휴대폰은 한 단 — 둘째 단이 아래에 이어짐").toBeGreaterThanOrEqual(c1.y + c1.height - 1);
-      expect(Math.abs(c2.x - c1.x), "왼쪽 맞춤").toBeLessThanOrEqual(2);
+      await expect.poll(async () => { const { c1, c2 } = await colBoxes(); return { below: c2.y >= c1.y + c1.height - 1, left: Math.abs(c2.x - c1.x) <= 2 }; }, { message: "휴대폰은 한 단 — 둘째 단이 아래에 이어짐 · 왼쪽 맞춤", timeout: 10_000 }).toEqual({ below: true, left: true });
       await expect(list(page).locator('[data-testid="currency-head"]').first()).toContainText("90일 최고보다");
     }
   });
