@@ -39,7 +39,7 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
             {children}
           </main>
           {/* 맨 아래 — 다른 통화 목록 (지금 목록 부품 · 격자) */}
-          <FadeUpGroup testId="currency-list" className="mt-[4.5rem] min-w-0 sm:mt-24">
+          <FadeUpGroup data-testid="currency-list" className="mt-[4.5rem] min-w-0 sm:mt-24">
             <Eyebrow data-fu={0}>둘러보기</Eyebrow>
             <div data-fu={3} className="mt-4">
               <CurrencyList items={items} variant="grid" />

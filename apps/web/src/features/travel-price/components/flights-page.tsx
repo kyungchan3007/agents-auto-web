@@ -117,7 +117,7 @@ export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: Tra
                   </div>
                 </SlideIn>
                 {strip && (
-                  <FadeUpGroup testId="flights-strip" className="mt-8 grid border-t border-line sm:grid-cols-3 sm:divide-x sm:divide-line">
+                  <FadeUpGroup data-testid="flights-strip" className="mt-8 grid border-t border-line sm:grid-cols-3 sm:divide-x sm:divide-line">
                     <div data-testid="strip-max" data-fu={0} className="py-5 sm:pr-6">
                       <p className="flex items-center gap-2 text-[1.125rem] font-bold text-fg">
                         <span aria-hidden className="size-2.5 rounded-full bg-pin-expensive" />
