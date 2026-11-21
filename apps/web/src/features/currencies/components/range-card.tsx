@@ -34,10 +34,11 @@ export function RangeCard({ code, stats, rate, unitText }: { code: string; stats
       </div>
       {stats && pos !== null && (
         <>
+          {/* 비행기 표시가 끝점 6% 안이면 그 끝의 고리는 그리지 않음 — 고리가 비행기에 반쯤 가려 "C" 로 보이던 것 (작업 0248 · 19번) */}
           <div aria-hidden className="relative mx-3 mt-7 h-9">
             <div className="absolute inset-x-0 top-1/2 border-t-2 border-dashed border-line" />
-            <span className="absolute top-1/2 left-0 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-pin-cheap bg-card" />
-            <span className="absolute top-1/2 right-0 size-3.5 translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-pin-expensive bg-card" />
+            {pos >= 0.06 && <span className="absolute top-1/2 left-0 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-pin-cheap bg-card" />}
+            {pos <= 0.94 && <span className="absolute top-1/2 right-0 size-3.5 translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-pin-expensive bg-card" />}
             {avgTickPos !== null && <span className={`absolute top-1/2 h-5 w-0.5 -translate-x-1/2 -translate-y-1/2 bg-fg ${slide}`} style={{ left: `${avgTickPos * 100}%` }} />}
             <span
               data-testid="route-plane"
