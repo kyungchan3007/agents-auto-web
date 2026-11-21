@@ -95,6 +95,27 @@ describe("신호 median 계약 (작업 0228)", () => {
   });
 });
 
+// 작업 0260 — max(90일 최고) 계약: SignalList 줄에 선택 · null 가능 · 숫자만 (옛 응답 호환) · 테스트 먼저
+describe("신호 목록 max 계약 (작업 0260)", () => {
+  const rule = { windowDays: 90, cheapAt: 0.3, expensiveAt: 0.7, minCoverage: 0.8 };
+  const row = { currency: "USD", signal: "cheap", reason: "ok", percentile: 0.02, latest: { date: "2026-10-28", value: 1324.3 } };
+  const list = (r: object) => ({ rule, signals: [r] });
+
+  it("SignalList 줄: max 숫자 · null · 없음(옛 응답) 통과 · 숫자가 아니면 실패 · 값이 그대로 나옴", () => {
+    expect(SignalList.safeParse(list({ ...row, max: 1441.1 })).success).toBe(true);
+    expect(SignalList.safeParse(list({ ...row, max: null })).success).toBe(true);
+    expect(SignalList.safeParse(list(row)).success).toBe(true);
+    expect(SignalList.safeParse(list({ ...row, max: "1441" })).success).toBe(false);
+    const parsed = SignalList.parse(list({ ...row, max: 14.411 })) as { signals: { max?: number | null }[] };
+    expect(parsed.signals[0].max).toBe(14.411); // 계약이 모르는 필드로 알고 지우지 않음
+  });
+
+  it("median 과 함께 와도 둘 다 그대로", () => {
+    const parsed = SignalList.parse(list({ ...row, median: 1350.5, max: 1441.1 })) as { signals: { median?: number | null; max?: number | null }[] };
+    expect(parsed.signals[0]).toMatchObject({ median: 1350.5, max: 1441.1 });
+  });
+});
+
 describe("블록 탑 막힘 표시 (작업 0075)", () => {
   const done = [
     { task: "0070", mergedAt: "2026-10-29T11:00:00.000Z" },

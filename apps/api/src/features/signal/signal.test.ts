@@ -148,3 +148,50 @@ describe("median — 90일 중간값 (작업 0228)", () => {
     expect(u.latest?.value).toBe(1300 + N - 1);
   });
 });
+
+// 작업 0260 — 90일 최고 max (통화 둘러보기 표 "90일 최고보다") · 테스트 먼저 (구현 전에는 FAIL 이 정상)
+//   목록 줄(signalsByCurrency)에 max: number | null — 단위는 latest.value 와 같은 1 외화당 원(perUnit) · 90일 창 안 값의 최대 · 추가 D1 읽기 없음(이미 읽은 값으로 계산)
+describe("max — 90일 최고 (작업 0260)", () => {
+  const asc = (k: number) => Array.from({ length: k }, (_, i) => 1000 + i * 7);
+  const rowsOf = (currency: string, values: number[], unit = 1, source = "koreaexim", end = END) => weekdaySeries(end, values).map((p, i) => ({ currency, date: p.date, baseRate: values[i] * unit, unit, source }));
+  const maxOf = (r: unknown) => (r as { max?: number | null }).max;
+
+  it("목록 줄에 max — 창 안 가장 높은 값 · 오늘이 최고면 오늘 값", () => {
+    const values = [...asc(N - 1), 5000, 1100]; // 가운데에 높았던 날
+    const [u] = signalsByCurrency(rowsOf("USD", values));
+    expect(maxOf(u)).toBe(5000);
+    const [top] = signalsByCurrency(rowsOf("USD", asc(N)));
+    expect(maxOf(top)).toBe(1000 + (N - 1) * 7);
+    expect(maxOf(top)).toBe(top.latest!.value);
+  });
+
+  it("1 외화당 원 단위로 — 엔 100 단위 고시도 같은 기준(약 8~9) · latest 와 같은 단위라 내린 폭이 단위와 무관", () => {
+    const jpyValues = Array.from({ length: N }, (_, i) => 8 + (i % 5) * 0.1); // 1엔당 원
+    const [j] = signalsByCurrency(rowsOf("JPY", jpyValues, 100));
+    expect(maxOf(j)!).toBeCloseTo(Math.max(...jpyValues), 6);
+    expect(maxOf(j)!, "엔은 1엔당 원").toBeLessThan(20);
+    expect(maxOf(j)!).toBeGreaterThanOrEqual(j.latest!.value);
+  });
+
+  it("90일 창보다 오래된 값은 max 에 안 넣음", () => {
+    const values = asc(N);
+    const old = { currency: "USD", date: "2026-01-02", baseRate: 99999, unit: 1, source: "koreaexim" };
+    const [u] = signalsByCurrency([old, ...rowsOf("USD", values)]);
+    expect(maxOf(u)).toBe(Math.max(...values));
+  });
+
+  it("기록이 짧아 신호가 없는 통화도 max 는 받은 값으로(웹이 신호가 없으면 '—' 로 처리) · 기록이 없으면 줄이 없음", () => {
+    const [short] = signalsByCurrency(rowsOf("EUR", [1500, 1520, 1510], 1));
+    expect(short.signal).toBeNull();
+    expect(maxOf(short)).toBe(1520);
+    expect(signalsByCurrency([])).toEqual([]);
+  });
+
+  it("통화마다 따로 · 기존 줄 값은 그대로", () => {
+    const rows = [...rowsOf("USD", asc(N)), ...rowsOf("JPY", Array.from({ length: N }, () => 9), 100)];
+    const r = signalsByCurrency(rows) as { currency: string; max?: number | null }[];
+    expect(r.find((x) => x.currency === "USD")!.max).toBe(1000 + (N - 1) * 7);
+    expect(r.find((x) => x.currency === "JPY")!.max).toBeCloseTo(9, 6);
+    expect(r.find((x) => x.currency === "USD")).toMatchObject({ signal: "expensive", reason: "ok", percentile: 1 });
+  });
+});

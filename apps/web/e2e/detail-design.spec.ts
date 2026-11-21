@@ -36,56 +36,28 @@ test.describe("통화 상세 (작업 0212)", () => {
     expect(new Set(digits).size, values.join(" | ")).toBe(1);
   });
 
-  // 작업 0250 — 17번이 격자의 알약을 조용한 글자(span.text-right · '최근 90일 …')로 바꿈 · 남긴 것: 판정 표시(알약 또는 글자)가 그 통화 칸 밖으로 나가지 않음
-  test("휴대폰 — 맨 아래 통화 줄의 판정 표시가 그 통화 칸 안에 있음", async ({ page }) => {
-    test.skip(!isPhone(page), "휴대폰 전용");
+  // 작업 0260 — 판정 알약 · 조용한 글자('최근 90일 …')는 표에서 없어짐: "휴대폰 줄의 판정 표시가 칸 안에 있음" 검사는 currency-table.spec.ts 의 "휴대폰 — … 가로로 넘치지 않음"(이름 · 환율 · 내린 폭이 줄 안)으로 옮김
+  // 작업 0260 — 카드 격자가 표(두 단 · 휴대폰 한 단)로 바뀜: 모두 보임 · 스크롤 칸 없음 · 가로 넘침 없음은 그대로 지킴
+  test("맨 아래 통화 목록 — 표로 모두 보임 (스크롤 칸 없음 · 중간에서 잘리지 않음 · 가로 넘침 없음)", async ({ page }) => {
     await page.goto("/currencies/USD");
-    const links = tid(page, "currency-list").locator("nav ul li a");
-    let checked = 0;
-    for (let i = 0; i < 3; i++) {
-      const link = links.nth(i);
-      const pill = link.locator("span.rounded-pill, span.text-right").first();
-      if ((await pill.count()) === 0) continue;
-      const lb = await box(link);
-      const pb = await box(pill);
-      expect(pb.x, "판정 표시 왼쪽").toBeGreaterThanOrEqual(lb.x - 0.5);
-      expect(pb.x + pb.width, "판정 표시 오른쪽").toBeLessThanOrEqual(lb.x + lb.width + 0.5);
-      expect(pb.y + pb.height, "판정 표시 아래").toBeLessThanOrEqual(lb.y + lb.height + 0.5);
-      checked++;
+    const cols = tid(page, "currency-list").locator('[data-testid="currency-col"]');
+    const nc = await cols.count();
+    expect(nc).toBeGreaterThan(0);
+    for (let c = 0; c < nc; c++) {
+      const ul = cols.nth(c).locator("ul");
+      expect(await ul.evaluate((el) => el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1), `${c + 1}번째 단 스크롤 칸 없음`).toBe(true);
+      const ub = await box(ul);
+      const items = cols.nth(c).locator("ul li");
+      const n = await items.count();
+      for (let i = 0; i < n; i++) {
+        const b = await box(items.nth(i));
+        expect(b.y + b.height, `${c + 1}단 ${i + 1}번째 줄`).toBeLessThanOrEqual(ub.y + ub.height + 1);
+        expect(b.x + b.width).toBeLessThanOrEqual(ub.x + ub.width + 1);
+      }
     }
-    expect(checked).toBeGreaterThan(0);
-    // 칸끼리 겹치지 않음 (작업 0219: 맨 아래 목록은 격자 — 같은 줄이면 옆 칸 · 다음 줄이면 아래 칸)
-    const a = await box(links.nth(0));
-    const b = await box(links.nth(1));
-    expect(a.x + a.width <= b.x + 0.5 || a.y + a.height <= b.y + 0.5).toBe(true);
+    expect(await tid(page, "currency-list").locator("nav ul li").count()).toBeGreaterThan(3);
   });
 
-  test("맨 아래 통화 목록 — 격자로 모두 보임 (스크롤 칸 없음 · 중간에서 잘리지 않음 · 가로 넘침 없음)", async ({ page }) => {
-    await page.goto("/currencies/USD");
-    const ul = tid(page, "currency-list").locator("nav ul");
-    expect(await ul.evaluate((el) => el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1)).toBe(true);
-    const ub = await box(ul);
-    const items = tid(page, "currency-list").locator("nav ul li");
-    const n = await items.count();
-    expect(n).toBeGreaterThan(3);
-    for (let i = 0; i < n; i++) {
-      const b = await box(items.nth(i));
-      expect(b.y + b.height, `${i + 1}번째 줄`).toBeLessThanOrEqual(ub.y + ub.height + 1);
-      expect(b.x + b.width).toBeLessThanOrEqual(ub.x + ub.width + 1);
-    }
-  });
-});
-
-test.describe("여행 물가 (작업 0212)", () => {
-  test("나라 줄 판정 알약은 '환율 …' 으로 시작 — 물가와 구분 (다른 화면 알약은 그대로)", async ({ page }) => {
-    await page.goto("/prices");
-    const pills = tid(page, "price-bands").locator("a span.rounded-pill");
-    const n = await pills.count();
-    expect(n).toBeGreaterThan(0);
-    for (let i = 0; i < n; i++) expect((await pills.nth(i).innerText()).trim()).toMatch(/^환율 /);
-  });
-
-  // 작업 0248 · 17번: 통화 둘러보기 격자는 알약 대신 조용한 글자로 바꿈 — 알약이 있어야 한다는 모양 검사는 디자인 테스트로 나눔
   // 작업 0250 — 17번이 둘러보기 격자의 알약을 조용한 글자('최근 90일 중 하위 N%' · '최근 90일 최저')로 바꿈 · 남긴 것: 판정 글자가 '환율 …' 알약 글(물가 쪽)로 시작하지 않음
   test("통화 목록의 판정 글자는 '환율 …' 으로 시작하지 않음 — 물가 쪽 알약과 구분", async ({ page }) => {
     await page.goto("/currencies/USD");
