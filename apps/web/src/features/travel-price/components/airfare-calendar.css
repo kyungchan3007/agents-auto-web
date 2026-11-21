@@ -10,7 +10,6 @@
 .af-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px}
 .af-chips button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:8px;padding:7px 15px 7px 10px;border-radius:999px;border:2px solid var(--line);background:var(--hav-foam);font-weight:700;font-size:14px;transition:background .25s,color .25s,border-color .25s}
 .af-chips button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--hav-foam)}
-.af-chips button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 .af-chips .fl{display:block;width:24px;height:16px;border-radius:2px;overflow:hidden;box-shadow:var(--shadow-af-ring)}
 .af-chips .fl svg{display:block;width:100%;height:100%;border-radius:0}
 .af-card{margin-top:22px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;border:2px solid var(--line);border-radius:24px;background:var(--hav-foam);padding:28px}
@@ -26,7 +25,6 @@
 .af-nav{display:flex;gap:6px}
 .af-nav button{all:unset;cursor:pointer;width:32px;height:32px;border-radius:50%;background:var(--hav-foam);color:var(--ink);font-size:20px;line-height:30px;text-align:center;font-weight:700;box-shadow:var(--shadow-af-nav);transition:opacity .2s}
 .af-nav button:disabled{opacity:.35;cursor:default}
-.af-nav button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 /* 휴대폰: 눌리는 자리만 44px — 보이지 않는 덧칸 · 가운데 기준 (작업 0268) */
 @media (max-width:639.98px){
   .af-chips button,.af-nav button{position:relative}
@@ -48,7 +46,7 @@
 .af-d .pr{font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;color:var(--sub);line-height:1.2}
 .af-d[data-tier="low"] .pr{color:var(--blue)}.af-d[data-tier="high"] .pr{color:var(--red)}
 .af-d[data-best="true"]::before{content:"";position:absolute;inset:2px 3px;border-radius:14px;border:2px solid var(--yellow);pointer-events:none}
-.af-d:focus-visible{outline:2px solid var(--blue);outline-offset:-4px;border-radius:16px}
+.af-d:focus-visible{outline-offset:-4px;border-radius:16px}
 .af-d[data-on] .wd,.af-d[data-on] .dt,.af-d[data-on] .pr{color:var(--hav-foam)}
 .af-sel{position:absolute;z-index:0;top:0;bottom:0;left:0;width:calc(100%/var(--n));transition:transform .38s cubic-bezier(.3,1.2,.4,1)}
 .af-sel::before{content:"";position:absolute;inset:2px 3px;border-radius:14px;background:var(--blue);box-shadow:var(--shadow-af-sel)}

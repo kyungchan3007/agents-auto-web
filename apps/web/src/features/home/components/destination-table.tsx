@@ -75,7 +75,7 @@ function Row({ row, f, motion }: { row: DestinationRowData; f: PillFrame; motion
     </div>
   );
   return row.href ? (
-    <Link href={row.href} style={rowStyle} className="block hover:bg-surface-2/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
+    <Link href={row.href} style={rowStyle} className="block hover:bg-surface-2/60">
       {body}
     </Link>
   ) : (

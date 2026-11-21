@@ -80,7 +80,7 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
                 data-testid="picked-pass"
                 aria-expanded={passOpen}
                 onClick={togglePass}
-                className="self-start border-b-2 border-cheap pb-0.5 text-body font-semibold text-cheap hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cheap"
+                className="self-start border-b-2 border-cheap pb-0.5 text-body font-semibold text-cheap hover:text-fg"
               >
                 {`${pickedChip(picked).replace(/^✈\s*/, "").replace(" · ", " ")} ›`}
               </button>

@@ -31,7 +31,7 @@ export function BubbleSearch({ s }: { s: IntroView }) {
           placeholder="나라나 도시를 입력하세요 (예: 다낭, 파리)"
           value={s.query}
           onChange={(e) => s.setQuery(e.target.value)}
-          className="min-w-0 flex-1 border-0 bg-transparent py-2 text-[17px] font-semibold text-fg outline-none placeholder:font-normal placeholder:text-fg-2"
+          className="min-w-0 flex-1 border-0 bg-transparent py-2 text-[17px] font-semibold text-fg placeholder:font-normal placeholder:text-fg-2"
         />
         <button type="submit" className="inline-flex items-center justify-center rounded-pill bg-cheap px-5 py-2 text-sm font-semibold text-on-accent hover:bg-pin-ink">
           출발

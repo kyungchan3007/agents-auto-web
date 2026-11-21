@@ -28,7 +28,7 @@ export function BubbleBudget({ s }: { s: IntroView }) {
           onKeyDown={(e) => {
             if (e.key === "Enter") s.next2();
           }}
-          className="min-w-0 flex-1 border-0 bg-transparent text-[26px] font-extrabold text-fg tabular-nums outline-none"
+          className="min-w-0 flex-1 border-0 bg-transparent text-[26px] font-extrabold text-fg tabular-nums"
         />
         <span className="font-semibold text-fg-2">원</span>
       </label>

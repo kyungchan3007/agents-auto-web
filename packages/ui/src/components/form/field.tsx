@@ -3,7 +3,7 @@
 import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from "react";
 
 export const fieldClass =
-  "h-14 w-full rounded-[0.875rem] border-2 border-field-line bg-card px-4 text-base text-fg placeholder:text-fg-2 transition-colors hover:border-cheap/60 focus:border-cheap focus:outline-3 focus:outline-cheap/25";
+  "h-14 w-full rounded-[0.875rem] border-2 border-field-line bg-card px-4 text-base text-fg placeholder:text-fg-2 transition-colors hover:border-cheap/60 focus:border-cheap";
 
 export function Input({ className = "", ...rest }: InputHTMLAttributes<HTMLInputElement>) {
   return <input className={`${fieldClass} ${className}`} {...rest} />;
