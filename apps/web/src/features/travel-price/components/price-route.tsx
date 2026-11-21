@@ -1,17 +1,17 @@
 "use client";
 
-// 여행 물가 "스크롤로 떠나는 물가 노선" — 정적 물가 자 자리에 들어가는 새 구역 (작업 0230 · 모션 3번) · 바로 아래로 세 칸 목록 · 나라 더 보기 · 뺀 나라 줄이 그대로 이어짐
-//   움직이는 모습: 화면이 메뉴 띠 바로 아래에 붙은 채(sticky · 세로 가운데 아님) 스크롤을 내리면 말(동그라미)이 싼 나라에서 한국을 지나 비싼 나라로 · 올리면 거꾸로 · 정거장마다 카드(이름 · 물가 숫자 · 한국과 비교 · 하루 예산 · 환율 신호)
+// 여행 물가 "나라별 물가 노선" — 정적 물가 자 자리에 들어가는 구역 (작업 0230 · 모션 3번 → 작업 0266: 스크롤 고정을 풀고 나라 단추로 고르기) · 바로 아래로 세 칸 목록 · 나라 더 보기 · 뺀 나라 줄이 그대로 이어짐
+//   움직이는 모습: 제목 오른쪽(휴대폰은 제목 아래 가로 한 줄)의 나라 단추를 누르면 말(동그라미)이 그 나라 값 위치로 가고 아래 정거장 카드(이름 · 물가 숫자 · 한국과 비교 · 하루 예산 · 환율 신호)가 그 나라로 바뀜 · 스크롤로는 바뀌지 않음
 //   정거장 = 지금 정적 자의 핀(구간마다 맨 위 두 나라) + 한국 · 값은 아래 목록의 "물가 N (한국 100)" 과 같음(추가 API 없음 · 지어내지 않음)
-//   서버 첫 그림 · 움직임 줄이기 · 자바스크립트 꺼짐 = 정적 노선(고정 없이 자 · 핀 · 정거장 카드가 모두 보임) · 긴 스크롤 모양은 globals.css 의 scripting + no-preference 조건에서만
+//   서버 첫 그림 · 자바스크립트 꺼짐 = 첫 정거장(가장 싼 나라) 카드와 자 · 핀 · 한국 100 꼬리표 · 움직임 줄이기 = 같은 화면에서 움직임 없이 바로 바뀜(모든 카드를 펼친 정적 목록은 없앰)
 import { Flag } from "@hav/ui/data/flag";
 import type { Signal } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import { SectionTitle } from "@hav/ui/text/heading";
 import type { CSSProperties } from "react";
-import { useCountTween, usePlaneFlip, usePriceRoute, useRouteStep, useRouteTiles } from "../hooks/use-price-route";
+import { useCountTween, usePlaneFlip, usePriceRoute, useRouteTiles } from "../hooks/use-price-route";
 import { type PriceBand, rateBadgeText } from "../lib/bands";
-import { type RouteBand, type RouteStop, isMoving, routeActive, routeCardText, routeFrame, routeStops, routeValue } from "../lib/price-route";
+import { type RouteBand, type RouteStop, routeCardText, routeStops } from "../lib/price-route";
 import { rulerScale, rulerX } from "../lib/ruler";
 
 const COLOR: Record<RouteBand, string> = {
@@ -53,9 +53,6 @@ function SignalCell({ stop, extra, signalOf, percentileOf, small }: { stop: Rout
 
 /** 정거장 카드 아랫줄 — 움직이는 카드는 넓은 화면에서 세 칸 가로 · 휴대폰(760 이하)은 하루 예산을 아랫줄로 */
 const ROW = "grid grid-cols-[auto_1fr_1.25fr] border-t-2 border-dashed border-line pt-(--route-row-pt) max-[760px]:grid-cols-2 max-[760px]:gap-y-(--route-row-gap) [&>div]:border-l [&>div]:border-line [&>div]:px-8 [&>div:first-child]:border-l-0 [&>div:first-child]:pl-0 max-[760px]:[&>div]:pr-0 max-[760px]:[&>div]:pl-4 max-[760px]:[&>div:first-child]:pl-0 max-[760px]:[&>div:nth-child(3)]:col-span-2 max-[760px]:[&>div:nth-child(3)]:border-t max-[760px]:[&>div:nth-child(3)]:border-l-0 max-[760px]:[&>div:nth-child(3)]:pt-(--route-row-gap) max-[760px]:[&>div:nth-child(3)]:pl-0";
-/** 정적 카드(움직임 줄이기 · 스크립트 꺼짐 · 두 단 카드)는 칸이 좁아 어느 폭에서나 휴대폰처럼 하루 예산을 아랫줄로 내려 금액이 잘리지 않게 (작업 0248 · 1번) */
-const ROW_STACKED = "grid grid-cols-2 gap-y-(--route-row-gap) border-t-2 border-dashed border-line pt-(--route-row-pt) [&>div]:border-l [&>div]:border-line [&>div]:pr-0 [&>div]:pl-4 [&>div:first-child]:border-l-0 [&>div:first-child]:pl-0 [&>div:nth-child(3)]:col-span-2 [&>div:nth-child(3)]:border-t [&>div:nth-child(3)]:border-l-0 [&>div:nth-child(3)]:pt-(--route-row-gap) [&>div:nth-child(3)]:pl-0";
-
 /** 카드 한 장 — 정거장 하나의 모습 (움직이는 카드 · 정적 카드가 같은 틀) */
 function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap = 0 }: { swap?: number; stop: RouteStop; n: number; extra: Extra; latestYear?: number; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"]; live: boolean }) {
   const t = routeCardText(stop, stop.index, n);
@@ -89,7 +86,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
           <SignalCell stop={stop} extra={extra} signalOf={signalOf} percentileOf={percentileOf} small />
         </div>
       </div>
-      <div className={`mt-(--route-row-mt) ${live ? ROW : ROW_STACKED}`}>
+      <div className={`mt-(--route-row-mt) ${ROW}`}>
         <div>
           <p className="mb-1.5 text-[0.78125rem] text-fg-2">물가 (한국 = 100)</p>
           <div className="flex items-center gap-1">
@@ -113,8 +110,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
               <>
                 {pctNum}
                 <small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:text-[0.875rem]">{stop.value < 100 ? "% 쌉니다" : "% 비쌉니다"}</small>
-              </>
-            )}
+            </>
           </p>
         </div>
         <div>
@@ -142,57 +138,50 @@ export function PriceRoute({ bands, signalOf, percentileOf, latestYear }: Props)
 
 function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: RouteStop[]; extras: Record<string, Extra>; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"]; latestYear?: number }) {
   const n = stops.length;
-  const { armed, progress, dir, sec, stage, ruler, vp, goto } = usePriceRoute(n);
-  const fr = routeFrame(progress, n);
-  const { value: active, swap } = useRouteStep(fr, routeActive);
-  const moving = isMoving(fr.m);
-  const scale = rulerScale(stops.map((s) => s.value));
+  const { armed, active, target, moving, planeValue, dir, swap, sameValue, ruler, vp, goto } = usePriceRoute(stops.map((st) => st.value));
+  const scale = rulerScale(stops.map((st) => st.value));
   const x = (v: number) => rulerX(v, scale);
   const noExtra: Extra = { currency: null, year: null };
-  const planeValue = armed ? routeValue(stops, fr) : stops[0].value;
   const planeX = x(planeValue);
-  // 앞뒤 정거장 값이 같은 구간(스페인 111 ↔ 아랍에미리트 111)은 비행기가 가만히 — 뛰지 않고 · 고리가 다시 퍼지지 않고 · 좌우로 뒤집히지 않음 (작업 0251 ㄴ) · 바뀌는 것은 나라 쪽뿐
-  const sameSeg = n > fr.i + 1 && stops[fr.i].value === stops[fr.i + 1].value;
-  const flipped = usePlaneFlip(dir, sameSeg);
+  // 이웃 정거장 값이 같은 이동(스페인 111 ↔ 아랍에미리트 111)은 비행기가 가만히 — 뛰지 않고 · 고리가 다시 퍼지지 않고 · 좌우로 뒤집히지 않음 (작업 0251 ㄴ) · 바뀌는 것은 나라 쪽뿐
+  const flipped = usePlaneFlip(dir, sameValue);
   const cur = stops[active] ?? stops[0];
-  const nextName = moving ? (stops[active === fr.i ? fr.i + 1 : fr.i]?.name ?? "") : "";
+  const nextName = moving ? (stops[target]?.name ?? "") : "";
   const ticks: number[] = [];
   for (let v = Math.ceil((scale.lo + 5) / 5) * 5; v <= scale.hi - 5; v += 5) ticks.push(v);
   const labels = ticks.filter((v) => v % 20 === 0 && v < 100);
   const x0 = x(stops[0].value);
   const x1 = x(stops[n - 1].value);
   return (
-    <section ref={sec} data-testid="route-section" aria-label="스크롤로 떠나는 물가 노선" className="relative" style={{ "--route-n": n } as CSSProperties}>
-      <div ref={stage} data-testid="route-stage" className="w-full">
-        <div className="mb-(--route-head-mb) flex items-end justify-between gap-6">
+    <section data-testid="route-section" aria-label="나라별 물가 노선" className="relative mb-[4.5rem] sm:mb-24">
+      <div data-testid="route-stage" className="w-full">
+        <div className="mb-(--route-head-mb) flex items-end justify-between gap-6 max-[760px]:flex-col max-[760px]:items-stretch max-[760px]:gap-3">
           <div>
             <SectionTitle data-testid="route-title" className="text-(length:--route-title) leading-[1.125] text-fg">
-              스크롤로 떠나는 물가 노선
+              나라별 물가 노선
             </SectionTitle>
-            <p className="mt-1.5 text-small text-fg-2 max-[760px]:hidden">내릴수록 싼 나라에서 한국을 지나 비싼 나라로 갑니다 · 올리면 거꾸로 돌아옵니다</p>
+            <p className="mt-1.5 text-small text-fg-2">나라 이름을 누르면 그 나라로 갑니다 · 싼 나라에서 한국을 지나 비싼 나라 순서입니다</p>
           </div>
-          {armed && (
-            <ol data-testid="route-stops" className="m-0 flex list-none flex-wrap justify-end gap-1 p-0 max-[760px]:hidden">
-              {stops.map((s) => (
-                <li key={s.country}>
-                  <button
-                    type="button"
-                    data-testid="route-stop"
-                    data-country={s.country}
-                    data-value={s.value}
-                    data-active={s.index === active ? "true" : "false"}
-                    onClick={() => goto(s.index)}
-                    className={`flex cursor-pointer items-center gap-1.5 rounded-pill border py-[0.3125rem] pr-2.5 pl-1.5 text-[0.78125rem] transition-colors duration-[250ms] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${s.index === active ? "border-fg bg-fg font-bold text-card" : s.index < active ? "border-fg/40 text-fg" : "border-line text-fg-2"}`}
-                  >
-                    <RouteFlag country={s.country} name={s.name} className="size-4 ring-0" />
-                    {s.name}
-                  </button>
-                </li>
-              ))}
-            </ol>
-          )}
+          <ol data-testid="route-stops" className="m-0 flex min-w-0 list-none flex-wrap justify-end gap-1 p-0 max-[760px]:flex-nowrap max-[760px]:justify-start max-[760px]:overflow-x-auto max-[760px]:pb-1">
+            {stops.map((s) => (
+              <li key={s.country} className="max-[760px]:shrink-0">
+                <button
+                  type="button"
+                  data-testid="route-stop"
+                  data-country={s.country}
+                  data-value={s.value}
+                  data-active={s.index === active ? "true" : "false"}
+                  onClick={() => goto(s.index)}
+                  className={`flex cursor-pointer items-center gap-1.5 rounded-pill border py-[0.3125rem] pr-2.5 pl-1.5 text-[0.78125rem] whitespace-nowrap transition-colors duration-[250ms] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${s.index === active ? "border-fg bg-fg font-bold text-card" : s.index < active ? "border-fg/40 text-fg" : "border-line text-fg-2"}`}
+                >
+                  <RouteFlag country={s.country} name={s.name} className="size-4 ring-0" />
+                  {s.name}
+                </button>
+              </li>
+            ))}
+          </ol>
         </div>
-        <div ref={vp} className={`relative -mx-2 mt-1 px-2 max-[760px]:mx-[-1rem] max-[760px]:px-0 ${armed ? "max-[760px]:overflow-hidden" : "max-[760px]:overflow-x-auto"}`}>
+        <div ref={vp} className={`relative -mx-2 mt-1 px-2 max-[760px]:mx-[-1rem] max-[760px]:px-0 max-[760px]:overflow-hidden`}>
           <div
             ref={ruler}
             data-testid="route-ruler"
@@ -214,16 +203,14 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
               <span className="text-pin-cheap">← 쌈</span>
               <span className="text-pin-expensive">비쌈 →</span>
             </div>
-            {armed && (
-              <>
+            <>
                 <div aria-hidden className="absolute top-[calc(var(--tt)+10px)] h-0.5 bg-[repeating-linear-gradient(90deg,color-mix(in_srgb,var(--hav-card)_95%,transparent)_0_6px,transparent_6px_12px)]" style={{ left: `${x0}%`, width: `${x1 - x0}%` }} />
                 <div aria-hidden className="absolute top-[calc(var(--tt)+8.5px)] h-[5px] rounded-[3px] bg-card ring-[1.5px] ring-fg/35" style={{ left: `${x0}%`, width: `${Math.max(0, planeX - x0)}%` }} />
-              </>
-            )}
+            </>
             <div aria-hidden className="absolute top-[30px] h-[calc(var(--tt)+22px-30px)] w-0.5 -translate-x-px bg-fg" style={{ left: `${x(100)}%` }} />
             <div
               data-testid="route-kr-tag"
-              className={`absolute top-0 flex -translate-x-1/2 items-center gap-1.5 rounded-[6px] bg-sun py-1 pr-3 pl-[5px] text-[0.78125rem] font-bold whitespace-nowrap text-fg transition-transform duration-[350ms] ${armed && cur.country === "KR" ? "scale-[1.14]" : ""}`}
+              className={`absolute top-0 flex -translate-x-1/2 items-center gap-1.5 rounded-[6px] bg-sun py-1 pr-3 pl-[5px] text-[0.78125rem] font-bold whitespace-nowrap text-fg transition-transform duration-[350ms] ${cur.country === "KR" ? "scale-[1.14]" : ""}`}
               style={{ left: `${x(100)}%` }}
             >
               <RouteFlag country="KR" name="한국" className="size-5 ring-0" />
@@ -233,15 +220,15 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
               <span
                 key={`d${s.country}`}
                 aria-hidden
-                className={`absolute top-[calc(var(--tt)+11px)] -mt-[5.5px] -ml-[5.5px] size-[11px] rounded-full border-[2.5px] bg-card transition-transform duration-300 ${armed && s.index === active ? "scale-[1.35]" : ""}`}
+                className={`absolute top-[calc(var(--tt)+11px)] -mt-[5.5px] -ml-[5.5px] size-[11px] rounded-full border-[2.5px] bg-card transition-transform duration-300 ${s.index === active ? "scale-[1.35]" : ""}`}
                 style={{ left: `${x(s.value)}%`, borderColor: COLOR[s.band] }}
               />
             ))}
             {stops
               .filter((s) => s.side !== "kr")
               .map((s) => {
-                const on = armed && s.index === active;
-                const past = armed && s.index < active;
+                const on = s.index === active;
+                const past = s.index < active;
                 const up = s.side === "up";
                 const col = COLOR[s.band];
                 const nm = <span className="text-[0.78125rem] leading-tight font-bold text-fg">{s.name}</span>;
@@ -255,7 +242,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
                     data-country={s.country}
                     data-value={s.value}
                     data-side={s.side}
-                    className={`absolute flex -translate-x-1/2 flex-col items-center transition-[opacity,transform] duration-[350ms] ${up ? "bottom-[calc(var(--rh)-var(--tt)+2px)]" : "top-[calc(var(--tt)+24px)]"} ${on ? (up ? "-translate-y-1.5 scale-[1.12] opacity-100" : "translate-y-1.5 scale-[1.12] opacity-100") : armed ? (past ? "opacity-70" : "opacity-45") : ""}`}
+                    className={`absolute flex -translate-x-1/2 flex-col items-center transition-[opacity,transform] duration-[350ms] ${up ? "bottom-[calc(var(--rh)-var(--tt)+2px)]" : "top-[calc(var(--tt)+24px)]"} ${on ? (up ? "-translate-y-1.5 scale-[1.12] opacity-100" : "translate-y-1.5 scale-[1.12] opacity-100") : past ? "opacity-70" : "opacity-45"}`}
                     style={{ left: `${x(s.value)}%`, color: col }}
                   >
                     {up ? (
@@ -276,8 +263,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
                   </div>
                 );
               })}
-            {armed && (
-              <>
+            <>
                 <div aria-hidden className="pointer-events-none absolute top-[calc(var(--tt)-34px)] z-[4] max-[760px]:hidden" style={{ left: `${planeX}%` }}>
                   <span className={`block -translate-x-1/2 rounded-pill bg-fg px-2.5 py-[3px] text-[0.75rem] font-bold whitespace-nowrap text-card transition-opacity duration-200 ${moving ? "opacity-100" : "opacity-0"}`}>{moving ? `${active === fr.i ? "→" : "←"} ${nextName}` : ""}</span>
                 </div>
@@ -286,41 +272,30 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
                   data-dir={dir}
                   aria-hidden="true"
                   key={swap}
-                  className={`absolute top-[calc(var(--tt)+11px)] z-[3] -mt-[19px] -ml-[19px] grid size-[38px] place-items-center rounded-full bg-fg shadow-[0_0_0_3px_var(--hav-sun),0_8px_18px_-6px_color-mix(in_srgb,var(--hav-pin-ink)_70%,transparent)] after:absolute after:-inset-2.5 after:rounded-full after:border-2 after:border-sun after:opacity-0 ${swap > 0 && !sameSeg ? "after:animate-[route-ping_.8s_ease-out]" : ""}`}
+                  className={`absolute top-[calc(var(--tt)+11px)] z-[3] -mt-[19px] -ml-[19px] grid size-[38px] place-items-center rounded-full bg-fg shadow-[0_0_0_3px_var(--hav-sun),0_8px_18px_-6px_color-mix(in_srgb,var(--hav-pin-ink)_70%,transparent)] after:absolute after:-inset-2.5 after:rounded-full after:border-2 after:border-sun after:opacity-0 ${swap > 0 && !sameValue ? "after:animate-[route-ping_.8s_ease-out]" : ""}`}
                   style={{ left: `${planeX}%` }}
                 >
                   <svg viewBox="0 0 24 24" className={`size-5 text-card transition-transform duration-300 ${flipped ? "-scale-x-100" : ""}`}>
                     <path fill="currentColor" d="M21.5 11.2 14 7.8V3.5a2 2 0 1 0-4 0v4.3l-7.5 3.4v2.1l7.5-1.6v4.6l-2.2 1.6V20l4.2-1.1 4.2 1.1v-1.9L14 16.3v-4.6l7.5 1.6z" transform="rotate(90 12 12)" />
                   </svg>
                 </div>
-              </>
-            )}
+            </>
           </div>
         </div>
-        {armed ? (
-          <article
-            data-testid="route-card"
-            data-moving={moving ? "true" : "false"}
-            aria-live="polite"
-            className={`${CARD} mt-2.5 max-[760px]:mt-0`}
-            style={{ "--c": COLOR[cur.band] } as CSSProperties}
-          >
-            <div className={moving ? "opacity-55 transition-opacity duration-200" : "transition-opacity duration-[250ms]"}>
-              <Card stop={cur} n={n} extra={extras[cur.country] ?? noExtra} latestYear={latestYear} signalOf={signalOf} percentileOf={percentileOf} live swap={swap} />
-            </div>
-            <p data-testid="route-next" className={`absolute right-7 bottom-3.5 text-[0.75rem] text-fg-2 transition-opacity duration-200 max-[760px]:hidden ${moving ? "opacity-100" : "opacity-0"}`}>
-              {moving ? `다음 정거장 → ${nextName}` : ""}
-            </p>
-          </article>
-        ) : (
-          <div data-testid="route-static" className="mt-2.5 grid gap-4 min-[761px]:grid-cols-2">
-            {stops.map((s) => (
-              <article key={s.country} data-testid="route-card" className={CARD} style={{ "--c": COLOR[s.band] } as CSSProperties}>
-                <Card stop={s} n={n} extra={extras[s.country] ?? noExtra} latestYear={latestYear} signalOf={signalOf} percentileOf={percentileOf} live={false} />
-              </article>
-            ))}
+        <article
+          data-testid="route-card"
+          data-moving={moving ? "true" : "false"}
+          aria-live="polite"
+          className={`${CARD} mt-2.5 max-[760px]:mt-0`}
+          style={{ "--c": COLOR[cur.band] } as CSSProperties}
+        >
+          <div className={moving ? "opacity-55 transition-opacity duration-200" : "transition-opacity duration-[250ms]"}>
+            <Card stop={cur} n={n} extra={extras[cur.country] ?? noExtra} latestYear={latestYear} signalOf={signalOf} percentileOf={percentileOf} live={armed} swap={swap} />
           </div>
-        )}
+          <p data-testid="route-next" className={`absolute right-7 bottom-3.5 text-[0.75rem] text-fg-2 transition-opacity duration-200 max-[760px]:hidden ${moving ? "opacity-100" : "opacity-0"}`}>
+            {moving ? `다음 정거장 → ${nextName}` : ""}
+          </p>
+        </article>
       </div>
     </section>
   );

@@ -1,6 +1,6 @@
 // 여행 물가 "스크롤 물가 노선" 계산 — 순수 함수 (작업 0230 · 모션 3번 · 시안 .tmp/motion-pages/m-prices.js)
 //   정거장 = 지금 정적 자의 핀(구간마다 맨 위 두 나라 · lib/ruler.ts rulerPins) + 한국 · 값은 아래 세 칸 목록의 "물가 N (한국 100)" 과 같음 (추가 자료 없음 · 지어내지 않음)
-//   스크롤 진행 p(0~1) → 정거장 사이 위치(routeFrame) · 값(routeValue) · 지금 정거장(routeActive) · 카드 글(routeCardText)
+//   정거장 사이 위치 m(0~1) → 값(routeValue) · 지금 정거장(routeActive) · 카드 글(routeCardText) (작업 0266: 스크롤 진행 routeFrame · ROUTE_STEP_VH 는 나라 단추로 고르면서 없앰)
 import { rulerPins } from "./ruler";
 
 export type RouteBand = "cheap" | "mid" | "exp" | "base";
@@ -17,20 +17,6 @@ export function routeStops(bands: { rows: { country: string; name: string; relat
   const before = pins.filter((p) => p.value < 100).map(mk);
   const after = pins.filter((p) => p.value >= 100).map(mk);
   return [...before, kr, ...after].map((s, index) => ({ ...s, index }));
-}
-
-/** 정거장 사이 스크롤 길이 (화면 높이의 %) */
-export const ROUTE_STEP_VH = { wide: 36, phone: 30 } as const;
-
-const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
-const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2);
-
-/** p = 스크롤 진행 0~1 · n = 정거장 수 — 앞뒤 22% 는 정거장에 멈추고 가운데 56% 에서 움직임 */
-export function routeFrame(p: number, n: number): { i: number; f: number; m: number } {
-  const tt = clamp01(p) * Math.max(1, n - 1);
-  const i = Math.max(0, Math.min(n - 2, Math.floor(tt)));
-  const f = tt - i;
-  return { i, f, m: ease(clamp01((f - 0.22) / 0.56)) };
 }
 
 /** 두 정거장 값 사이를 m 만큼 */
