@@ -8,8 +8,9 @@ import { numberTone, splitNumbers } from "../../lib/emphasis";
 type Bg = "light" | "sea";
 type Tone = "neutral" | "expensive";
 
+// 화면이 뜨고 0.35초 뒤 띠가 왼쪽에서 오른쪽으로 0.6초에 걸쳐 그어짐(emph-sweep · tokens.css) · 끝 모양은 아래 값 그대로 · 움직임 줄이기는 처음부터 그어져 있음 · 자바스크립트 없이 CSS 만 (작업 0255)
 // 띠는 글자 폭에 맞추고(왼쪽 밖 · 아래로 삐져나오지 않게) 높이는 글자 위쪽 64% ~ 90% 구간만 (작업 0248 → 0249 · 24번 · 예전: 55% 부터 아래 끝까지 · 양쪽 0.05em 안쪽 가운데 맞춤 · 작업 0209)
-const LIGHT_NEUTRAL = "box-decoration-clone bg-[linear-gradient(transparent_64%,var(--hav-sun)_64%,var(--hav-sun)_90%,transparent_90%)] bg-size-[100%_100%] bg-position-[0_0] bg-no-repeat";
+const LIGHT_NEUTRAL = "box-decoration-clone bg-[linear-gradient(transparent_64%,var(--hav-sun)_64%,var(--hav-sun)_90%,transparent_90%)] bg-size-[100%_100%] bg-position-[0_0] bg-no-repeat animate-[emph-sweep_0.6s_cubic-bezier(0.22,1,0.36,1)_0.35s_backwards] motion-reduce:animate-none";
 const LIGHT_EXPENSIVE = "text-expensive";
 const SEA = "text-figure";
 
