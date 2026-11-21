@@ -27,19 +27,19 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
     <>
       <SiteNav page="prices" />
       <main id="main" tabIndex={-1} className="bg-surface text-fg">
-        {/* 첫 면 — 파랑 띠는 그리드 첫 줄 높이만큼만 깔리고 예산 카드는 그 경계에 걸침 (넓은 화면은 시안 B 처럼 카드를 원래 자리에서 150px 아래로 내려(translate · 자리는 그대로) 파랑 면 끝 = 카드 원래 자리 아래 40px · 아래 구간은 내려온 만큼 위 여백을 늘림 · 작업 0220 사용자 지적) (그라데이션 · 음수 여백 대신 칸 나눔 · 휴대폰은 카드를 위로 끌어올림) */}
+        {/* 첫 면 — 파랑 띠는 그리드 첫 줄 높이만큼만 깔리고 예산 카드는 그 경계에 걸침 (넓은 화면은 카드를 원래 자리에서 36px 아래로 내려(translate · 자리는 그대로) 카드 위 = 제목 첫 줄 · 카드가 파랑 면 높이를 늘리지 않게 아래 여백을 음수로 · 파랑 면 끝 = 제목 묶음 끝 · 아래 구간은 카드가 파랑 밖으로 나온 만큼(약 108px) 위 여백을 늘림 · 작업 0220 → 0248 · 3번) (그라데이션 · 음수 여백 대신 칸 나눔 · 휴대폰은 카드를 위로 끌어올림) */}
         <div className="grid grid-cols-[minmax(1rem,1fr)_minmax(0,var(--container-page))_minmax(1rem,1fr)] sm:grid-cols-[minmax(2rem,1fr)_minmax(0,var(--container-page))_minmax(2rem,1fr)]">
           <div data-testid="prices-band" aria-hidden className="col-span-3 col-start-1 row-start-1 bg-pin-cheap" />
           <div className="col-start-2 row-start-1 pt-10 pb-32 sm:pt-14 lg:pr-[calc(28.25rem+3.5rem)] lg:pb-10">
             <PricesHeader rows={rows.map((r) => ({ country: r.country, name: r.name, relative: r.relative, year: r.year }))} title={headline ? headline.title : "여행 물가 자료를 받지 못했습니다"} />
           </div>
           {data && data.bands.length > 0 && (
-            <div className="relative z-10 col-start-2 row-start-2 -mt-24 pb-2 lg:row-start-1 lg:mt-14 lg:mb-10 lg:ml-auto lg:w-[28.25rem] lg:translate-y-[150px] lg:self-start lg:pb-0">
+            <div className="relative z-10 col-start-2 row-start-2 -mt-24 pb-2 lg:row-start-1 lg:mt-14 lg:-mb-20 lg:ml-auto lg:w-[28.25rem] lg:translate-y-9 lg:self-start lg:pb-0">
               <BudgetPlanner rows={rows} latestOf={latestOf} />
             </div>
           )}
         </div>
-        <div className="px-4 pt-14 pb-10 sm:px-8 sm:pt-16 lg:pt-[calc(150px+4rem)]">
+        <div className="px-4 pt-14 pb-10 sm:px-8 sm:pt-16 lg:pt-[calc(7rem+4rem)]">
         <div className="mx-auto max-w-page">
           {data && data.bands.length > 0 ? (
             // 노선(정적 자 자리) + 세 칸 목록 — 주소의 ?currency= 는 브라우저에서 읽음(정적 사이트) — 읽기 전 · 검색 · AI 가 읽는 HTML 은 전체 목록 (작업 0193 · 0230)
