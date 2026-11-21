@@ -8,10 +8,6 @@
 //     // 정거장 = 지금 자의 핀(lib/ruler.ts rulerPins: 구간마다 맨 위 perBand 나라 · value = round(relative × 100) · 값 오름차순 · 핀 옆은 위(up) · 아래(down) 번갈아) + 한국(country "KR" · name "한국" · value 100 · band "base" · side "kr")
 //     // 한국은 값이 100 보다 작은 정거장들 뒤 · 100 이상인 정거장들 앞 · 나머지 순서는 핀 순서 그대로(값이 같으면 위 → 아래) · index = 순서(0부터)
 //     // band: 한국 "base" · 그 밖은 한국 대비(value/100) 가 BAND_EDGE 안: 0.9 미만 "cheap" · 1.1 초과 "exp" · 사이(0.9 · 1.1 포함) "mid" · 나라가 하나도 없으면 [] (한국만 있는 노선을 만들지 않음 · 지어내지 않음)
-//   export const ROUTE_STEP_VH = { wide: 36, phone: 30 }      // 정거장 사이 스크롤 길이(화면 높이의 %) · 넓은 화면 36 · 휴대폰 30
-//   export function routeFrame(p: number, n: number): { i: number; f: number; m: number }
-//     // p = 스크롤 진행 0~1(범위 밖은 자름) · n = 정거장 수(2 이상) · tt = p × (n−1) · i = min(n−2, floor(tt)) · f = tt − i
-//     // m = ease(clamp((f − 0.22) / 0.56, 0, 1)) · 앞뒤 22% 는 정거장에 멈춤 · ease(x) = x < 0.5 ? 4x³ : 1 − (−2x + 2)³ / 2
 //   export function routeValue(stops: { value: number }[], fr: { i: number; m: number }): number   // 두 정거장 값 사이를 m 만큼
 //   export function routeHop(stops: { value: number }[], fr: { i: number; m: number }): number     // 같은 값(111 → 111)은 제자리 뛰기 −sin(π m) × 34 (px) · 값이 다르면 0
 //   export function routeActive(prev: number, fr: { i: number; m: number }): number
@@ -23,7 +19,7 @@
 //     // budget: 한국에서 하루 100,000원 쓰는 만큼 · 물가 비율로 계산 = `약 ${(v × 1000).toLocaleString("ko-KR")}원` (천 원 단위로 반올림)
 //     // tiles: 세 칸 글자판 — 값 글자를 3자리에 맞춰 앞을 비움: 37 → [" ", "3", "7"] · 100 → ["1", "0", "0"]
 import { describe, expect, it } from "vitest";
-import { ROUTE_STEP_VH, isMoving, routeActive, routeCardText, routeFrame, routeHop, routeStops, routeValue } from "./price-route";
+import { isMoving, routeActive, routeCardText, routeHop, routeStops, routeValue } from "./price-route";
 
 const row = (country: string, name: string, relative: number) => ({ country, name, relative });
 // 시안과 같은 값: 인도 37 · 베트남 46 · 헝가리 94 · 멕시코 95 · (한국 100) · 스페인 111 · 아랍에미리트 111
@@ -65,32 +61,9 @@ describe("routeStops — 핀 + 한국", () => {
   });
 });
 
-describe("ROUTE_STEP_VH", () => {
-  it("넓은 화면 36 · 휴대폰 30", () => expect(ROUTE_STEP_VH).toEqual({ wide: 36, phone: 30 }));
-});
-
-describe("routeFrame — 스크롤 진행 → 위치", () => {
-  const N = 7;
-  it("정거장 위(p = i/(n−1))에서는 멈춤 m = 0", () => {
-    for (let i = 0; i < N - 1; i++) expect(routeFrame(i / (N - 1), N)).toMatchObject({ i, m: 0 });
-    expect(routeFrame(1, N)).toMatchObject({ i: N - 2, f: 1, m: 1 }); // 끝 = 마지막 구간 끝
-  });
-  it("앞 22% · 뒤 22% 는 정거장에 멈춤 · 가운데 56% 에서 움직임", () => {
-    expect(routeFrame((1 + 0.2) / (N - 1), N).m).toBe(0);
-    expect(routeFrame((1 + 0.8) / (N - 1), N).m).toBe(1);
-    const mid = routeFrame((1 + 0.5) / (N - 1), N);
-    expect(mid.m).toBeCloseTo(0.5, 6);
-    expect(mid.i).toBe(1);
-    expect(routeFrame((1 + 0.3) / (N - 1), N).m).toBeGreaterThan(0);
-    expect(routeFrame((1 + 0.3) / (N - 1), N).m).toBeLessThan(0.5);
-  });
-  it("범위 밖은 자름 · 단조 증가(되감기지 않음)", () => {
-    expect(routeFrame(-1, N)).toMatchObject({ i: 0, m: 0 });
-    expect(routeFrame(2, N)).toMatchObject({ i: N - 2, m: 1 });
-    let prev = -1;
-    for (let k = 0; k <= 200; k++) { const p = k / 200; const fr = routeFrame(p, N); const t = fr.i + fr.m; expect(t).toBeGreaterThanOrEqual(prev - 1e-9); prev = t; }
-  });
-});
+// 작업 0266 — 스크롤 진행으로 정거장을 바꾸던 계산(routeFrame · ROUTE_STEP_VH · 정거장 사이 스크롤 길이)은 사용자 결정(시안 40번 "고정을 푼 모습")으로 걷어 냄:
+//   나라 단추로 정거장을 고르므로 스크롤 진행 → 위치 변환이 없음 · builder 가 쓰는 곳이 없어진 함수(routeFrame · ROUTE_STEP_VH)를 지워도 이 파일은 깨지지 않음
+//   남은 함수(routeStops · routeValue · routeCardText · routeHop · routeActive · isMoving)가 아직 쓰이는지는 builder 가 정함 — 지우면 해당 describe 도 함께 지움(test 가 정리)
 
 describe("routeValue · routeHop", () => {
   const S = [{ value: 37 }, { value: 46 }, { value: 111 }, { value: 111 }];
