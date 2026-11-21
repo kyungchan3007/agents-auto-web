@@ -22,6 +22,8 @@
 - .agents/specs/0271-focus-ring-fix/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- apps/web/src/features/currencies/components/currency-chips.tsx — test 의 새 e2e 에서 선택된 통화 칩(진한 채움) 안쪽 고리가 파랑이라 보이지 않음이 드러나 흰색으로(0269 작업서 "남색 면 흰색").
+- .agents/e2e-map.json — 새 focus-ring.spec 을 연결표에 추가(test).
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (CI `결과: ✅ ALL PASS`)
