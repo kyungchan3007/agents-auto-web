@@ -198,3 +198,13 @@
     --hav-nav-h: 4.5rem;
   }
 }
+
+/* 강조 띠가 왼쪽에서 오른쪽으로 그어짐 — emph.tsx 흰 바탕 강조 (작업 0255) · 끝 모양은 부품의 bg-size-[100%_100%] 그대로 */
+@keyframes emph-sweep {
+  from {
+    background-size: 0% 100%;
+  }
+  to {
+    background-size: 100% 100%;
+  }
+}
