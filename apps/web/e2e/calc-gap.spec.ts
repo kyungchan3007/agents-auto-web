@@ -61,17 +61,21 @@ test.describe("직구 입력 안내 아래 빈칸 (작업 0208 추가)", () => {
 // 작업 0259 — 사용자가 정한 조건(시안 31번 B안 "세 구역" · 기능 테스트 · 0256 의 64px 조건을 바꿈): 1280 폭에서
 //   구역 제목 세 개("물건" · "보내는 곳" · "더 정확하게 (선택)")와 구역 사이 가는 선 두 줄이 보임 ·
 //   구역 ↔ 선 사이 네 간격이 같음(±1 · 값은 남는 높이에 따라 달라짐) · 두 선택지 사이 8px(±1) · 두 카드 아래 선이 같음
-//   구역 = 이름 있는 묶음(role=group) · 선 = hr 또는 role=separator · 구역 상자 = 제목 · 칸 · 도움말 글을 모두 품은 묶음 상자
+//   구역 = 입력 카드의 바로 아래 자식 · 선 = 안이 빈 얇은 칸(2px 이하) · 구역 상자 = 제목 · 칸 · 도움말 글을 모두 품은 칸
 test("직구 입력 카드 — 세 구역 제목 · 선 두 줄 · 구역과 선 사이 네 간격 같음 · 두 선택지 사이 8px · 두 카드 아래 선 같음 (폭 1280 · 작업 0259)", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/calc");
   await page.waitForTimeout(300);
   const form = page.locator('form[data-testid="calc-input"]');
   for (const t of ["물건", "보내는 곳", "더 정확하게 (선택)"]) await expect(form.getByText(t, { exact: true }).first(), `구역 제목 ${t}`).toBeVisible();
-  const sec = ["물건", "보내는 곳", "더 정확하게 (선택)"].map((n) => form.getByRole("group", { name: n, exact: true }));
-  for (const [i, g] of sec.entries()) await expect(g, `구역 묶음 ${i + 1}`).toHaveCount(1);
-  const lines = form.locator('hr, [role="separator"]');
+  // 입력 카드의 바로 아래 자식 다섯: 구역 · 선 · 구역 · 선 · 구역 (선은 높이 2px 이하의 얇은 칸 · 구역은 제목 · 칸 · 도움말 글을 모두 품은 칸)
+  const kids = form.locator(":scope > *");
+  await expect(kids, "구역 셋 + 선 둘").toHaveCount(5);
+  const lines = kids.filter({ hasNot: page.locator("*") }); // 안에 아무것도 없는 칸 = 선
   await expect(lines, "구역 사이 선 두 줄").toHaveCount(2);
+  for (const i of [0, 1]) expect((await box(lines.nth(i))).height, `선 ${i + 1} 두께`).toBeLessThanOrEqual(2);
+  await expect(form.getByRole("radiogroup", { name: "보내는 곳" }), "라디오 묶음 이름 유지").toHaveCount(1);
+  const sec = [kids.nth(0), kids.nth(2), kids.nth(4)];
   const radios = form.locator('[role="radiogroup"] > label');
   await expect(radios).toHaveCount(2);
   const [s1, s2, s3, l1, l2, o1, o2, card, result] = await Promise.all([...sec, lines.nth(0), lines.nth(1), radios.nth(0), radios.nth(1), form, tid(page, "calc-result")].map(box));
