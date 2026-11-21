@@ -71,7 +71,8 @@ export function signalsByCurrency(rows: { currency: string; date: string; baseRa
   const byCurrency = new Map<string, Point[]>();
   for (const r of rows) if (official.has(r.currency)) byCurrency.set(r.currency, [...(byCurrency.get(r.currency) ?? []), { date: r.date, value: perUnit(r) }]);
   return [...byCurrency].map(([currency, points]) => {
-    const { signal, reason, percentile, latest, median } = computeSignal(points);
-    return { currency, signal, reason, percentile, latest, median };
+    const { signal, reason, percentile, latest, median, range } = computeSignal(points);
+    // max = 90일 창 안 가장 높은 값(1 외화당 원) — 이미 계산한 range 에서 꺼냄 · 추가 D1 읽기 없음 (작업 0260)
+    return { currency, signal, reason, percentile, latest, median, max: range?.max ?? null };
   });
 }
