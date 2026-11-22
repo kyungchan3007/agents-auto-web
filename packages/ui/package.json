@@ -7,6 +7,7 @@
     "./tokens.css": "./src/tokens.css",
     "./contrast": "./src/lib/contrast.ts",
     "./chart": "./src/lib/chart.ts",
+    "./lib/*": "./src/lib/*.ts",
     "./hooks/*": "./src/hooks/*.ts",
     "./three/lib/*": "./src/three/lib/*.ts",
     "./three/*": "./src/three/*.tsx",
