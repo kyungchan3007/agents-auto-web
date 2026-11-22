@@ -24,6 +24,7 @@
 - .agents/specs/0286-footer-same/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- packages/shared/src/domain/currency.ts — 통화 바닥 띠의 출처 문장(SOURCE_NOTE)이 여기 있어 '(예비: Frankfurter)'를 뺌. 쓰는 곳은 통화 바닥 띠 한 곳.
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (CI `결과: ✅ ALL PASS`)
