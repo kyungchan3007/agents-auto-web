@@ -64,11 +64,11 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
         <div aria-hidden className="h-px shrink-0 bg-line" />
         <fieldset className="m-0 min-w-0 border-0 p-0">
           <legend className="mb-3.5 block p-0 text-[0.9375rem] font-bold text-fg">더 정확하게 (선택)</legend>
-          <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="국제 배송비" hint="한도를 넘을 때만 세금에 더합니다" htmlFor="shipping" error={err("shipping")}>
+          <div className="@container grid gap-4 sm:grid-cols-2">
+        <Field label="국제 배송비" hint="한도를 넘을 때만 세금에 더합니다" htmlFor="shipping" error={err("shipping")} reserve>
           <Input id="shipping" inputMode="decimal" autoComplete="off" value={input.shipping} onChange={set("shipping")} placeholder="모르면 비워 두세요" />
         </Field>
-        <Field label="관세율 (%)" hint="품목마다 다릅니다" htmlFor="duty" error={err("dutyRate")}>
+        <Field label="관세율 (%)" hint="품목마다 다릅니다" htmlFor="duty" error={err("dutyRate")} reserve>
           <Input id="duty" inputMode="decimal" autoComplete="off" value={input.dutyRate} onChange={set("dutyRate")} placeholder="모르면 비워 두세요" />
         </Field>
           </div>
@@ -82,22 +82,28 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
 }
 
 // 힌트 · 오류는 같은 자리(한 줄 높이 · 안내가 접히는 좁은 폭에서만 두 줄) — 오류 글도 한 줄 길이라 오류가 떠도 칸이 커지지 않음 (작업 0200 · 0208 에서 두 줄 자리를 줄여 아래 빈칸을 없앰) · 보내는 곳은 두 칸 폭
-function Field({ label, hint, htmlFor, error, wide, badge, children }: { label: string; hint?: string; htmlFor: string; error?: string | null; wide?: boolean; badge?: boolean; children: ReactNode }) {
+function Field({ label, hint, htmlFor, error, wide, badge, reserve, children }: { label: string; hint?: string; htmlFor: string; error?: string | null; wide?: boolean; badge?: boolean; reserve?: boolean; children: ReactNode }) {
   return (
     <div className={wide ? "sm:col-span-2" : ""}>
       <div className="flex items-baseline justify-between gap-2">
         <label htmlFor={htmlFor} className="text-small text-fg-2">
           {label}
         </label>
-        {badge && (
-          <span data-testid="calc-example" className="text-small font-semibold text-cheap">
-            예시 값입니다. 바꿔 넣어 보세요
-          </span>
-        )}
+        {badge !== undefined &&
+          (badge ? (
+            <span data-testid="calc-example" className="text-small font-semibold text-cheap">
+              예시 값입니다. 바꿔 넣어 보세요
+            </span>
+          ) : (
+            // 같은 글을 안 보이게 두어 자리만 잡음 — 예시 표시가 사라져도 줄 높이가 같아 칸 · 아래 구간이 밀리지 않음 (작업 0208 · 0282)
+            <span aria-hidden className="invisible text-small font-semibold">
+              예시 값입니다. 바꿔 넣어 보세요
+            </span>
+          ))}
       </div>
       <div className="mt-1.5">{children}</div>
       {(hint || error) && (
-        <p className={`mt-1.5 min-h-5 text-small ${error ? "text-expensive" : "text-fg-2"}`}>{error ?? hint}</p>
+        <p className={`mt-1.5 min-h-5 text-small ${reserve ? "sm:@max-[450px]:min-h-10" : ""} ${error ? "text-expensive" : "text-fg-2"}`}>{error ?? hint}</p>
       )}
     </div>
   );
