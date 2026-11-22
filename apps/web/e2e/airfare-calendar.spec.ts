@@ -267,6 +267,28 @@ for (const size of SIZES) {
       expect(await tid(page, "airfare-section").innerText()).not.toMatch(/구글|싼 날로 표시/);
     });
 
+    // 작업 0290(57번): 막대 길이 = 그 요일 평균 ÷ 가장 비싼 요일 평균(가장 싼 요일도 0 에서 시작) · 제목 옆 괄호 설명 없음 · 가장 싼 요일 진한 색 강조는 그대로
+    test("R6 요일 막대 길이 = 평균 ÷ 가장 비싼 요일 평균 · 제목 '요일별 평균'(괄호 없음) · 가장 싼 요일 강조", async ({ page }) => {
+      await needData(page);
+      await page.emulateMedia({ reducedMotion: "reduce" }); // 막대가 자라는 중이면 길이가 달라 보임 — 움직임 줄이기는 처음부터 최종 길이
+      await scrollToSection(page);
+      const city = fixture.cities[0];
+      const sum = Array<number>(7).fill(0), cnt = Array<number>(7).fill(0);
+      for (const d of city.days) { const w = (new Date(`${d.depart}T00:00:00Z`).getUTCDay() + 6) % 7; sum[w] += d.price; cnt[w]++; }
+      const avg = sum.map((x, i) => (cnt[i] ? x / cnt[i] : null));
+      const present = avg.filter((v): v is number => v !== null);
+      const hi = Math.max(...present), lo = Math.min(...present);
+      const widths = await tid(page, "airfare-week-fill").evaluateAll((els) => els.map((e) => { const r = e.getBoundingClientRect(), t = (e.parentElement as HTMLElement).getBoundingClientRect(); return Math.max(0, Math.min(r.right, t.right) - Math.max(r.left, t.left)) / t.width; }));
+      expect(widths.length).toBe(7);
+      avg.forEach((v, i) => { if (v !== null) expect(widths[i], `${"월화수목금토일"[i]}요일 막대 ${widths[i].toFixed(3)} (기대 ${(v / hi).toFixed(3)})`).toBeCloseTo(v / hi, 1); });
+      await expect.poll(async () => { const w = await tid(page, "airfare-week-fill").evaluateAll((els) => els.map((e) => { const r = e.getBoundingClientRect(), t = (e.parentElement as HTMLElement).getBoundingClientRect(); return Math.max(0, Math.min(r.right, t.right) - Math.max(r.left, t.left)) / t.width; })); return Math.max(...avg.map((v, i) => (v === null ? 0 : Math.abs(w[i] - v / hi)))); }, { timeout: 5000 }).toBeLessThan(0.015);
+      expect(Math.min(...widths.filter((_, i) => avg[i] !== null)), "가장 싼 요일도 0 에서 시작한 길이(옛 25% 가 아님)").toBeGreaterThan(lo / hi - 0.02);
+      const h3 = page.locator('[data-testid="airfare-section"] h3', { hasText: "요일별 평균" });
+      await expect(h3).toHaveText("요일별 평균");
+      expect(await tid(page, "airfare-section").innerText(), "옛 괄호 설명").not.toContain("막대는 가장");
+      await expect(tid(page, "airfare-week-row").filter({ has: page.locator(".fill") }).locator("xpath=self::*[contains(@class,'min')]"), "가장 싼 요일 강조 한 곳").toHaveCount(1);
+    });
+
     test("R7 맨 아래 한 줄 — 받은 날 · 제공처 설명 · 구글 링크 없음", async ({ page }) => {
       await needData(page);
       await expect(tid(page, "airfare-note")).toHaveText("11월 19일에 받은 가격이며, 실제 결제 가격과 다를 수 있습니다.");
