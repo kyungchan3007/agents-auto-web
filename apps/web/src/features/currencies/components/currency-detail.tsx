@@ -1,7 +1,7 @@
 // 통화 상세 — 새 디자인(작업 0219 · 시안 A): 머리(국기 라벨 → "○○(코드) 환율" → 큰 오늘 값 카운트업 → 상태 점 + 글) + 1년 최저 · 최고 · 평균 비행 경로 카드 / 오른쪽 탑승권 "실제로 바꿀 때"(따라옴) → 아래 가로 전체 1년 흐름 → 물가 링크
 // 숫자는 빌드 때 받은 값만 (없으면 이유) · 판정은 사이트 신호 규칙(최근 90일 백분위) · 설명 문단 · 변화 표 · 공유는 화면에서 뺌 · 위쪽 검색 · 칩 · 맨 아래 목록은 둘러보기 틀(browse-layout)에 있음
 import type { Fetched } from "@/shared/api";
-import { currencyName, rateText, toUnit } from "@hav/shared/currency";
+import { currencyName, pegText, rateText, toUnit } from "@hav/shared/currency";
 import type { FxHistory, FxRate } from "@hav/shared/fx";
 import type { CurrencySignal } from "@hav/shared/signal";
 import { countriesOf } from "@hav/shared/travel";
@@ -14,7 +14,7 @@ import { CurrencyKicker } from "./currency-kicker";
 import { PeriodChart } from "./period-chart";
 import { RangeCard } from "./range-card";
 import { SwitchFade } from "./switch-fade";
-import { currencyListName, detailLine, yearStats } from "../lib/detail-view";
+import { currencyListName, verdictLines, verdictSub, yearStats } from "../lib/detail-view";
 import { bigRate } from "../lib/redesign";
 
 const DOT = { cheap: "bg-pin-cheap", normal: "bg-pin-line", expensive: "bg-pin-expensive" } as const;
@@ -31,6 +31,8 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
   const s = signal.ok ? signal.data : null;
   const days = history.ok ? toUnit(history.data.rates, rate.unit) : [];
   const stats = yearStats(days);
+  const lines = s ? verdictLines({ signal: s.signal, percentile: s.percentile, windowDays: s.rule.windowDays, date: rate.date, source: rate.source }) : (["", ""] as [string, string]);
+  const peg = pegText(code);
 
   return (
     <div className="min-w-0">
@@ -61,9 +63,14 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
               </span>
             )}
             <span className="text-small text-fg-2">
-              {s ? detailLine({ signal: s.signal, percentile: s.percentile, windowDays: s.rule.windowDays, date: rate.date, source: rate.source }) : `신호를 받지 못했습니다 (${signal.ok ? "" : signal.reason}) · ${rate.date}`} · 예측 아님
+              <span className="block">{s ? lines[0] : `신호를 받지 못했습니다${signal.ok ? "" : ` (${signal.reason})`}`}</span>
+              <span className="block">{s ? lines[1] : verdictSub(rate.date, rate.source)}</span>
             </span>
           </SwitchFade>
+          {/* 셋째 줄 자리는 늘 같은 높이로 잡음 — 고정 통화가 아니어도 안 보이는 같은 글이 자리를 차지해 통화를 바꿔도 아래가 밀리지 않음 (작업 0289) */}
+          <p data-testid="peg-note" className="mt-2 text-small text-fg-2">
+            {peg ?? <span aria-hidden className="invisible">이 통화는 미국 달러에 고정된 통화라 달러와 같이 움직입니다</span>}
+          </p>
           <FreshnessNote date={rate.date} className="mt-2" />
 
           <div className="mt-8">
