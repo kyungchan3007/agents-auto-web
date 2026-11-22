@@ -66,6 +66,19 @@ main:focus {
   [data-testid="dest-list"][data-boot] [data-testid="dest-row"] {
     opacity: 0;
   }
+  /* 자바스크립트가 늦거나 실패해 [data-boot] 가 5초 넘게 남으면 펼친 최종 카드를 보여 줌 (평소엔 하이드레이션 한 프레임 뒤 [data-boot] 이 떨어져 이 규칙이 닿지 않음) */
+  [data-testid="dest-list"][data-boot] {
+    animation: boot-release 0s linear 5s forwards;
+  }
+  [data-testid="dest-list"][data-boot] [data-testid="dest-row"] {
+    animation: boot-show 0s linear 5s forwards;
+  }
+}
+@keyframes boot-release {
+  to { height: auto; overflow: visible; }
+}
+@keyframes boot-show {
+  to { opacity: 1; }
 }
 
 /* 여행 타이밍 "창밖 12달" — 서버가 그린 첫 그림부터 덮개가 닫힘 (작업 0229)
@@ -129,8 +142,12 @@ main:focus {
   to { opacity: 1; transform: none; }
 }
 
+@keyframes chips-release {
+  to { visibility: visible; }
+}
 /* 고른 통화 칩 — 저장이 있는 사람은 저장 순서로 그려질 때까지 칩 줄을 숨김 (작업 0231 · 첫 그림 깜빡임)
    <html data-recent-chips> 는 currencies layout 의 작은 스크립트가 저장이 있을 때만 달아 · 칩 줄이 준비되면(data-ready) 풀림 · 높이는 그대로라 아래 내용이 움직이지 않음 · 저장이 없거나 자바스크립트가 꺼져 있으면 숨기지 않음 */
 html[data-recent-chips] [data-testid="currency-chips"]:not([data-ready]) {
+  animation: chips-release 0s linear 4s forwards; /* 자바스크립트가 늦거나 실패해 4초 넘게 준비 표시가 없으면 칩 줄을 보여 줌 */
   visibility: hidden;
 }
