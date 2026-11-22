@@ -1,4 +1,4 @@
-// 알리기 소재 초안 (작업 0304) — geo 가 쓰는 docs/marketing/YYYY-MM-DD/문구.md 를 절(## 제목)로 나눔 · 순수 함수
+// 알리기 소재 초안 (작업 0307) — geo 가 쓰는 docs/marketing/YYYY-MM-DD/문구.md 를 절(## 제목)로 나눔 · 순수 함수
 //   절 이름은 team.md geo 절의 초안 묶음과 같음: 본문 · 해시태그 · 이미지 대체 글 · 쓴 숫자와 받은 날짜 · 눌렀을 때 갈 주소
 export type Draft = {
   day: string;

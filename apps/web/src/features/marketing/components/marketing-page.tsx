@@ -1,6 +1,6 @@
 "use client";
 
-// 알리기 (작업 0304) — Meta(인스타그램 · 페이스북) 광고 소재 초안을 날짜별로 · 문구 복사 · 소재 기준 · 광고 운영(아직 연결 안 함)
+// 알리기 (작업 0307) — Meta(인스타그램 · 페이스북) 광고 소재 초안을 날짜별로 · 문구 복사 · 소재 기준 · 광고 운영(아직 연결 안 함)
 //   초안은 geo 가 docs/marketing/YYYY-MM-DD/ 에 쌓은 것만(빌드 때 읽음) · 올렸는지 · 반응 · 광고비는 저장소에 적지 않아 화면에도 없음
 import { Flap } from "@hav/ui/admin/flap";
 import { Panel, Stamp } from "@hav/ui/admin/panel";
