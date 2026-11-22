@@ -19,6 +19,12 @@ export const IconHow = () => (
     <path d="M8 7.5l3 8M16 7.5l-3 8M8.5 6h7" />
   </svg>
 );
+export const IconMegaphone = () => (
+  <svg {...P}>
+    <path d="M4 10v4h3l7 4V6L7 10H4z" />
+    <path d="M17.5 9a4 4 0 0 1 0 6" />
+  </svg>
+);
 export const IconOut = () => (
   <svg {...P}>
     <path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6" />
