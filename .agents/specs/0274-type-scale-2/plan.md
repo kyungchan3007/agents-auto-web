@@ -21,6 +21,7 @@
 - .agents/specs/0274-type-scale-2/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- apps/web/src/app/globals.css — 여행 물가 카드 도시 이름(34 → 36 · 휴대폰 26 → 28) 크기가 이 파일에 있음.
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (CI `결과: ✅ ALL PASS`)
