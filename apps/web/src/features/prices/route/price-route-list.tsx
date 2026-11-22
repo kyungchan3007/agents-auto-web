@@ -11,7 +11,7 @@ import type { CSSProperties } from "react";
 import { useRouteList } from "./use-route-list";
 import { rateBadgeText } from "../bands/bands";
 import type { RouteStop } from "./price-route-view";
-import { barPct, budgetWon, cheaperText, digitCells, gapPct, signalChipTone, wonText, yearNote } from "../common/price-text";
+import { barPct, budgetWon, cheaperText, digitCells, gapPct, signalChipTone, wonDigits, yearNote } from "../common/price-text";
 
 type Extra = { currency: string | null; year: number | null };
 type Props = { stops: RouteStop[]; extras: Record<string, Extra>; signalOf: Record<string, Signal | null>; percentileOf: Record<string, number | null>; latestYear?: number };
@@ -70,7 +70,7 @@ function Detail({ stop, extra, latestYear, signalOf, percentileOf }: { stop: Rou
       <div className="mt-4 flex items-baseline justify-between gap-3 border-t border-line pt-4">
         <p className="m-0 text-[0.8125rem] text-fg-2">하루 예산 예시</p>
         <p data-testid="route-row-budget" className="m-0 text-[1.75rem] leading-none font-bold tabular-nums text-(--c)">
-          약 {wonText(budgetWon(v))}
+          약 {wonDigits(budgetWon(v))}
           <small className="ml-0.5 text-[0.9375rem]">원</small>
         </p>
       </div>

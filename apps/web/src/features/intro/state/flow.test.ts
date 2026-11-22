@@ -23,7 +23,8 @@
 import { currencyName } from "@hav/shared/currency";
 import { TRAVEL_CITIES, TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import { describe, expect, it } from "vitest";
-import { BOARD_COLS, ORIGIN, STEP_NAMES, airfareInfo, boardRows, budgetLine, canGoBack, convertBudget, formatWon, introCountries, parseBudget, pickedOf, pinLine, prevStep, priceLine, quickPicks, rateNote, searchPlaces, stepLabel, ticketOf, wonText } from "./flow";
+import { BOARD_COLS, ORIGIN, STEP_NAMES, airfareInfo, boardRows, budgetLine, canGoBack, convertBudget, formatWon, introCountries, parseBudget, pickedOf, pinLine, prevStep, priceLine, quickPicks, rateNote, searchPlaces, stepLabel, ticketOf } from "./flow";
+import { wonText } from "@hav/shared/format"; // 작업 0312 — 원 표기는 공용 서식
 
 const INPUT = {
   rates: [

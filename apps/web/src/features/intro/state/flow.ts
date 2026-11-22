@@ -2,12 +2,15 @@
 // 숫자는 빌드 때 받은 값 — 없으면 null · "없음" · "환율 없음" 으로 보임 (지어내지 않음)
 import { currencyName } from "@hav/shared/currency";
 import { type PickedTrip, TRAVEL_CITIES, TRAVEL_COUNTRIES, monthlyAverages } from "@hav/shared/travel";
+import { wonText } from "@hav/shared/format";
+import type { Signal } from "@hav/shared/signal";
+import { SIGNAL_TEXT } from "@/shared/signal/signal-tone";
 
 export const ORIGIN = "ICN";
 /** 출발 안내판 한 줄의 칸 수 (홈 안내판과 같음) */
 export const BOARD_COLS = 12;
 
-export type Signal = "cheap" | "normal" | "expensive";
+export type { Signal } from "@hav/shared/signal";
 
 export type IntroCountry = {
   iso: string;
@@ -88,10 +91,7 @@ export function quickPicks(countries: IntroCountry[]): Hit[] {
 
 const cut = (s: string, n = BOARD_COLS) => Array.from(s).slice(0, n).join("");
 
-/** 100 이상은 반올림 정수(쉼표) · 100 미만은 소수 첫째 자리 · 뒤에 "원" (홈 안내판과 같은 규칙) */
-export function wonText(n: number): string {
-  return n >= 100 ? `${Math.round(n).toLocaleString("ko-KR")}원` : `${n.toFixed(1)}원`;
-}
+// 원 표기(wonText)는 @hav/shared/format (작업 0312 — 홈 안내판과 같은 함수)
 export const formatWon = (n: number): string => n.toLocaleString("ko-KR");
 
 /** 숫자만 남김 · 비면 0 · 최대 100억 */
@@ -124,7 +124,6 @@ export function budgetLine(c: IntroCountry, krw: number): string {
 const rateNum = (c: IntroCountry) => (c.base === null ? "" : c.base.toLocaleString("ko-KR", { maximumFractionDigits: 2 }));
 export const rateNote = (c: IntroCountry): string => (c.base === null ? "환율 없음" : `오늘 매매기준율 ${unitOf(c)} ${c.currencyLabel} = ${rateNum(c)}원`);
 
-const SIGNAL_TEXT: Record<Signal, string> = { cheap: "낮은 편", normal: "보통", expensive: "높은 편" };
 
 /** 2단계 판정 한 줄 — 환율이 없으면 계산하지 못했다고 · 신호가 없으면 판정을 못 냈다고 (지어내지 않음) */
 export function pinLine(c: IntroCountry, windowDays = 90): string {

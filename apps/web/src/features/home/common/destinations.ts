@@ -3,8 +3,10 @@
 import { currencyFlag, currencyName } from "@hav/shared/currency";
 import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import { pinBasis } from "@hav/ui/data/signal-pin";
+import { wonText } from "@hav/shared/format";
+import type { Signal } from "@hav/shared/signal";
 
-export type Signal = "cheap" | "normal" | "expensive";
+export type { Signal } from "@hav/shared/signal";
 export type Destination = { id: string; name: string; currency?: string; country?: string };
 /** median = 최근 windowDays 중간값 (선택 · 작업 0228) — latest.value 와 같은 1 외화당 원 (화면 금액은 × 환율 unit) · 옛 응답 · 자료 부족이면 없음 */
 export type SignalRow = { currency: string; signal: Signal | null; reason: string; percentile: number | null; median?: number | null };
@@ -15,10 +17,7 @@ export const NO_RATE_COPY = "오늘 환율을 아직 받지 못했습니다";
 /** 통화 짧은 이름 — 끝의 "화" 를 뗌 (엔화 → 엔 · 유로 · 달러) */
 export const shortName = (currency: string) => currencyName(currency).replace(/화$/, "");
 
-/** 100 이상은 반올림 정수(쉼표) · 100 미만은 소수 첫째 자리 + "원" */
-export function wonText(baseRate: number): string {
-  return `${baseRate >= 100 ? Math.round(baseRate).toLocaleString("ko-KR") : baseRate.toFixed(1)}원`;
-}
+// 원 표기(wonText)는 @hav/shared/format (작업 0312 — 인트로와 같은 함수)
 
 /** 신호 · 백분위 · 환율이 모두 있는 도착지 중 백분위가 가장 낮은 곳 (같으면 destinations 순서가 앞선 곳) · 없으면 null */
 export function cheapestDestination(signals: SignalRow[], rates: RateRow[], destinations: Destination[]): { destination: Destination; rate: RateRow; percentile: number } | null {

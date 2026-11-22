@@ -15,7 +15,7 @@ export const cheaperText = (v: number) => (v < 100 ? "저렴합니다" : "비쌉
 
 /** 하루 예산 예시 — 한국 하루 100,000원 기준 (천 원 단위로 반올림한 값을 받으면 그대로) */
 export const budgetWon = (v: number) => v * 1000;
-export const wonText = (won: number) => won.toLocaleString("ko-KR");
+export const wonDigits = (won: number) => won.toLocaleString("ko-KR");
 
 /** 물가 숫자 칸 — 한 글자 한 칸 */
 export const digitCells = (v: number) => String(v).split("");

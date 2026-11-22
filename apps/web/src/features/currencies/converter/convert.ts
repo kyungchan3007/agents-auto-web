@@ -1,7 +1,7 @@
 // 환율 계산기 계산 — 원 ↔ 외화 (작업 0086) · 화면 상태에만 · 보내지 않음
 //   매매기준율(base) 로 바꾸고, 수출입은행 송금 환율(tts · ttb)이 있으면 "실제로 바꿀 때" 가까운 값을 같이
 //   tts = 은행이 외화를 팔 때(내가 외화를 살 때) · ttb = 은행이 외화를 살 때(내가 외화를 팔 때)
-import { numberText, stripNumberText } from "@hav/shared/format";
+import { isNumberText, numberText, stripNumberText } from "@hav/shared/format";
 import type { FxRate } from "@hav/shared/fx";
 
 export type Side = "won" | "foreign";
@@ -39,7 +39,7 @@ export function amountText(v: number, side: Side, r: Pick<FxRate, "unit">): stri
 /** "12,345.6" · " 20 " → 숫자 · 빈 칸 · 숫자 아님 · 음수는 null */
 export function parseInput(s: string): number | null {
   const t = stripNumberText(s);
-  if (!/^\d*\.?\d+$|^\d+\.$/.test(t)) return null;
+  if (!isNumberText(t)) return null;
   return Number(t);
 }
 

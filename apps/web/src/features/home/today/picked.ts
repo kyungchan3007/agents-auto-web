@@ -2,13 +2,14 @@
 // 고르지 않았거나 모르는 나라면 null — 홈은 지금 안내판 그대로 (지어내지 않음)
 import { currencyName } from "@hav/shared/currency";
 import { type PickedTrip, TRAVEL_COUNTRIES } from "@hav/shared/travel";
-import { type RateRow, type SignalRow, shortName, wonText } from "../common/destinations";
+import { type RateRow, type SignalRow, shortName } from "../common/destinations";
+import { wonText } from "@hav/shared/format";
+import { SIGNAL_TEXT } from "@/shared/signal/signal-tone";
 import { ORIGIN_CODE } from "./today-view";
 import type { BoardRow } from "./today-view";
 
 export const PICKED_TITLE = "내가 고른 여행지 · 오늘 환율";
 
-const SIGNAL_TEXT = { cheap: "낮은 편", normal: "보통", expensive: "높은 편" } as const;
 
 export function pickedBoard(a: { picked: PickedTrip | null; rates: RateRow[]; signals: SignalRow[]; windowDays: number }): { title: string; rows: [BoardRow, BoardRow]; label: string; evidence: string; percentile: number | null } | null {
   const p = a.picked;

@@ -14,7 +14,7 @@ import { type PriceBand, rateBadgeText } from "../bands/bands";
 import { type RouteBand, type RouteStop, routeCardText, routeStops } from "./price-route-view";
 import { PriceRouteList } from "./price-route-list";
 import { rulerScale, rulerX } from "./ruler";
-import { budgetWon, gapPct, signalChipTone, wonText, yearOnly } from "../common/price-text";
+import { budgetWon, gapPct, signalChipTone, wonDigits, yearOnly } from "../common/price-text";
 import { awayStops, cardNumbers, routeExtras, rulerTicks, trackBg, trailWidth } from "./price-route-view";
 
 const COLOR: Record<RouteBand, string> = {
@@ -116,7 +116,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
         <div>
           <p className="mb-1.5 text-[0.8125rem] text-fg-2">하루 예산 예시</p>
           <p data-testid="route-card-budget" className="text-(length:--route-big) leading-[1.1] font-bold tracking-display whitespace-nowrap text-(--c) tabular-nums max-[760px]:whitespace-normal">
-            약 {wonText(bud)}
+            약 {wonDigits(bud)}
             <small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:text-[0.9375rem]">원</small>
           </p>
           <p className="mt-1.5 text-[0.8125rem] text-fg-2 max-[760px]:text-[0.75rem]">한국에서 하루 100,000원 쓰는 만큼 · 물가 비율로 계산</p>

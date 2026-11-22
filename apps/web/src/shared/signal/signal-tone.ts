@@ -7,3 +7,6 @@ export const SIGNAL_DOT: Record<Tone, string> = { cheap: "bg-pin-cheap", normal:
 
 /** 판정이 없으면 보통 점 */
 export const signalDot = (tone: Tone | null | undefined) => (tone ? SIGNAL_DOT[tone] : SIGNAL_DOT.normal);
+
+/** 판정 글 — 최근 N일 중 "낮은 편" · "보통" · "높은 편" (작업 0312 에 홈 탑승권 · 인트로의 같은 표를 모음) */
+export const SIGNAL_TEXT: Record<Tone, string> = { cheap: "낮은 편", normal: "보통", expensive: "높은 편" };

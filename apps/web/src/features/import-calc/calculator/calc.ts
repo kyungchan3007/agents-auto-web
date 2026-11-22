@@ -1,6 +1,6 @@
 // 직구 예상 세금 — 순수 함수 (테스트 있음) · 브라우저 안에서만 계산하고 어디에도 보내지 않음 (IMP-01)
 // 기준값은 rules.ts 한 곳 (IMP-03) · 결과는 "예상" (IMP-04) · 틀린 입력은 계산하지 않고 이유 (IMP-05)
-import { stripNumberText } from "@hav/shared/format";
+import { isNumberText, stripNumberText } from "@hav/shared/format";
 import { DUTY_FREE_USD, type Route, VAT_RATE } from "./rules";
 
 export type Rate = { baseRate: number; unit: number };
@@ -36,7 +36,7 @@ export type CalcResult =
 export function parseAmount(s: string): number | "empty" {
   const t = stripNumberText(s);
   if (t === "") return "empty";
-  return /^\d*\.?\d+$|^\d+\.$/.test(t) ? Number(t) : Number.NaN;
+  return isNumberText(t) ? Number(t) : Number.NaN;
 }
 
 const won = (amount: number, r: Rate) => (amount / r.unit) * r.baseRate;
