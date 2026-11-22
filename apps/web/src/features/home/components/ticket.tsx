@@ -43,7 +43,7 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
     <section id="board" aria-labelledby="today-title" className="text-fg">
       <div className="grid grid-cols-[minmax(1rem,1fr)_minmax(0,45rem)_minmax(1rem,1fr)] sm:grid-cols-[minmax(2rem,1fr)_minmax(0,45rem)_minmax(2rem,1fr)] lg:[@media(max-height:880px)]:grid-cols-[minmax(2rem,1fr)_minmax(0,34rem)_minmax(2rem,1fr)] lg:[@media(min-height:881px)_and_(max-height:1000px)]:grid-cols-[minmax(2rem,1fr)_minmax(0,38rem)_minmax(2rem,1fr)]">
         <div data-testid="ticket-band" aria-hidden className="col-span-3 col-start-1 row-start-1 -mb-[13px] bg-pin-cheap" />
-        <div data-testid="ticket" className="relative z-10 col-start-2 row-span-2 row-start-1 grid grid-cols-[minmax(0,1fr)] grid-rows-subgrid rounded-[1.75rem] border border-line bg-card shadow-ticket">
+        <div data-testid="ticket" className="relative z-10 col-start-2 row-span-2 row-start-1 grid grid-cols-[minmax(0,1fr)] grid-rows-subgrid rounded-[1.5rem] border border-line bg-card shadow-ticket">
           <div className="px-4 pt-6 pb-5 sm:px-8 sm:pt-7 sm:pb-6 lg:[@media(max-height:880px)]:pt-4 lg:[@media(max-height:880px)]:pb-3 lg:[@media(min-height:881px)_and_(max-height:1000px)]:pt-5 lg:[@media(min-height:881px)_and_(max-height:1000px)]:pb-4">
             <h2 id="today-title" className="text-[0.9375rem] font-bold text-fg">
               {board.title}
@@ -96,7 +96,7 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
               data-leaving={passLeaving}
               onPointerEnter={() => holdPass(true)}
               onPointerLeave={() => holdPass(false)}
-              className="fixed bottom-20 left-6 z-40 w-[340px] rounded-2xl bg-pin-ink px-4 py-4 text-sm text-foam shadow-pass transition-[opacity,transform] duration-[220ms] ease-out starting:translate-y-2.5 starting:opacity-0 data-[leaving=true]:translate-y-2.5 data-[leaving=true]:opacity-0 data-[leaving=true]:duration-500 data-[leaving=true]:ease-in motion-reduce:starting:translate-y-0 motion-reduce:data-[leaving=true]:translate-y-0"
+              className="fixed bottom-20 left-6 z-40 w-[340px] rounded-[0.875rem] bg-pin-ink px-4 py-4 text-sm text-foam shadow-pass transition-[opacity,transform] duration-[220ms] ease-out starting:translate-y-2.5 starting:opacity-0 data-[leaving=true]:translate-y-2.5 data-[leaving=true]:opacity-0 data-[leaving=true]:duration-500 data-[leaving=true]:ease-in motion-reduce:starting:translate-y-0 motion-reduce:data-[leaving=true]:translate-y-0"
             >
               <p className="m-0 text-xs font-bold tracking-wider text-foam/70">BOARDING PASS · 탑승권</p>
               <dl className="m-0 mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">

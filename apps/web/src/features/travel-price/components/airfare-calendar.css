@@ -10,7 +10,7 @@
 .af-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px}
 .af-chips button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:8px;padding:7px 15px 7px 10px;border-radius:999px;border:2px solid var(--line);background:var(--hav-foam);font-weight:700;font-size:15px;transition:background .25s,color .25s,border-color .25s}
 .af-chips button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--hav-foam)}
-.af-chips .fl{display:block;width:24px;height:16px;border-radius:2px;overflow:hidden;box-shadow:var(--shadow-af-ring)}
+.af-chips .fl{display:block;width:24px;height:16px;border-radius:4px;overflow:hidden;box-shadow:var(--shadow-af-ring)}
 .af-chips .fl svg{display:block;width:100%;height:100%;border-radius:0}
 .af-card{margin-top:22px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;border:2px solid var(--line);border-radius:24px;background:var(--hav-foam);padding:28px}
 .af-head{font-family:var(--head);font-weight:800;font-size:22px;letter-spacing:-.03em;line-height:1.35}
@@ -19,7 +19,7 @@
 .af-sub{font-size:13px;color:var(--sub);margin-top:14px!important;padding-top:12px;border-top:1px solid color-mix(in srgb,var(--sub) 22%,transparent)}
 /* 날짜 띠: 옅은 면 위 흰 알약 · 요일 / 날짜 / 가격 · 고른 날은 파랑 둥근 네모 */
 .af-top{grid-column:1/-1;min-width:0}
-.af-stage{margin-top:18px;background:var(--face);border-radius:20px;padding:16px 20px}
+.af-stage{margin-top:18px;background:var(--face);border-radius:24px;padding:16px 20px}
 .af-bar{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .af-range{font-family:var(--head);font-weight:800;font-size:15px;letter-spacing:-.02em}
 .af-nav{display:flex;gap:6px}
@@ -36,8 +36,8 @@
   .af-nav button:first-child::after{right:0}
   .af-nav button:last-child::after{left:0}
 }
-.af-strip{position:relative;margin-top:12px;background:var(--hav-foam);border-radius:22px;padding:6px 8px;box-shadow:var(--shadow-af-strip)}
-.af-scroll{overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;border-radius:16px}
+.af-strip{position:relative;margin-top:12px;background:var(--hav-foam);border-radius:24px;padding:6px 8px;box-shadow:var(--shadow-af-strip)}
+.af-scroll{overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;border-radius:14px}
 .af-scroll::-webkit-scrollbar{display:none}
 .af-track{--n:14;position:relative;display:flex}
 .af-d{all:unset;box-sizing:border-box;position:relative;z-index:1;flex:0 0 calc(100%/var(--n));scroll-snap-align:start;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:11px 0 10px;text-align:center;-webkit-tap-highlight-color:transparent}
@@ -48,7 +48,7 @@
 .af-d .pr{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:0;color:var(--sub);line-height:1.2}
 .af-d[data-tier="low"] .pr{color:var(--blue)}.af-d[data-tier="high"] .pr{color:var(--red)}
 .af-d[data-best="true"]::before{content:"";position:absolute;inset:2px 3px;border-radius:14px;border:2px solid var(--yellow);pointer-events:none}
-.af-d:focus-visible{outline:2px solid var(--hav-ring);outline-offset:-4px;border-radius:16px}
+.af-d:focus-visible{outline:2px solid var(--hav-ring);outline-offset:-4px;border-radius:14px}
 .af-d[data-on] .wd,.af-d[data-on] .dt,.af-d[data-on] .pr{color:var(--hav-foam)}
 .af-sel{position:absolute;z-index:0;top:0;bottom:0;left:0;width:calc(100%/var(--n));transition:transform .38s cubic-bezier(.3,1.2,.4,1)}
 .af-sel::before{content:"";position:absolute;inset:2px 3px;border-radius:14px;background:var(--blue);box-shadow:var(--shadow-af-sel)}
@@ -65,17 +65,17 @@
 .af-week{margin-top:14px;display:grid;gap:8px}
 .af-row{display:grid;grid-template-columns:28px minmax(0,1fr) 64px;align-items:center;gap:10px;font-size:13px}
 .af-row .w{font-weight:700;color:var(--sub)}
-.af-row .track{display:block;height:12px;border-radius:9px;background:var(--face);overflow:hidden}
-.af-row .fill{display:block;height:100%;border-radius:9px;background:var(--af-bar-soft);width:0;transition:width .7s cubic-bezier(.3,.9,.3,1),background-color .4s}
+.af-row .track{display:block;height:12px;border-radius:10px;background:var(--face);overflow:hidden}
+.af-row .fill{display:block;height:100%;border-radius:10px;background:var(--af-bar-soft);width:0;transition:width .7s cubic-bezier(.3,.9,.3,1),background-color .4s}
 .af-row.min .fill{background:var(--blue)}.af-row.min .w{color:var(--blue)}
 .af-row .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
-@media (max-width:900px){.af-card{grid-template-columns:1fr;padding:20px;border-radius:20px}}
+@media (max-width:900px){.af-card{grid-template-columns:1fr;padding:20px;border-radius:24px}}
 /* 휴대폰(640 이하)에서만 바깥 테두리 카드를 없앰 — 탑승권 · 날짜 판이 구간 좌우 여백 선에 바로 닿음 · 641~900(한 단 태블릿)은 카드 그대로 · 넓은 화면(두 단)은 그대로 (작업 0263 · 시안 34 A안) */
 @media (max-width:640px){.af-card{border:0;background:none;padding:0}}
-@media (max-width:640px){.af{padding-top:48px;padding-bottom:64px}.af-track{--n:7}.af-stage{padding:14px 10px;border-radius:16px}.af-bar{padding:0 4px}.af-strip{padding:5px 4px;border-radius:18px}.af-d .dt{font-size:18px}.af-d .pr{font-size:12px}.af-legend{padding:0 4px}.af-head{font-size:18px}}
+@media (max-width:640px){.af{padding-top:48px;padding-bottom:64px}.af-track{--n:7}.af-stage{padding:14px 10px;border-radius:14px}.af-bar{padding:0 4px}.af-strip{padding:5px 4px;border-radius:14px}.af-d .dt{font-size:18px}.af-d .pr{font-size:12px}.af-legend{padding:0 4px}.af-head{font-size:18px}}
 
 /* 가장 싼 출발 탑승권 — 처음 한 번 왼쪽에서 미끄러져 들어옴 (사이트 탑승권 모양 · 파인 동그라미 없음) */
-.af-pass{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:stretch;border:2px solid var(--ink);border-radius:18px;overflow:hidden;background:var(--hav-foam)}
+.af-pass{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:stretch;border:2px solid var(--ink);border-radius:14px;overflow:hidden;background:var(--hav-foam)}
 .af-pass .main{display:flex;align-items:center;gap:22px;padding:16px 22px;min-width:0;flex-wrap:wrap}
 .af-pass .tag{font-size:12px;font-weight:700;color:var(--hav-foam);background:var(--blue);padding:3px 10px;border-radius:6px;white-space:nowrap}
 .af-pass .route{display:flex;align-items:center;gap:12px}
@@ -92,7 +92,7 @@
 .af-pass .stub{position:relative;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:14px 20px;border-left:2px dashed var(--line);background:var(--face)}
 .af-pass .stub .lab{font-size:12px;font-weight:700;color:var(--sub)}
 /* 글자판 가격 — 칸마다 숫자가 굴러서 맞춰짐 (운영 출발 안내판 모양) */
-.af-board{display:flex;gap:3px;padding:6px;border-radius:8px;background:var(--hav-pin-ink);min-height:48px;min-width:96px}
+.af-board{display:flex;gap:3px;padding:6px;border-radius:10px;background:var(--hav-pin-ink);min-height:48px;min-width:96px}
 .af-board .c{position:relative;isolation:isolate;width:24px;height:36px;border-radius:3px;background:var(--hav-flap-cell);overflow:hidden;color:var(--yellow);font-family:var(--head);font-weight:800;font-size:22px}
 .af-board .c::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--hav-on-band);z-index:-1}
 .af-board .c .s{display:flex;flex-direction:column;will-change:transform}

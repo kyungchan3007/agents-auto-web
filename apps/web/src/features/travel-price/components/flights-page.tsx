@@ -85,7 +85,7 @@ export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: Tra
             {ready && (
               <>
                 <SlideIn from="left">
-                  <div data-testid="flights-ticket" className="relative grid rounded-[1.75rem] bg-card shadow-ticket lg:grid-cols-[minmax(0,1fr)_21rem]">
+                  <div data-testid="flights-ticket" className="relative grid rounded-[1.5rem] bg-card shadow-ticket lg:grid-cols-[minmax(0,1fr)_21rem]">
                     <div className="min-w-0 px-5 py-6 sm:px-8 sm:py-8">
                       <h2 className="text-[1.375rem] font-bold text-fg">국제항공료 · 해외단체여행비 지수와 환율 그래프</h2>
                       <div className="mt-2">

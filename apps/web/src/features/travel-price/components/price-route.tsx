@@ -128,7 +128,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
 }
 
 // mx-px: 감싼 영역이 넘치는 1px 을 잘라 카드 바깥 둘레 선(ring)이 양쪽에서 잘리던 것을 안으로 들여 온전히 보이게 — 왼쪽 굵은 색 띠는 그대로 (작업 0248 · 20번)
-const CARD = "relative mx-px overflow-hidden rounded-3xl bg-card px-8 pt-(--route-card-pt) pb-(--route-card-pb) ring-1 ring-line before:absolute before:inset-y-0 before:left-0 before:w-1.5 before:bg-(--c) max-[760px]:rounded-[1.25rem] max-[760px]:px-[1.125rem] max-[760px]:before:w-[5px]";
+const CARD = "relative mx-px overflow-hidden rounded-3xl bg-card px-8 pt-(--route-card-pt) pb-(--route-card-pb) ring-1 ring-line before:absolute before:inset-y-0 before:left-0 before:w-1.5 before:bg-(--c) max-[760px]:rounded-[1.5rem] max-[760px]:px-[1.125rem] max-[760px]:before:w-[5px]";
 
 export function PriceRoute({ bands, signalOf, percentileOf, latestYear }: Props) {
   const stops = routeStops(bands);
@@ -189,7 +189,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
             data-plane-x={planeX}
             className="relative h-(--rh) [--rh:var(--route-rh)] [--tt:var(--route-tt)] max-[760px]:w-[960px]"
           >
-            <div className="absolute inset-x-0 top-(--tt) h-[22px] rounded-[11px]" style={{ background: trackBg(scale.lo, scale.hi) }} />
+            <div className="absolute inset-x-0 top-(--tt) h-[22px] rounded-[0.625rem]" style={{ background: trackBg(scale.lo, scale.hi) }} />
             <div className="absolute inset-x-0 top-[calc(var(--tt)+22px)]">
               {ticks.map((v) => (
                 <i key={v} aria-hidden className="absolute top-[-5px] block h-1 w-[1.5px] -translate-x-1/2 bg-card/75" style={{ left: `${x(v)}%` }} />
@@ -206,7 +206,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
             </div>
             <>
                 <div aria-hidden className="absolute top-[calc(var(--tt)+10px)] h-0.5 bg-[repeating-linear-gradient(90deg,color-mix(in_srgb,var(--hav-card)_95%,transparent)_0_6px,transparent_6px_12px)]" style={{ left: `${x0}%`, width: `${x1 - x0}%` }} />
-                <div aria-hidden className="absolute top-[calc(var(--tt)+8.5px)] h-[5px] rounded-[3px] bg-card ring-[1.5px] ring-fg/35" style={{ left: `${x0}%`, width: `${Math.max(0, planeX - x0)}%` }} />
+                <div aria-hidden className="absolute top-[calc(var(--tt)+8.5px)] h-[5px] rounded-[0.25rem] bg-card ring-[1.5px] ring-fg/35" style={{ left: `${x0}%`, width: `${Math.max(0, planeX - x0)}%` }} />
             </>
             <div aria-hidden className="absolute top-[30px] h-[calc(var(--tt)+22px-30px)] w-0.5 -translate-x-px bg-fg" style={{ left: `${x(100)}%` }} />
             <div

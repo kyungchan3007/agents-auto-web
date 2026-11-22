@@ -43,7 +43,7 @@ export function AboutPage(_props: { signals: Fetched<SignalList>; duty: DutyRule
         <FadeUpGroup className="mx-auto max-w-page">
           <ul className="grid gap-4 sm:grid-cols-2">
             {ABOUT_CARDS.map((c, i) => (
-              <li key={c.id} data-testid="criteria-card" data-fu={Math.floor(i / 2)} className="rounded-card bg-card px-5 py-5">
+              <li key={c.id} data-testid="criteria-card" data-fu={Math.floor(i / 2)} className="rounded-[0.625rem] bg-card px-5 py-5">
                 <SectionTitle className="text-[1.375rem] leading-tight text-cheap">{c.title}</SectionTitle>
                 <p className="mt-3 text-body text-fg-2">{bodyOf(c)}</p>
               </li>
