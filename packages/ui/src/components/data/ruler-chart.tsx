@@ -57,7 +57,7 @@ export function RulerChart({ pins, stops, ticks, korea, maxTier, lo, hi, aria, c
         {ticks
           .filter((t) => t.big && t.v !== 100 && t.pct > 6 && t.pct < 94)
           .map((t) => (
-            <span key={t.v} className="absolute -translate-x-1/2 text-[0.6875rem] font-medium text-fg-2 sm:text-small" style={{ left: `${t.pct}%` }}>
+            <span key={t.v} className="absolute -translate-x-1/2 text-[0.6875rem] font-normal text-fg-2 sm:text-small" style={{ left: `${t.pct}%` }}>
               {t.v}
             </span>
           ))}
