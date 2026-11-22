@@ -2,7 +2,7 @@
 // 순수 함수는 각 lib/*.test.ts (detail-view · flights-copy · prices-copy · calc-copy · team · criteria · geo-cards) · 그리는 모양은 sdd 검증 계획대로 로컬 빌드 캡처 대조
 //
 // builder · geo 가 할 것 (prd P1~P10 · figma-spec 02~08)
-//   공통: 울트라마린 전면 화면 없음 — 이 화면들(통화 · 여행 타이밍 · 여행 물가 · 직구 · 작업실 · 소개 · GEO · 404)에는 data-surface="dark" · "elevated" 가 없음 (Figma 02~08 은 하늘 종이 바탕 · 바다 띠는 홈에만) · 판정은 SignalPin · 고양이 없음(0168 검사)
+//   공통: 울트라마린 전면 화면 없음 — 이 화면들(통화 · 여행 타이밍 · 여행 물가 · 직구 · 소개 · 404 (작업실 · GEO 는 apps/admin/src/screens.test.ts))에는 data-surface="dark" · "elevated" 가 없음 (Figma 02~08 은 하늘 종이 바탕 · 바다 띠는 홈에만) · 판정은 SignalPin · 고양이 없음(0168 검사)
 //   화면에 다는 표시 (e2e 가 찾음): 통화 data-testid="currency-list" · "currency-detail" / 여행 타이밍 "travel-graph" · "plane-route" · "travel-legend" · "yoy-cards" / 여행 물가 "price-bands" · "budget" / 직구 "calc-input" · "calc-result" · "customs-section" · "import-price-section" / 작업실 "status-board" · "team-desks" · "work-flow" / 소개 "criteria-card"(6개) / GEO "geo-cards" · "geo-reading"
 //   그 밖의 문구 · 부품 이름은 아래 검사 그대로
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -30,9 +30,7 @@ const SCREENS = {
   flights: [...sources("app/flights"), ...comps("travel-price", /price-page|price-bands|budget-planner|travel-index-section/)],
   prices: ["app/prices/page.tsx", "features/travel-price/components/price-page.tsx", "features/travel-price/components/price-bands.tsx", "features/travel-price/components/budget-planner.tsx"],
   calc: [...comps("import-calc"), "app/calc/page.tsx"],
-  log: [...comps("log"), "app/log/page.tsx"],
   about: [...comps("about"), "app/about/page.tsx"],
-  geo: [...comps("geo"), "app/geo/page.tsx"],
 } as const;
 const T = Object.fromEntries(Object.entries(SCREENS).map(([k, v]) => [k, text(v.filter((f) => existsSync(join(WEB_SRC, f))))])) as Record<keyof typeof SCREENS, string>;
 
@@ -108,46 +106,11 @@ describe("직구 계산 /calc (P4 · SR-CALC-01)", () => {
   });
 });
 
-describe("작업실 /log (P5 · SR-LOG-01)", () => {
-  it("큰 제목 · 팀 책상(TEAM_DESKS) · 작업 흐름(WORK_FLOW)", () => {
-    expect(T.log).toContain("AI 에이전트 팀이 이 사이트를 만듭니다");
-    expect(T.log).toMatch(/\bTEAM_DESKS\b/);
-    expect(T.log).toMatch(/\bWORK_FLOW\b/);
-    for (const id of ["status-board", "team-desks", "work-flow"]) expect(T.log, id).toMatch(new RegExp(`data-testid="${id}"`));
-  });
-
-  it("상태판 칸 이름 · 실패는 붉은 글자(어드민 bad · 작업 0303)", () => {
-    for (const s of ["오늘 환율 수집", "사이트 빌드", "자동 검사 (main)", "열린 작업"]) expect(T.log, s).toContain(s);
-    expect(T.log).toMatch(/failed \? " bad"/);
-  });
-
-  it("지금 맡은 일(\"지금:\")을 상수에 박아 두지 않음 — 실제 기록에서만", () => {
-    expect(codeOf(readFileSync(join(WEB_SRC, "features/log/lib/team.ts"), "utf8"))).not.toMatch(/지금:/);
-  });
-});
-
 describe("소개 /about (P7 · SR-ABT-01)", () => {
   it("큰 제목 · 기준 카드 8개(ABOUT_CARDS) 표시", () => {
     expect(T.about).toContain("어떤 자료를, 어떤 기준으로 보여 주나요");
     expect(T.about).toMatch(/\bABOUT_CARDS\b/);
     expect(T.about).toMatch(/data-testid="criteria-card"/);
-  });
-});
-
-describe("GEO 측정 /geo (P6 · SR-GEO-01) — geo 소유 화면", () => {
-  it("자세한 기록을 되살림(작업 0180) — 시안에 없어도 표 · 측정 방법 · 한계가 화면에 있음", () => {
-    expect(T.geo).toMatch(/\bgeoDetail\b/);
-    for (const id of ["geo-answers", "geo-search", "geo-bots", "geo-method", "geo-questions"]) expect(T.geo, id).toMatch(new RegExp(`(data-testid=|id=)"${id}"`)); // Card 는 id 를 prop 으로 받아 data-testid 로 붙임
-    for (const word of ["질문별 결과", "측정한 날마다 기록", "상위 검색어", "AI 봇별 방문", "측정의 한계", "아직 연결하지 않은 자료"]) expect(T.geo, word).toContain(word);
-    expect(T.geo).toMatch(/<details/);
-    expect(T.geo).toMatch(/<table\b/); // 작업 0303: 어드민 표(DataTable 대신 같은 칸의 표)
-  });
-
-  it("큰 제목 · 측정 수치 카드(geoCards) · 읽는 법(geoReading)", () => {
-    expect(T.geo).toContain("AI 검색에서 이 사이트가 어떻게 쓰이는지 잽니다");
-    expect(T.geo).toContain("이 수치를 읽는 법");
-    for (const fn of ["geoCards", "geoReading"]) expect(T.geo, fn).toMatch(new RegExp(`\\b${fn}\\b`));
-    for (const id of ["geo-cards", "geo-reading"]) expect(T.geo, id).toMatch(new RegExp(`data-testid="${id}"`));
   });
 });
 

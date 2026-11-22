@@ -1,0 +1,44 @@
+/* 어드민 전역 — 운영 apps/web/src/app/globals.css 의 바탕 규칙 중 어드민이 쓰는 것만 (작업 0312) · 어드민 화면 모양은 shared/ui/admin.css */
+@import "tailwindcss";
+@import "@hav/ui/tokens.css";
+
+/* 바탕은 토큰 (하늘 종이 하나) */
+html {
+  background: var(--hav-surface);
+  /* 가로로 넘치는 글 · 그림이 페이지 가로 스크롤을 만들지 않게 (clip 은 스크롤 칸을 만들지 않아 sticky 가 그대로) (작업 0213) */
+  overflow-x: clip;
+  color-scheme: light; /* 밝은 화면 하나만 — 기기가 어두운 화면 설정이어도 기본 컨트롤 · 스크롤바까지 밝게 (작업 0173) */
+}
+
+body {
+  overflow-x: clip;
+  font-family: var(--font-sans);
+  /* 한국어는 낱말 중간에서 줄이 바뀌지 않게 ("한국수 / 출입은행" 을 휴대폰에서 봄) */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* 내용이 짧아도 본문(main)이 남는 높이를 채움 (작업 0170) */
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+  flex-direction: column;
+}
+
+body > main {
+  flex: 1 0 auto;
+}
+
+/* 본문 바로가기로 초점이 옮겨 온 main 은 둘레 선을 그리지 않음 (작업 0213) */
+main:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

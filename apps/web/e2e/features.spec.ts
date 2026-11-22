@@ -12,7 +12,7 @@ function watchErrors(page: Page) {
   return errs;
 }
 
-for (const path of ["/", "/currencies/USD", "/prices", "/flights", "/calc", "/log", "/about", "/geo"]) {
+for (const path of ["/", "/currencies/USD", "/prices", "/flights", "/calc", "/about"]) { // 어드민은 apps/admin/e2e/basics.spec.ts (작업 0312)
   test(`${path} — 페이지 오류 없음 · 가로로 넘치지 않음`, async ({ page }) => {
     const errs = watchErrors(page);
     await page.goto(path);
@@ -70,16 +70,6 @@ test("여행 예산 — 주소의 나라가 골라지고 결과가 나옴 (작�
   await page.goto("/prices?country=THA#budget");
   await expect(page.locator("#budget select")).toHaveValue("THA");
   await expect(page.locator("#budget")).toContainText("태국 물가는 한국보다");
-});
-
-test("작업실 — 사이트 상태 점검판이 맨 위 · 탭 제목은 페이지 이름 (작업 0105 · 0114)", async ({ page }) => {
-  await page.goto("/log");
-  await expect(page).toHaveTitle("작업실 · Flapfx");
-  const board = page.locator('section[aria-labelledby="status-title"]');
-  await expect(board).toContainText("사이트 상태");
-  await expect(board).toContainText(/오늘 환율 수집|상태를 받지 못했습니다/); // 새 상태판(작업 0170): 칸 이름 "오늘 환율 수집" · 못 받으면 이유
-  // 어드민 틀(작업 0303): 지금 화면 표시가 작업실
-  await expect(page.locator('a[aria-current="page"]:visible').first()).toContainText("작업실");
 });
 
 // 여행 품목 영역(국제항공료 · 해외단체여행비 · 3D 비행기)은 /prices 에서 /flights 로 옮김 (작업 0164 · 사용자 결정 2026-11-15)

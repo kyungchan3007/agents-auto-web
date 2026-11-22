@@ -31,7 +31,7 @@ describe("GitHub Actions 워크플로 이름", () => {
 
 describe("작업실 · README", () => {
   it("'자동 검사 (main)' 카드는 main 의 검사 기록만 연결", () => {
-    const src = readFileSync(join(ROOT, "apps/web/src/features/log/components/status-board.tsx"), "utf8");
+    const src = readFileSync(join(ROOT, "apps/admin/src/features/log/status/status-board.tsx"), "utf8");
     expect(src).toContain("/actions/workflows/checks.yml?query=branch%3Amain");
     expect(src).not.toMatch(/REPO_URL\}\/actions`/);
   });

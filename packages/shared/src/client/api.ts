@@ -1,13 +1,13 @@
-// API 받기 — 빌드 때 부르고 @hav/shared 스키마로 검사 · 실패해도 던지지 않고 이유를 돌려준다 (빌드가 깨지지 않게)
-import { type Fetched, type FetchOptions, fetchJson } from "@hav/shared/fetched";
-import { AirfareCalendar } from "@hav/shared/airfare";
-import { FxChanges, FxHistory, FxLatest } from "@hav/shared/fx";
-import { IndicatorSeries } from "@hav/shared/indicators";
-import { PriceLevels } from "@hav/shared/prices";
-import { CurrencySignal, SignalList } from "@hav/shared/signal";
-import { GeoReport } from "@hav/shared/geo";
-import { SiteStatus } from "@hav/shared/status";
-import { TasksSummary } from "@hav/shared/tasks";
+// API 받기 — 운영 · 어드민 두 앱이 빌드 때 부르고 스키마로 검사 · 실패해도 던지지 않고 이유를 돌려준다 (빌드가 깨지지 않게 · 작업 0312 에 apps/web/src/shared 에서 옮김)
+import { type Fetched, type FetchOptions, fetchJson } from "../utils/fetched";
+import { AirfareCalendar } from "../contracts/airfare";
+import { FxChanges, FxHistory, FxLatest } from "../contracts/fx";
+import { IndicatorSeries } from "../contracts/indicators";
+import { PriceLevels } from "../contracts/prices";
+import { CurrencySignal, SignalList } from "../contracts/signal";
+import { GeoReport } from "../contracts/geo";
+import { SiteStatus } from "../contracts/status";
+import { TasksSummary } from "../contracts/tasks";
 import type { z } from "zod";
 
 export const DEFAULT_API = "https://tripfx-api.developfff.workers.dev";

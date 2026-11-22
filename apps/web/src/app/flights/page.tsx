@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { FlightsPage } from "@/features/travel-price/components/flights-page";
 import { fxMonthlyAverage } from "@/features/travel-price/lib/travel-index";
-import { api } from "@/shared/api";
+import { api } from "@hav/shared/api";
 import { JsonLd } from "@/shared/json-ld";
 import { breadcrumbLd, pageMeta } from "@/shared/seo";
 

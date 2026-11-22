@@ -1,0 +1,20 @@
+import type { Metadata } from "next";
+import { LogPage } from "@/features/log/log-page";
+import { api } from "@hav/shared/api";
+import { ADMIN_URL } from "@/shared/site";
+
+// 탭 제목에서 "만드는 중" 은 뺌 (2026-10-30 사용자 · 작업 0105) · 검색에서 구별되게 페이지 이름만 (작업 0114)
+export const metadata: Metadata = {
+  title: "작업실 · Flapfx",
+  // 어드민으로 옮김 · 검색에 막음 (작업 0302)
+  alternates: { canonical: `${ADMIN_URL}/log` },
+  robots: { index: false, follow: false },
+  description: "AI 코딩 에이전트가 이 사이트를 만드는 과정을 실시간으로",
+};
+
+// 지난 작업 · 작업 이름은 빌드 때 우리 API 에서 (GitHub Actions 가 저장 · 브라우저가 한 번 더) · 실시간 기록은 브라우저가 /bff/activity 에서
+// 사이트 상태 점검판도 빌드 때 한 번 · 브라우저가 5분마다 다시 (작업 0105)
+export default async function Page() {
+  const [tasks, status] = await Promise.all([api.tasks(), api.status()]);
+  return <LogPage tasks={tasks} status={status} builtAt={new Date().toISOString()} />;
+}

@@ -1,0 +1,24 @@
+{
+  "name": "@hav/edge",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./bff": "./src/bff.ts",
+    "./noindex": "./src/noindex.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@hav/shared": "^0.0.0"
+  },
+  "devDependencies": {
+    "@hav/config": "*",
+    "eslint": "^9",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.5"
+  }
+}

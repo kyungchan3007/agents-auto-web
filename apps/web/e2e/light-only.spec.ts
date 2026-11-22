@@ -8,7 +8,7 @@ const SKY = "rgb(255, 255, 255)"; // 흰 바탕 #FFFFFF (작업 0216 · 이름�
 const SEA = "rgb(36, 56, 168)"; // #2438A8 (예전 울트라마린 띠 · #board 바탕이 이 색이면 안 됨)
 const INK = "rgb(22, 36, 110)"; // #16246E 안내판
 
-for (const path of ["/", "/currencies/USD", "/flights", "/prices", "/calc", "/log", "/about", "/geo"]) {
+for (const path of ["/", "/currencies/USD", "/flights", "/prices", "/calc", "/about"]) { // 어드민은 apps/admin/e2e/basics.spec.ts (작업 0312)
   test(`${path} — 기기 다크 모드여도 바탕은 흰색 · color-scheme 은 light @design`, async ({ page }) => {
     await page.goto(path);
     const { body, html, scheme } = await page.evaluate(() => ({

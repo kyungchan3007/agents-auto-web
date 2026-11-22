@@ -8,8 +8,7 @@ const TITLES: [string, string][] = [
   ["/calc", "직구 계산기 · Flapfx"],
   ["/currencies", "통화 둘러보기 · Flapfx"],
   ["/about", "소개 · 판단 기준 · Flapfx"],
-  ["/geo", "GEO 측정 · Flapfx"],
-  ["/log", "작업실 · Flapfx"],
+  // 어드민(/geo · /log) 탭 제목은 apps/admin/e2e/basics.spec.ts (작업 0312)
 ];
 
 test.describe("탭 제목 · 화면 글", () => {

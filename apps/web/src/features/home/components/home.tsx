@@ -1,6 +1,6 @@
 // 홈 — 빌드 때 받은 데이터로 그림 (작업 0169 · Figma 01) · 새 디자인(작업 0217 · 시안 B + 환전 타이밍 A) 위 → 아래: 파랑 첫 면(큰 문장 "N월에 떠나세요") → 탑승권 카드(출발 안내판 · 경계에 걸침) → 12달 막대 → 도착지별 환전 타이밍 → 바닥 띠 (사진 · 3D 비행 경로 없음)
 //   지수 · 환율 · 신호가 없으면 각 구간이 "아직 받지 못했습니다" 로 바뀜 (숫자를 지어내지 않음)
-import type { Fetched } from "@/shared/api";
+import type { Fetched } from "@hav/shared/api";
 import { SiteNav } from "@/shared/site-nav";
 import type { FxLatest } from "@hav/shared/fx";
 import type { IndicatorSeries } from "@hav/shared/indicators";

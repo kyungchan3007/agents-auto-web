@@ -2,7 +2,7 @@
 
 // 직구 계산 페이지 — 새 디자인(작업 0221 · 시안 A + 사용자 결정 파랑 머리): 메뉴와 이어지는 파랑 면(라벨 · 큰 문장 · 설명)에 입력 · 결과 카드가 경계에 걸침 → 입력 · 세관 꼬리표 결과 2단 → 수입물가와 환율(왼쪽 숫자 카드 · 오른쪽 그래프 + 이번 주 과세환율) (작업 0200 · 시안 B 배치 유지)
 // 환율은 빌드 때 받은 값 · 계산은 브라우저에서 (IMP-01) · 모바일은 입력 → 결과 → 수입물가 → 과세환율 순서로 쌓임
-import type { Fetched } from "@/shared/api";
+import type { Fetched } from "@hav/shared/api";
 import { SiteNav } from "@/shared/site-nav";
 import { RATE_SOURCE_LABEL } from "@hav/shared/currency";
 import type { FxLatest } from "@hav/shared/fx";

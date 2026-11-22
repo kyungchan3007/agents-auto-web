@@ -1,5 +1,5 @@
 // 빌드 때 받기 — 통화 하나의 상세 (오늘 환율은 /fx/latest 에서 · 신호 · 1년 기록)
-import { api } from "@/shared/api";
+import { api } from "@hav/shared/api";
 import type { DetailData } from "../components/currency-detail";
 
 export async function loadDetail(code: string): Promise<DetailData> {

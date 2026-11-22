@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { api } from "@/shared/api";
+import { api } from "@hav/shared/api";
 import { PUBLIC_PAGES, SITE_URL } from "@/shared/site";
 import { sitemapEntries } from "@/shared/sitemap-entries";
 

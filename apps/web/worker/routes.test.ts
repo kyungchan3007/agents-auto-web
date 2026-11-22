@@ -21,11 +21,12 @@ describe("Worker 먼저 지나는 경로 (작업 0189)", () => {
     expect(cfg.routes).toEqual([
       { pattern: "flapfx.com", custom_domain: true },
       { pattern: "www.flapfx.com", custom_domain: true },
-      { pattern: "admin.flapfx.com", custom_domain: true }, // 어드민 (작업 0302)
     ]);
     expect(cfg.main).toBe("worker/index.ts");
     expect(cfg.assets).toMatchObject({ directory: "out", binding: "ASSETS", not_found_handling: "404-page" });
     expect(cfg.d1_databases[0]).toMatchObject({ binding: "DB", database_name: "hav-db" });
     expect(cfg.services[0]).toEqual({ binding: "API", service: "tripfx-api" });
+    // 어드민 주소는 어드민 Worker(apps/admin/wrangler.jsonc)가 잡음 (작업 0312)
+    expect(JSON.stringify(cfg.routes)).not.toContain("admin.flapfx.com");
   });
 });

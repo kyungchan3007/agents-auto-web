@@ -1,5 +1,5 @@
 // 소개 · 판단 기준 (작업 0115 · 이슈 #117) — 작업 0170 Figma 08: 큰 제목 + 기준 카드 6개 · 작업 0222: 사진 머리 → 사진 없는 머리(메뉴 아래 흰 면 · 라벨 · 큰 제목 · 새 디자인 시안 A 페이지 머리 모양) (2열 × 3줄) · 규칙 숫자는 원본(API rule · rules.ts)에서 읽어 카드 아래에 따로 적음
-import type { Fetched } from "@/shared/api";
+import type { Fetched } from "@hav/shared/api";
 import { SiteNav } from "@/shared/site-nav";
 import type { SignalList } from "@hav/shared/signal";
 import { FadeUpGroup } from "@hav/ui/motion/fade-up";

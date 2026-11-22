@@ -1,7 +1,7 @@
 // 작업 0234 R9 · R10 — 사이트가 빌드 때 읽는 api.airfareCalendar (테스트 먼저 · 구현 전에는 FAIL 이 정상)
 //   builder 가 만들 것 — apps/web/src/shared/api.ts 에 airfareCalendar: (o?) => getJson("/airfare/calendar", AirfareCalendar, o)  (AirfareCalendar = @hav/shared/airfare)
 import { describe, expect, it } from "vitest";
-import { api } from "./api";
+import { api } from "@hav/shared/api";
 import fixture from "../../e2e/fixtures/airfare-calendar.json";
 
 const json = (body: unknown, status = 200) => async () => new Response(JSON.stringify(body), { status });

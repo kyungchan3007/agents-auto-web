@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { BrowseLayout } from "@/features/currencies/components/browse-layout";
 import { RECENT_KEY } from "@/features/currencies/lib/recent-chips";
-import { api } from "@/shared/api";
+import { api } from "@hav/shared/api";
 
 export const metadata: Metadata = {
   title: "통화 둘러보기 · Flapfx",

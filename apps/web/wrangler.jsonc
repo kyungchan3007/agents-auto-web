@@ -3,7 +3,7 @@
 //   배포: npx wrangler deploy --config apps/web/wrangler.jsonc
 //   미리보기(브랜치): npx wrangler versions upload --config apps/web/wrangler.jsonc
 //   평일 다시 만들기: 배포 후크(daily-rebuild · main) — GitHub Secrets · API Worker 의 PAGES_DEPLOY_HOOK
-// API Worker 설정은 apps/api/wrangler.jsonc · 옛 Pages(tripfx) 설정은 2026-11-17 프로젝트 삭제와 함께 지움 (작업 0190)
+// 어드민 Worker 설정은 apps/admin/wrangler.jsonc (작업 0312) · API Worker 설정은 apps/api/wrangler.jsonc · 옛 Pages(tripfx) 설정은 2026-11-17 프로젝트 삭제와 함께 지움 (작업 0190)
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
   // 대시보드 Worker 이름과 같아야 함 (다르면 Workers Builds 가 경고하고 CI 이름으로 덮어씀)
@@ -40,9 +40,8 @@
   // 플랩 주소 — 설정이 원본 (대시보드에서 붙인 사용자 지정 도메인과 같게 · 작업 0190)
   "routes": [
     { "pattern": "flapfx.com", "custom_domain": true },
-    { "pattern": "www.flapfx.com", "custom_domain": true },
-    // 어드민(작업실 · GEO 측정) — 같은 Worker 가 주소로 나눔 (worker/host.ts · 작업 0302)
-    { "pattern": "admin.flapfx.com", "custom_domain": true }
+    { "pattern": "www.flapfx.com", "custom_domain": true }
+    // 어드민(admin.flapfx.com)은 어드민 Worker 가 잡음 — apps/admin/wrangler.jsonc (작업 0312)
   ],
   "workers_dev": true,
   "preview_urls": true,

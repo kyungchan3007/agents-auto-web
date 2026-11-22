@@ -4,7 +4,7 @@ import { CurrencyDetail } from "@/features/currencies/components/currency-detail
 import { describeCurrency } from "@/features/currencies/lib/describe";
 import { loadDetail } from "@/features/currencies/lib/load";
 import { DEFAULT_CODE } from "@/features/currencies/lib/route";
-import { api, mustHave } from "@/shared/api";
+import { api, mustHave } from "@hav/shared/api";
 import { JsonLd } from "@/shared/json-ld";
 import { breadcrumbLd, pageMeta, rateDatasetLd } from "@/shared/seo";
 

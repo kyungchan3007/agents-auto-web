@@ -1,6 +1,6 @@
 // 통화 둘러보기 — 새 디자인(작업 0219): 위쪽 검색 + 국기 칩 줄 → 상세(children) → 맨 아래 다른 통화 목록 (docs/design.md 페이지 패턴 "둘러보기")
 // 검색 · 칩 · 목록은 레이아웃이라 통화를 바꿔도 남고, 상세(children)만 바뀜 (작업 0168: 동전을 뺌)
-import type { Fetched } from "@/shared/api";
+import type { Fetched } from "@hav/shared/api";
 import { SiteNav } from "@/shared/site-nav";
 import { SOURCE_NOTE, rateText } from "@hav/shared/currency";
 import type { FxChanges, FxLatest } from "@hav/shared/fx";
