@@ -34,8 +34,8 @@ export function AboutPage(_props: { signals: Fetched<SignalList>; duty: DutyRule
       <main id="main" tabIndex={-1} className="bg-surface text-fg">
         <section aria-label="소개 머리" data-testid="about-head" className="px-4 pt-10 sm:px-8 sm:pt-14">
           <div className="mx-auto max-w-page">
-            <Title as="h1" size="page" aria-label="어떤 자료를, 어떤 기준으로 보여 주나요" className="text-cheap">
-              <span aria-hidden className="block">어떤 자료를,</span> <span aria-hidden className="block">어떤 기준으로 보여 주나요</span>
+            <Title as="h1" size="page" aria-label="어떤 자료를, 어떤 기준으로 보여 주나요?" className="text-cheap">
+              <span aria-hidden className="block">어떤 자료를,</span> <span aria-hidden className="block">어떤 기준으로 보여 주나요?</span>
             </Title>
           </div>
         </section>
