@@ -37,7 +37,8 @@ async function daysAfterRename(page: Page): Promise<number> {
 const perDay = (hits: number, days: number) => String(Math.round((hits / days) * 10) / 10);
 
 test.describe("이름 바꾼 날 전후 비교 (작업 0205)", () => {
-  test("맨 위 구간 · 기준일 표시 · 수치 카드보다 위", async ({ page }) => {
+  // 작업 0303(어드민): 요약 숫자(수치 카드)를 맨 위로 — 전후 비교는 그 아래 (시안 Version 6)
+  test("기준일 표시 · 수치 카드보다 아래", async ({ page }) => {
     await open(page, WITH_DAILY);
     const sec = tid(page, "rename-compare");
     await expect(sec).toBeVisible();
@@ -49,9 +50,9 @@ test.describe("이름 바꾼 날 전후 비교 (작업 0205)", () => {
         async () => {
           const a = await sec.boundingBox();
           const b = await tid(page, "geo-cards").boundingBox();
-          return a && b ? b.y - (a.y + a.height) : Number.NEGATIVE_INFINITY;
+          return a && b ? a.y - (b.y + b.height) : Number.NEGATIVE_INFINITY;
         },
-        { message: "이름 바꾼 날 구간은 수치 카드보다 위(구간 아래 끝 ≤ 카드 위 끝 + 1)", timeout: 10_000 },
+        { message: "이름 바꾼 날 구간은 수치 카드보다 아래(카드 아래 끝 ≤ 구간 위 끝 + 1)", timeout: 10_000 },
       )
       .toBeGreaterThanOrEqual(-1);
   });
@@ -85,7 +86,7 @@ test.describe("이름 바꾼 날 전후 비교 (작업 0205)", () => {
     await open(page, WITH_DAILY);
     const days = await daysAfterRename(page);
     await expect(tid(page, "rename-compare").getByRole("row", { name: /ChatGPT/ })).toContainText(`하루 0회 (합계 0회)하루 ${perDay(1, days)}회 (합계 1회)`);
-    await expect(tid(page, "rename-compare").getByRole("row", { name: /해외직구 관세 계산기/ })).toContainText("찾음 1 · 인용 0 / 1회");
+    await expect(tid(page, "rename-questions").getByRole("row", { name: /해외직구 관세 계산기/ })).toContainText("찾음 1 · 인용 0 / 1회"); // 작업 0303: 일반 질문은 따로 판
     await expect(tid(page, "rename-brand")).toContainText("Flapfx 시기(3판): 1일 측정");
     await expect(tid(page, "rename-search")).toContainText("새 속성(flapfx.com): 아직 없음 (Search Console 새 속성 등록 대기 #214)");
   });
@@ -94,7 +95,8 @@ test.describe("이름 바꾼 날 전후 비교 (작업 0205)", () => {
     await open(page, BASE);
     const sec = tid(page, "rename-compare");
     await expect(sec).toBeVisible();
-    await expect(sec.getByText("아직 없음", { exact: true })).toHaveCount(3);
+    await expect(sec.getByText("아직 없음", { exact: true })).toHaveCount(2); // 봇 · 유입 (작업 0303: 답변은 따로 판)
+    await expect(tid(page, "rename-questions").getByText("아직 없음", { exact: true })).toHaveCount(1);
     await expect(sec.getByRole("row", { name: /GPTBot/ })).toHaveCount(0);
   });
 

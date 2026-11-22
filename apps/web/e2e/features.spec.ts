@@ -78,8 +78,8 @@ test("작업실 — 사이트 상태 점검판이 맨 위 · 탭 제목은 페�
   const board = page.locator('section[aria-labelledby="status-title"]');
   await expect(board).toContainText("사이트 상태");
   await expect(board).toContainText(/오늘 환율 수집|상태를 받지 못했습니다/); // 새 상태판(작업 0170): 칸 이름 "오늘 환율 수집" · 못 받으면 이유
-  await openMenuIfCollapsed(page); // 휴대폰은 메뉴 버튼을 먼저 펼침 (작업 0168)
-  await expect(page.getByRole("banner").getByRole("navigation").getByRole("link", { name: "작업실" })).toBeVisible();
+  // 어드민 틀(작업 0303): 지금 화면 표시가 작업실
+  await expect(page.locator('a[aria-current="page"]:visible').first()).toContainText("작업실");
 });
 
 // 여행 품목 영역(국제항공료 · 해외단체여행비 · 3D 비행기)은 /prices 에서 /flights 로 옮김 (작업 0164 · 사용자 결정 2026-11-15)

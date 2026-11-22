@@ -116,9 +116,9 @@ describe("작업실 /log (P5 · SR-LOG-01)", () => {
     for (const id of ["status-board", "team-desks", "work-flow"]) expect(T.log, id).toMatch(new RegExp(`data-testid="${id}"`));
   });
 
-  it("상태판 칸 이름 · 실패는 주홍(expensive 색)", () => {
+  it("상태판 칸 이름 · 실패는 붉은 글자(어드민 bad · 작업 0303)", () => {
     for (const s of ["오늘 환율 수집", "사이트 빌드", "자동 검사 (main)", "열린 작업"]) expect(T.log, s).toContain(s);
-    expect(T.log).toMatch(/expensive/);
+    expect(T.log).toMatch(/failed \? " bad"/);
   });
 
   it("지금 맡은 일(\"지금:\")을 상수에 박아 두지 않음 — 실제 기록에서만", () => {
@@ -140,7 +140,7 @@ describe("GEO 측정 /geo (P6 · SR-GEO-01) — geo 소유 화면", () => {
     for (const id of ["geo-answers", "geo-search", "geo-bots", "geo-method", "geo-questions"]) expect(T.geo, id).toMatch(new RegExp(`(data-testid=|id=)"${id}"`)); // Card 는 id 를 prop 으로 받아 data-testid 로 붙임
     for (const word of ["질문별 결과", "측정한 날마다 기록", "상위 검색어", "AI 봇별 방문", "측정의 한계", "아직 연결하지 않은 자료"]) expect(T.geo, word).toContain(word);
     expect(T.geo).toMatch(/<details/);
-    expect(T.geo).toMatch(/\bDataTable\b/);
+    expect(T.geo).toMatch(/<table\b/); // 작업 0303: 어드민 표(DataTable 대신 같은 칸의 표)
   });
 
   it("큰 제목 · 측정 수치 카드(geoCards) · 읽는 법(geoReading)", () => {

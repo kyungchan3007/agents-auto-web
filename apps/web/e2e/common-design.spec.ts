@@ -7,7 +7,7 @@ const BLUE = "rgb(36, 56, 168)";
 const WHITE = "rgb(255, 255, 255)";
 const SUN = "rgb(247, 197, 72)";
 const PAGES: [string, string][] = [
-  ["/", "홈"], ["/flights", "여행 타이밍"], ["/currencies", "통화"], ["/prices", "여행 물가"], ["/calc", "직구 계산"], ["/log", "작업실"], ["/geo", "GEO 측정"], ["/about", "소개"],
+  ["/", "홈"], ["/flights", "여행 타이밍"], ["/currencies", "통화"], ["/prices", "여행 물가"], ["/calc", "직구 계산"], ["/about", "소개"],
 ];
 const css = (loc: ReturnType<Page["locator"]>, prop: string) => loc.evaluate((el, p) => getComputedStyle(el).getPropertyValue(p), prop);
 
@@ -49,18 +49,9 @@ test.describe("메뉴 띠 · 로고 (작업 0216)", () => {
     await page.goto("/");
     await openMenuIfCollapsed(page);
     const names = await page.getByRole("banner").getByRole("navigation").getByRole("link").allInnerTexts();
-    expect(names.slice(1)).toEqual(["여행 타이밍", "오늘 환율", "통화", "여행 물가", "직구 계산"]); // 작업실 · GEO 측정은 어드민으로 (작업 0302)
+    expect(names.slice(1)).toEqual(["여행 타이밍", "오늘 환율", "통화", "여행 물가", "직구 계산"]); // 작업실 · GEO 측정은 어드민으로 (작업 0302 · 어드민 틀은 admin.spec.ts)
   });
 
-  test("작업실 · GEO 측정 화면은 어드민 메뉴 — 작업실 · GEO 측정 · 사이트로 가기 (작업 0302)", async ({ page }) => {
-    for (const path of ["/log", "/geo"]) {
-      await page.goto(path);
-      await openMenuIfCollapsed(page);
-      const nav = page.getByRole("banner").getByRole("navigation");
-      expect((await nav.getByRole("link").allInnerTexts()).slice(1)).toEqual(["작업실", "GEO 측정", "사이트로 가기"]);
-      await expect(nav.getByRole("link", { name: "사이트로 가기" })).toHaveAttribute("href", "https://flapfx.com");
-    }
-  });
 });
 
 const sampleText = (page: Page) => page.getByTestId("motion-sample-count").getByTestId("count-up").innerText();
