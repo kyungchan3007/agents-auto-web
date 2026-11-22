@@ -148,7 +148,7 @@ function Calendar({ items, fetchedOn }: { items: AirfareItem[]; fetchedOn: strin
             {view.weekBars.map((b) => (
               <div key={b.label} data-testid="airfare-week-row" className={`af-row${b.min ? " min" : ""}`}>
                 <span className="w">{b.label}</span>
-                <span className="track"><span data-testid="airfare-week-fill" className="fill" style={{ width: grown ? `${b.percent}%` : 0 }} /></span>
+                <span className="track"><span data-testid="airfare-week-fill" className="fill" style={{ transform: `translateX(${grown ? b.percent - 100 : -100}%)` }} /></span>
                 <span className="v">{b.average === null ? "–" : `${manWon(b.average)}만`}</span>
               </div>
             ))}
