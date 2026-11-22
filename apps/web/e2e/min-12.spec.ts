@@ -75,7 +75,12 @@ test.describe("보이는 글자 12px 이상 · 가로 넘침 없음 (작업 0272
           await page.evaluate((v) => { document.documentElement.style.scrollBehavior = "auto"; window.scrollTo(0, v); }, total * y);
           await page.waitForTimeout(250);
           await settle(page);
-          const r = await scan(page);
+          let r = await scan(page);
+          // 그래프 꼬리표(최저 · 최고 글자)는 그려지는 동안 크기가 커지며 나타남(자바스크립트로 움직임) — 작은 글자가 보이면 끝나 자리 잡을 때까지(최대 6초) 같은 자리를 다시 잼 · 끝난 크기로 판정
+          for (let k = 0; k < 9 && r.small.length > 0; k++) {
+            await page.waitForTimeout(700);
+            r = await scan(page);
+          }
           texts = Math.max(texts, r.total);
           small = small.concat(r.small);
         }
