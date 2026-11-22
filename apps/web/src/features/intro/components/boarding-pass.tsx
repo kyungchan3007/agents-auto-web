@@ -20,7 +20,7 @@ export function BoardingPass({ s }: { s: IntroView }) {
         initial={{ y: "-102%" }}
         animate={fold ? { x: "-40%", y: "60%", scale: 0.3, opacity: 0 } : { y: 0 }}
         transition={{ duration: s.still ? 0 : fold ? 0.8 : 2.2, ease: fold ? [0.6, 0, 0.2, 1] : "easeOut" }}
-        className="rounded-b-2xl bg-card px-5 pt-[18px] pb-3.5 shadow-ticket"
+        className="rounded-b-[0.875rem] bg-card px-5 pt-[18px] pb-3.5 shadow-ticket"
       >
         <div className="flex justify-between text-[12px] font-bold tracking-wider text-fg-2">
           <span>FLAPFX · BOARDING PASS</span>

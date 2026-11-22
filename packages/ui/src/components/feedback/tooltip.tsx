@@ -11,7 +11,7 @@ export function Tooltip({ content, children }: { content: ReactNode; children: R
         <BaseTooltip.Trigger render={children} />
         <BaseTooltip.Portal>
           <BaseTooltip.Positioner sideOffset={10}>
-            <BaseTooltip.Popup className="max-w-xs rounded-card border border-line bg-surface-2 px-3 py-2 text-sm text-fg transition-opacity duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0">
+            <BaseTooltip.Popup className="max-w-xs rounded-[0.625rem] border border-line bg-surface-2 px-3 py-2 text-sm text-fg transition-opacity duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0">
               {content}
             </BaseTooltip.Popup>
           </BaseTooltip.Positioner>

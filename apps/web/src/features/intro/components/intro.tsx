@@ -55,7 +55,7 @@ export function Intro({ data }: { data: IntroData }) {
       <section
         data-intro-bubble
         aria-live="polite"
-        className={`absolute z-[4] w-[440px] rounded-[20px] border border-line bg-card px-6 pt-[22px] pb-5 shadow-panel transition-[opacity,transform] duration-300 after:absolute after:-bottom-2.5 after:left-[var(--tail,50%)] after:size-[18px] after:-translate-x-1/2 after:rotate-45 after:border-r after:border-b after:border-line after:bg-card after:content-[''] ${bubbleOn ? "opacity-100" : "pointer-events-none translate-y-2.5 opacity-0"}`}
+        className={`absolute z-[4] w-[440px] rounded-[1.5rem] border border-line bg-card px-6 pt-[22px] pb-5 shadow-panel transition-[opacity,transform] duration-300 after:absolute after:-bottom-2.5 after:left-[var(--tail,50%)] after:size-[18px] after:-translate-x-1/2 after:rotate-45 after:border-r after:border-b after:border-line after:bg-card after:content-[''] ${bubbleOn ? "opacity-100" : "pointer-events-none translate-y-2.5 opacity-0"}`}
         style={s.lite ? { left: "50%", top: "16%", transform: "translateX(-50%)" } : { left: 16, top: 84 }}
       >
         {s.step === 1 && <BubbleSearch s={s} />}

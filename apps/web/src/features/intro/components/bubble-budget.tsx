@@ -42,7 +42,7 @@ export function BubbleBudget({ s }: { s: IntroView }) {
           <span className="text-[13px] text-fg-2">{s.rateNote}</span>
         </div>
       ) : null}
-      <p className={`m-0 flex items-center gap-2.5 rounded-xl bg-surface-2 px-3 py-2.5 text-[15px] font-semibold ${hasRate && c.signal ? "" : "text-expensive"}`}>
+      <p className={`m-0 flex items-center gap-2.5 rounded-[0.875rem] bg-surface-2 px-3 py-2.5 text-[15px] font-semibold ${hasRate && c.signal ? "" : "text-expensive"}`}>
         <span aria-hidden className={`size-2.5 flex-none rounded-full ${hasRate && c.signal ? "bg-cheap" : "bg-expensive"}`} />
         {s.pinLine}
       </p>
