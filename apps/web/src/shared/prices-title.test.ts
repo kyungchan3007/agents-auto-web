@@ -30,10 +30,10 @@ describe("여행 물가 예산 카드 — 시안 B 위치 · 크기", () => {
     expect(cell).not.toMatch(/lg:row-span-2/);
   });
 
-  it("카드 안: 안쪽 여백 28 · 30 · 입력 칸 64px(h-16) · 결과 숫자 44px", () => {
+  it("카드 안: 안쪽 여백 28 · 30 · 입력 칸 64px(h-16) · 결과 숫자 48px(작업 0274 · 글자 크기 11단계로 44 → 48)", () => {
     expect(card).toMatch(/lg:px-\[30px\]/);
     expect(card).toMatch(/lg:pt-7/);
-    expect(card).toMatch(/lg:text-\[2\.75rem\]/);
+    expect(card).toMatch(/lg:text-\[3rem\]/); // 44 → 48 (작업 0274)
     expect((card.match(/lg:h-16/g) ?? []).length).toBeGreaterThanOrEqual(3);
   });
 });
