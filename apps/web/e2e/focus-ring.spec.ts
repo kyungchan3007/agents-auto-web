@@ -31,6 +31,8 @@ async function walk(page: Page): Promise<Stop[]> {
       // 초점 직후 읽으면 색 전환(transition-colors 가 outline-color 도 바꿈)의 중간 색이 잡힐 수 있어, 그 요소의 전환이 끝난 뒤에 읽음 (작업 0271)
       await Promise.all(el.getAnimations().map((a) => a.finished.catch(() => undefined)));
       await new Promise((res) => requestAnimationFrame(() => requestAnimationFrame(res)));
+      // 하이드레이션 직전에 Tab 이 닿았다가 그 단추가 곧 꺼진 경우(예: 맨 앞이라 꺼지는 앞 날짜 단추)는 초점이 이미 사라져 고리가 없음 — 지금 키보드 초점이 아닌 요소는 검사하지 않음 (병렬 실행 흔들림)
+      if (document.activeElement !== el || !el.matches(":focus-visible") || (el as HTMLButtonElement).disabled) return null;
       const cs = getComputedStyle(el);
       // 고리가 놓이는 면: 바깥 고리(간격 ≥ 0)는 요소 바깥이라 부모 쪽 면 · 안쪽 고리(음수 간격)는 요소 자신의 면 (흰 입력 칸이 파란 띠 위에 있으면 고리는 파란 면 위)
       const outer = (parseFloat(cs.outlineOffset) || 0) >= 0;

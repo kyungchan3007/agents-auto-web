@@ -8,9 +8,9 @@
 //   크기 단계 (@theme · Figma 텍스트 스타일 · 글자 크기 --text-NAME 과 줄 높이 --text-NAME--line-height):
 //     --text-poster  Gasoek One 96/102 (clamp 로 모바일 약 48 · 최대 6rem)
 //     --text-section Gasoek One 48/54 (clamp · 최대 3rem)
-//     --text-city    Gasoek One 34/36 (2.125rem)
+//     --text-city    도시 이름 36/38.1 (2.25rem · 작업 0273: 글자 크기 11단계로 34 → 36 · 줄 높이 비율 유지)
 //     --text-body    설명 16/26 (1rem)
-//     --text-number  강조 숫자 26/32 (1.625rem)
+//     --text-number  강조 숫자 28/34.5 (1.75rem · 작업 0273: 26 → 28 · 줄 높이 비율 유지)
 //     --text-small   작은 글 13/20 (0.8125rem)
 //   글꼴: --font-display 에 "Gasoek One" · --font-sans 에 "IBM Plex Sans KR" 글자가 들어감 (next/font 변수를 앞에 두고 이름을 뒤에 둠 — var(--font-…), "IBM Plex Sans KR", …)
 //   걷어 냄 (R9): .hav-reveal · hav-rise(떠오름) · text-aurora 유틸 · 휴대폰 메뉴 두 줄 높이(6.5rem)
@@ -70,9 +70,9 @@ describe("크기 단계 — Figma 텍스트 스타일 그대로", () => {
   const SPEC: [string, number, number][] = [
     ["poster", 96, 102],
     ["section", 48, 54],
-    ["city", 34, 36],
+    ["city", 36, 38.1], // 작업 0273: 글자 크기 11단계(12 · 13 · 15 · 16 · 18 · 22 · 28 · 36 · 48 · 56 · 72) — 34 → 36 · 줄 높이는 비율(1.0588)을 그대로 둬 36 → 38.1 (builder 선택 · 작업서에 줄 높이 언급 없음)
     ["body", 16, 26],
-    ["number", 26, 32],
+    ["number", 28, 34.5], // 작업 0273: 26 → 28 · 줄 높이는 비율(1.2308)을 그대로 둬 32 → 34.5
     ["small", 13, 20],
   ];
   for (const [name, px, line] of SPEC) {
