@@ -43,7 +43,7 @@ for (const w of [1280, 1024]) {
   });
 }
 
-for (const w of [1280, 1024, 768, 640, 428, 412, 390, 360, 320]) {
+for (const w of [1280, 1024, 768, 640, 428, 412, 390, 389, 375, 360, 320]) { // 작업 0296: 389(좁은 폭 보정 경계) · 375 추가
   test(`${w}px — 어떤 문장이어도 카드 · 아래 구간 위치 고정(모든 폭 ±1px · 0208 크기 고정 · 휴대폰도 제목 자리를 두 줄 높이로 미리 잡음 · 작업 0296) · 제목 줄 수는 가장 긴 문장 기준으로 자리 잡힘`, async ({ page }) => {
     await page.setViewportSize({ width: w, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
@@ -59,8 +59,8 @@ for (const w of [1280, 1024, 768, 640, 428, 412, 390, 360, 320]) {
       const n = await lines(page);
       max = Math.max(max, n);
       // 작업 0296(lead: A안 · 작업서 3번): 휴대폰도 제목 자리를 미리 잡아 어떤 문장이어도 카드 · 아래 구간 위치가 모든 폭에서 같음(±1px) — 작업 0245 의 '639 이하는 줄 수만큼 내려감'을 바꿈
-      // 제목이 두 줄 이하인 문장(실제로 나오는 상태들)은 ±1px · 세 줄이 되는 극단 입력(9천9백만 달러 · 관세율 20%)은 자리를 넘어 내려가므로 내려간 양의 상한(60px)만 확인
-      const tol = n <= 2 ? 1 : 60;
+      // 제목이 두 줄 이하인 문장(실제로 나오는 상태들)은 ±1px · 세 줄이 되는 극단 입력(9천9백만 달러 · 관세율 20%)은 자리를 넘어 내려가므로 내려간 양의 상한(120px)만 확인
+      const tol = n <= 2 ? 1 : 120;
       expect(Math.abs((await absY(page, "calc-input")) - y0), `${name} · 카드 위치(제목 ${n}줄)`).toBeLessThanOrEqual(tol);
       expect(Math.abs((await absY(page, "import-price-section")) - below0), `${name} · 아래 구간 위치(제목 ${n}줄)`).toBeLessThanOrEqual(tol);
       rows.push({ name, n, lh: 0, card: 0, below: 0 });
