@@ -125,6 +125,7 @@ test.describe("여행 물가 — 나라 단추로 고르는 물가 노선 (작�
   });
 
   test("처음에는 첫 정거장(가장 싼 나라) · 스크롤해도 정거장이 바뀌지 않음", async ({ page }) => {
+    test.skip(isPhone(page), "휴대폰(760 이하)은 세로 노선 — prices-route-mobile.spec.ts");
     if (!isPhone(page)) await page.setViewportSize({ width: 1280, height: 800 });
     test.skip(!(await ready(page)), "물가 자료 없음");
     const exp = expectedStops(await listPins(page));
@@ -151,6 +152,7 @@ test.describe("여행 물가 — 나라 단추로 고르는 물가 노선 (작�
   });
 
   test("나라 단추를 누르면 — 카드(이름 · 정거장 N / M · 숫자 · 비교 · 예산 · 환율 알약) · 단추 · 비행기가 그 나라로 · 마지막 · 가운데 · 처음으로 다시", async ({ page }) => {
+    test.skip(isPhone(page), "휴대폰(760 이하)은 세로 노선 — prices-route-mobile.spec.ts");
     test.skip(!(await ready(page)), "물가 자료 없음");
     const exp = expectedStops(await listPins(page));
     const n = exp.length;
@@ -170,6 +172,7 @@ test.describe("여행 물가 — 나라 단추로 고르는 물가 노선 (작�
   });
 
   test("같은 값인 이웃 나라로 옮겨도 비행기는 가만히(작업 0251) — 나라(카드 · 이름)만 바뀜", async ({ page }) => {
+    test.skip(isPhone(page), "휴대폰(760 이하)은 세로 노선 — prices-route-mobile.spec.ts");
     test.skip(!(await ready(page)), "물가 자료 없음");
     const exp = expectedStops(await listPins(page));
     const k = exp.findIndex((e, i) => i > 0 && e.value === exp[i - 1].value);
@@ -191,25 +194,7 @@ test.describe("여행 물가 — 나라 단추로 고르는 물가 노선 (작�
     expect(await tid(page, "route-plane").evaluate((e) => getComputedStyle(e.querySelector("svg") ?? e).transform), "좌우 뒤집힘 없음").toBe(flipBefore);
   });
 
-  test("휴대폰 — 나라 단추 줄이 제목 아래에 보이고 가로로 밀 수 있음 · 문서가 가로로 넘치지 않음 · 누르면 바뀜", async ({ page }) => {
-    test.skip(!isPhone(page), "휴대폰 전용");
-    test.skip(!(await ready(page)), "물가 자료 없음");
-    const exp = expectedStops(await listPins(page));
-    await stopsReady(page);
-    const stops = tid(page, "route-stops");
-    await stops.scrollIntoViewIfNeeded();
-    await expect(stops, "휴대폰에도 단추 줄").toBeVisible();
-    await expect(tid(page, "route-stop").first()).toBeVisible();
-    // 제목 아래
-    const [tb, sb] = [(await tid(page, "route-title").boundingBox())!, (await stops.boundingBox())!];
-    expect(sb.y, "단추 줄은 제목 아래").toBeGreaterThanOrEqual(tb.y + tb.height - 1);
-    // 줄 안에서만 가로로 넘치고(밀 수 있음) 문서는 안 넘침
-    const m = await stops.evaluate((el) => ({ over: getComputedStyle(el).overflowX, sw: el.scrollWidth, cw: el.clientWidth }));
-    expect(["auto", "scroll"], "단추 줄 안에서 가로 스크롤").toContain(m.over);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), "문서 가로 넘침").toBeLessThanOrEqual(0);
-    // 끝쪽 단추도 눌러 고를 수 있음
-    await pickStop(page, exp, exp.length - 1);
-  });
+  // 작업 0283: 휴대폰 가로 단추 줄 검사는 세로 노선으로 바뀌어 prices-route-mobile.spec.ts 로 옮김
 
   test("끝까지 스크롤하며 — 가로 넘침 0 · 비행기가 화면 안 · 콘솔 오류 없음 (1280 · 휴대폰)", async ({ page }) => {
     const errors: string[] = [];
@@ -224,8 +209,8 @@ test.describe("여행 물가 — 나라 단추로 고르는 물가 노선 (작�
       await page.waitForTimeout(300);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth), `위치 ${p} 가로 넘침`).toBeLessThanOrEqual(1);
     }
-    await tid(page, "route-card").scrollIntoViewIfNeeded();
-    const pl = (await tid(page, "route-plane").boundingBox())!;
+    await tid(page, isPhone(page) ? "route-list" : "route-card").scrollIntoViewIfNeeded();
+    const pl = (await tid(page, isPhone(page) ? "route-row-plane" : "route-plane").boundingBox())!; // 휴대폰은 세로 노선의 비행기(작업 0283)
     expect(pl.x, "비행기 왼쪽").toBeGreaterThanOrEqual(-1);
     expect(pl.x + pl.width, "비행기 오른쪽").toBeLessThanOrEqual(vw + 1);
     expect(errors).toEqual([]);
@@ -251,6 +236,7 @@ test.describe("여행 물가 — 나라 단추로 고르는 물가 노선 (작�
   });
 
   test("정거장 카드의 네 변 테두리(바깥 링)가 모서리까지 잘리지 않고 보임 — 카드를 자를 수 있는 모든 조상 칸이 카드 + 링 두께보다 넓음", async ({ page }) => {
+    test.skip(isPhone(page), "휴대폰(760 이하)은 세로 노선 — prices-route-mobile.spec.ts");
     test.skip(!(await ready(page)), "물가 자료 없음");
     await stopsReady(page);
     await tid(page, "route-card").first().scrollIntoViewIfNeeded();
@@ -320,6 +306,7 @@ test.describe("여행 물가 — 나라 단추로 고르는 물가 노선 (작�
   });
 
   test("움직임 줄이기 — 고정 없이 단추로 고르기가 그대로 됨(움직임만 없음 또는 모든 카드를 펼친 정적 노선) · 첫 정거장 카드가 보임", async ({ page }) => {
+    test.skip(isPhone(page), "휴대폰(760 이하)은 세로 노선 — prices-route-mobile.spec.ts");
     await page.emulateMedia({ reducedMotion: "reduce" });
     test.skip(!(await ready(page)), "물가 자료 없음");
     const exp = expectedStops(await listPins(page));
