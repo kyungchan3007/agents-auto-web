@@ -75,7 +75,8 @@ describe("코드 역할 분담 (작업 0125)", () => {
 
   it("앱 공용 폴더에는 이 사이트 고유 파일만 — 2개 이상 기능이 쓰는 공통 모듈 · 디자인은 @hav/ui · @hav/shared 로 승격 (작업 0126)", () => {
     // admin-nav.tsx: site-nav.tsx 의 어드민 짝 — 이 사이트의 어드민 화면 목록 · 이름 (틀 모양은 @hav/ui/admin · 작업 0303)
-    const allowed = ["admin-nav.tsx", "api.ts", "outage-notice.tsx", "outage.ts", "site-nav.tsx", "site.ts", "sitemap-entries.ts", "use-outage-visible.ts"];
+    // json-ld.tsx · seo.ts: 이 사이트의 검색 · 공유 정보(메타 · 구조화 자료) 도우미 — 사이트 이름 · 주소를 쓰는 이 사이트 고유 파일 (작업 0304)
+    const allowed = ["admin-nav.tsx", "api.ts", "json-ld.tsx", "outage-notice.tsx", "outage.ts", "seo.ts", "site-nav.tsx", "site.ts", "sitemap-entries.ts", "use-outage-visible.ts"];
     const here = files(join(SRC, "shared")).map((f) => relative(join(SRC, "shared"), f)).sort();
     expect(here).toEqual([...allowed].sort());
   });
