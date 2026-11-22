@@ -44,16 +44,22 @@ export function Converter({ code, rate }: { code: string; rate: FxRate }) {
           ))}
         </div>
       </section>
-      <p id="converter-note" className="mx-3 mt-4 mb-2 border-t-2 border-dashed border-line pt-4 text-small text-fg-2">
-        {invalid ? (
-          <span className="text-expensive">0 이상의 숫자만 넣어 주세요.</span>
-        ) : (
-          <>
-            매매기준율 · {rate.date} · {SOURCE_NAME[rate.source]}
-            {remit != null && result != null && foreign && <> · 송금으로 바꾸면 약 {amountText(remit, "won", rate)}원</>} · 실제 환전은 은행 · 환전소 수수료(우대율)에 따라 달라집니다
-          </>
-        )}
-      </p>
+      <div id="converter-note" className="mx-3 mt-4 mb-2 border-t-2 border-dashed border-line pt-4 text-small text-fg-2">
+        {/* 기준일 · 출처 줄은 금액이 틀려도 늘 남김(FX-01 · 작업 0298) — 틀린 입력에서는 송금 글만 안 보이게(자리는 그대로) */}
+        <p className="m-0">
+          매매기준율 · {rate.date} · {SOURCE_NAME[rate.source]}
+          {invalid ? (
+            <span aria-hidden className="invisible"> · 송금으로 바꾸면 약 000,000원</span>
+          ) : (
+            remit != null && result != null && foreign && <> · 송금으로 바꾸면 약 {amountText(remit, "won", rate)}원</>
+          )}{" "}
+          · 실제 환전은 은행 · 환전소 수수료(우대율)에 따라 달라집니다
+        </p>
+        {/* 오류 글은 따로 한 줄 — 늘 한 줄 높이를 잡아 오류가 떠도 아래가 밀리지 않음 */}
+        <p role="alert" className="m-0 mt-1 min-h-5 text-expensive">
+          {invalid ? "0 이상의 숫자만 넣어 주세요." : null}
+        </p>
+      </div>
     </div>
   );
 }
