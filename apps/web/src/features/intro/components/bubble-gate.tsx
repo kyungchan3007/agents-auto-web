@@ -13,7 +13,7 @@ export function BubbleGate({ s }: { s: IntroView }) {
           </button>
         )}
       </div>
-      <h2 className="m-0 text-[28px] leading-tight font-black tracking-tight text-fg">{printing ? "탑승권을 출력합니다" : `이번 달 ${s.month}월에 떠나요`}</h2>
+      <h2 className="m-0 text-[28px] leading-tight font-bold tracking-tight text-fg">{printing ? "탑승권을 출력합니다" : `이번 달 ${s.month}월에 떠나요`}</h2>
       {!printing && (
         <>
           <p className="m-0 flex items-center gap-2.5 rounded-xl bg-surface-2 px-3 py-2.5 text-[15px] font-semibold">

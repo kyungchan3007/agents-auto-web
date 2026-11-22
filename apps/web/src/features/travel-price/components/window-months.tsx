@@ -12,7 +12,7 @@ function FlapCell({ char }: { char: string }) {
   return (
     <span
       ref={ref}
-      className={`relative isolate grid h-[4.625rem] w-[3.25rem] place-items-center rounded-[5px] bg-flap-cell text-[2.75rem] leading-none font-extrabold text-sun [perspective:200px] after:absolute after:inset-x-0 after:top-1/2 after:-z-10 after:h-px after:bg-on-band max-sm:h-[3.875rem] max-sm:w-11 max-sm:text-[2.25rem]`}
+      className={`relative isolate grid h-[4.625rem] w-[3.25rem] place-items-center rounded-[5px] bg-flap-cell text-[2.75rem] leading-none font-bold text-sun [perspective:200px] after:absolute after:inset-x-0 after:top-1/2 after:-z-10 after:h-px after:bg-on-band max-sm:h-[3.875rem] max-sm:w-11 max-sm:text-[2.25rem]`}
     >
       {shown}
     </span>
@@ -42,7 +42,7 @@ function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof wi
     <section data-testid="window-section" aria-labelledby="window-title" className="bg-surface-2 px-4 pt-14 pb-[4.5rem] text-fg sm:px-8 max-sm:pt-10 max-sm:pb-14">
       <div className="mx-auto max-w-page">
         <p className="text-small text-accent">창밖으로 보는 12달</p>
-        <h2 id="window-title" className="mt-1.5 text-[1.5rem] leading-tight font-extrabold tracking-display sm:text-[1.875rem]">
+        <h2 id="window-title" className="mt-1.5 text-[1.5rem] leading-tight font-bold tracking-display sm:text-[1.875rem]">
           계절이 바뀌는 동안 항공료 지수도 오르내립니다
         </h2>
         <p className="mt-1.5 text-small text-fg-2">1월부터 12월까지 같은 달의 국제항공료 지수를 창밖 계절과 함께 봅니다.</p>
@@ -87,7 +87,7 @@ function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof wi
               </div>
               <div data-testid="window-season" className="text-[1.375rem] leading-snug font-bold">
                 {cur.season}
-                <small className="block text-small font-medium text-fg-2">{cur.desc}</small>
+                <small className="block text-small font-normal text-fg-2">{cur.desc}</small>
               </div>
               <span
                 data-testid="window-tag"
@@ -99,7 +99,7 @@ function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof wi
             <div className="mt-6 border-t border-line pt-5">
               <p className="text-small font-semibold text-fg-2">국제항공료 지수 · 같은 달 평균</p>
               <div className="mt-0.5 flex items-baseline gap-2.5">
-                <b data-testid="window-value" data-final={cur.text} className={`text-[3.5rem] leading-[1.05] font-extrabold tracking-display tabular-nums max-sm:text-[2.875rem] ${cur.tone === "high" ? "text-expensive" : cur.tone === "low" ? "text-figure" : "text-fg"}`}>
+                <b data-testid="window-value" data-final={cur.text} className={`text-[3.5rem] leading-[1.05] font-bold tracking-display tabular-nums max-sm:text-[2.875rem] ${cur.tone === "high" ? "text-expensive" : cur.tone === "low" ? "text-figure" : "text-fg"}`}>
                   {value.toFixed(1)}
                 </b>
                 <span className="text-small text-fg-2">2020년 = 100</span>

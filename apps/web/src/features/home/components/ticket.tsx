@@ -23,7 +23,7 @@ function Evidence({ text }: { text: string }) {
     <>
       {text.split(/(\d+%)/).map((part, i) =>
         /^\d+%$/.test(part) ? (
-          <em key={i} className="text-[1.375rem] font-extrabold text-cheap not-italic">
+          <em key={i} className="text-[1.375rem] font-bold text-cheap not-italic">
             {part}
           </em>
         ) : (

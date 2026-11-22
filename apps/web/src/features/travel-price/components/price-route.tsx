@@ -76,7 +76,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
             {t.meta}
             {year && <> · {year}</>}
           </p>
-          <p className="h-(--route-name-h) overflow-hidden text-(length:--route-name) leading-[1.2] font-extrabold tracking-display">
+          <p className="h-(--route-name-h) overflow-hidden text-(length:--route-name) leading-[1.2] font-bold tracking-display">
             <span key={swap} data-testid="route-card-name" className={`block ${live && swap > 0 ? "animate-[route-up_.42s_cubic-bezier(.2,.9,.3,1)]" : ""}`}>
               {stop.name}
             </span>
@@ -92,7 +92,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
           <div className="flex items-center gap-1">
             <div data-testid="route-card-value" role="img" aria-label={`물가 ${stop.value} (한국 100)`} className="flex items-center gap-1">
               {shownTiles.map((x, k) => (
-                <span key={k} aria-hidden="true" className="relative isolate grid h-(--route-tile-h) w-(--route-tile-w) place-items-center rounded-[5px] bg-flap-cell text-(length:--route-tile) leading-none font-extrabold text-sun [perspective:200px] after:absolute after:inset-x-0 after:top-1/2 after:-z-10 after:h-px after:bg-on-band ">
+                <span key={k} aria-hidden="true" className="relative isolate grid h-(--route-tile-h) w-(--route-tile-w) place-items-center rounded-[5px] bg-flap-cell text-(length:--route-tile) leading-none font-bold text-sun [perspective:200px] after:absolute after:inset-x-0 after:top-1/2 after:-z-10 after:h-px after:bg-on-band ">
                   <span className={`block origin-center transition-transform duration-[140ms] ease-in ${x.out ? "[transform:rotateX(90deg)]" : ""} ${x.ch === " " ? "opacity-0" : ""}`}>{x.ch === " " ? "0" : x.ch}</span>
                 </span>
               ))}
@@ -101,7 +101,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
         </div>
         <div>
           <p className="mb-1.5 text-[0.78125rem] text-fg-2">한국과 비교</p>
-          <p data-testid="route-card-pct" className="text-(length:--route-big) leading-[1.1] font-extrabold tracking-display whitespace-nowrap text-(--c) tabular-nums max-[760px]:whitespace-normal">
+          <p data-testid="route-card-pct" className="text-(length:--route-big) leading-[1.1] font-bold tracking-display whitespace-nowrap text-(--c) tabular-nums max-[760px]:whitespace-normal">
             {stop.value === 100 ? (
               <>
                 기준<small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:block max-[760px]:text-[0.8125rem]">100,000원 그대로</small>
@@ -116,7 +116,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
         </div>
         <div>
           <p className="mb-1.5 text-[0.78125rem] text-fg-2">하루 예산 예시</p>
-          <p data-testid="route-card-budget" className="text-(length:--route-big) leading-[1.1] font-extrabold tracking-display whitespace-nowrap text-(--c) tabular-nums max-[760px]:whitespace-normal">
+          <p data-testid="route-card-budget" className="text-(length:--route-big) leading-[1.1] font-bold tracking-display whitespace-nowrap text-(--c) tabular-nums max-[760px]:whitespace-normal">
             약 {bud.toLocaleString("ko-KR")}
             <small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:text-[0.875rem]">원</small>
           </p>
@@ -233,7 +233,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
                 const up = s.side === "up";
                 const col = COLOR[s.band];
                 const nm = <span className="text-[0.78125rem] leading-tight font-bold text-fg">{s.name}</span>;
-                const val = <span className="text-2xl leading-[1.15] font-extrabold tracking-[0.02em] tabular-nums">{s.value}</span>;
+                const val = <span className="text-2xl leading-[1.15] font-bold tracking-[0.02em] tabular-nums">{s.value}</span>;
                 const fl = <RouteFlag country={s.country} name={s.name} className="my-[3px] size-[1.875rem] ring-[2px]" />;
                 const stem = <span className="block h-[22px] w-[1.5px] bg-current opacity-45" />;
                 return (
