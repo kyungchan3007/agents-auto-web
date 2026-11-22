@@ -86,10 +86,10 @@ export function percentileText(signal: Signal | null, percentile: number | null,
   return `최근 ${windowDays}일 중간 수준`;
 }
 
-/** 표시용 환율 — 엔 · 루피아는 100 단위 그대로 보여 주고 단위를 붙인다 (FX-04) */
+/** 표시용 환율 — 엔 · 루피아는 100 단위 그대로 보여 주고 단위를 붙인다 (FX-04) · 소수 둘째 자리 고정(끝자리 0 은 덧붙인 표기일 뿐 값은 같음 · 작업 0287 · 통화 상세 · 둘러보기 표) */
 export function rateText(rate: Pick<FxRate, "baseRate" | "unit">): { value: string; unit: string } {
   return {
-    value: numberText(rate.baseRate, { minimumFractionDigits: rate.baseRate >= 100 ? 1 : 2, maximumFractionDigits: 2 }),
+    value: numberText(rate.baseRate, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
     unit: rate.unit === 1 ? "원" : `원 / ${rate.unit}`,
   };
 }
