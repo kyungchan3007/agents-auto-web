@@ -53,7 +53,7 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
           {r?.ok && (
             <dl className="text-small">
               <Row k="물건 값 (원화)" v={won(r.priceKrw, "price")} />
-              <Row k="과세 가격 (물건 값 + 국제 배송비)" v={r.tax ? won(r.tax.taxableKrw, "taxable") : "— 한도 안이라 계산 안 함"} />
+              <Row k="과세 가격 (물건 값 + 국제 배송비)" v={r.tax ? won(r.tax.taxableKrw, "taxable") : "한도 안이라 계산하지 않음"} />
               <Row k={`관세${r.tax && dutyRate ? ` (${dutyRate}%)` : ""}`} v={won(r.tax ? r.tax.duty : 0, "duty")} />
               <Row k="부가세 10% ((과세 가격 + 관세) × 10%)" v={won(r.tax ? r.tax.vat : 0, "vat")} />
               <Row k="적용 환율" v={rateText} />

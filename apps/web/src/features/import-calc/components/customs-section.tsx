@@ -1,5 +1,5 @@
 // 과세환율 영역 — 이번 주 관세청 과세환율 vs 수출입은행 매매기준율 · 주별 흐름 (달러 · 작업 0163) · 자료가 없으면 "준비 중" (숫자를 만들지 않음)
-// 새 디자인(작업 0221 · 시안 A): 관세청 값을 작은 글자판으로 · 은행 값 · 차이(점 + 글) — 기록이 2주 미만이면 지금 안내
+// 새 디자인(작업 0221 · 시안 A): 관세청 값을 작은 글자판으로 · 은행 값 · 차이(점 + 글) — 기록이 2주 미만이면 주별 그래프만 없음(안내 줄 없음 · 작업 0282)
 import { SectionTitle } from "@hav/ui/text/heading";
 import { numberText } from "@hav/shared/format";
 import type { FxRate } from "@hav/shared/fx";
@@ -38,13 +38,7 @@ export function CustomsSection({ points, bank }: { points: Point[] | null; bank:
               </>
             )}
           </div>
-          {canChart(points) ? (
-            <YearChart compact rates={v.trend.map((p) => ({ date: p.period, baseRate: p.value }))} unitText="원 (1달러당)" title="주별 과세환율 흐름" />
-          ) : (
-            <p data-testid="customs-short-note" className="mt-3 text-small text-fg-2">
-              기록이 2주 미만이라 주별 흐름 그래프는 아직 없습니다
-            </p>
-          )}
+          {canChart(points) && <YearChart compact rates={v.trend.map((p) => ({ date: p.period, baseRate: p.value }))} unitText="원 (1달러당)" title="주별 과세환율 흐름" />}
         </>
       )}
     </section>

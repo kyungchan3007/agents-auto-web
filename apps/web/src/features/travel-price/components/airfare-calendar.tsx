@@ -27,7 +27,7 @@ export function AirfareCalendarSection({ calendar }: { calendar: AirfareCalendar
     <section data-testid="airfare-section" aria-labelledby="airfare-title" className="af bg-surface px-4 text-fg sm:px-8">
       <div className="mx-auto max-w-page">
         <p className="af-eyebrow">항공권 출발일 달력</p>
-        <h2 id="airfare-title" className="af-title">언제 떠나면 쌀까 — 인천 출발 1주 왕복</h2>
+        <h2 id="airfare-title" className="af-title">언제 떠나면 쌀까</h2>
         {cities.length === 0 || !calendar?.fetchedOn ? (
           <p data-testid="airfare-empty" className="af-lede">아직 받지 못했습니다 — 항공권 가격을 받으면 이 자리에 출발일별 최저가가 표시됩니다.</p>
         ) : (
@@ -58,7 +58,7 @@ function Calendar({ items, fetchedOn }: { items: AirfareItem[]; fetchedOn: strin
 
   return (
     <div ref={rootRef}>
-      <p data-testid="airfare-lede" className="af-lede">출발일마다 그날 떠나 1주 뒤 돌아오는 왕복 최저가입니다. 날짜를 고를 필요 없이 가장 저렴한 날을 바로 봅니다.</p>
+      <p data-testid="airfare-lede" className="af-lede">인천 출발 기준으로, 출발일마다 그날 떠나 1주 뒤 돌아오는 왕복 최저가입니다. 날짜를 고를 필요 없이 가장 저렴한 날을 바로 봅니다.</p>
       <div className="af-chips" role="group" aria-label="도시 고르기">
         {items.map(({ city: c }) => (
           <button key={c.airport} type="button" data-testid="airfare-chip" data-airport={c.airport} aria-pressed={c.airport === airport} onClick={() => chooseCity(c.airport)}>

@@ -65,11 +65,11 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
         <fieldset className="m-0 min-w-0 border-0 p-0">
           <legend className="mb-3.5 block p-0 text-[0.9375rem] font-bold text-fg">더 정확하게 (선택)</legend>
           <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="국제 배송비" hint="한도를 넘을 때만 세금에 더함 · 모르면 비워 두기" htmlFor="shipping" error={err("shipping")}>
-          <Input id="shipping" inputMode="decimal" autoComplete="off" value={input.shipping} onChange={set("shipping")} placeholder="0" />
+        <Field label="국제 배송비" hint="한도를 넘을 때만 세금에 더합니다" htmlFor="shipping" error={err("shipping")}>
+          <Input id="shipping" inputMode="decimal" autoComplete="off" value={input.shipping} onChange={set("shipping")} placeholder="모르면 비워 두세요" />
         </Field>
-        <Field label="관세율 (%)" hint="품목마다 다름 · 모르면 비워 두기" htmlFor="duty" error={err("dutyRate")}>
-          <Input id="duty" inputMode="decimal" autoComplete="off" value={input.dutyRate} onChange={set("dutyRate")} placeholder="모르면 비워 두기" />
+        <Field label="관세율 (%)" hint="품목마다 다릅니다" htmlFor="duty" error={err("dutyRate")}>
+          <Input id="duty" inputMode="decimal" autoComplete="off" value={input.dutyRate} onChange={set("dutyRate")} placeholder="모르면 비워 두세요" />
         </Field>
           </div>
         </fieldset>
@@ -91,7 +91,7 @@ function Field({ label, hint, htmlFor, error, wide, badge, children }: { label: 
         </label>
         {badge && (
           <span data-testid="calc-example" className="text-small font-semibold text-cheap">
-            예시 값 — 바꿔 넣어 보세요
+            예시 값입니다. 바꿔 넣어 보세요
           </span>
         )}
       </div>
