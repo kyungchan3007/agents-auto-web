@@ -166,6 +166,7 @@ test.describe("통화 상세 1년 흐름 — 풍성한 2D (작업 0219 · 시안
     const flow = tid(page, "year-flow");
     const group = flow.getByRole("group", { name: "기간" });
     const chart = chartOf(page);
+    await hydrated(group.getByRole("button").first()); // 작업 0308: 하이드레이션 전에 누르면 무시됨 — 이어받은 뒤에 누름
     const today = await lastValue(chart);
     for (const label of ["1개월", "3개월", "1년"]) {
       await group.getByRole("button", { name: label }).click();

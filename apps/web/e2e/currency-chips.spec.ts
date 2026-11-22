@@ -235,13 +235,16 @@ test.describe("저장된 칩 첫 그림 깜빡임 없음 (작업 0231 · lead �
           const r = e.getBoundingClientRect();
           return !hidden && o > 0.05 && r.width > 0;
         }).map((e) => ({ c: e.getAttribute("data-code"), x: e.getBoundingClientRect().x, leaving: e.getAttribute("data-leaving") === "true" }));
-        window.__cf.push({ t: performance.now() - t0, vis, attr: document.documentElement.hasAttribute("data-recent-chips") });
+        const nav = document.querySelector('[data-testid="currency-chips"]');
+        let ls = null; try { ls = localStorage.getItem("flapfx:recent-currencies"); } catch (e) { ls = "읽기 실패"; }
+        // 작업 0308: 틀린 칩이 보일 때 원인을 남김 — 칩 줄 준비 표시(data-ready) · 저장값 · 칩 줄 수
+        window.__cf.push({ t: performance.now() - t0, vis, attr: document.documentElement.hasAttribute("data-recent-chips"), ready: !!nav && nav.hasAttribute("data-ready"), ls, navs: document.querySelectorAll('[data-testid="currency-chips"]').length });
         if (performance.now() - t0 < 6000) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
     });
   `;
-  type CF = { t: number; vis: { c: string; x: number; leaving: boolean }[]; attr: boolean };
+  type CF = { t: number; vis: { c: string; x: number; leaving: boolean }[]; attr: boolean; ready: boolean; ls: string | null; navs: number };
   const frames = (page: Page) => page.evaluate(() => (window as unknown as { __cf: unknown[] }).__cf) as Promise<CF[]>;
   const SAVED = ["GBP", "SGD", "AUD", "MYR", "CNH", "JPY", "USD"];
 
@@ -260,7 +263,7 @@ test.describe("저장된 칩 첫 그림 깜빡임 없음 (작업 0231 · lead �
     const rowOf = (f: CF) => [...f.vis].sort((a, b) => a.x - b.x).map((v) => v.c);
     for (const f of fr) {
       const row = rowOf(f);
-      expect(row.length === 0 || JSON.stringify(row) === JSON.stringify(want), `틀린 칩이 보임 (t=${f.t.toFixed(0)}ms): ${row.join(" ")}`).toBe(true);
+      expect(row.length === 0 || JSON.stringify(row) === JSON.stringify(want), `틀린 칩이 보임 (t=${f.t.toFixed(0)}ms): ${row.join(" ")} · 준비 ${f.ready} · html 표시 ${f.attr} · 칩 줄 ${f.navs}개 · 저장값 ${f.ls}`).toBe(true);
     }
     expect(rowOf(fr[fr.length - 1]), "끝에는 저장 순서").toEqual(want);
     // 나타난 뒤에는 밀림(위치 이동) 없음 · 빠지는 칩 없음
