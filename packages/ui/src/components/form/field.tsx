@@ -14,7 +14,7 @@ export function UnitInput({ unit, className = "", ...rest }: InputHTMLAttributes
   return (
     <div className="relative">
       <Input className={`pr-14 ${className}`} {...rest} />
-      <span className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-sm text-fg-2">{unit}</span>
+      <span className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-[0.9375rem] text-fg-2">{unit}</span>
     </div>
   );
 }

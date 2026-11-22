@@ -46,7 +46,7 @@ export function Intro({ data }: { data: IntroData }) {
             ))}
           </span>
         </div>
-        <button type="button" data-testid="intro-skip" onClick={s.skip} tabIndex={s.phase === 0 ? 0 : -1} className="pointer-events-auto rounded-pill border border-line bg-card px-5 py-2 text-sm font-semibold text-fg hover:bg-surface-2">
+        <button type="button" data-testid="intro-skip" onClick={s.skip} tabIndex={s.phase === 0 ? 0 : -1} className="pointer-events-auto rounded-pill border border-line bg-card px-5 py-2 text-[0.9375rem] font-semibold text-fg hover:bg-surface-2">
           건너뛰기
         </button>
       </div>
