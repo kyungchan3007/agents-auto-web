@@ -2,6 +2,7 @@
 // 물가 · 환율 신호는 빌드 때 받은 값만 · 없으면 이유 (docs/domain/travel-price.md) · 숫자를 지어내지 않음
 import type { Fetched } from "@/shared/api";
 import { SiteNav } from "@/shared/site-nav";
+import { RATE_SOURCE_LABEL } from "@hav/shared/currency";
 import type { PriceLevels } from "@hav/shared/prices";
 import type { SignalList } from "@hav/shared/signal";
 import { travelBands } from "@hav/shared/travel";
@@ -70,7 +71,7 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
         </div>
         </div>
       </main>
-      <PageFooter width="max-w-page">자료: 세계은행 물가 수준 · 한국수출입은행 · <TextLink href="/about">소개 · 판단 기준</TextLink></PageFooter>
+      <PageFooter width="max-w-page">자료: 세계은행 물가 수준 · {RATE_SOURCE_LABEL} · <TextLink href="/about">소개 · 판단 기준</TextLink></PageFooter>
     </>
   );
 }

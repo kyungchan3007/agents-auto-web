@@ -4,6 +4,7 @@
 // 환율은 빌드 때 받은 값 · 계산은 브라우저에서 (IMP-01) · 모바일은 입력 → 결과 → 수입물가 → 과세환율 순서로 쌓임
 import type { Fetched } from "@/shared/api";
 import { SiteNav } from "@/shared/site-nav";
+import { RATE_SOURCE_LABEL } from "@hav/shared/currency";
 import type { FxLatest } from "@hav/shared/fx";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
 import { FadeUpGroup } from "@hav/ui/motion/fade-up";
@@ -60,7 +61,7 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
         </div>
         </div>
       </main>
-      <PageFooter width="max-w-page">자료: 관세청 과세환율 · 한국은행 ECOS 수입물가지수 · 한국수출입은행 · 면세 한도 관세법 기준 · <TextLink href="/about">소개 · 판단 기준</TextLink></PageFooter>
+      <PageFooter width="max-w-page">자료: 관세청 과세환율 · 한국은행 ECOS 수입물가지수 · {RATE_SOURCE_LABEL} · 면세 한도 관세법 기준 · <TextLink href="/about">소개 · 판단 기준</TextLink></PageFooter>
     </>
   );
 }
