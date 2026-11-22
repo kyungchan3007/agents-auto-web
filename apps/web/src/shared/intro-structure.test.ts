@@ -202,7 +202,7 @@ describe("출처 표시 · 홈 문구", () => {
     const f = readFileSync(join(WEB_SRC, "features/home/components/home-footer.tsx"), "utf8");
     expect(f).toMatch(/Kenney/);
     expect(f).toMatch(/CC0/);
-    expect(f).toMatch(/한국수출입은행/);
+    expect(f, "환율 출처는 공용 상수(RATE_SOURCE_LABEL · 작업 0299: 한국수출입은행 · Frankfurter)에서").toMatch(/RATE_SOURCE_LABEL|한국수출입은행/);
     expect(f).not.toMatch(/PLANE_CREDIT|Poly by Google/); // 홈은 3D 비행기를 뺌(그래프 2D) — 출처 줄도 뺌 · 인트로 화면(intro.tsx)에는 그대로
   });
 
