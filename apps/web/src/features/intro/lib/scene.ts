@@ -531,10 +531,11 @@ export function mountIntroScene(el: HTMLElement, api: SceneApi): () => void {
   // 카메라 — 정사영 · 도시 미니어처를 비스듬히 내려다봄
   const VIEW = 30, DIST = 160, ELEV = (32 * Math.PI) / 180;
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 600);
-  const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(4, 4, { samples: 4, type: THREE.HalfFloatType })); // 계단 현상 줄이기 (MSAA)
+  const PR = Math.min(devicePixelRatio, 2);
+  // 화면 배율이 1 보다 크면(레티나) 픽셀이 촘촘해 MSAA 를 끔 — 배율 1 은 그대로 4
+  const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(4, 4, { samples: PR > 1 ? 0 : 4, type: THREE.HalfFloatType })); // 계단 현상 줄이기 (MSAA)
   composer.addPass(new RenderPass(scene, camera));
   // 구석 그림자(GTAO)는 화면 배율이 1 보다 클 때만 절반 해상도로 계산 — 배율 2 에서 배율 1 과 같은 해상도(느려지지 않게) · 배율 1 은 그대로 · 더 줄여야 하면 AO_SAMPLES_RETINA 를 8 로
-  const PR = Math.min(devicePixelRatio, 2);
   const AO_SCALE_RETINA = 0.5;
   const AO_SAMPLES_RETINA = 16;
   const aoScale = PR > 1 ? AO_SCALE_RETINA : 1;
