@@ -90,7 +90,7 @@ test.describe("새 /prices — 예산 카드 위치 · 크기 (작업 0220 사�
     expect((h1?.x ?? 0) + (h1?.width ?? 0), "제목이 카드 왼쪽(겹치지 않음)").toBeLessThanOrEqual(card.x + 1);
   });
 
-  test("넓은 화면 — 입력 칸 높이 약 64px · 결과 숫자 약 44px · 안쪽 여백(위 28 · 옆 30)", async ({ page }) => {
+  test("넓은 화면 — 입력 칸 높이 약 64px · 결과 숫자 약 48px(작업 0274: 44 → 48) · 안쪽 여백(위 28 · 옆 30)", async ({ page }) => {
     test.skip(isPhone(page), "넓은 화면 전용");
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.emulateMedia({ reducedMotion: "reduce" });
@@ -100,7 +100,7 @@ test.describe("새 /prices — 예산 카드 위치 · 크기 (작업 0220 사�
     expect(heights.length).toBeGreaterThanOrEqual(3);
     for (const h of heights) expect(Math.abs(h - 64), `입력 칸 ${Math.round(h)}px`).toBeLessThanOrEqual(3);
     const fs = await tid(page, "budget-total").evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
-    expect(Math.abs(fs - 44), `결과 숫자 ${fs}px`).toBeLessThanOrEqual(2);
+    expect(Math.abs(fs - 48), `결과 숫자 ${fs}px`).toBeLessThanOrEqual(2); // 작업 0274: 글자 크기 11단계로 44 → 48
     const pad = await tid(page, "budget").evaluate((el) => ({ t: parseFloat(getComputedStyle(el).paddingTop), l: parseFloat(getComputedStyle(el).paddingLeft) }));
     expect(Math.abs(pad.t - 28)).toBeLessThanOrEqual(2);
     expect(Math.abs(pad.l - 30)).toBeLessThanOrEqual(2);
