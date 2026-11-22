@@ -98,4 +98,5 @@
 | 0274 | 글자 크기 11단계 (2/3) — 여행 물가 · 인트로 (Quick · 디자인 PR · 시안 46) | builder → test | 머지됨 (#327) | task/0274-type-scale-2 | features/travel-price/** (prices) · features/intro/** |
 | 0275 | 글자 크기 11단계 (3/3) — 통화 상세 · 홈 · 직구 (Quick · 디자인 PR · 시안 46) | builder → test | 머지됨 (#328) | task/0275-type-scale-3 | features/{currencies,home,import-calc}/** · globals.css |
 | 0276 | '쌈 · 비쌈' 문구 바꾸기 — 저렴 · 낮음 · 높음 · 비쌉니다 (Quick · 평소 PR · 사용자 직접 지적) | builder → test | 머지됨 (#329) | task/0276-word-cheap | features/** · packages/ui · packages/shared/src/domain · docs/domain |
-| 0277 | '쌈 · 비쌈' 문구 바꾸기 (2/2) — 여행 물가 · 항공료 (Quick · 평소 PR) | builder → test | 진행 중 | task/0277-word-cheap-2 | features/travel-price/** · ruler-chart · packages/shared/src/domain |
+| 0277 | '쌈 · 비쌈' 문구 바꾸기 (2/2) — 여행 물가 · 항공료 (Quick · 평소 PR) | builder → test | 머지됨 (#330) | task/0277-word-cheap-2 | features/travel-price/** · ruler-chart · packages/shared/src/domain |
+| 0278 | 모서리 값을 여섯 가지로 — 4 · 6 · 10 · 14 · 24 · 알약 토큰 (Quick · 디자인 PR · 시안 47 · 3차 공-10) | builder → test | 진행 중 | task/0278-radius-six | packages/ui/src/** · apps/web/src/shared/** · features/{home,currencies,travel-price,import-calc,intro,about}/** |
