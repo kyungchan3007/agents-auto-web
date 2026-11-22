@@ -28,7 +28,7 @@ test.describe("직구 계산 디자인 (작업 0208)", () => {
     const form = await box(tid(page, "calc-input"));
     expect(a.y + a.height).toBeLessThanOrEqual(form.y + 1); // 폼 위
     await setPrice(page, "201");
-    await expect(line).toContainText("한도 넘음");
+    await expect(line).toContainText("관세율을 넣으면 합계"); // 작업 0296: 한도 넘음 · 관세율 없음 = '물건 값 N원 · 관세율을 넣으면 합계'
     const b = await box(line);
     expect(Math.abs(b.height - a.height)).toBeLessThan(1);
     expect(Math.abs(b.y - a.y)).toBeLessThan(1);
