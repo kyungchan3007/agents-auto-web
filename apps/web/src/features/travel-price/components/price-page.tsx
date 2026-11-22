@@ -4,7 +4,7 @@ import type { Fetched } from "@/shared/api";
 import { SiteNav } from "@/shared/site-nav";
 import type { PriceLevels } from "@hav/shared/prices";
 import type { SignalList } from "@hav/shared/signal";
-import { TRAVEL_COUNTRIES, travelBands } from "@hav/shared/travel";
+import { travelBands } from "@hav/shared/travel";
 import { PageFooter } from "@hav/ui/layout/page-footer";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
 import { pricesHeadline } from "../lib/prices-copy";
@@ -61,10 +61,9 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
             </div>
           )}
 
-          {data && (data.missing.length > 0 || !signals.ok) && (
+          {data && !signals.ok && (
             <div className="mt-6 space-y-1 text-small text-fg-2">
-              {data.missing.length > 0 && <p>자료가 없어 뺀 나라: {data.missing.map((c) => TRAVEL_COUNTRIES[c]?.name ?? c).join(" · ")}</p>}
-              {!signals.ok && <p>오늘 환율 신호를 받지 못해 비워 두었습니다 ({signals.reason})</p>}
+              <p>오늘 환율 신호를 받지 못해 비워 두었습니다 ({signals.reason})</p>
             </div>
           )}
         </div>

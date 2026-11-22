@@ -31,7 +31,7 @@ export function BudgetPlanner({ rows, latestOf, className = "" }: { rows: Travel
             </Select>
           </FieldLabel>
         </div>
-        <FieldLabel label="한국에서 하루 (원)">
+        <FieldLabel label="한국에서 하루 쓰는 돈 (원)">
           <Input className="lg:h-16" inputMode="numeric" autoComplete="off" value={daily} onChange={(e) => setDaily(e.target.value)} aria-invalid={d == null} />
         </FieldLabel>
         <FieldLabel label="일수">
@@ -51,10 +51,10 @@ export function BudgetPlanner({ rows, latestOf, className = "" }: { rows: Travel
                 하루 약 {wonText(b.dailyWon)}
               </p>
               <p className="mt-1 flex flex-wrap items-baseline gap-x-3 text-fg">
+                <span className="text-body font-bold text-fg-2">{n}일 약</span>
                 <span data-testid="budget-total" className="text-[2.25rem] leading-tight font-bold tracking-display tabular-nums sm:text-[3rem] lg:text-[3rem]">
                   <CountUp value={b.totalWon} suffix="원" />
                 </span>
-                <span className="text-body font-bold text-fg-2">{n}일 약</span>
               </p>
               <p className="mt-3 text-small text-fg-2">
                 {row.name} 물가는 한국보다 {relativeText(row.relative)} ({row.year}년)
