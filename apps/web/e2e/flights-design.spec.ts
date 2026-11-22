@@ -9,7 +9,7 @@ test.describe("/flights 디자인 (작업 0211)", () => {
     const h1 = ((await page.getByRole("heading", { level: 1 }).innerText()) ?? "").replace(/\s+/g, " ");
     // 작업 0218: 가장 싼 달 카드는 작은 글자판 — 화면 읽기 이름 "가장 싼 달 11월" 에서 읽음
     const cardLabel = (await tid(page, "cheap-board").getByTestId("flap-board").getAttribute("aria-label")) ?? "";
-    const value = cardLabel.replace(/^가장 싼 달 /, "").trim();
+    const value = cardLabel.replace(/^가장 저렴한 달 /, "").trim();
     const same = h1.match(/^항공료 · 단체여행 모두 (\d+)월이 싼 편$/);
     if (same) {
       expect(value).toBe(`${same[1]}월`);

@@ -54,28 +54,28 @@ describe("flapLine", () => {
 });
 
 describe("flightsBoard", () => {
-  it("세 줄 — 가장 싼 달 · 국제항공료 · 단체여행비 (실제 최신 값)", () => {
+  it("세 줄 — 가장 저렴한 달 · 국제항공료 · 단체여행비 (실제 최신 값)", () => {
     const b = flightsBoard({ airCheap: 11, tourCheap: 11, air: AIR, tour: TOUR });
     expect(b?.rows).toHaveLength(3);
-    expect(b?.rows[0].text.startsWith("가장 싼 달")).toBe(true);
+    expect(b?.rows[0].text.startsWith("가장 저렴한 달")).toBe(true);
     expect(b?.rows[0].text.trimEnd().endsWith("11월")).toBe(true);
     expect(b?.rows[1].text.trimEnd().endsWith("146.8")).toBe(true);
     expect(b?.rows[2].text.trimEnd().endsWith("139.2")).toBe(true);
     expect(b?.rows[2].text.startsWith("단체여행비")).toBe(true);
     expect(b?.cols).toBe(12);
-    expect(b?.label).toBe("가장 싼 달은 11월입니다. 국제항공료 지수 146.8 · 해외단체여행비 지수 139.2");
+    expect(b?.label).toBe("가장 저렴한 달은 11월입니다. 국제항공료 지수 146.8 · 해외단체여행비 지수 139.2");
   });
   it("달이 다르면 '11월 · 3월' (항공료 달 먼저) · 칸 수가 늘어남", () => {
     const b = flightsBoard({ airCheap: 11, tourCheap: 3, air: AIR, tour: TOUR });
     expect(b?.rows[0].text.trimEnd().endsWith("11월 · 3월")).toBe(true);
     expect(b?.cols).toBeGreaterThanOrEqual(12);
     for (const r of b?.rows ?? []) expect(Array.from(r.text)).toHaveLength(b?.cols ?? 0);
-    expect(b?.label.startsWith("가장 싼 달은 11월 · 3월입니다.")).toBe(true);
+    expect(b?.label.startsWith("가장 저렴한 달은 11월 · 3월입니다.")).toBe(true);
   });
   it("없는 항목은 줄 · 문장에서 뺌 (지어내지 않음)", () => {
     const b = flightsBoard({ airCheap: 11, tourCheap: null, air: AIR, tour: null });
     expect(b?.rows).toHaveLength(2);
-    expect(b?.label).toBe("가장 싼 달은 11월입니다. 국제항공료 지수 146.8");
+    expect(b?.label).toBe("가장 저렴한 달은 11월입니다. 국제항공료 지수 146.8");
   });
   it("아무 값도 없으면 null", () => {
     expect(flightsBoard({ airCheap: null, tourCheap: null, air: null, tour: null })).toBeNull();

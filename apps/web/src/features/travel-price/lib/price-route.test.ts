@@ -10,7 +10,7 @@
 //     // band: 한국 "base" · 그 밖은 한국 대비(value/100) 가 BAND_EDGE 안: 0.9 미만 "cheap" · 1.1 초과 "exp" · 사이(0.9 · 1.1 포함) "mid" · 나라가 하나도 없으면 [] (한국만 있는 노선을 만들지 않음 · 지어내지 않음)
 //   export function routeCardText(stop: { value: number; band: RouteBand }, index: number, n: number): { meta: string; pct: string; budget: string; tiles: string[] }
 //     // meta `정거장 ${index+1} / ${n} · ${띠 이름}` 띠 이름: cheap "한국보다 싼 곳" · mid "비슷한 곳" · base "기준" · exp "한국보다 비싼 곳"
-//     // pct: 100 → "기준" · 100 보다 작으면 `${100−v}% 쌉니다` · 크면 `${v−100}% 비쌉니다`
+//     // pct: 100 → "기준" · 100 보다 작으면 `${100−v}% 저렴합니다` · 크면 `${v−100}% 비쌉니다`
 //     // budget: 한국에서 하루 100,000원 쓰는 만큼 · 물가 비율로 계산 = `약 ${(v × 1000).toLocaleString("ko-KR")}원` (천 원 단위로 반올림)
 //     // tiles: 세 칸 글자판 — 값 글자를 3자리에 맞춰 앞을 비움: 37 → [" ", "3", "7"] · 100 → ["1", "0", "0"]
 import { describe, expect, it } from "vitest";
@@ -62,13 +62,13 @@ describe("routeStops — 핀 + 한국", () => {
 
 describe("routeCardText — 카드 글", () => {
   it("싼 곳(인도 37 · 7개 중 1번째)", () => {
-    expect(routeCardText({ value: 37, band: "cheap" }, 0, 7)).toEqual({ meta: "정거장 1 / 7 · 한국보다 싼 곳", pct: "63% 쌉니다", budget: "약 37,000원", tiles: [" ", "3", "7"] });
+    expect(routeCardText({ value: 37, band: "cheap" }, 0, 7)).toEqual({ meta: "정거장 1 / 7 · 한국보다 싼 곳", pct: "63% 저렴합니다", budget: "약 37,000원", tiles: [" ", "3", "7"] });
   });
   it("한국 100 = 기준", () => {
     expect(routeCardText({ value: 100, band: "base" }, 4, 7)).toEqual({ meta: "정거장 5 / 7 · 기준", pct: "기준", budget: "약 100,000원", tiles: ["1", "0", "0"] });
   });
   it("비싼 곳 · 비슷한 곳", () => {
     expect(routeCardText({ value: 111, band: "exp" }, 5, 7)).toEqual({ meta: "정거장 6 / 7 · 한국보다 비싼 곳", pct: "11% 비쌉니다", budget: "약 111,000원", tiles: ["1", "1", "1"] });
-    expect(routeCardText({ value: 94, band: "mid" }, 2, 7)).toMatchObject({ meta: "정거장 3 / 7 · 비슷한 곳", pct: "6% 쌉니다", budget: "약 94,000원" });
+    expect(routeCardText({ value: 94, band: "mid" }, 2, 7)).toMatchObject({ meta: "정거장 3 / 7 · 비슷한 곳", pct: "6% 저렴합니다", budget: "약 94,000원" });
   });
 });

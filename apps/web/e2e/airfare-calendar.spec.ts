@@ -11,7 +11,7 @@
 //     탑승권 [data-testid="airfare-pass"]: 꼬리표 airfare-tag("가장 싼 출발"|"고른 출발") · 도착 airfare-to(공항 코드 포함) · 출발 airfare-dep · 돌아옴 airfare-ret ("12.29(화)" 모양)
 //       글자판 airfare-board — aria-hidden · data-final="274873" · 자리마다 굴러감 · 읽는 글 airfare-price-sr "274,873원 · 12월 29일(화) 출발 1주 왕복" (R3)
 //       파인 동그라미(구멍 · 노치 · 펀치) 없음: 탑승권 안에 testid 에 hole · notch · punch 가 든 것이 없음
-//     머리 문장 airfare-head "도쿄는 12월 29일(화) 출발이 가장 쌉니다" · 풀이 airfare-sub (R4)
+//     머리 문장 airfare-head "도쿄는 12월 29일(화) 출발이 가장 저렴합니다" · 풀이 airfare-sub (R4)
 //     날짜 띠: 밀기 칸 airfare-scroll · 날짜 칸 airfare-day(버튼 · data-depart · data-tier="low|mid|high" · data-best="true"|없음 · aria-pressed) 안에 요일 airfare-day-wd · 날짜 airfare-day-dt · 가격 airfare-day-pr("27.5" 만 원)
 //       범위 글 airfare-range · ‹ airfare-prev · › airfare-next · 고른 날 표시 airfare-sel (파랑 둥근 네모 · 위치 = 칸 실제 픽셀(left transform px · width px · 퍼센트 금지)) · 비행기 airfare-plane (R5 · R8)
 //     요일 막대 airfare-week-row ×7(월 → 일) · 채움 airfare-week-fill · 요약 airfare-fact ×2(이름표 dt · 큰 값 dd.big · 풀이 dd.say) · 안내 airfare-note (R6 · R7)
@@ -161,7 +161,7 @@ for (const size of SIZES) {
       await needData(page);
       const b = best("NRT");
       expect(await pressed(page)).toBe("NRT"); // 첫 도시 = 고정 자료 첫 도시
-      await expect(tid(page, "airfare-tag")).toHaveText("가장 싼 출발");
+      await expect(tid(page, "airfare-tag")).toHaveText("가장 저렴한 출발");
       await expect(tid(page, "airfare-pass")).toContainText("ICN");
       await expect(tid(page, "airfare-to")).toContainText("NRT");
       await expect(tid(page, "airfare-dep")).toHaveText(md2(b.depart));
@@ -175,13 +175,13 @@ for (const size of SIZES) {
 
     test("R4 머리 문장 · 풀이 한 줄 — 도시를 바꾸면 따라 바뀜", async ({ page }) => {
       await needData(page);
-      await expect(tid(page, "airfare-head")).toHaveText("도쿄는 12월 29일(화) 출발이 가장 쌉니다");
-      await expect(tid(page, "airfare-sub")).toHaveText("12.29 → 01.05 왕복 · 가장 비싼 11월 23일(월) 출발(685,748원)보다 410,875원 쌈");
+      await expect(tid(page, "airfare-head")).toHaveText("도쿄는 12월 29일(화) 출발이 가장 저렴합니다");
+      await expect(tid(page, "airfare-sub")).toHaveText("12.29 → 01.05 왕복 · 가장 비싼 11월 23일(월) 출발(685,748원)보다 410,875원 저렴합니다");
       await scrollToSection(page);
       await chip(page, "BKK").click();
-      await expect(tid(page, "airfare-head")).toHaveText("방콕은 11월 24일(화) 출발이 가장 쌉니다");
+      await expect(tid(page, "airfare-head")).toHaveText("방콕은 11월 24일(화) 출발이 가장 저렴합니다");
       await chip(page, "CDG").click();
-      await expect(tid(page, "airfare-head")).toHaveText("파리는 11월 27일(금) 출발이 가장 쌉니다");
+      await expect(tid(page, "airfare-head")).toHaveText("파리는 11월 27일(금) 출발이 가장 저렴합니다");
     });
 
     test("R5 날짜 띠 — 칸 구성 · 칸 수 · ‹ › · 가장 싼 날 · 가격 색(아래 1/4 · 위 1/4)", async ({ page }) => {
@@ -255,12 +255,12 @@ for (const size of SIZES) {
       expect(new Set(widths.map((w) => Math.round(w))).size).toBeGreaterThan(1); // 길이가 다름
       const facts = tid(page, "airfare-fact");
       await expect(facts).toHaveCount(2);
-      await expect(facts.nth(0)).toContainText("가장 싼 요일");
+      await expect(facts.nth(0)).toContainText("가장 저렴한 요일");
       await expect(facts.nth(0)).toContainText(/(월|화|수|목|금|토|일)요일/);
-      await expect(facts.nth(0)).toContainText(/출발 평균 \d+\.\d만 원으로, 가장 비싼 .요일보다 \d+\.\d만 원 쌉니다\./);
+      await expect(facts.nth(0)).toContainText(/출발 평균 \d+\.\d만 원으로, 가장 비싼 .요일보다 \d+\.\d만 원 저렴합니다\./);
       await expect(facts.nth(1)).toContainText("출발일에 따른 차이");
       await expect(facts.nth(1)).toContainText("최대 2.5배");
-      await expect(facts.nth(1)).toContainText("가장 싼 날 27.5만 원부터 가장 비싼 날 68.6만 원까지 벌어집니다.");
+      await expect(facts.nth(1)).toContainText("가장 저렴한 날 27.5만 원부터 가장 비싼 날 68.6만 원까지 벌어집니다.");
       expect(await tid(page, "airfare-section").innerText()).not.toMatch(/구글|싼 날로 표시/);
     });
 
@@ -326,7 +326,7 @@ for (const size of SIZES) {
       // 가장 싼 날을 다시 누르면 꼬리표가 돌아옴
       const b = best("NRT");
       await page.locator(`[data-testid="airfare-day"][data-depart="${b.depart}"]`).click();
-      await expect(tid(page, "airfare-tag")).toHaveText("가장 싼 출발");
+      await expect(tid(page, "airfare-tag")).toHaveText("가장 저렴한 출발");
       await expect(tid(page, "airfare-board")).toHaveAttribute("data-final", String(b.price));
     });
 

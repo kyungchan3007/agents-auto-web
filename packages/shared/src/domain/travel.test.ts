@@ -9,8 +9,8 @@ describe("물가 묶음", () => {
   });
 
   it("문장 — 퍼센트 반올림 · 0 은 거의 같음", () => {
-    expect(relativeText(1.616)).toBe("62% 비쌈");
-    expect(relativeText(0.521)).toBe("48% 쌈");
+    expect(relativeText(1.616)).toBe("62% 비쌉니다");
+    expect(relativeText(0.521)).toBe("48% 저렴합니다");
     expect(relativeText(1.004)).toBe("거의 같음");
   });
 });
