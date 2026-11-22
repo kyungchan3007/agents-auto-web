@@ -15,12 +15,12 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
   return (
     <>
       {/* 휴대폰 — 결과가 두 번째 화면이라 폼 위에 요약 한 줄 · 높이 고정(글만 바뀜) (작업 0208) */}
-      <p data-testid="calc-summary" className="mb-4 flex h-14 items-center overflow-hidden rounded-card bg-pin-ink px-5 ring-1 ring-card/40 text-small leading-snug font-semibold text-sun sm:hidden">
+      <p data-testid="calc-summary" className="mb-4 flex h-14 items-center overflow-hidden rounded-[0.625rem] bg-pin-ink px-5 ring-1 ring-card/40 text-small leading-snug font-semibold text-sun sm:hidden">
         {summaryLine(result)}
       </p>
       {/* 입력 카드는 세 구역(물건 / 보내는 곳 / 더 정확하게 (선택)) + 구역 제목 + 구역 사이 1px 선 · 넓은 화면은 결과 카드와 같은 높이로 늘리고 남는 높이를 구역 ↔ 선 사이 네 곳에 똑같이(space-between · 최소 20px · 위아래 안쪽 여백 28px) · 구역 안 간격은 그대로 (작업 0259 · 시안 31 B안 · 0256 의 64px 방식을 바꿈) */}
       <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
-      <form data-testid="calc-input" className="flex flex-col gap-5 rounded-[1.75rem] border border-line bg-card px-6 py-7 shadow-ticket lg:justify-between" onSubmit={(e) => e.preventDefault()} aria-label="직구 계산 입력">
+      <form data-testid="calc-input" className="flex flex-col gap-5 rounded-[1.5rem] border border-line bg-card px-6 py-7 shadow-ticket lg:justify-between" onSubmit={(e) => e.preventDefault()} aria-label="직구 계산 입력">
         <fieldset className="m-0 min-w-0 border-0 p-0">
           <legend className="mb-3.5 block p-0 text-[0.9375rem] font-bold text-fg">물건</legend>
           <div className="grid gap-4 sm:grid-cols-2">

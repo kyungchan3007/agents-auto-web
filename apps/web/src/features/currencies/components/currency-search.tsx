@@ -40,7 +40,7 @@ export function CurrencySearch({ codes }: { codes: string[] }) {
           aria-label="통화 제안"
           // 누를 때 입력칸이 포커스를 잃어 목록이 닫히지 않게 (마우스 · 터치 모두)
           onMouseDown={(e) => e.preventDefault()}
-          className="absolute inset-x-0 top-full z-20 mt-1 max-h-80 overflow-y-auto rounded-field border-2 border-fg bg-card"
+          className="absolute inset-x-0 top-full z-20 mt-1 max-h-80 overflow-y-auto rounded-[0.625rem] border-2 border-fg bg-card"
         >
           {s.hits.map((hit, i) => (
             <li
