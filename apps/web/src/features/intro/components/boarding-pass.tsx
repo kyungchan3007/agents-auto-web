@@ -22,7 +22,7 @@ export function BoardingPass({ s }: { s: IntroView }) {
         transition={{ duration: s.still ? 0 : fold ? 0.8 : 2.2, ease: fold ? [0.6, 0, 0.2, 1] : "easeOut" }}
         className="rounded-b-2xl bg-card px-5 pt-[18px] pb-3.5 shadow-ticket"
       >
-        <div className="flex justify-between text-[10px] font-bold tracking-wider text-fg-2">
+        <div className="flex justify-between text-[12px] font-bold tracking-wider text-fg-2">
           <span>FLAPFX · BOARDING PASS</span>
           <span>TFX 1116</span>
         </div>
@@ -34,7 +34,7 @@ export function BoardingPass({ s }: { s: IntroView }) {
         <dl className="m-0 grid grid-cols-2 gap-x-3.5 gap-y-2">
           {t.rows.map((r) => (
             <div key={r.label}>
-              <dt className="text-[10px] font-semibold text-fg-2">{r.label}</dt>
+              <dt className="text-[12px] font-semibold text-fg-2">{r.label}</dt>
               <dd className="m-0 mt-px text-[13px] font-bold tabular-nums">{r.value}</dd>
             </div>
           ))}
@@ -45,7 +45,7 @@ export function BoardingPass({ s }: { s: IntroView }) {
             <span key={b.key} className={b.ink ? "bg-fg" : ""} style={{ flex: b.grow }} />
           ))}
         </div>
-        <div className="mt-1.5 flex justify-between text-[10px] text-fg-2">
+        <div className="mt-1.5 flex justify-between text-[12px] text-fg-2">
           <span>{t.footer[0]}</span>
           <span>{t.footer[1]}</span>
         </div>

@@ -59,7 +59,7 @@ export function MonthBars({ bars, ticks, aria, highText, lowText }: { bars: Mont
     const cx = X(i) + bw / 2;
     const top = topOf(b.rel, 1);
     const th = phone ? 24 : 30;
-    const tw = textWidth(text, phone ? 11 : 12, true) + (phone ? 18 : 24);
+    const tw = textWidth(text, 12, true) + (phone ? 18 : 24);
     const tail = 7;
     const bx = Math.max(4, Math.min(W - 4 - tw, cx - tw / 2));
     let by = top - tail - 6 - th;
@@ -77,7 +77,7 @@ export function MonthBars({ bars, ticks, aria, highText, lowText }: { bars: Mont
         {oy < top - 8 && <line x1={cx} x2={cx} y1={oy} y2={top - 4} stroke={kind === "high" ? "var(--hav-pin-expensive)" : "#b8901f"} strokeWidth={1.6} strokeDasharray="3 3" />}
         <rect x={bx} y={by} width={tw} height={th} rx={th / 2} fill={color} />
         <path d={`M${cx - 6},${by + th - 1} L${cx},${by + th + tail} L${cx + 6},${by + th - 1}Z`} fill={color} />
-        <text x={bx + tw / 2} y={by + th / 2 + 4.3} textAnchor="middle" fontSize={phone ? 11 : 12} fontWeight={700} fill={ink} className="font-sans">
+        <text x={bx + tw / 2} y={by + th / 2 + 4.3} textAnchor="middle" fontSize={12} fontWeight={700} fill={ink} className="font-sans">
           {text}
         </text>
       </g>
@@ -124,7 +124,7 @@ export function MonthBars({ bars, ticks, aria, highText, lowText }: { bars: Mont
         </g>
         <g data-testid="chart-axis" data-reveal={rv(axis)} opacity={axis}>
           {ticks.map((tk) => (
-            <text key={tk.f} x={L - 10} y={B - PH * tk.f + 4} textAnchor="end" fontSize={phone ? 10 : 11} fontWeight={600} fill="var(--hav-fg-2)" opacity={0.75} className="font-sans tabular-nums">
+            <text key={tk.f} x={L - 10} y={B - PH * tk.f + 4} textAnchor="end" fontSize={12} fontWeight={600} fill="var(--hav-fg-2)" opacity={0.75} className="font-sans tabular-nums">
               {tk.t}
             </text>
           ))}
@@ -147,7 +147,7 @@ export function MonthBars({ bars, ticks, aria, highText, lowText }: { bars: Mont
         })}
         <g opacity={labelsA} transform={`translate(0 ${(1 - labelsA) * 6})`}>
           {bars.map((b, i) => (
-            <text key={b.month} data-testid="year-month" x={X(i) + bw / 2} y={B + (phone ? 19 : 23)} textAnchor="middle" fontSize={phone ? 10.5 : 11.5} fontWeight={b.tone === "high" || b.tone === "low" ? 700 : 400} fill={b.tone === "high" || b.tone === "low" ? "var(--hav-pin-ink)" : "var(--hav-fg-2)"} className="font-sans">
+            <text key={b.month} data-testid="year-month" x={X(i) + bw / 2} y={B + (phone ? 19 : 23)} textAnchor="middle" fontSize={12} fontWeight={b.tone === "high" || b.tone === "low" ? 700 : 400} fill={b.tone === "high" || b.tone === "low" ? "var(--hav-pin-ink)" : "var(--hav-fg-2)"} className="font-sans">
               {phone ? String(b.month) : `${b.month}월`}
             </text>
           ))}

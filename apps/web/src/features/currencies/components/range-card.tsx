@@ -17,7 +17,7 @@ export function RangeCard({ code, stats, rate, unitText }: { code: string; stats
   const avgPos = stats ? routePosition(stats.avg, stats.min, stats.max) : null;
   const d = cardDigits(rate);
   // "833.5원 / 100" 이 두 줄로 꺾이던 것 — "/ 100" 을 작은 "100엔당" 으로 바꿔 한 줄에 둠 (작업 0248 · 11번 · 1년 평균 글은 그대로)
-  const per = rate.unit !== 1 && unitText.startsWith("원") ? <small className="ml-1.5 text-[0.55em] font-bold whitespace-nowrap text-fg-2">{`${rate.unit}${code === "JPY" ? "엔" : code}당`}</small> : unitText === "원" ? null : unitText.replace(/^원/, "");
+  const per = rate.unit !== 1 && unitText.startsWith("원") ? <small className="ml-1.5 text-[0.75rem] font-bold whitespace-nowrap text-fg-2">{`${rate.unit}${code === "JPY" ? "엔" : code}당`}</small> : unitText === "원" ? null : unitText.replace(/^원/, "");
   const { planePos, avgTickPos, heading, animated, avgRef, avgValue } = useRangeMotion(code, from, stats, pos, avgPos);
   const slide = animated ? "transition-[left] delay-[220ms] duration-[1050ms] ease-[cubic-bezier(.45,0,.2,1)] motion-reduce:transition-none" : "";
   return (
