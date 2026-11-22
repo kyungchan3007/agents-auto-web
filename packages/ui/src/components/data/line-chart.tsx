@@ -184,7 +184,7 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
             tk.t || tk.s ? (
               <g key={tk.v}>
                 {tk.t && (
-                  <text x={L - 10} y={Y(tk.v) + (tk.s ? -1 : 4)} textAnchor="end" fontSize={phone ? 10.5 : 11.5} fontWeight={tk.on ? 700 : 500} fill={MUTE} className="font-sans">
+                  <text x={L - 10} y={Y(tk.v) + (tk.s ? -1 : 4)} textAnchor="end" fontSize={phone ? 10.5 : 11.5} fontWeight={tk.on ? 700 : 400} fill={MUTE} className="font-sans">
                     {tk.t}
                   </text>
                 )}
@@ -201,7 +201,7 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
             const first = k === 0 && x - L < 24;
             const last = k === xt.length - 1 && R - x < 24;
             return (
-              <text key={t.x} data-testid="chart-xtick" x={first ? x - 4 : last ? x + 4 : x} y={B + (phone ? 19 : 21)} textAnchor={first ? "start" : last ? "end" : "middle"} fontSize={phone ? 10.5 : 11.5} fontWeight={500} fill={MUTE} className="font-sans">
+              <text key={t.x} data-testid="chart-xtick" x={first ? x - 4 : last ? x + 4 : x} y={B + (phone ? 19 : 21)} textAnchor={first ? "start" : last ? "end" : "middle"} fontSize={phone ? 10.5 : 11.5} fontWeight={400} fill={MUTE} className="font-sans">
                 {labelOf(t)}
               </text>
             );

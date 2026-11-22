@@ -147,7 +147,7 @@ export function MonthBars({ bars, ticks, aria, highText, lowText }: { bars: Mont
         })}
         <g opacity={labelsA} transform={`translate(0 ${(1 - labelsA) * 6})`}>
           {bars.map((b, i) => (
-            <text key={b.month} data-testid="year-month" x={X(i) + bw / 2} y={B + (phone ? 19 : 23)} textAnchor="middle" fontSize={phone ? 10.5 : 11.5} fontWeight={b.tone === "high" || b.tone === "low" ? 700 : 500} fill={b.tone === "high" || b.tone === "low" ? "var(--hav-pin-ink)" : "var(--hav-fg-2)"} className="font-sans">
+            <text key={b.month} data-testid="year-month" x={X(i) + bw / 2} y={B + (phone ? 19 : 23)} textAnchor="middle" fontSize={phone ? 10.5 : 11.5} fontWeight={b.tone === "high" || b.tone === "low" ? 700 : 400} fill={b.tone === "high" || b.tone === "low" ? "var(--hav-pin-ink)" : "var(--hav-fg-2)"} className="font-sans">
               {phone ? String(b.month) : `${b.month}월`}
             </text>
           ))}
