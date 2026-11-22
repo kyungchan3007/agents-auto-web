@@ -16,7 +16,7 @@ export function BudgetPlanner({ rows, latestOf, className = "" }: { rows: Travel
 
   return (
     <section id="budget" data-testid="budget" aria-labelledby="budget-title" className={`scroll-mt-(--hav-nav-h) rounded-[1.75rem] border border-line bg-card px-5 py-6 text-fg shadow-ticket sm:px-8 sm:py-8 lg:px-[30px] lg:pt-7 lg:pb-[26px] ${className}`}>
-      <SectionTitle id="budget-title" className="text-[1.625rem] leading-tight text-fg">
+      <SectionTitle id="budget-title" className="text-[1.75rem] leading-tight text-fg">
         여행 하루 예산
       </SectionTitle>
       <form className="mt-5 grid gap-4 sm:grid-cols-[minmax(0,1fr)_7rem]" onSubmit={(e) => e.preventDefault()}>
@@ -51,7 +51,7 @@ export function BudgetPlanner({ rows, latestOf, className = "" }: { rows: Travel
                 하루 약 {wonText(b.dailyWon)}
               </p>
               <p className="mt-1 flex flex-wrap items-baseline gap-x-3 text-fg">
-                <span data-testid="budget-total" className="text-[2.25rem] leading-tight font-bold tracking-display tabular-nums sm:text-[2.75rem] lg:text-[2.75rem]">
+                <span data-testid="budget-total" className="text-[2.25rem] leading-tight font-bold tracking-display tabular-nums sm:text-[3rem] lg:text-[3rem]">
                   <CountUp value={b.totalWon} suffix="원" />
                 </span>
                 <span className="text-body font-bold text-fg-2">{n}일 약</span>

@@ -88,7 +88,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
       </div>
       <div className={`mt-(--route-row-mt) ${ROW}`}>
         <div>
-          <p className="mb-1.5 text-[0.78125rem] text-fg-2">물가 (한국 = 100)</p>
+          <p className="mb-1.5 text-[0.8125rem] text-fg-2">물가 (한국 = 100)</p>
           <div className="flex items-center gap-1">
             <div data-testid="route-card-value" role="img" aria-label={`물가 ${stop.value} (한국 100)`} className="flex items-center gap-1">
               {shownTiles.map((x, k) => (
@@ -100,7 +100,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
           </div>
         </div>
         <div>
-          <p className="mb-1.5 text-[0.78125rem] text-fg-2">한국과 비교</p>
+          <p className="mb-1.5 text-[0.8125rem] text-fg-2">한국과 비교</p>
           <p data-testid="route-card-pct" className="text-(length:--route-big) leading-[1.1] font-bold tracking-display whitespace-nowrap text-(--c) tabular-nums max-[760px]:whitespace-normal">
             {stop.value === 100 ? (
               <>
@@ -109,18 +109,18 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
             ) : (
               <>
                 {pctNum}
-                <small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:text-[0.875rem]">{stop.value < 100 ? "% 쌉니다" : "% 비쌉니다"}</small>
+                <small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:text-[0.9375rem]">{stop.value < 100 ? "% 쌉니다" : "% 비쌉니다"}</small>
               </>
             )}
           </p>
         </div>
         <div>
-          <p className="mb-1.5 text-[0.78125rem] text-fg-2">하루 예산 예시</p>
+          <p className="mb-1.5 text-[0.8125rem] text-fg-2">하루 예산 예시</p>
           <p data-testid="route-card-budget" className="text-(length:--route-big) leading-[1.1] font-bold tracking-display whitespace-nowrap text-(--c) tabular-nums max-[760px]:whitespace-normal">
             약 {bud.toLocaleString("ko-KR")}
-            <small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:text-[0.875rem]">원</small>
+            <small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:text-[0.9375rem]">원</small>
           </p>
-          <p className="mt-1.5 text-[0.78125rem] text-fg-2 max-[760px]:text-[0.75rem]">한국에서 하루 100,000원 쓰는 만큼 · 물가 비율로 계산</p>
+          <p className="mt-1.5 text-[0.8125rem] text-fg-2 max-[760px]:text-[0.75rem]">한국에서 하루 100,000원 쓰는 만큼 · 물가 비율로 계산</p>
         </div>
       </div>
     </>
@@ -173,7 +173,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
                   data-value={s.value}
                   data-active={s.index === active ? "true" : "false"}
                   onClick={() => goto(s.index)}
-                  className={`tap-44 max-[760px]:focus-visible:outline-offset-[-4px] flex cursor-pointer items-center gap-1.5 rounded-pill border py-[0.3125rem] pr-2.5 pl-1.5 text-[0.78125rem] whitespace-nowrap transition-colors duration-[250ms] ${s.index === active ? "border-fg bg-fg font-bold text-card max-[760px]:[--hav-ring:var(--hav-ring-on-dark)]" : s.index < active ? "border-fg/40 text-fg" : "border-line text-fg-2"}`}
+                  className={`tap-44 max-[760px]:focus-visible:outline-offset-[-4px] flex cursor-pointer items-center gap-1.5 rounded-pill border py-[0.3125rem] pr-2.5 pl-1.5 text-[0.8125rem] whitespace-nowrap transition-colors duration-[250ms] ${s.index === active ? "border-fg bg-fg font-bold text-card max-[760px]:[--hav-ring:var(--hav-ring-on-dark)]" : s.index < active ? "border-fg/40 text-fg" : "border-line text-fg-2"}`}
                 >
                   <RouteFlag country={s.country} name={s.name} className="size-4 ring-0" />
                   {s.name}
@@ -211,7 +211,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
             <div aria-hidden className="absolute top-[30px] h-[calc(var(--tt)+22px-30px)] w-0.5 -translate-x-px bg-fg" style={{ left: `${x(100)}%` }} />
             <div
               data-testid="route-kr-tag"
-              className={`absolute top-0 flex -translate-x-1/2 items-center gap-1.5 rounded-[6px] bg-sun py-1 pr-3 pl-[5px] text-[0.78125rem] font-bold whitespace-nowrap text-fg transition-transform duration-[350ms] ${cur.country === "KR" ? "scale-[1.14]" : ""}`}
+              className={`absolute top-0 flex -translate-x-1/2 items-center gap-1.5 rounded-[6px] bg-sun py-1 pr-3 pl-[5px] text-[0.8125rem] font-bold whitespace-nowrap text-fg transition-transform duration-[350ms] ${cur.country === "KR" ? "scale-[1.14]" : ""}`}
               style={{ left: `${x(100)}%` }}
             >
               <RouteFlag country="KR" name="한국" className="size-5 ring-0" />
@@ -232,8 +232,8 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
                 const past = s.index < active;
                 const up = s.side === "up";
                 const col = COLOR[s.band];
-                const nm = <span className="text-[0.78125rem] leading-tight font-bold text-fg">{s.name}</span>;
-                const val = <span className="text-2xl leading-[1.15] font-bold tracking-[0.02em] tabular-nums">{s.value}</span>;
+                const nm = <span className="text-[0.8125rem] leading-tight font-bold text-fg">{s.name}</span>;
+                const val = <span className="text-[1.375rem] leading-[1.15] font-bold tracking-[0.02em] tabular-nums">{s.value}</span>;
                 const fl = <RouteFlag country={s.country} name={s.name} className="my-[3px] size-[1.875rem] ring-[2px]" />;
                 const stem = <span className="block h-[22px] w-[1.5px] bg-current opacity-45" />;
                 return (

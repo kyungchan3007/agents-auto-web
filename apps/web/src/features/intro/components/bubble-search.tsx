@@ -6,7 +6,7 @@ import { IntroCells } from "./intro-cells";
 export function BubbleSearch({ s }: { s: IntroView }) {
   return (
     <div className="grid gap-3">
-      <p className="m-0 text-sm font-bold text-accent">안녕하세요, Flapfx입니다!</p>
+      <p className="m-0 text-[0.9375rem] font-bold text-accent">안녕하세요, Flapfx입니다!</p>
       <h2 className="m-0 text-[28px] leading-tight font-bold tracking-tight text-fg">어디로 떠나세요?</h2>
       <div className="rounded-[14px] bg-pin-ink p-3" aria-hidden>
         <div className="mx-0.5 mb-2 flex justify-between text-[12px] font-bold tracking-wider text-foam/70">
@@ -31,9 +31,9 @@ export function BubbleSearch({ s }: { s: IntroView }) {
           placeholder="나라나 도시를 입력하세요 (예: 다낭, 파리)"
           value={s.query}
           onChange={(e) => s.setQuery(e.target.value)}
-          className="min-w-0 flex-1 border-0 bg-transparent py-2 text-[17px] font-semibold text-fg placeholder:font-normal placeholder:text-fg-2"
+          className="min-w-0 flex-1 border-0 bg-transparent py-2 text-[18px] font-semibold text-fg placeholder:font-normal placeholder:text-fg-2"
         />
-        <button type="submit" className="inline-flex items-center justify-center rounded-pill bg-cheap px-5 py-2 text-sm font-semibold text-on-accent hover:bg-pin-ink">
+        <button type="submit" className="inline-flex items-center justify-center rounded-pill bg-cheap px-5 py-2 text-[0.9375rem] font-semibold text-on-accent hover:bg-pin-ink">
           출발
         </button>
       </form>
