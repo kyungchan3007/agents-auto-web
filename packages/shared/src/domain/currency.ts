@@ -86,10 +86,19 @@ export function percentileText(signal: Signal | null, percentile: number | null,
   return `최근 ${windowDays}일 중간 수준`;
 }
 
-/** 표시용 환율 — 엔 · 루피아는 100 단위 그대로 보여 주고 단위를 붙인다 (FX-04) · 소수 둘째 자리 고정(끝자리 0 은 덧붙인 표기일 뿐 값은 같음 · 작업 0287 · 통화 상세 · 둘러보기 표) */
+/** 환율 소수 자리 규칙 하나 (작업 0287 · 통화 상세 전부) — 1,000원 이상은 첫째 자리까지 · 미만은 둘째 자리까지 · 끝자리 0 은 쓰지 않음(1,330.80 → 1,330.8 · 7.30 → 7.3 · 1,331.0 → 1,331) · 반올림 방식은 numberText 그대로 */
+export const rateMaxDigits = (v: number): 1 | 2 => (Math.abs(v) >= 1000 ? 1 : 2);
+
+/** 위 규칙으로 실제 보이는 소수 자리 수(끝자리 0 뺀) — 카운트업이 같은 자리로 끝나게 */
+export function rateDigits(v: number): number {
+  const frac = numberText(v, { minimumFractionDigits: 0, maximumFractionDigits: rateMaxDigits(v) }).split(".")[1];
+  return frac ? frac.length : 0;
+}
+
+/** 표시용 환율 — 엔 · 루피아는 100 단위 그대로 보여 주고 단위를 붙인다 (FX-04) · 소수 자리는 rateMaxDigits 규칙 */
 export function rateText(rate: Pick<FxRate, "baseRate" | "unit">): { value: string; unit: string } {
   return {
-    value: numberText(rate.baseRate, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+    value: numberText(rate.baseRate, { minimumFractionDigits: 0, maximumFractionDigits: rateMaxDigits(rate.baseRate) }),
     unit: rate.unit === 1 ? "원" : `원 / ${rate.unit}`,
   };
 }
