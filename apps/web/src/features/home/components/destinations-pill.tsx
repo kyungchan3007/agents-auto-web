@@ -19,7 +19,7 @@ export function DestinationsPill({ rows, windowDays, fade }: { rows: Destination
     >
       <span className="flex shrink-0 gap-[0.3125rem]">
         {rows.map((row) => (
-          <span key={row.id} data-testid="dest-pill-flag" className="block overflow-hidden rounded-[3px] ring-1 ring-line">
+          <span key={row.id} data-testid="dest-pill-flag" className="block overflow-hidden rounded-[0.25rem] ring-1 ring-line">
             <Flag country={row.flag} label={row.flagLabel} className="h-4 w-6 sm:h-5 sm:w-[1.875rem]" />
           </span>
         ))}

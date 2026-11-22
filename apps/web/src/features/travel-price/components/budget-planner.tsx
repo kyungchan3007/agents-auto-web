@@ -15,7 +15,7 @@ export function BudgetPlanner({ rows, latestOf, className = "" }: { rows: Travel
   const { sorted, country, setCountry, daily, setDaily, days, setDays, row, d, n, latest, budget: b } = useBudgetPlanner(rows, latestOf);
 
   return (
-    <section id="budget" data-testid="budget" aria-labelledby="budget-title" className={`scroll-mt-(--hav-nav-h) rounded-[1.75rem] border border-line bg-card px-5 py-6 text-fg shadow-ticket sm:px-8 sm:py-8 lg:px-[30px] lg:pt-7 lg:pb-[26px] ${className}`}>
+    <section id="budget" data-testid="budget" aria-labelledby="budget-title" className={`scroll-mt-(--hav-nav-h) rounded-[1.5rem] border border-line bg-card px-5 py-6 text-fg shadow-ticket sm:px-8 sm:py-8 lg:px-[30px] lg:pt-7 lg:pb-[26px] ${className}`}>
       <SectionTitle id="budget-title" className="text-[1.75rem] leading-tight text-fg">
         여행 하루 예산
       </SectionTitle>

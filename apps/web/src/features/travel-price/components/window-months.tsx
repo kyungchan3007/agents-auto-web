@@ -46,7 +46,7 @@ function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof wi
           계절이 바뀌는 동안 항공료 지수도 오르내립니다
         </h2>
         <p className="mt-1.5 text-small text-fg-2">1월부터 12월까지 같은 달의 국제항공료 지수를 창밖 계절과 함께 봅니다.</p>
-        <div ref={trip} className="mt-6 grid overflow-hidden rounded-[1.625rem] bg-card shadow-ticket max-[760px]:grid-cols-1 max-[760px]:rounded-[1.375rem] min-[761px]:grid-cols-[22.5rem_minmax(0,1fr)] min-[1101px]:grid-cols-[26.25rem_minmax(0,1fr)]">
+        <div ref={trip} className="mt-6 grid overflow-hidden rounded-[1.5rem] bg-card shadow-ticket max-[760px]:grid-cols-1 max-[760px]:rounded-[1.5rem] min-[761px]:grid-cols-[22.5rem_minmax(0,1fr)] min-[1101px]:grid-cols-[26.25rem_minmax(0,1fr)]">
           <div className="relative grid place-items-center bg-surface-2 py-10 max-[760px]:py-7" style={{ background: "linear-gradient(#EEF2F8,#E3E9F2)" }}>
             <div
               className="relative w-[18.75rem] rounded-[7.375rem] p-4 max-[760px]:w-[min(15.625rem,70vw)] max-[760px]:rounded-[6.25rem] max-[760px]:p-[0.8125rem] min-[761px]:max-[1100px]:w-[16.875rem]"
@@ -70,7 +70,7 @@ function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof wi
                 <div
                   data-testid="window-shade"
                   aria-hidden="true"
-                  className="absolute inset-x-0 top-0 z-[3] h-full after:absolute after:bottom-2.5 after:left-1/2 after:h-1.5 after:w-11 after:-translate-x-1/2 after:rounded-[3px] after:bg-[#C3CCDA]"
+                  className="absolute inset-x-0 top-0 z-[3] h-full after:absolute after:bottom-2.5 after:left-1/2 after:h-1.5 after:w-11 after:-translate-x-1/2 after:rounded-[0.25rem] after:bg-[#C3CCDA]"
                   style={{ background: "linear-gradient(#F4F6FA,#E4E9F1)" }}
                 />
                 </div>
@@ -120,11 +120,11 @@ function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof wi
                     aria-pressed={m.month === cur.month}
                     aria-label={`${m.month}월 · 지수 ${m.text}`}
                     onClick={() => pick(m.month)}
-                    className="flex h-[5.75rem] cursor-pointer flex-col items-center justify-end gap-[0.4375rem] rounded-lg"
+                    className="flex h-[5.75rem] cursor-pointer flex-col items-center justify-end gap-[0.4375rem] rounded-[0.625rem]"
                   >
                     <span
                       aria-hidden="true"
-                      className={`w-[62%] max-w-[1.625rem] rounded-t-[5px] rounded-b-[2px] ${m.month === cur.month ? "ring-2 ring-fg" : ""} ${m.tone === "high" ? "bg-pin-expensive" : m.tone === "low" ? "bg-sun" : "bg-line"}`}
+                      className={`w-[62%] max-w-[1.625rem] rounded-t-[0.375rem] rounded-b-[0.25rem] ${m.month === cur.month ? "ring-2 ring-fg" : ""} ${m.tone === "high" ? "bg-pin-expensive" : m.tone === "low" ? "bg-sun" : "bg-line"}`}
                       style={{ height: `${vmax === vmin ? 30 : 14 + ((Number(m.text) - vmin) / (vmax - vmin)) * 46}px` }}
                     />
                     <span className={`text-(length:--lbl) leading-none ${m.month === cur.month ? "font-bold text-fg" : "text-fg-2"}`}>{m.month}월</span>

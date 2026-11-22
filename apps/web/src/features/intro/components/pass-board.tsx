@@ -11,7 +11,7 @@ export function PassBoard({ s }: { s: IntroView }) {
       initial={false}
       animate={{ y: s.passVisible ? 0 : "120%", opacity: s.passVisible ? 1 : 0 }}
       transition={{ duration: s.still ? 0 : 0.5, ease: [0.2, 0.8, 0.2, 1] }}
-      className="fixed bottom-6 left-6 z-[3] w-[380px] rounded-2xl bg-pin-ink px-[18px] pt-4 pb-3.5 text-foam shadow-pass"
+      className="fixed bottom-6 left-6 z-[3] w-[380px] rounded-[0.875rem] bg-pin-ink px-[18px] pt-4 pb-3.5 text-foam shadow-pass"
     >
       <header className="flex justify-between text-xs font-bold tracking-wider text-foam/70">
         <span>BOARDING PASS · 탑승권</span>
