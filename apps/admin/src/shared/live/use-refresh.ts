@@ -41,4 +41,3 @@ export function useRefresh<T>(build: Fetched<T>, load: () => Promise<Fetched<T>>
   return { data: pickLive(build, live), busy, left, round, refresh };
 }
 
-export const clockText = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;

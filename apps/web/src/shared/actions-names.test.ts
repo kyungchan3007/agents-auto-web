@@ -29,12 +29,8 @@ describe("GitHub Actions 워크플로 이름", () => {
   });
 });
 
-describe("작업실 · README", () => {
-  it("'자동 검사 (main)' 카드는 main 의 검사 기록만 연결", () => {
-    const src = readFileSync(join(ROOT, "apps/admin/src/features/log/status/status-board.tsx"), "utf8");
-    expect(src).toContain("/actions/workflows/checks.yml?query=branch%3Amain");
-    expect(src).not.toMatch(/REPO_URL\}\/actions`/);
-  });
+// 작업실 "자동 검사 (main)" 카드 연결 검사는 apps/admin/src/features/log/status/status-view.test.ts (작업 0312)
+describe("README", () => {
 
   it("README 에 자동으로 도는 일 목록 · 워크플로 파일 이름이 모두 나옴", () => {
     const readme = readFileSync(join(ROOT, "README.md"), "utf8");

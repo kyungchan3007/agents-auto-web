@@ -11,3 +11,7 @@ export const TEAM_DESKS: readonly { id: DeskId; duty: string }[] = [
 ];
 
 export const WORK_FLOW: readonly string[] = ["요청 원문 보관", "계획", "테스트 먼저 (실패 확인)", "구현", "자동 검사 통과", "PR · 사람 머지"];
+
+/** 완료 기준 칸 — 위 파란 선 + "완료 기준" 표시 (작업 0303 · 0312 에 work-flow.tsx 에서 옮김) */
+export const WORK_FLOW_KEY = "자동 검사 통과";
+export const workFlowSteps = () => WORK_FLOW.map((step) => ({ step, key: step === WORK_FLOW_KEY }));

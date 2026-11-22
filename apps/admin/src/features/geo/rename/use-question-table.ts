@@ -1,25 +1,18 @@
 "use client";
 
 // 일반 질문 표 상태 (작업 0303) — 걸러 보기(낱자 · 초성) · 정렬 · 줄이 미끄러져 자리를 찾음 · 찾기 창에서 고른 질문(adm-pick)
-import { flashPanel, reduceMotion } from "../../../shared/ui/events/admin-events";
-import { match } from "../../../shared/search/match";
+import { flashPanel, reduceMotion } from "@/shared/ui/events/admin-events";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import type { AnswerCount } from "./rename-model";
+import { type QuestionRow, type QuestionSort, filterSortQuestions } from "./questions-view";
 
-export type QuestionRow = { question: string; before: AnswerCount; after: AnswerCount };
-export type QuestionSort = "base" | "name" | "long";
+export type { QuestionRow, QuestionSort };
 
 export function useQuestionTable(rows: QuestionRow[]) {
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<QuestionSort>("base");
   const [hit, setHit] = useState<string | null>(null);
   const body = useRef<HTMLTableSectionElement>(null);
-  const list = useMemo(() => {
-    const found = rows.map((r, i) => ({ r, i, m: match(r.question, q) })).filter((x) => x.m !== null);
-    if (sort === "name") return [...found].sort((a, b) => a.r.question.localeCompare(b.r.question, "ko"));
-    if (sort === "long") return [...found].sort((a, b) => (a.r.before.measured === 0 ? 1000 : 0) + a.i - ((b.r.before.measured === 0 ? 1000 : 0) + b.i));
-    return found;
-  }, [rows, q, sort]);
+  const list = useMemo(() => filterSortQuestions(rows, q, sort), [rows, q, sort]);
 
   // 줄 자리가 바뀌면 앞 자리 → 새 자리로 미끄러지게
   const prev = useRef<Map<string, DOMRect>>(new Map());

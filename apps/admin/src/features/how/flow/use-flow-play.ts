@@ -1,7 +1,7 @@
 "use client";
 
 // 흐름 그림 (작업 0303) — 고른 자리 · "따라가기"(단계마다 2.2초) · 단계를 누르면 그 단계로
-import { reduceMotion } from "../../../shared/ui/events/admin-events";
+import { reduceMotion } from "@/shared/ui/events/admin-events";
 import { useEffect, useRef, useState } from "react";
 import { HOW_STEPS, type NodeId } from "../common/how";
 

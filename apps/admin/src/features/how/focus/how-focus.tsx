@@ -1,7 +1,7 @@
 // 만드는 방식 — 세 칸: 데이터 흐름 · 상태 관리 · 에이전트 최적화 (작업 0306) · 칸마다 근거 파일 링크
-import { Panel } from "../../../shared/ui/panel/panel";
-import { REPO_BLOB } from "../common/how";
-import { HOW_FOCUS } from "../trials/story";
+import { Panel } from "@/shared/ui/panel/panel";
+import { srcHref } from "../common/how";
+import { HOW_FOCUS } from "./focus-data";
 
 export function HowFocus() {
   return (
@@ -15,7 +15,7 @@ export function HowFocus() {
                 <li key={p}>{p}</li>
               ))}
             </ul>
-            <a className="adm-link src" href={`${REPO_BLOB}${f.source}`} target="_blank" rel="noreferrer">
+            <a className="adm-link src" href={srcHref(f.source)} target="_blank" rel="noreferrer">
               근거 보기 ↗
             </a>
           </div>

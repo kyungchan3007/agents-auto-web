@@ -2,6 +2,7 @@
 import { kstDate } from "@hav/shared/date";
 import { monthDayText as md } from "@hav/shared/format";
 import type { SiteStatus, SlotState, StatusRun } from "@hav/shared/status";
+import { kstHourMinute as hm } from "@/shared/time/time-text";
 
 export const SLOT_TEXT: Record<SlotState, string> = {
   done: "수집 완료",
@@ -25,13 +26,6 @@ export function reasonText(code: string | null): string | null {
   return code;
 }
 
-/** "10월 30일 14:39" (한국 시각) */
-export function timeText(iso: string): string {
-  const p = Object.fromEntries(new Intl.DateTimeFormat("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Seoul" }).formatToParts(new Date(iso)).map((x) => [x.type, x.value]));
-  return `${p.month}월 ${p.day}일 ${p.hour}:${p.minute}`;
-}
-
-const hm = (iso: string) => new Intl.DateTimeFormat("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Seoul" }).format(new Date(iso));
 
 export type Headline = { tone: "ok" | "warn" | "bad" | "rest"; text: string };
 

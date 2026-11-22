@@ -1,19 +1,11 @@
 "use client";
 
 // 만드는 방식 — 검색 · 자동완성 (작업 0306) · 왼쪽 설명(찾는 범위 · 순위 · 설계) · 오른쪽 직접 써 보기(사이트의 실제 검색 함수 · 실제 통화 목록)
-import { IconSearch } from "../../../shared/ui/icons/icons";
-import { Panel, Stamp } from "../../../shared/ui/panel/panel";
+import { IconSearch } from "@/shared/ui/icons/icons";
+import { Panel, Stamp } from "@/shared/ui/panel/panel";
+import { srcHref } from "../common/how";
+import { RANK_EXAMPLES, TRY_WORDS } from "./search-demo";
 import { useSearchDemo } from "./use-search-demo";
-import { REPO_BLOB } from "../common/how";
-
-const RANKS: [string, string][] = [
-  ["코드 앞글자", "JP → JPY"],
-  ["통화 이름 앞글자", "엔 → 엔화"],
-  ["나라 앞글자", "베트 → 베트남 동"],
-  ["도시 앞글자", "다낭 → 동 · 베트남 다낭"],
-  ["가운데 일치", "크푸 → 유로 · 독일 프랑크푸르트"],
-];
-const TRY = ["jp", "엔", "다낭", "프랑크", "런던"];
 
 export function HowSearch() {
   const s = useSearchDemo();
@@ -24,7 +16,7 @@ export function HowSearch() {
           <p className="adm-fc-lead">통화 코드만 알아야 찾을 수 있으면 여행자에게 불편합니다. 그래서 통화 코드 · 통화 이름 · 나라 · 도시로 찾게 했습니다.</p>
           <h3>순위</h3>
           <ol className="adm-rank">
-            {RANKS.map(([k, ex]) => (
+            {RANK_EXAMPLES.map(([k, ex]) => (
               <li key={k}>
                 <b>{k}</b>
                 <span>{ex}</span>
@@ -47,7 +39,7 @@ export function HowSearch() {
               <b>어드민 찾기 창</b> — 같은 생각을 어드민에도: ⌘K 로 화면 · 판 · 규칙을 찾고, 한글 초성(ㄱㅅ → 관세)도 됩니다.
             </li>
           </ul>
-          <a className="adm-link src" href={`${REPO_BLOB}packages/shared/src/domain/currency-search.ts`} target="_blank" rel="noreferrer">
+          <a className="adm-link src" href={srcHref("packages/shared/src/domain/currency-search.ts")} target="_blank" rel="noreferrer">
             검색 계산 코드 보기 ↗
           </a>
         </div>
@@ -55,7 +47,7 @@ export function HowSearch() {
           <p className="adm-note">직접 써 보기 · 사이트와 같은 검색 함수 · 통화 {s.total}개</p>
           <div className="adm-srch-try">
             <span className="adm-note">눌러 보기</span>
-            {TRY.map((t) => (
+            {TRY_WORDS.map((t) => (
               <button key={t} type="button" onClick={() => s.type(t)}>
                 {t}
               </button>

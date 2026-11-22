@@ -2,14 +2,13 @@
 
 // 이름 바꾼 날 전후 — 일반 질문 표 (작업 0205 → 작업 0303 어드민) · 걸러 보기(낱자 · 초성 · / 단축키) · 정렬(기본 · 가나다 · 오래 잰 것) · 줄이 미끄러져 자리를 찾음
 //   찾기 창에서 질문을 고르면(adm-pick) 그 질문으로 걸러 보고 줄을 잠깐 강조
-import { IconSearch } from "../../../shared/ui/icons/icons";
-import { pieces } from "../../../shared/search/match";
+import { IconSearch } from "@/shared/ui/icons/icons";
+import { pieces } from "@/shared/search/match";
 import { type QuestionRow, type QuestionSort, useQuestionTable } from "./use-question-table";
-import type { AnswerCount } from "./rename-model";
+import { answerText } from "./rename-text";
+import { countText } from "./questions-view";
 
 export type { QuestionRow };
-
-const answerText = (c: AnswerCount) => (c.measured === 0 ? "측정 기록 없음" : `찾음 ${c.found} · 인용 ${c.cited} / ${c.measured}회`);
 
 export function QuestionsTable({ rows, before, after }: { rows: QuestionRow[]; before: string; after: string }) {
   const { q, setQ, sort, setSort, hit, list, body } = useQuestionTable(rows);
@@ -46,7 +45,7 @@ export function QuestionsTable({ rows, before, after }: { rows: QuestionRow[]; b
           {sortBtn("long", "오래 잰 것")}
         </div>
         <span className="adm-count" aria-live="polite">
-          {q ? `${list.length} / ${rows.length}개` : `${rows.length}개`}
+          {countText(q, list.length, rows.length)}
         </span>
       </div>
       <div className="adm-tw">

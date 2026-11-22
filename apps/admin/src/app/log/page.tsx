@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { LogPage } from "@/features/log/log-page";
 import { api } from "@hav/shared/api";
 import { ADMIN_URL } from "@/shared/site";
+import { buildStamp } from "@/shared/time/build-time";
 
 // 탭 제목에서 "만드는 중" 은 뺌 (2026-10-30 사용자 · 작업 0105) · 검색에서 구별되게 페이지 이름만 (작업 0114)
 export const metadata: Metadata = {
@@ -16,5 +17,5 @@ export const metadata: Metadata = {
 // 사이트 상태 점검판도 빌드 때 한 번 · 브라우저가 5분마다 다시 (작업 0105)
 export default async function Page() {
   const [tasks, status] = await Promise.all([api.tasks(), api.status()]);
-  return <LogPage tasks={tasks} status={status} builtAt={new Date().toISOString()} />;
+  return <LogPage tasks={tasks} status={status} builtAt={buildStamp()} />;
 }

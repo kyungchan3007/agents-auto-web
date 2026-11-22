@@ -3,7 +3,7 @@
 // GEO 측정 (작업 0170 → 작업 0303 어드민 · 시안 Version 6) — 머리(라벨 · 제목 · 자료 기준일) → GeoReport
 import type { GeoReport as Report } from "@hav/shared/geo";
 import { AdminNav } from "@/shared/nav/admin-nav";
-import { Stamp } from "../../shared/ui/panel/panel";
+import { Stamp } from "@/shared/ui/panel/panel";
 import type { Fetched } from "@hav/shared/api";
 import { GeoReport } from "./report/geo-report";
 

@@ -1,10 +1,9 @@
 "use client";
 
 // 봇별 읽은 페이지 묶음 (작업 0303) — 전체 · AI 봇 · 검색 엔진 · 바뀌면 카드가 앞 자리 → 새 자리로 움직임
-import { reduceMotion } from "../../../shared/ui/events/admin-events";
+import { reduceMotion } from "@/shared/ui/events/admin-events";
+import type { BotKind } from "./bots-view";
 import { useLayoutEffect, useRef, useState } from "react";
-
-export type BotKind = "all" | "ai" | "eng";
 
 export function useBotKind() {
   const [kind, setKind] = useState<BotKind>("all");

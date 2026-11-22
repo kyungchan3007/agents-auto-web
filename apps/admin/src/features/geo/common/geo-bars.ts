@@ -1,8 +1,9 @@
 // /geo 시안 B(작업 0214) 막대 계산 — 순수 함수 · 값은 받은 자료 그대로 · 막대마다 같은 숫자를 글(text)로도 내보냄 (검색 · AI 가 읽는 HTML)
 import { numberText } from "@hav/shared/format";
 import type { GeoReport } from "@hav/shared/geo";
+import type { BarRow } from "@/shared/ui/bars/bar-row";
 
-export type BarRow = { label: string; value: number; pct: number; text: string };
+export type { BarRow };
 
 /** 가로 막대 — 가장 큰 값이 100% · 나머지는 비례 · 0 이 아니면 최소 2% (보이게) · 0 은 0% */
 export function barRows(rows: { label: string; value: number }[]): BarRow[] {
@@ -53,3 +54,18 @@ export function botPagesView(botPages: GeoReport["botPages"], limit = 5): BotPag
       };
     });
 }
+
+/** AI 봇이 읽은 페이지 막대 (작업 0312 에 geo-detail.tsx 에서 옮김) */
+export const pageRows = (r: GeoReport) => barRows(r.pages.map((p) => ({ label: p.path, value: p.hits })));
+
+/** 날마다 그래프 눈금 — 가장 많이 응답 받은 수 · 그 절반 (작업 0312 에 day-chart.tsx 에서 옮김) */
+export function dayAxis(columns: Pick<DayColumn, "ok">[]) {
+  const max = Math.max(1, ...columns.map((c) => c.ok));
+  return { max, mid: Math.round(max / 2) };
+}
+
+/** 그래프 아래 한 줄 — 고른 막대의 기록 · 고르지 않았으면 안내 */
+export const dayTip = (columns: Pick<DayColumn, "text">[], on: number | null) => (on === null ? "막대에 마우스를 올리거나 눌러 그날 기록을 봅니다" : (columns[on]?.text ?? ""));
+
+/** 막대 아래 날짜 — "2026-11-20" → "20" */
+export const dayOfMonth = (day: string) => day.slice(8);

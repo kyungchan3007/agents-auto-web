@@ -78,3 +78,15 @@ describe("알리기 그림 주소 (작업 0310)", () => {
     expect(parseDraft("2026-11-20", md, null).imageFallback).toBeNull();
   });
 });
+
+describe("알리기 문구 · 주소 도우미 (작업 0312)", () => {
+  it("저장소 원본 주소 · 링크 글 · 복사 글 · 최근 날짜", async () => {
+    const { copyBody, latestDay, linkText, rawBase } = await import("./drafts");
+    expect(rawBase("https://github.com/o/r")).toBe("https://raw.githubusercontent.com/o/r/main/docs/marketing/");
+    expect(linkText("https://flapfx.com/prices")).toBe("flapfx.com/prices");
+    expect(copyBody({ body: "본문", tags: "#태그" })).toBe("본문\n\n#태그");
+    expect(copyBody({ body: "본문", tags: "" })).toBe("본문");
+    expect(latestDay([{ day: "2026-11-23" }, { day: "2026-11-22" }])).toBe("2026-11-23");
+    expect(latestDay([])).toBeNull();
+  });
+});

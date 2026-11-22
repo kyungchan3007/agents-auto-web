@@ -3,31 +3,24 @@
 // 사이트 상태 (작업 0105 → 작업 0303 어드민) — 숫자 칸 4개: 오늘 환율 수집 · 사이트 빌드 · 자동 검사 (main) · 열린 작업
 //   값은 API 가 준 것만 — 자동 검사 · 열린 작업은 이 사이트가 아직 받아 오지 않아 GitHub 로 연결 (숫자를 지어내지 않음)
 //   5분마다 다시 받음(남은 시간 표시) · "사이트 상태 다시 받기"(R)로 바로 · 받는 동안 숫자 칸은 불러오는 모양 → 받으면 안내판처럼 다시 넘어감
+//   보일 값은 status-view.ts (그리기만)
 import type { SiteStatus } from "@hav/shared/status";
-import { Flap } from "../../../shared/ui/flap/flap";
-import { IconRefresh } from "../../../shared/ui/icons/icons";
-import { clockText } from "../../../shared/live/use-refresh";
+import { Flap } from "@/shared/ui/flap/flap";
+import { IconRefresh } from "@/shared/ui/icons/icons";
 import { REPO_URL } from "@/shared/site";
-import { runSummary } from "./run-summary";
-import { headlineOf, timeText } from "./status-text";
+import { countdownText } from "@/shared/time/time-text";
+import { statusBoardView, statusLinks } from "./status-view";
 import type { useSiteStatus } from "./use-site-status";
 
-/** "11-20 12:00 성공 · 공식 22개" → 큰 글자(시각) · 작은 글자(나머지) */
-export function splitRun(text: string): { big: string; rest: string } {
-  const m = /^((?:\d\d-\d\d )?\d\d:\d\d)\s*(.*)$/.exec(text);
-  return m ? { big: m[1] ?? text, rest: m[2] ?? "" } : { big: text, rest: "" };
-}
-
-/** "11월 22일 20:31" → "11-22 20:31" (숫자 칸) */
-const shortTime = (iso: string) => timeText(iso).replace(/(\d+)월 (\d+)일/, (_, m: string, d: string) => `${m.padStart(2, "0")}-${d.padStart(2, "0")}`);
+const LINKS = statusLinks(REPO_URL);
 
 export function RefreshButton({ busy, left, onClick }: { busy: boolean; left: number; onClick: () => void }) {
   return (
     <button type="button" className={`adm-btn${busy ? " busy" : ""}`} onClick={onClick} aria-busy={busy} data-key-r title="R">
       <IconRefresh />
       사이트 상태 다시 받기
-      <span className="cd" aria-label={`자동으로 다시 받기까지 ${clockText(left)}`}>
-        {clockText(left)}
+      <span className="cd" aria-label={`자동으로 다시 받기까지 ${countdownText(left)}`}>
+        {countdownText(left)}
       </span>
     </button>
   );
@@ -46,33 +39,30 @@ export function StatusBoard({ s, builtAt }: { s: ReturnType<typeof useSiteStatus
 }
 
 function Body({ st, builtAt, round, busy }: { st: SiteStatus; builtAt: string; round: number; busy: boolean }) {
-  const h = headlineOf(st);
-  const failed = h.tone === "bad" || st.lastRun?.status === "error";
-  const run = splitRun(runSummary(st));
-  const sub = [run.rest, h.tone === "ok" ? "" : h.text].filter(Boolean).join(" · ");
+  const v = statusBoardView(st, builtAt);
   return (
     <dl className={`adm-stats${busy ? " loading" : ""}`}>
       <div className="adm-stat">
         <dt>
-          <i className={`adm-dot${failed ? " bad" : ""}`} aria-hidden />
+          <i className={`adm-dot${v.failed ? " bad" : ""}`} aria-hidden />
           오늘 환율 수집
         </dt>
-        <dd className={`v${failed ? " bad" : ""}`}>
-          <Flap text={run.big} replay={round} />
+        <dd className={`v${v.failed ? " bad" : ""}`}>
+          <Flap text={v.run} replay={round} />
         </dd>
-        {sub && <dd className="s">{sub}</dd>}
+        {v.sub && <dd className="s">{v.sub}</dd>}
       </div>
       <div className="adm-stat">
         <dt>사이트 빌드</dt>
         <dd className="v">
-          <Flap text={shortTime(builtAt)} order={1} replay={round} />
+          <Flap text={v.built} order={1} replay={round} />
         </dd>
         <dd className="s">하루 한 번 다시 빌드</dd>
       </div>
       <div className="adm-stat">
         <dt>자동 검사 (main)</dt>
         <dd className="v">
-          <a href={`${REPO_URL}/actions/workflows/checks.yml?query=branch%3Amain`} target="_blank" rel="noreferrer">
+          <a href={LINKS.checks} target="_blank" rel="noreferrer">
             GitHub 에서 확인 ↗
           </a>
         </dd>
@@ -80,7 +70,7 @@ function Body({ st, builtAt, round, busy }: { st: SiteStatus; builtAt: string; r
       <div className="adm-stat">
         <dt>열린 작업</dt>
         <dd className="v">
-          <a href={`${REPO_URL}/issues`} target="_blank" rel="noreferrer">
+          <a href={LINKS.issues} target="_blank" rel="noreferrer">
             GitHub 에서 확인 ↗
           </a>
         </dd>
@@ -88,4 +78,3 @@ function Body({ st, builtAt, round, busy }: { st: SiteStatus; builtAt: string; r
     </dl>
   );
 }
-

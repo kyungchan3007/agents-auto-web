@@ -1,18 +1,15 @@
 "use client";
 
 // 만드는 방식 — 시행착오 (작업 0306 · 궁금한 것 뒤) · 날짜순 · 종류로 골라 보기 · 펼치면 무슨 일 · 원인 · 바꾼 것 · 결과 · 근거 · 해결 중 표시
-import { Panel } from "../../../shared/ui/panel/panel";
+import { Panel } from "@/shared/ui/panel/panel";
+import { foldAllText } from "@/shared/fold/fold";
+import { trialSegments } from "./trials-view";
 import { useTrials } from "./use-trials";
-import { HOW_TRIALS, TRIAL_CATS } from "./story";
+
+const SEGMENTS = trialSegments();
 
 export function HowTrials() {
   const { cat, setCat, open, toggle, toggleAll, allOpen, shown, list } = useTrials();
-  const count = (c: string) => HOW_TRIALS.filter((x) => x.cat === c).length;
-  const seg = (id: (typeof TRIAL_CATS)[number] | "all", label: string) => (
-    <button key={id} type="button" aria-pressed={cat === id} onClick={() => setCat(id)}>
-      {label}
-    </button>
-  );
   return (
     <Panel
       id="how-trials"
@@ -21,11 +18,14 @@ export function HowTrials() {
       meta={
         <div className="adm-topr">
           <div className="adm-seg" role="group" aria-label="시행착오 종류">
-            {seg("all", `전체 ${HOW_TRIALS.length}`)}
-            {TRIAL_CATS.filter((c) => count(c) > 0).map((c) => seg(c, `${c} ${count(c)}`))}
+            {SEGMENTS.map(({ id, label }) => (
+              <button key={id} type="button" aria-pressed={cat === id} onClick={() => setCat(id)}>
+                {label}
+              </button>
+            ))}
           </div>
           <button type="button" className="adm-btn" onClick={toggleAll}>
-            {allOpen ? "모두 접기" : "모두 펼치기"}
+            {foldAllText(allOpen)}
           </button>
         </div>
       }
@@ -34,7 +34,7 @@ export function HowTrials() {
         <p className="adm-note">무슨 일이 있었고, 왜 그랬고, 무엇을 바꿨는지 · 작업 문서와 PR 로 확인한 것만 적었습니다. 줄을 누르면 펼쳐집니다.</p>
       </div>
       <ol ref={list} className="adm-trials">
-        {shown.map(({ t: x, i }) => (
+        {shown.map(({ x, i }) => (
           <li key={x.title} data-trial={i} data-cmd="시행착오" data-cmd-label={x.title}>
             <button type="button" className="adm-trial-h" aria-expanded={open.has(i)} aria-controls={`trial-${i}`} onClick={() => toggle(i)}>
               <span className="d">{x.day}</span>

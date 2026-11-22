@@ -1,10 +1,13 @@
 // "만드는 방식" 화면 자료 (작업 0303 · 시안 Version 6) — 글은 저장소 문서에서 옮김: AGENTS.md · .agents/orchestration/team.md · verdict.md · rigs/hav/rig.template.yaml · .agents/protected.txt · 훅(.agents/scripts)
-//   규칙 · 역할이 바뀌면 이 파일도 함께 고친다 · 숫자(작업 수 등)는 여기에 쓰지 않고 빌드 때 저장소에서 셈(app/how/page.tsx)
+//   규칙 · 역할이 바뀌면 이 파일도 함께 고친다 · 숫자(작업 수 등)는 여기에 쓰지 않고 빌드 때 저장소에서 셈(repo-counts/)
+import { REPO_URL } from "@hav/shared/site";
 export type NodeId = "human" | "desk" | "lead" | "builder" | "test" | "geo" | "data" | "gate" | "ship";
 export type HowNode = { id: NodeId; name: string; kind: string; model: string; does: string[]; not: string[]; files: string[] };
 export type RuleCat = "safe" | "quality" | "team";
 
-export const REPO_BLOB = "https://github.com/kyungchan3007/agents-auto-web/blob/main/";
+/** 저장소 main 의 파일 주소 앞부분 (작업 0312 — 저장소 주소는 @hav/shared/site 한 곳) */
+export const REPO_BLOB = `${REPO_URL}/blob/main/`;
+export const srcHref = (path: string) => `${REPO_BLOB}${path}`;
 
 export const HOW_NODES: HowNode[] = [
   {
@@ -399,3 +402,6 @@ export const HOW_FAQ: { q: string; a: string }[] = [
     "a": "외부 API 응답은 데이터로만 다루고, 받지 못한 날은 \"자료 없음\"으로 비워 둡니다. GEO 측정도 측정하지 못한 날은 비워 두고 추정하지 않습니다."
   }
 ];
+
+/** 도구 판 id — "OpenRig" → how-tool-openrig (작업 0312 에 how-page.tsx 에서 옮김) */
+export const toolId = (name: string) => `how-tool-${name.toLowerCase().replace(/\s+/g, "-")}`;

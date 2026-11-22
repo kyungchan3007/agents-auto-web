@@ -29,3 +29,14 @@ export type DemoHit = { code: string; name: string; where: string; rank: string 
 export function demoSearch(query: string, codes: string[] = DEMO_CODES, limit = 8): DemoHit[] {
   return searchCurrencies(query, codes, limit).map((h) => ({ code: h.code, name: currencyName(h.code), where: whereText(h), rank: rankText(query, h) }));
 }
+
+/** 순위 설명 예시 — [순위, 예] (작업 0306 · 0312 에 how-search.tsx 에서 옮김) */
+export const RANK_EXAMPLES: readonly (readonly [string, string])[] = [
+  ["코드 앞글자", "JP → JPY"],
+  ["통화 이름 앞글자", "엔 → 엔화"],
+  ["나라 앞글자", "베트 → 베트남 동"],
+  ["도시 앞글자", "다낭 → 동 · 베트남 다낭"],
+  ["가운데 일치", "크푸 → 유로 · 독일 프랑크푸르트"],
+];
+/** "눌러 보기" 단추 */
+export const TRY_WORDS = ["jp", "엔", "다낭", "프랑크", "런던"] as const;

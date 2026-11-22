@@ -1,14 +1,15 @@
 "use client";
 
 // 봇별 읽은 페이지 (작업 0226 → 작업 0303 어드민) — 봇마다 작은 판 · 세 칸 격자 · 전체 · AI 봇 · 검색 엔진으로 묶어 보기(카드가 움직여 자리를 찾음)
-import { Bars } from "../../../shared/ui/bars/bars";
-import { type BotKind, useBotKind } from "./use-bot-kind";
+import { Bars } from "@/shared/ui/bars/bars";
 import type { BotPagesView } from "../common/geo-bars";
 import { KIND_TEXT } from "../common/geo-view";
+import { type BotKind, botShortText, filterBotKind } from "./bots-view";
+import { useBotKind } from "./use-bot-kind";
 
 export function BotPages({ bots }: { bots: BotPagesView[] }) {
   const { kind, setKind, grid } = useBotKind();
-  const shown = bots.filter((b) => (kind === "all" ? true : kind === "eng" ? b.kind === "engine" : b.kind !== "engine"));
+  const shown = filterBotKind(bots, kind);
   const btn = (id: BotKind, label: string) => (
     <button type="button" aria-pressed={kind === id} onClick={() => setKind(id)}>
       {label}
@@ -30,7 +31,7 @@ export function BotPages({ bots }: { bots: BotPagesView[] }) {
               </h3>
               <span className="adm-stamp">
                 {KIND_TEXT[b.kind]} · <span className="sr-only">{b.text}</span>
-                <span aria-hidden>{b.text.replace(`${b.name} · `, "")}</span>
+                <span aria-hidden>{botShortText(b)}</span>
               </span>
             </div>
             <Bars rows={b.rows} />

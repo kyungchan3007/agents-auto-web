@@ -5,7 +5,7 @@
 import type { SiteStatus } from "@hav/shared/status";
 import type { TasksSummary } from "@hav/shared/tasks";
 import { AdminNav } from "@/shared/nav/admin-nav";
-import { Stamp } from "../../shared/ui/panel/panel";
+import { Stamp } from "@/shared/ui/panel/panel";
 import type { Fetched } from "@hav/shared/api";
 import { RecordCard } from "./records/record-card";
 import { useSiteStatus } from "./status/use-site-status";

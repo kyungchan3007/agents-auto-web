@@ -2,8 +2,8 @@
 
 // 사이트 상태 받기 (작업 0105 → 작업 0303) — 빌드 때 값을 먼저 · 5분마다(남은 시간) · 누르면 바로 · 다시 받으면 알림 한 줄
 import type { SiteStatus } from "@hav/shared/status";
-import { useRefresh } from "../../../shared/live/use-refresh";
-import { toast } from "../../../shared/ui/events/admin-events";
+import { useRefresh } from "@/shared/live/use-refresh";
+import { toast } from "@/shared/ui/events/admin-events";
 import { useEffect, useRef } from "react";
 import { type Fetched, LIVE, api } from "@hav/shared/api";
 

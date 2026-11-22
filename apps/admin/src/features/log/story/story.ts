@@ -70,3 +70,11 @@ export function sourceLinks(source: string, repoUrl: string): { label: string; h
   }
   return out;
 }
+
+/** 화면에 그릴 단계 — 두 자리 번호 · 불릿마다 근거 링크 (작업 0312 에 story-section.tsx 에서 옮김) */
+export const storyView = (repoUrl: string) =>
+  STORY_STEPS.map((step, i) => ({
+    ...step,
+    num: String(i + 1).padStart(2, "0"),
+    bullets: step.bullets.map((b) => ({ text: b.text, links: sourceLinks(b.source, repoUrl) })),
+  }));

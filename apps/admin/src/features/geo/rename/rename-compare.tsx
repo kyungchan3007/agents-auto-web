@@ -1,45 +1,16 @@
 "use client";
 
 // 이름 바꾼 날 전후 비교 (작업 0205 · #243 → 작업 0303 어드민) — 봇 방문 하루 평균(날짜별 작은 막대 · 점선 = 이름 바꾼 날) · AI 서비스 유입 · 검색 노출
-//   일반 질문은 따로 판(RenameQuestions · 걸러 보기 · 정렬) · 하루 평균 = 합계 ÷ 그 기간의 달력 날짜 수 (방문 없는 날 포함) · 자료가 없는 칸은 "아직 없음"
-import { numberText } from "@hav/shared/format";
+//   일반 질문은 따로 판(rename-questions.tsx · 걸러 보기 · 정렬) · 문구는 rename-text.ts · 하루 평균 = 합계 ÷ 그 기간의 달력 날짜 수 (방문 없는 날 포함) · 자료가 없는 칸은 "아직 없음"
 import type { GeoReport } from "@hav/shared/geo";
-import { Panel, Stamp } from "../../../shared/ui/panel/panel";
+import { Panel, Stamp } from "@/shared/ui/panel/panel";
 import { useRenameCompare } from "./use-rename-compare";
-import { type BrandSummary, type DayHits, type Period, perDayText } from "./rename-model";
-import { QuestionsTable } from "./questions-table";
-
-const NONE = "아직 없음";
-const periodText = (p: Period | null) => (p ? `하루 ${perDayText(p.perDay)}회 (합계 ${numberText(p.total)}회)` : "기록 없음");
-
-/** 날짜별 작은 막대 — 기준일 위치에 세로 점선 · 같은 숫자를 aria-label 글로 */
-function DayBars({ name, daily, dayMark }: { name: string; daily: DayHits[]; dayMark: string }) {
-  const n = daily.length;
-  if (n === 0) return <span className="m">{NONE}</span>;
-  const max = Math.max(1, ...daily.map((d) => d.hits));
-  const w = 100 / n;
-  const at = daily.findIndex((d) => d.day === dayMark);
-  const label = `${name} 날짜별 방문: ${daily.map((d) => `${d.day.slice(5)} ${d.hits}회`).join(", ")}${at >= 0 ? ` (${dayMark} 이름 바꾼 날)` : ""}`;
-  return (
-    <svg role="img" aria-label={label} data-testid="rename-bars" viewBox="0 0 100 30" preserveAspectRatio="none" style={{ display: "block", height: 24, width: 140 }}>
-      <line x1="0" x2="100" y1="29.5" y2="29.5" stroke="var(--a-line2)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
-      {daily.map((d) => (
-        <rect key={d.day} x={daily.indexOf(d) * w + w * 0.15} width={w * 0.7} y={29 - (d.hits / max) * 27} height={(d.hits / max) * 27} fill={d.day >= dayMark ? "var(--a-blue)" : "var(--a-bar2)"} />
-      ))}
-      {at >= 0 && <line x1={at * w} x2={at * w} y1="0" y2="30" stroke="var(--a-mute)" strokeWidth={1} strokeDasharray="3 2" vectorEffect="non-scaling-stroke" />}
-    </svg>
-  );
-}
-
-function brandText(b: BrandSummary | null): string {
-  if (!b) return "측정 기록 없음";
-  return `${b.days}일 측정 (${b.first} ~ ${b.last}) · ${b.measured === 0 ? "측정 기록 없음" : `찾음 ${b.found} · 인용 ${b.cited} / ${b.measured}회`}`;
-}
+import { DayBars } from "./day-bars";
+import { NONE, oldSearchText, periodLabels, periodText, referralRows } from "./rename-text";
 
 export function RenameCompare({ report, asOf }: { report: GeoReport; asOf: string }) {
   const c = useRenameCompare(report, asOf);
-  const before = `바꾸기 전 ${c.beforeDays}일`;
-  const after = `바꾼 뒤 ${c.afterDays}일`;
+  const { before, after } = periodLabels(c);
   return (
     <Panel id="geo-rename" testId="rename-compare" title="이름 바꾼 날 전후 비교" meta={<Stamp>기준 {c.day}</Stamp>}>
       <div className="adm-pb" style={{ paddingBottom: 8 }}>
@@ -104,7 +75,7 @@ export function RenameCompare({ report, asOf }: { report: GeoReport; asOf: strin
               </tr>
             </thead>
             <tbody>
-              {[...c.referrals.rows.map((x) => ({ name: x.name, before: x.before, after: x.after })), { name: "합계", before: c.referrals.sum.before, after: c.referrals.sum.after }].map((x) => (
+              {referralRows(c.referrals).map((x) => (
                 <tr key={x.name}>
                   <td>{x.name}</td>
                   <td className="n">{periodText(x.before)}</td>
@@ -121,30 +92,9 @@ export function RenameCompare({ report, asOf }: { report: GeoReport; asOf: strin
         검색 노출 (Search Console)
       </h3>
       <ul data-testid="rename-search" className="adm-pb adm-note" style={{ margin: 0, paddingLeft: 36, color: "var(--a-sub)" }}>
-        <li>옛 속성(tripfx.pages.dev): {c.search.old ? `노출 ${numberText(c.search.old.impressions)}회 · 클릭 ${numberText(c.search.old.clicks)}회 (${c.search.old.range})` : NONE}</li>
+        <li>옛 속성(tripfx.pages.dev): {oldSearchText(c.search.old)}</li>
         <li>새 속성(flapfx.com): 아직 없음 (Search Console 새 속성 등록 대기 #214)</li>
       </ul>
-    </Panel>
-  );
-}
-
-/** 일반 질문 — 같은 질문끼리 앞뒤로 · 브랜드 질문은 시기별로 따로 */
-export function RenameQuestions({ report, asOf }: { report: GeoReport; asOf: string }) {
-  const c = useRenameCompare(report, asOf);
-  return (
-    <Panel id="geo-questions-compare" testId="rename-questions" title={`AI 답변 — 일반 질문${c.answers ? ` ${c.answers.general.length}개` : ""}`} meta={<Stamp>찾음 · 인용 / 측정 횟수</Stamp>}>
-      {c.answers && c.answers.general.length > 0 ? (
-        <QuestionsTable rows={c.answers.general} before={`바꾸기 전`} after={`바꾼 뒤`} />
-      ) : (
-        <p className="adm-empty">{NONE}</p>
-      )}
-      <div className="adm-foot">
-        <ul data-testid="rename-brand" className="adm-note" style={{ margin: 0, paddingLeft: 16 }}>
-          <li>Tripfx 시기(1 · 2판): {c.answers ? brandText(c.answers.brand.tripfx) : NONE}</li>
-          <li>Flapfx 시기(3판): {c.answers ? brandText(c.answers.brand.flapfx) : NONE}</li>
-          <li>브랜드 질문은 이름이 달라 이어 비교하지 않고 시기별로 따로 봅니다.</li>
-        </ul>
-      </div>
     </Panel>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 // 궁금한 것 (작업 0303) — 고른 질문 · 화살표로 앞뒤 · 찾기 창에서 고른 질문(adm-pick · data-pick="click")은 누르고 판으로 스크롤
-import { reduceMotion } from "../../../shared/ui/events/admin-events";
+import { reduceMotion } from "@/shared/ui/events/admin-events";
 import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { HOW_FAQ } from "../common/how";
 
@@ -26,5 +26,5 @@ export function useFaq() {
     document.addEventListener("adm-pick", on, true);
     return () => document.removeEventListener("adm-pick", on, true);
   }, []);
-  return { cur, setCur, btns, onKey };
+  return { cur, setCur, btns, onKey, f: HOW_FAQ[cur] ?? HOW_FAQ[0] };
 }

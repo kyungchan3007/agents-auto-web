@@ -57,3 +57,18 @@ export function imageSources(day: string, r2Base: string, rawBase: string, hasRa
 export function nextImage(current: string | null, d: Pick<Draft, "imageFallback">): string | null {
   return d.imageFallback && current !== d.imageFallback ? d.imageFallback : null;
 }
+
+/** 저장소 원본 파일 주소 — github.com/<저장소> → raw.githubusercontent.com/<저장소>/main/docs/marketing/ (작업 0310 · 0312 에 page.tsx 에서 옮김) */
+export const rawBase = (repoUrl: string) => `${repoUrl.replace("https://github.com/", "https://raw.githubusercontent.com/")}/main/docs/marketing/`;
+
+/** 링크 글 — 앞의 https:// 를 뺀 주소 */
+export const linkText = (link: string) => link.replace(/^https?:\/\//, "");
+
+/** 본문 복사 글 — 본문과 해시태그를 빈 줄로 이음 */
+export const copyBody = (d: Pick<Draft, "body" | "tags">) => [d.body, d.tags].filter(Boolean).join("\n\n");
+
+/** 최근 초안 날짜 — 목록은 최근 날부터라 맨 앞 · 없으면 null */
+export const latestDay = (drafts: Pick<Draft, "day">[]) => drafts[0]?.day ?? null;
+
+/** 숫자 칸 날짜 — "2026-11-23" → "11-23" */
+export const shortDay = (day: string) => day.slice(5);
