@@ -12,6 +12,7 @@
 - 판정 이름이 docs/domain 에 있으면 함께 고침(보호 파일이면 멈추고 알림). (작업서)
 - 화면 읽기용 글(aria) · 구조화 자료에 같은 문구가 있으면 함께. 메타 · 공유 이미지는 그대로(사용자 확정). (작업서)
 - 길어진 문구로 줄이 바뀌거나 넘치는 곳 확인 — "가로로 넘치지 않는다 · 값이 바뀌어도 밀리지 않는다"는 기능 테스트. (작업서)
+- (정함 · lead 04:34Z) 바꿀 파일 약 17개 → 두 PR 로 나눔: **0276** 홈 · 환율 판정 · 소개 · 창밖 꼬리표 · 강조(year-bars · destination-table · destination-row · signal-pin · criteria · window-months · emphasis.ts · docs/domain/signal.md · travel-price.md) / **0277** 여행 물가 · 항공료(price-route · lib/price-route · ruler-chart · shared travel.ts · airfare.ts · airfare-calendar · airfare-view · flights-page · flights-view · flights-copy). 0277 은 같은 작업서를 따른다.
 - 파일이 10개를 넘으면 lead 가 나눈다. builder 가 사실 대조 뒤 바꿀 파일 목록을 먼저 보고 → lead 가 정함. (작업서)
 - 문구 · 판정 이름(lib · shared · docs/domain)이 바뀌므로 평소 PR(design 라벨 없음). (verdict.md)
 
