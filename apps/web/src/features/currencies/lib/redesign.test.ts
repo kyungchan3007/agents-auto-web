@@ -8,7 +8,7 @@
 //   bigRate(rate: { baseRate: number; unit: number }): { value: number; digits: number; unit: string }
 //     머리 큰 숫자(카운트업) — value = baseRate 그대로 · digits = rateText 가 보이는 소수 자리(100 이상 1 · 미만 2, 끝 0 은 numberText 규칙을 따름) · unit = rateText 의 단위("원" · "원 / 100")
 //     formatCount(value, digits) 가 rateText(rate).value 와 같음 (카운트업 끝 글 = 지금 글)
-//   cardDigits(rate): 1 | 2   — cardRateText 와 같은 자릿수 규칙(현재 환율이 100 이상이면 1 · 아니면 2) · formatCount(v, cardDigits) + unit 이 cardRateText 와 같음
+//   cardDigits({ baseRate: 카드 값 }): number — 그 값에 대한 rateDigits 규칙(작업 0287 정정: 1,000원 이상 첫째 · 미만 둘째 · 끝자리 0 생략) · formatCount(v, cardDigits) + unit 이 cardRateText 와 같음
 import { rateText } from "@hav/shared/currency";
 import { formatCount } from "@hav/ui/hooks/use-count-up";
 import { describe, expect, it } from "vitest";
@@ -67,7 +67,9 @@ describe("bigRate · cardDigits — 카운트업 끝 글 = 지금 글", () => {
       expect(b.unit).toBe(rateText(r).unit);
     }
   });
-  it("카드(최저 · 최고 · 평균) 글 = formatCount(v, cardDigits) + 단위", () => {
-    for (const r of RATES) for (const v of [1322.6, 1554.4, 1447.1234, 39.1, 912.5]) expect(`${formatCount(v, cardDigits(r))}${rateText(r).unit}`).toBe(cardRateText(v, r));
+  it("카드(최저 · 최고 · 평균) 글 = formatCount(v, cardDigits(그 값)) + 단위 — 작업 0287 정정: 자릿수는 카드 값 자신에 대한 규칙(1,000원 이상 첫째 · 미만 둘째 · 끝자리 0 생략)", () => {
+    for (const r of RATES) for (const v of [1322.6, 1554.4, 1447.1234, 39.1, 912.5, 1331.0, 833.73, 7.3]) expect(`${formatCount(v, cardDigits({ baseRate: v }))}${rateText(r).unit}`).toBe(cardRateText(v, r));
+    expect(formatCount(1459.62, cardDigits({ baseRate: 1459.62 }))).toBe("1,459.6");
+    expect(formatCount(1331.0, cardDigits({ baseRate: 1331.0 }))).toBe("1,331");
   });
 });
