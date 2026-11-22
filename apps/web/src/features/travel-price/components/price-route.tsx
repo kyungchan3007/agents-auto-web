@@ -46,7 +46,7 @@ function SignalCell({ stop, extra, signalOf, percentileOf, small }: { stop: Rout
   return (
     <>
       <span className={`inline-flex items-center rounded-[6px] px-3.5 py-[0.4375rem] text-[0.8125rem] font-bold whitespace-nowrap ${tone}`}>{rateBadgeText(s, percentileOf[extra.currency ?? ""] ?? null)}</span>
-      {small && <small className="mt-1 block text-[0.71875rem] text-fg-2 max-[760px]:hidden">오늘 그 나라 통화 신호</small>}
+      {small && <small className="mt-1 block text-[0.75rem] text-fg-2 max-[760px]:hidden">오늘 그 나라 통화 신호</small>}
     </>
   );
 }
@@ -120,7 +120,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
             약 {bud.toLocaleString("ko-KR")}
             <small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:text-[0.875rem]">원</small>
           </p>
-          <p className="mt-1.5 text-[0.78125rem] text-fg-2 max-[760px]:text-[0.71875rem]">한국에서 하루 100,000원 쓰는 만큼 · 물가 비율로 계산</p>
+          <p className="mt-1.5 text-[0.78125rem] text-fg-2 max-[760px]:text-[0.75rem]">한국에서 하루 100,000원 쓰는 만큼 · 물가 비율로 계산</p>
         </div>
       </div>
     </>

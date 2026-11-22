@@ -59,7 +59,7 @@ export function PeriodChart({ rates, unit = 1, unitText, lastTone }: { rates: { 
             height={380}
             heightPhone={300}
             pad={{ l: 56, t: 52 }}
-            padPhone={{ l: 44, t: 44 }}
+            padPhone={{ l: 50, t: 44 }}
           />
         ) : (
           <p className="border-t-2 border-line py-6 text-sm text-fg-2">{period.label} 흐름을 그릴 기록이 모자랍니다</p>

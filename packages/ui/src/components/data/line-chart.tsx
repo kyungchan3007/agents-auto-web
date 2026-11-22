@@ -69,7 +69,7 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
   const W = Math.max(280, useElementWidth(box, 720));
   const phone = W < 560;
   const H = phone ? heightPhone : height;
-  const p0 = phone ? { l: 48, r: 70, t: 40, b: 30 } : { l: 62, r: 150, t: 44, b: 36 };
+  const p0 = phone ? { l: 60, r: 70, t: 40, b: 30 } : { l: 62, r: 150, t: 44, b: 36 };
   const pp = { ...p0, ...(phone ? padPhone : pad) };
 
   // 끝 말풍선 크기 — 글자 폭을 어림해 오른쪽 여백을 정함
@@ -80,7 +80,7 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
       const e = s.end as NonNullable<ChartSeries["end"]>;
       const numTxt = fmtNum(e.value, e.digits ?? 0) + (e.unit ?? "");
       const nw = textWidth(numTxt, numSize, true);
-      const cw = phone ? 0 : textWidth(e.label, 11.5, true);
+      const cw = phone ? 0 : textWidth(e.label, 12, true);
       return { s, e, numTxt, w: Math.ceil(Math.max(nw, cw)) + (phone ? 16 : 24), h: phone ? 26 : 50 };
     });
   const maxEnd = ends.reduce((a, b) => Math.max(a, b.w), 0);
@@ -107,7 +107,7 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
   const marksBySeries = shapes.map((sh) => marks.filter((m) => m.series === sh.s.id && sh.pts[m.index]));
   // 날짜 눈금 — 글자끼리 겹치면 끝쪽부터 남기고 사이를 건너뜀 (처음 · 끝은 늘 남김)
   const labelOf = (t: { label: string; short?: string }) => (phone && t.short ? t.short : t.label);
-  const xt = thinTicks(xTicks.map((t) => ({ ...t, w: textWidth(labelOf(t), phone ? 10.5 : 11.5) + 10 })), (v) => X(v));
+  const xt = thinTicks(xTicks.map((t) => ({ ...t, w: textWidth(labelOf(t), 12) + 10 })), (v) => X(v));
   const sched = chartSchedule({
     series: shapes.map((sh, k) => ({ marks: marksBySeries[k].map((m) => (sh.pts[m.index].x - L) / PW), area: sh.s.area !== undefined })),
   });
@@ -184,12 +184,12 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
             tk.t || tk.s ? (
               <g key={tk.v}>
                 {tk.t && (
-                  <text x={L - 10} y={Y(tk.v) + (tk.s ? -1 : 4)} textAnchor="end" fontSize={phone ? 10.5 : 11.5} fontWeight={tk.on ? 700 : 400} fill={MUTE} className="font-sans">
+                  <text x={L - 10} y={Y(tk.v) + (tk.s ? -2 : 4)} textAnchor="end" fontSize={12} fontWeight={tk.on ? 700 : 400} fill={MUTE} className="font-sans">
                     {tk.t}
                   </text>
                 )}
                 {tk.s && (
-                  <text x={L - 10} y={Y(tk.v) + (phone ? 11 : 12.5)} textAnchor="end" fontSize={phone ? 9.5 : 10.5} fill={MUTE} opacity={0.7} className="font-sans">
+                  <text x={L - 10} y={Y(tk.v) + 12.5} textAnchor="end" fontSize={12} fill={MUTE} opacity={0.7} className="font-sans">
                     {tk.s}
                   </text>
                 )}
@@ -201,7 +201,7 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
             const first = k === 0 && x - L < 24;
             const last = k === xt.length - 1 && R - x < 24;
             return (
-              <text key={t.x} data-testid="chart-xtick" x={first ? x - 4 : last ? x + 4 : x} y={B + (phone ? 19 : 21)} textAnchor={first ? "start" : last ? "end" : "middle"} fontSize={phone ? 10.5 : 11.5} fontWeight={400} fill={MUTE} className="font-sans">
+              <text key={t.x} data-testid="chart-xtick" x={first ? x - 4 : last ? x + 4 : x} y={B + (phone ? 19 : 21)} textAnchor={first ? "start" : last ? "end" : "middle"} fontSize={12} fontWeight={400} fill={MUTE} className="font-sans">
                 {labelOf(t)}
               </text>
             );
@@ -258,7 +258,7 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
                 <circle r={phone ? 9 : 11} fill={tone.dot} opacity={0.18} />
                 <circle r={phone ? 5 : 6.5} fill={tone.dot} stroke="var(--hav-card)" strokeWidth={2.5} filter={`url(#${uid}dot)`} />
                 <rect x={tx} y={ty} width={tw} height={th} rx={12} fill={tone.bg} stroke={tone.border} strokeWidth={1.2} />
-                <text x={tx + 9} y={ty + th / 2 + 4.2} fontSize={phone ? 11 : 12} fontWeight={700} fill={tone.ink} className="font-sans">
+                <text x={tx + 9} y={ty + th / 2 + 4.2} fontSize={12} fontWeight={700} fill={tone.ink} className="font-sans">
                   {txt}
                 </text>
               </g>
@@ -290,7 +290,7 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
                 {elbow ? <path d={`M${last.x + 7},${last.y} L${bx - 2},${cy[i]}`} stroke={s.color} strokeWidth={1.4} fill="none" opacity={0.6} /> : <path d={`M${bx + 1},${cy[i] - 5} L${bx - 5},${cy[i]} L${bx + 1},${cy[i] + 5}Z`} fill={s.color} />}
                 <rect x={bx} y={by} width={en.w} height={en.h} rx={phone ? 8 : 12} fill={s.color} filter={`url(#${uid}f${k})`} />
                 {!phone && (
-                  <text x={bx + 12} y={by + 18} fontSize={11.5} fontWeight={600} fill="var(--hav-card)" opacity={0.85} className="font-sans">
+                  <text x={bx + 12} y={by + 18} fontSize={12} fontWeight={600} fill="var(--hav-card)" opacity={0.85} className="font-sans">
                     {en.e.label}
                   </text>
                 )}

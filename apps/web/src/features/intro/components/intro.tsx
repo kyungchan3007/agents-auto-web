@@ -67,7 +67,7 @@ export function Intro({ data }: { data: IntroData }) {
       <FlightHint s={s} />
       <WindowTransition s={s} />
 
-      <p className={`fixed right-4 bottom-2 z-[3] m-0 text-[11px] text-fg-2 transition-opacity duration-300 [text-shadow:0_0_6px_var(--hav-card)] ${s.phase === 0 ? "opacity-100" : "opacity-0"}`}>
+      <p className={`fixed right-4 bottom-2 z-[3] m-0 text-[12px] text-fg-2 transition-opacity duration-300 [text-shadow:0_0_6px_var(--hav-card)] ${s.phase === 0 ? "opacity-100" : "opacity-0"}`}>
         환율 한국수출입은행 · 물가 세계은행 · 항공료 통계청 · {PLANE_CREDIT.text.replace("3D 비행기: ", "비행기 ")} · 차 · 사람 · 도시 Kenney (CC0)
       </p>
     </motion.div>

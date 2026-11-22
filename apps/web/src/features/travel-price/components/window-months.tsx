@@ -109,7 +109,7 @@ function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof wi
               </p>
             </div>
             <div className="relative mt-6 pb-3">
-              <div data-testid="window-band" role="group" aria-label="달 고르기" className="relative grid gap-1.5 pb-3 [--lbl:0.75rem] max-sm:gap-[3px] max-sm:[--lbl:0.65625rem]" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
+              <div data-testid="window-band" role="group" aria-label="달 고르기" className="relative grid gap-1.5 pb-3 [--lbl:0.75rem] max-sm:gap-[3px]" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
                 {months.map((m) => (
                   <button
                     key={m.month}
