@@ -109,4 +109,5 @@
 | 0285 | 여행 물가 문구 — 예산 결과 순서 · 정거장 번호 · 환율 없음 · 뺀 나라 줄 → 소개 · 글자판 자릿수 (Quick · 평소 PR · 시안 50 · 검수) | builder → test | 머지됨 (#338) | task/0285-prices-copy | features/{travel-price,about}/** |
 | 0286 | 바닥 띠 같은 형식 — 소개 · 판단 기준 링크 · 지표 코드 · 예비 출처는 소개로 (Quick · 평소 PR · 시안 52 · 검수) | builder → test | 머지됨 (#339) | task/0286-footer-same | features/{travel-price,import-calc,currencies,about}/** · 바닥 띠 부품 |
 | 0287 | 환율 소수 자리 — 통화 상세 둘째 자리 · 홈 정수 · 한 화면 한 형식 (Quick · 평소 PR · 시안 53 · 먼저 사실 확인 · 검수) | builder → test | 머지됨 (#340) | task/0287-rate-decimals | features/{currencies,home}/** · 환율 표기 함수 |
-| 0288 | 그래프 눈금 글자 투명도 빼기 — 홈 12달 막대 · 여행 타이밍 선 그래프 · 같은 눈금 (Quick · 디자인 PR · 시안 54 · 검수) | builder → test | 진행 중 | task/0288-axis-clear | packages/ui 그래프 부품 · features/{home,travel-price,currencies}/** |
+| 0288 | 그래프 눈금 글자 투명도 빼기 — 홈 12달 막대 · 여행 타이밍 선 그래프 · 같은 눈금 (Quick · 디자인 PR · 시안 54 · 검수) | builder → test | 머지됨 (#341) | task/0288-axis-clear | packages/ui 그래프 부품 · features/{home,travel-price,currencies}/** |
+| 0289 | 통화 판정 줄 — 두 줄 설명 · 달러 고정 통화 셋째 줄(근거 있는 것만) · 밀림 없음 (Quick · 평소 PR · 시안 55 · 검수 마지막) | builder → test | 진행 중 | task/0289-verdict-lines | features/currencies/** · 판정 배지 부품 |
