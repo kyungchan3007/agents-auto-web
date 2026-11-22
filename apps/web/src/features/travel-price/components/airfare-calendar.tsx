@@ -143,7 +143,7 @@ function Calendar({ items, fetchedOn }: { items: AirfareItem[]; fetchedOn: strin
           </div>
         </div>
         <div className="af-side">
-          <h3>요일별 평균 <small>(막대는 가장 저렴한 요일 ~ 비싼 요일 차이)</small></h3>
+          <h3>요일별 평균</h3>
           <div className="af-week">
             {view.weekBars.map((b) => (
               <div key={b.label} data-testid="airfare-week-row" className={`af-row${b.min ? " min" : ""}`}>

@@ -50,7 +50,7 @@ export function cityView(city: AirfareCity): CityView | null {
   const weekBars = avg.map((v, i) => ({
     label: WEEKDAYS[i],
     average: v,
-    percent: v === null ? 0 : hi === lo ? 60 : 25 + (75 * (v - lo)) / (hi - lo),
+    percent: v === null ? 0 : hi === lo ? 60 : (100 * v) / hi, // 막대 길이 = 그 요일 평균 ÷ 가장 비싼 요일 평균 (작업 0290 · 값이 없으면 0 · 하나뿐이거나 모두 같으면 60 은 그대로)
     min: v !== null && v === lo,
   }));
   return { cells, bestIndex: cells.findIndex((c) => c.best), best, worst, weekBars, facts, head: headline(city.city, best) };

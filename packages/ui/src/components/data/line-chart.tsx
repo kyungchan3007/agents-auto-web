@@ -69,7 +69,7 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
   const W = Math.max(280, useElementWidth(box, 720));
   const phone = W < 560;
   const H = phone ? heightPhone : height;
-  const p0 = phone ? { l: 60, r: 70, t: 40, b: 30 } : { l: 62, r: 150, t: 44, b: 36 };
+  const p0 = phone ? { l: 48, r: 70, t: 40, b: 30 } : { l: 62, r: 150, t: 44, b: 36 };
   const pp = { ...p0, ...(phone ? padPhone : pad) };
 
   // 끝 말풍선 크기 — 글자 폭을 어림해 오른쪽 여백을 정함
@@ -184,11 +184,11 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
             tk.t || tk.s ? (
               <g key={tk.v}>
                 {tk.t && (
-                  <text x={L - 10} y={Y(tk.v) + (tk.s ? -2 : 4)} textAnchor="end" fontSize={12} fontWeight={tk.on ? 700 : 400} fill={MUTE} className="font-sans">
+                  <text x={L - 10} y={Y(tk.v) + (tk.s && !phone ? -2 : 4)} textAnchor="end" fontSize={12} fontWeight={tk.on ? 700 : 400} fill={MUTE} className="font-sans">
                     {tk.t}
                   </text>
                 )}
-                {tk.s && (
+                {tk.s && !phone && (
                   <text x={L - 10} y={Y(tk.v) + 12.5} textAnchor="end" fontSize={12} fill={MUTE} className="font-sans">
                     {tk.s}
                   </text>
