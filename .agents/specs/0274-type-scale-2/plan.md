@@ -29,3 +29,4 @@
 
 ## 허점
 - 0273: PR 을 열 때 design 라벨을 함께 달았는데도 첫 gate 가 '디자인 PR: 아니오(design 라벨 없음)' 로 돌았다(0269 와 같음) — 결과는 디자인 테스트까지 막는 쪽으로 돌아 더 엄격했고 통과. 라벨 반영 시점 문제로 보임.
+- 0274: test 로컬 e2e 가 옛 빌드를 읽음 — 앞 작업에서 끊은 e2e 정적 서버(포트 4399)가 고아로 남아 다른 worktree 의 out 을 서빙했고, playwright 의 reuseExistingServer(로컬)가 그 서버를 재사용 → 로컬 '통과'가 무효였고 gate 1회 실패(prices-redesign 44px 고정). 대책(test): e2e 전 4399 점검 · 끊을 때 서버까지 정리. 하네스로 막으려면 playwright.config.ts 의 로컬 서버 재사용을 worktree 별로 나누는 작업이 필요(후보).
