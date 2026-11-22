@@ -3,7 +3,7 @@
 // 글은 사용자가 본 문구(request.md · handoff 표 · 6번 · 7번은 사용자 답 문구)라 그대로 고정 — 판정 설명은 사이트 신호 규칙(최근 90일 백분위 · SIG-05)
 //
 //   export const ABOUT_CARDS: readonly { id: string; title: string; body: string; link?: { word: string; href: string } }[]  // 8개 · 이 순서
-//   link: 본문 안의 한 낱말(word)을 그 주소(href)로 잇는 링크 — 누가 만드나요의 "작업실" → /log
+//   link: 본문 안의 한 낱말(word)을 그 주소(href)로 잇는 링크 — 누가 만드나요의 "작업실" → 어드민 작업실(https://admin.flapfx.com/log · 작업 0302)
 import { describe, expect, it } from "vitest";
 import { ABOUT_CARDS } from "./criteria";
 
@@ -53,9 +53,9 @@ describe("기준 카드 8개 (작업 0267)", () => {
     for (const name of ["SerpApi", "구글 항공권", "Google", "serpapi"]) expect(all, name).not.toContain(name);
   });
 
-  it("누가 만드나요 — '작업실' 낱말이 /log 로 가는 링크 · 본문에 그 낱말이 있음 · 다른 칸에는 링크 없음", () => {
+  it("누가 만드나요 — '작업실' 낱말이 어드민 작업실로 가는 링크 · 본문에 그 낱말이 있음 · 다른 칸에는 링크 없음", () => {
     const maker = card("누가 만드나요");
-    expect(maker?.link).toEqual({ word: "작업실", href: "/log" });
+    expect(maker?.link).toEqual({ word: "작업실", href: "https://admin.flapfx.com/log" });
     expect(maker?.body).toContain(maker?.link?.word ?? "?");
     for (const c of ABOUT_CARDS.filter((c) => c.title !== "누가 만드나요")) expect(c.link, c.title).toBeUndefined();
   });
