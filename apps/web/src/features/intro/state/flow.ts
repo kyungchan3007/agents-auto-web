@@ -190,3 +190,6 @@ export const canGoBack = (step: number): boolean => step >= 2 && step <= 4;
 export const prevStep = (step: number): number => (canGoBack(step) ? step - 1 : step);
 
 export const pickedOf = (country: string, city: string, budget: number): PickedTrip => ({ v: 1, country, city, budget });
+
+/** 인트로 바닥 출처의 비행기 글 — "3D 비행기: …" → "비행기 …" (작업 0312 에 intro.tsx 에서 옮김) */
+export const planeCreditShort = (text: string) => text.replace("3D 비행기: ", "비행기 ");

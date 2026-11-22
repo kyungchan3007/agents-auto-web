@@ -1,4 +1,4 @@
-// 작업 0172 · 0303 — 작업실 요약 구간 (소스 검사 · 작업 0312 에 apps/web/src/shared/site-story.test.ts 에서 옮김)
+// 작업 0172 · 0303 — 작업실 요약 구간 (소스 검사 · 작업 0312 에 apps/web/src/checks/site-story.test.ts 에서 옮김)
 //   화면 · 훅 · 로직이 하위 폴더로 나뉘어도 작업실 기능 전체(테스트 제외)에서 찾음
 import { readFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";

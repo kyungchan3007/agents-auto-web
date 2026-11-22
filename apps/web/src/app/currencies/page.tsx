@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { CurrencyDetail } from "@/features/currencies/detail/currency-detail";
 import { loadDetail } from "@/features/currencies/page-data/load";
 import { DEFAULT_CODE } from "@/features/currencies/browse/route";
-import { JsonLd } from "@/shared/json-ld";
-import { breadcrumbLd, pageMeta } from "@/shared/seo";
+import { JsonLd } from "@/shared/seo/json-ld";
+import { breadcrumbLd, pageMeta } from "@/shared/seo/seo";
 
 export const metadata: Metadata = pageMeta({ path: "/currencies" });
 

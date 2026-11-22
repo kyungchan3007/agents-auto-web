@@ -42,3 +42,9 @@ export function parseInput(s: string): number | null {
   if (!/^\d*\.?\d+$|^\d+\.$/.test(t)) return null;
   return Number(t);
 }
+
+/** 결과 글자판 값 — 금액이 틀렸거나 원화 쪽 입력이면 없음(—) · 있으면 원 단위 정수 (작업 0312 에 converter.tsx 에서 옮김) */
+export const boardAmount = (invalid: boolean, foreign: boolean, result: number | null) => (invalid || !foreign || result == null ? null : Math.round(result));
+
+/** 결과 글자판 칸 수 — 글자 수만큼 · 적어도 min 칸 */
+export const boardCols = (label: string, min: number) => Math.max(min, Array.from(label).length);

@@ -67,3 +67,19 @@ export function rangeText(a: string, b: string): string {
   const md = (iso: string) => `${Number(iso.slice(5, 7))}월 ${Number(iso.slice(8, 10))}일`;
   return `${md(a)} ~ ${md(b)} 출발`;
 }
+
+/** 화면에 그릴 도시 — 값이 모자라 보기를 못 만든 도시는 뺌 (작업 0312 에 airfare-calendar.tsx 에서 옮김) */
+export const calendarItems = (calendar: { cities: AirfareCity[] } | null) =>
+  (calendar?.cities ?? []).flatMap((c) => {
+    const view = cityView(c);
+    return view ? [{ city: c, view }] : [];
+  });
+
+/** 숫자 · 금액(예: "(685,748원)" · "27.5만 원" · "2.5배")은 줄 중간에서 쪼개지지 않게 — keep 인 조각을 한 덩어리로 */
+export const noBreakParts = (text: string) => text.split(/(\(?[\d,.]+(?:만 원|원|배)\)?)/).map((part, i) => ({ part, keep: i % 2 === 1 }));
+
+/** 머리 글 — 날짜(굵게) 앞 · 날짜 · 뒤 */
+export function headParts(head: string): [string, string, string] {
+  const [a = "", b = "", c = ""] = head.split(/(\d+월 \d+일\([월화수목금토일]\))/);
+  return [a, b, c];
+}

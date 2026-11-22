@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sitemapEntries } from "./sitemap-entries";
+import { sitemapEntries } from "../shared/seo/sitemap-entries";
 
 describe("sitemap 항목 (작업 0114)", () => {
   it("환율 페이지 · 통화 상세만 실제 기준일 · 작업실은 날짜 없음", () => {

@@ -16,7 +16,7 @@ const SKIP_PREFIX: Record<string, string> = {
 
 /** 파일째로 뺌 — 이유 필수 */
 const SKIP_FILES: Record<string, string> = {
-  "apps/web/src/shared/old-name.test.ts": "이 검사 파일 자신 (설명 글에 옛 이름을 적음)",
+  "apps/web/src/checks/old-name.test.ts": "이 검사 파일 자신 (설명 글에 옛 이름을 적음)",
   "apps/api/src/features/geo/questions.ts": "1 · 2판 질문 문구(지난 기록을 그때 문구로 읽을 때 씀 · 2026-11-17 이전 Tripfx 시기)",
   "apps/api/src/features/geo/ask.test.ts": "위 지난 질문 문구와 판정 주소(옛 tripfx.pages.dev 는 우리 사이트가 아님)를 확인하는 테스트",
   "apps/api/src/features/geo/gsc.ts": "Search Console 속성 주소(옛 Pages 주소) — 새 주소 속성 등록은 사람이 정할 일이라 바꾸지 않음",
@@ -34,7 +34,7 @@ const SKIP_FILES: Record<string, string> = {
   "apps/api/src/db/schema.ts": "보호 파일(DB 스키마) 주석 — 승인 없이 바꾸지 않음",
   "apps/api/wrangler.jsonc": "보호 파일 — API Worker 이름 tripfx-api",
   "apps/web/wrangler.jsonc": "보호 파일 — 서비스 바인딩 tripfx-api · 옛 Pages 설정을 지웠다는 주석",
-  "apps/web/src/shared/site-story.test.ts": "README 에 옛 주소 tripfx.pages.dev 가 없음을 확인하는 검사",
+  "apps/web/src/checks/site-story.test.ts": "README 에 옛 주소 tripfx.pages.dev 가 없음을 확인하는 검사",
 };
 
 /** 줄 안에서 지우고 검사할 것 — API Worker 이름 · 환경 변수 · 서비스 계정 (사이트 이름이 아님) */

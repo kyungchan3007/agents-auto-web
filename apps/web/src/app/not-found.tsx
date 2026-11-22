@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SiteNav } from "@/shared/site-nav";
+import { SiteNav } from "@/shared/nav/site-nav";
 import { Eyebrow, Title } from "@hav/ui/text/heading";
 import { PageFooter } from "@hav/ui/layout/page-footer";
 

@@ -33,3 +33,15 @@ export function pickedBoard(a: { picked: PickedTrip | null; rates: RateRow[]; si
 
 /** 홈 왼쪽 아래 "탑승권 보기" 칩 글 */
 export const pickedChip = (p: PickedTrip): string => `✈ ${ORIGIN_CODE} → ${p.city} · 탑승권 보기`;
+
+/** 근거 글에서 "97%" 같은 숫자 조각 표시 (작업 0217 · 0312 에 ticket.tsx 에서 옮김) */
+export const percentParts = (text: string) => text.split(/(\d+%)/).map((part) => ({ part, num: /^\d+%$/.test(part) }));
+
+/** 근거 막대 너비 — 0 이 아니면 적어도 2% */
+export const pctWidth = (pct: number) => `${Math.max(2, Math.round(pct * 100))}%`;
+
+/** 고른 나라 칩 글에서 비행기 표시를 떼고 한 줄로 */
+export const passChipText = (chip: string) => `${chip.replace(/^✈\s*/, "").replace(" · ", " ")} ›`;
+
+/** 예산 "1,200,000원" */
+export const budgetText = (won: number) => `${won.toLocaleString("ko-KR")}원`;

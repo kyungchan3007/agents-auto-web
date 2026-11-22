@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { FlightsPage } from "@/features/flights/flights-page";
 import { fxMonthlyAverage } from "@/features/flights/travel-index";
 import { api } from "@hav/shared/api";
-import { JsonLd } from "@/shared/json-ld";
-import { breadcrumbLd, pageMeta } from "@/shared/seo";
+import { JsonLd } from "@/shared/seo/json-ld";
+import { breadcrumbLd, pageMeta } from "@/shared/seo/seo";
 
 export const metadata: Metadata = pageMeta({ path: "/flights", title: "여행 타이밍 · 항공료 · 단체여행비 물가지수 · Flapfx", description: "국제항공료 · 해외단체여행비 소비자물가지수 — 작년 같은 달과 비교하고 어느 달이 싼 편인지 · 원/달러 환율 월평균과 나란히" });
 

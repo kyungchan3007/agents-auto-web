@@ -13,6 +13,8 @@ import { CountUp } from "@hav/ui/motion/count-up";
 import Link from "next/link";
 import { usePriceBands } from "./use-price-bands";
 import { type PriceBand, rateBadgeText } from "./bands";
+import { relativePct, yearNote } from "../common/price-text";
+import { allRows, hiddenCount, shownRows } from "./bands";
 
 const BAND_TITLE: Record<Band, string> = { cheap: "한국보다 싼 곳", similar: "비슷한 곳", pricey: "한국보다 비싼 곳" };
 // 세 카드는 같은 틀(흰 바탕 · 같은 테두리) — 구분은 제목 색 + 제목 앞 작은 점 (작업 0212)
@@ -34,7 +36,7 @@ function CountryRow({ r, signalOf, percentileOf, latestYear }: { r: Row; signalO
         <span className="min-w-0">
           <span className="block text-[1.125rem] font-semibold text-fg">{r.name}</span>
           <span className="block text-small text-fg-2">
-            물가 <CountUp value={Math.round(r.relative * 100)} /> (한국 100){r.year !== latestYear ? ` · ${r.year}년 자료` : ""}
+            물가 <CountUp value={relativePct(r.relative)} /> (한국 100){yearNote(r.year, latestYear)}
           </span>
         </span>
       </span>
@@ -53,12 +55,12 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
   const { open: opened, toggle } = usePriceBands();
   const open = opened || unfolded;
   const merged = opened && !unfolded; // 펼친 상태(처음 화면의 접힌 세 칸은 그대로) = 세 묶음을 물가 낮은 순 한 목록으로 합쳐 세 단으로 흘림 (작업 0248 · 4번)
-  const more = unfolded ? 0 : bands.reduce((n, b) => n + Math.max(0, b.rows.length - FOLDED), 0);
+  const more = unfolded ? 0 : hiddenCount(bands, FOLDED);
   return (
     <FadeUpGroup id="price-bands" data-testid="price-bands" className="scroll-mt-24">
       {merged ? (
         <ul data-testid="price-merged" className="border-t-[3px] border-fg pt-2 lg:columns-3 lg:gap-x-12 lg:[column-rule:1px_solid_var(--hav-line)]">
-          {bands.flatMap((b) => b.rows).map((r) => (
+          {allRows(bands).map((r) => (
             <CountryRow key={r.country} r={r} signalOf={signalOf} percentileOf={percentileOf} latestYear={latestYear} />
           ))}
         </ul>
@@ -71,7 +73,7 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
               {BAND_TITLE[b.id]}
             </SectionTitle>
             <ul className="mt-3 [&>li:last-child]:border-b-0">
-              {(open ? b.rows : b.rows.slice(0, FOLDED)).map((r) => (
+              {shownRows(b.rows, open, FOLDED).map((r) => (
                 <CountryRow key={r.country} r={r} signalOf={signalOf} percentileOf={percentileOf} latestYear={latestYear} />
               ))}
             </ul>

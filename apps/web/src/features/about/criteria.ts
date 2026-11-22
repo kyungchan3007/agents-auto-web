@@ -14,3 +14,13 @@ export const ABOUT_CARDS: readonly AboutCard[] = [
   { id: "visits", title: "방문 통계", body: "쿠키를 쓰지 않습니다. AI · 검색 봇의 방문과 AI 서비스에서 넘어온 방문만 날짜별 횟수로 셉니다. 개인 정보는 저장하지 않습니다." },
   { id: "maker", title: "누가 만드나요", body: "사람 한 명과 AI 에이전트 팀이 함께 만듭니다. 만드는 과정은 작업실에 공개합니다.", link: { word: "작업실", href: `${ADMIN_URL}/log` } },
 ];
+
+/** 본문 — 링크 낱말 앞 · 낱말 · 뒤로 나눔 (링크가 없으면 null) (작업 0312 에 about-page.tsx 에서 옮김) */
+export function bodyParts(c: AboutCard): { before: string; word: string; href: string; after: string } | null {
+  if (!c.link) return null;
+  const [before = "", ...rest] = c.body.split(c.link.word);
+  return { before, word: c.link.word, href: c.link.href, after: rest.join(c.link.word) };
+}
+
+/** 카드가 올라오는 줄 번호 — 두 장씩 한 줄 */
+export const fadeRow = (i: number) => Math.floor(i / 2);

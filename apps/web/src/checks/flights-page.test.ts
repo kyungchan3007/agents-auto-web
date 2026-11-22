@@ -3,7 +3,7 @@
 //
 // builder 가 할 것
 //   shared/site.ts: PUBLIC_PAGES 에 "/flights" 추가 (sitemap.ts 가 자동으로 포함)
-//   shared/site-nav.tsx: Page 타입에 "flights" · 메뉴에 { href: "/flights", label: "여행 타이밍", current: page === "flights" } 추가 → 메뉴 7개
+//   shared/nav/site-nav.tsx: Page 타입에 "flights" · 메뉴에 { href: "/flights", label: "여행 타이밍", current: page === "flights" } 추가 → 메뉴 7개
 //   app/flights/page.tsx 새로 만듦: metadata 제목에 "여행 타이밍" · alternates.canonical "/flights" · 여행 품목 영역(TravelIndexSection)을 씀 · SiteNav page="flights"
 //     (app/flights/ 안이나 features/travel-price/components/ 의 새 화면 컴포넌트 어디에 두든 됨 — 둘을 합쳐서 검사)
 //   /prices (app/prices/page.tsx · price-page.tsx): TravelIndexSection · 여행 품목 API(kosis-cpi) 호출을 뺌 (시안 04 에 없는 "/flights 로 가는 링크 한 줄"은 요구하지 않음 — 있어도 되고 없어도 됨 · 작업 0170 시안 맞춤)
@@ -11,7 +11,7 @@
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { PUBLIC_PAGES } from "./site";
+import { PUBLIC_PAGES } from "../shared/site";
 
 const SRC = resolve(__dirname, "..");
 const read = (p: string) => readFileSync(join(SRC, p), "utf8");
@@ -34,7 +34,7 @@ describe("/flights — 검색 · 메뉴", () => {
   });
 
   it("상단 메뉴에 '여행 타이밍' → /flights · Page 타입에 flights · 메뉴는 5개 (작업 0302 · 0303: 작업실 · GEO 측정은 어드민)", () => {
-    const nav = read("shared/site-nav.tsx");
+    const nav = read("shared/nav/site-nav.tsx") + read("shared/nav/nav-links.ts"); // 작업 0312: 링크는 nav-links.ts
     expect(nav).toMatch(/href:\s*"\/flights"\s*,\s*label:\s*"여행 타이밍"/);
     expect(nav).toMatch(/page === "flights"/);
     expect(nav).toMatch(/export type Page\s*=[^;]*"flights"/);
@@ -48,7 +48,7 @@ describe("/flights — 새 페이지", () => {
     expect(existsSync(join(SRC, "app/flights/page.tsx"))).toBe(true);
     const page = read("app/flights/page.tsx");
     expect(page).toMatch(/title:\s*"[^"]*여행 타이밍/);
-    expect(page).toMatch(/pageMeta\(\{\s*path:\s*"\/flights"/); // canonical · og:url 은 공용 도우미(shared/seo.ts)가 같은 주소로 만듦 (작업 0304)
+    expect(page).toMatch(/pageMeta\(\{\s*path:\s*"\/flights"/); // canonical · og:url 은 공용 도우미(shared/seo/seo.ts)가 같은 주소로 만듦 (작업 0304)
     expect(page).toMatch(/description:/);
   });
 

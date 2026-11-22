@@ -1,27 +1,27 @@
 // 소개 · 판단 기준 (작업 0115 · 이슈 #117) — 작업 0170 Figma 08: 큰 제목 + 기준 카드 6개 · 작업 0222: 사진 머리 → 사진 없는 머리(메뉴 아래 흰 면 · 라벨 · 큰 제목 · 새 디자인 시안 A 페이지 머리 모양) (2열 × 3줄) · 규칙 숫자는 원본(API rule · rules.ts)에서 읽어 카드 아래에 따로 적음
 import type { Fetched } from "@hav/shared/api";
-import { SiteNav } from "@/shared/site-nav";
+import { SiteNav } from "@/shared/nav/site-nav";
 import type { SignalList } from "@hav/shared/signal";
 import { FadeUpGroup } from "@hav/ui/motion/fade-up";
 import { PageFooter } from "@hav/ui/layout/page-footer";
 import { SectionTitle, Title } from "@hav/ui/text/heading";
 import Link from "next/link";
-import { ABOUT_CARDS, type AboutCard } from "./criteria";
+import { ABOUT_CARDS, type AboutCard, bodyParts, fadeRow } from "./criteria";
 
 /** 직구 판단 기준 — 기능 폴더끼리 직접 가져오지 않게 라우트에서 받음 */
 export type DutyRules = { usList: number; other: number; source: { name: string; url: string; checked: string } };
 
 /** 본문 — 링크가 있으면 그 낱말만 링크로 */
 function bodyOf(c: AboutCard) {
-  if (!c.link) return c.body;
-  const [before, ...rest] = c.body.split(c.link.word);
+  const p = bodyParts(c);
+  if (!p) return c.body;
   return (
     <>
-      {before}
-      <Link href={c.link.href} className="font-semibold text-cheap underline underline-offset-2 hover:text-fg">
-        {c.link.word}
+      {p.before}
+      <Link href={p.href} className="font-semibold text-cheap underline underline-offset-2 hover:text-fg">
+        {p.word}
       </Link>
-      {rest.join(c.link.word)}
+      {p.after}
     </>
   );
 }
@@ -43,7 +43,7 @@ export function AboutPage(_props: { signals: Fetched<SignalList>; duty: DutyRule
         <FadeUpGroup className="mx-auto max-w-page">
           <ul className="grid gap-4 sm:grid-cols-2">
             {ABOUT_CARDS.map((c, i) => (
-              <li key={c.id} data-testid="criteria-card" data-fu={Math.floor(i / 2)} className="rounded-[0.625rem] bg-card px-5 py-5">
+              <li key={c.id} data-testid="criteria-card" data-fu={fadeRow(i)} className="rounded-[0.625rem] bg-card px-5 py-5">
                 <SectionTitle className="text-[1.375rem] leading-tight text-cheap">{c.title}</SectionTitle>
                 <p className="mt-3 text-body text-fg-2">{bodyOf(c)}</p>
               </li>

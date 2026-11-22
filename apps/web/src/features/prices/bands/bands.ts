@@ -20,3 +20,12 @@ export function bandsView(bands: PriceBand[], region: Region | "all") {
 
 /** 나라 줄 판정 알약 글 — 나라 물가(구간 제목)가 아니라 그 나라 통화 환율 신호라는 것을 "환율" 로 구분 (작업 0212) */
 export const rateBadgeText = (signal: Signal, percentile: number | null | undefined): string => `환율 ${pinBasis(signal, percentile)}`;
+
+/** 접힌 칸에 가려진 나라 수 (작업 0312 에 price-bands.tsx 에서 옮김) */
+export const hiddenCount = (bands: { rows: unknown[] }[], folded: number) => bands.reduce((n, b) => n + Math.max(0, b.rows.length - folded), 0);
+
+/** 세 묶음을 한 목록으로 */
+export const allRows = <T,>(bands: { rows: T[] }[]) => bands.flatMap((b) => b.rows);
+
+/** 펼쳤으면 전부 · 아니면 앞 folded 개 */
+export const shownRows = <T,>(rows: T[], open: boolean, folded: number) => (open ? rows : rows.slice(0, folded));

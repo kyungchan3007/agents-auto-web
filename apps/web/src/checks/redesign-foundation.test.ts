@@ -1,7 +1,7 @@
 // 작업 0168 — 사이트 전체 디자인 변경 ① 공통 기반: 메뉴 · 글꼴 · 고양이/동전 제거 · 장식 걷기 · 문서 (소스 검사) (테스트 먼저 · 구현 전에는 FAIL 이 정상)
 //
 // builder 가 할 것
-//   shared/site-nav.tsx — 메뉴 순서 · 주소 (R4 · figma-spec 라우트 맵):
+//   shared/nav/site-nav.tsx — 메뉴 순서 · 주소 (R4 · figma-spec 라우트 맵):
 //     여행 타이밍 /flights · 오늘 환율 /#today · 통화 /currencies · 여행 물가 /prices · 직구 계산 /calc · 작업실 /log · GEO 측정 /geo — 소개(/about)는 메뉴에 없음
 //   packages/ui/src/components/layout/nav-bar.tsx — 데스크톱: 파랑 띠(data-surface="dark" · 작업 0216) 위 로고 + 메뉴 한 줄 · 모바일: 로고 + 메뉴 아이콘 버튼
 //     버튼: <button> · 접근 이름에 "메뉴" · aria-expanded(열림/닫힘) · aria-controls · Esc 로 닫기 · 누르면 메뉴 7칸이 펼쳐짐 · 로고는 "/" 로 가는 링크
@@ -14,7 +14,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { navLinks, type Page } from "./site-nav";
+import { navLinks, type Page } from "../shared/nav/nav-links";
 
 const WEB_SRC = resolve(__dirname, ".."); // apps/web/src
 const UI_SRC = resolve(WEB_SRC, "../../../packages/ui/src");
@@ -33,7 +33,7 @@ function sources(dir: string): string[] {
 const APP_FILES = [...sources(WEB_SRC), ...sources(UI_SRC)];
 
 describe("메뉴 — 순서 · 주소 (R4)", () => {
-  const nav = read(join(WEB_SRC, "shared/site-nav.tsx"));
+  const nav = read(join(WEB_SRC, "shared/nav/site-nav.tsx")) + read(join(WEB_SRC, "shared/nav/nav-links.ts")); // 작업 0312: 링크는 nav-links.ts
   const links = [...nav.matchAll(/\{\s*href:\s*"([^"]+)"\s*,\s*label:\s*"([^"]+)"/g)].map((m) => [m[2], m[1]]);
 
   // 작업실 · GEO 측정은 어드민(admin.flapfx.com)으로 옮김 — 방문자 메뉴 다섯 개 · 어드민은 자기 틀 (작업 0302 · 0303)

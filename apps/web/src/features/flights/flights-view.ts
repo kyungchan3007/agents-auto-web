@@ -54,3 +54,10 @@ export function stripStats(air: IndexPoint[] | null | undefined, fx: IndexPoint[
   }
   return { max, min, fx: fx.length > 0 ? ([...fx].sort(byPeriod).at(-1) as IndexPoint) : null };
 }
+
+/** 작년 대비 — 크기(카운트업) · 앞 글 "작년보다 +" (작업 0312 에 flights-page.tsx 에서 옮김) */
+export const yoyParts = (yoy: number) => ({ value: Math.abs(yoy), prefix: `작년보다 ${yoy >= 0 ? "+" : "-"}` });
+
+/** 띠 글 — 국제항공료 지수 · 원/달러 월평균 */
+export const indexText = (v: number) => `국제항공료 지수 ${v.toFixed(1)}`;
+export const fxText = (v: number) => `원/달러 ${Math.round(v).toLocaleString("ko-KR")}원`;

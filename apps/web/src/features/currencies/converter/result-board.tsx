@@ -4,12 +4,13 @@
 //   통화를 바꾸면(작업 0231 · 모션 4) 직전 글자판 값에서 새 값으로 칸마다 굴러감 · 처음 들어옴 · 새로 고침 · 금액을 고쳐 쓸 때는 지금 규칙(값이 바뀌면 바로 · 이어 가며) 그대로
 //   서버 첫 그림 · 움직임 줄이기는 바로 최종 값 · 화면 읽기 도구는 판 전체를 최종 값 한 문장(label)으로 읽고 칸 글자는 읽지 않음 (flap-board · role=img · aria-label)
 import { RollingNumber } from "@hav/ui/motion/rolling-number";
+import { boardCols } from "./convert";
 
 const MIN_COLS = 8;
 const CELL = "h-10 w-[1.55rem] min-w-0 shrink rounded-[3px] bg-flap-cell font-display text-[1.3rem] font-extrabold tracking-display tabular-nums text-sun sm:h-12 sm:w-8 sm:text-[1.6rem]";
 
 export function ResultBoard({ amount, label, from = null }: { /** 최종 값(원 · 정수) — 없으면 "—" */ amount: number | null; label: string; /** 통화를 바꾸기 전 글자판 값 — 거기서 굴러 시작 */ from?: number | null }) {
-  const cols = Math.max(MIN_COLS, Array.from(label).length);
+  const cols = boardCols(label, MIN_COLS);
   return (
     <div data-testid="flap-board" role="img" aria-label={label} className="inline-flex max-w-full min-w-0 flex-col rounded-[10px] bg-pin-ink p-3 sm:p-4">
       {amount === null ? (

@@ -3,7 +3,7 @@
 import type { Metadata } from "next";
 import { SOURCE_NAME, currencyName } from "@hav/shared/currency";
 import type { FxRate } from "@hav/shared/fx";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "./site";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "../site";
 
 /** 홈 전용 설명 — 지금 화면 · docs/domain 사실만 (신호는 최근 90일 비교 · 환율은 한국수출입은행) */
 export const HOME_DESCRIPTION = "한국수출입은행 환율이 최근 90일 중 낮은지 높은지 신호로 알려 주고 · 여행 물가와 직구 세금 예상까지 한 곳에서 보여 줍니다";
@@ -57,3 +57,6 @@ export function rateDatasetLd(code: string, rate: Pick<FxRate, "date" | "baseRat
     variableMeasured: { "@type": "PropertyValue", name: "매매기준율", value: rate.baseRate, unitText: `원 / ${rate.unit} ${code}` },
   };
 }
+
+/** 구조화 자료 글 — "<" 는 이스케이프해 글이 태그를 닫지 못하게 (작업 0304 · 0312 에 json-ld.tsx 에서 옮김) */
+export const jsonLdText = (data: object) => JSON.stringify(data).replace(/</g, "\\u003c");

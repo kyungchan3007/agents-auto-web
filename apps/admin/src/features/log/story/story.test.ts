@@ -7,7 +7,7 @@
 //   export type StoryStep = { id: string; title: string; bullets: readonly StoryBullet[] }
 //   export const STORY_STEPS: readonly StoryStep[]                      // 다섯 단계 · 이 순서
 //     제목: "문제 정의" · "외부 공공 API 연결" · "구현 · 운영" · "사고 대응" · "결과 측정"
-//   화면은 이 상수만 그림 (소스 검사는 shared/site-story.test.ts)
+//   화면은 이 상수만 그림 (소스 검사는 checks/site-story.test.ts)
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";

@@ -3,7 +3,8 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const code = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
-const src = code(readFileSync(new URL("./flights-graph.tsx", import.meta.url), "utf8"));
+// 작업 0312: 계산은 옆 flights-chart.ts 로 — 화면과 함께 읽음
+const src = ["./flights-graph.tsx", "./flights-chart.ts"].map((f) => code(readFileSync(new URL(f, import.meta.url), "utf8"))).join("\n");
 
 describe("FlightsGraph 소스", () => {
   it("값과 무관한 가로 눈금선 3개를 그리지 않음 (세 선의 단위가 달라 공통 눈금이 없음) · 대신 단위 안내", () => {
@@ -31,7 +32,7 @@ describe("FlightsGraph 소스", () => {
 
   it("최저 · 최고 꼬리표 글은 seriesStats · extremeTexts(받은 값)에서 · 끝 말풍선은 이름 + 최근 값(END_NAME · lastOf) · 가로축 눈금은 monthTicks", () => {
     for (const f of ["seriesStats(", "extremeTexts(", "monthTicks(", "END_NAME", "lastOf("]) expect(src, f).toContain(f);
-    expect(src).toMatch(/marks=\{marks\}/);
+    expect(src).toMatch(/marks=\{(\w+\.)?marks\}/);
   });
 
   it("가로축 눈금은 LineChart 의 xTicks(날짜 글) · 겹치면 부품이 솎음 — 화면 코드는 줄바꿈 · 위치 계산을 하지 않음", () => {

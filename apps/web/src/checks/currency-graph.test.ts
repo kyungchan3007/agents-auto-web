@@ -15,7 +15,8 @@ const UI_SRC = resolve(WEB_SRC, "../../../packages/ui/src");
 const codeOf = (src: string) => src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
 const read = (p: string) => codeOf(readFileSync(p, "utf8"));
 const chart = () => read(join(UI_SRC, "components/data/year-chart.tsx"));
-const period = () => read(join(WEB_SRC, "features/currencies/period-chart/period-chart.tsx"));
+// 작업 0312: 그래프 값 계산은 옆 period-chart-view.ts 로 — 화면과 함께 읽음
+const period = () => ["period-chart.tsx", "period-chart-view.ts"].map((f) => read(join(WEB_SRC, "features/currencies/period-chart", f))).join("\n");
 
 describe("YearChart — 최고 · 최저 점과 금액 라벨", () => {
   it("라벨 위치는 placeExtremeLabels 로 (겹치면 비킴 · 화면 안)", () => {
@@ -63,7 +64,7 @@ describe("PeriodChart — 고른 기간의 최고 · 최저 (C2 · C4)", () => {
   it("기간을 자른 값(shown)으로 extremeDays · extremeLabelText 를 만들어 넘김", () => {
     expect(period()).toMatch(/extremeDays\(\s*shown\s*\)/);
     expect(period()).toMatch(/extremeLabelText\(/);
-    expect(period()).toMatch(/marks=\{marks\}/); // 그래프 2D(시안 F): 최고 · 최저 글은 공통 LineChart 의 marks(꼬리표)로 넘김
+    expect(period()).toMatch(/marks=\{(\w+\.)?marks\}/); // 그래프 2D(시안 F): 최고 · 최저 글은 공통 LineChart 의 marks(꼬리표)로 넘김
   });
 
   it("카드와 같은 계산 — 같은 yearStats 계열 함수를 씀(detail-view)", () => {

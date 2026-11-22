@@ -3,6 +3,7 @@
 // 공항 인트로 — 홈 위를 덮는 층 (작업 0185): 3D 공항 도시 · 위에 로고 · 단계 · 건너뛰기 · 직원 머리 위 말풍선 · 왼쪽 아래 탑승권 판 · 끝 장면(작업 0223: 파랑 면 → 로고 이동 → 사라짐)
 // 그리기만 — 단계 · 입력 · 스크롤 · 창문 전환 순서는 hooks/use-intro.ts · 3D 는 use-intro-scene 이 열릴 때 불러옴 · 늘 건너뛸 수 있음
 import { PLANE_CREDIT } from "@hav/shared/travel";
+import { planeCreditShort } from "./state/flow";
 import { motion } from "motion/react";
 import { type IntroData, useIntro } from "./state/use-intro";
 import { BoardingPass } from "./pass/boarding-pass";
@@ -68,7 +69,7 @@ export function Intro({ data }: { data: IntroData }) {
       <WindowTransition s={s} />
 
       <p className={`fixed right-4 bottom-2 z-[3] m-0 text-[12px] text-fg-2 transition-opacity duration-300 [text-shadow:0_0_6px_var(--hav-card)] ${s.phase === 0 ? "opacity-100" : "opacity-0"}`}>
-        환율 한국수출입은행 · 물가 세계은행 · 항공료 통계청 · {PLANE_CREDIT.text.replace("3D 비행기: ", "비행기 ")} · 차 · 사람 · 도시 Kenney (CC0)
+        환율 한국수출입은행 · 물가 세계은행 · 항공료 통계청 · {planeCreditShort(PLANE_CREDIT.text)} · 차 · 사람 · 도시 Kenney (CC0)
       </p>
     </motion.div>
   );

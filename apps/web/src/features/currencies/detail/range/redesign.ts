@@ -27,3 +27,10 @@ export function bigRate(rate: { baseRate: number; unit: number }): { value: numb
 
 /** 1년 최저 · 최고 · 평균 카드 숫자의 소수 자리 — 그 값에 대한 rateDigits 규칙(1,000원 이상 첫째 · 미만 둘째 · 끝자리 0 생략 · 작업 0287) */
 export const cardDigits = (rate: { baseRate: number }): number => rateDigits(rate.baseRate);
+
+/** 최저 · 최고 옆 단위 (작업 0248 · 0312 에 range-card.tsx 에서 옮김) — 100엔처럼 단위가 1이 아니면 작은 "100엔당" · 원이면 없음 · 그 밖은 "원" 을 뗀 글 */
+export function perUnit(unit: number, code: string, unitText: string): { small: boolean; text: string } | null {
+  if (unit !== 1 && unitText.startsWith("원")) return { small: true, text: `${unit}${code === "JPY" ? "엔" : code}당` };
+  if (unitText === "원") return null;
+  return { small: false, text: unitText.replace(/^원/, "") };
+}

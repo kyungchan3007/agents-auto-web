@@ -8,15 +8,9 @@ import { currencyName } from "@hav/shared/currency";
 import Link from "next/link";
 import { useChipRow } from "./use-chip-row";
 import { useCurrencyPick } from "../browse/use-currency-pick";
-import { readRecent, saveRecent } from "./use-recent-currencies";
-import { chipRow, moreLabel, pushRecent } from "./recent-chips";
+import { commitPick } from "./use-recent-currencies";
+import { moreLabel } from "./recent-chips";
 import { ChipMoreBox } from "./more-box/chip-more-box";
-
-/** 고른 통화를 칩 줄 맨 앞에 붙여 저장 — 저장이 없으면 지금 운영 줄을 바탕으로 (목록 · 상자에서 골라도 같음) */
-export function commitPick(codes: string[], current: string, code: string): void {
-  const stored = readRecent();
-  saveRecent(pushRecent(stored.length > 0 ? stored : chipRow([], current, codes), code));
-}
 
 const CHIP = "tap-44 flex focus-visible:outline-offset-[-4px] items-center gap-2 rounded-pill border-2 px-3.5 py-1.5 text-small font-bold transition-colors";
 

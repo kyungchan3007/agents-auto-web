@@ -3,7 +3,7 @@
 // 고른 통화 칩의 브라우저 저장소 (같은 탭 · 다른 탭 모두 바로 반영 · 작업 0231) — 즐겨찾기(use-favorites)와 같은 useSyncExternalStore + localStorage 패턴 · 새 키 · 계산은 recent-chips.ts
 //   보기만 해서는 저장하지 않음 — 고를 때만 저장(push) · 다른 탭에서 바뀐 것은 remote(밀림 움직임 없이 바로 반영)
 import { useSyncExternalStore } from "react";
-import { RECENT_KEY, parseRecent } from "./recent-chips";
+import { RECENT_KEY, chipRow, parseRecent, pushRecent } from "./recent-chips";
 
 export type RecentState = { list: string[]; /** 이 탭에서 고른 결과인지(밀림 움직임을 보임) · 다른 탭이 바꾼 것이면 false */ local: boolean };
 
@@ -54,3 +54,9 @@ export function saveRecent(next: string[]): void {
 
 /** 지금 저장된 목록을 바로 읽음(이벤트 안에서) */
 export const readRecent = (): string[] => read().list;
+
+/** 고른 통화를 칩 줄 맨 앞에 붙여 저장 — 저장이 없으면 지금 운영 줄을 바탕으로 (목록 · 상자에서 골라도 같음 · 작업 0312 에 currency-chips.tsx 에서 옮김) */
+export function commitPick(codes: string[], current: string, code: string): void {
+  const stored = readRecent();
+  saveRecent(pushRecent(stored.length > 0 ? stored : chipRow([], current, codes), code));
+}

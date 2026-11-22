@@ -40,3 +40,6 @@ export function splitColumns<T>(rows: T[]): [T[], T[]] {
   const n = Math.ceil(rows.length / 2);
   return [rows.slice(0, n), rows.slice(n)];
 }
+
+/** 목록 막대 너비 — 0~1 비율 × 막대 칸 (작업 0312 에 currency-table.tsx 에서 옮김) */
+export const barWidth = (bar: number, px: number) => `${(bar * px).toFixed(1)}px`;

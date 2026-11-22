@@ -14,17 +14,14 @@ import { type PriceBand, rateBadgeText } from "../bands/bands";
 import { type RouteBand, type RouteStop, routeCardText, routeStops } from "./price-route-view";
 import { PriceRouteList } from "./price-route-list";
 import { rulerScale, rulerX } from "./ruler";
+import { budgetWon, gapPct, signalChipTone, wonText, yearOnly } from "../common/price-text";
+import { awayStops, cardNumbers, routeExtras, rulerTicks, trackBg, trailWidth } from "./price-route-view";
 
 const COLOR: Record<RouteBand, string> = {
   cheap: "var(--hav-pin-cheap)",
   mid: "color-mix(in srgb, var(--hav-pin-cheap) 72%, var(--hav-card))",
   base: "var(--hav-pin-ink)",
   exp: "var(--hav-pin-expensive)",
-};
-/** 자 색 띠 — 싼 쪽 파랑 → 한국 근처 옅게 → 비싼 쪽 빨강 (정적 자와 같은 색) */
-const trackBg = (lo: number, hi: number) => {
-  const p = (v: number) => Math.min(100, Math.max(0, ((v - lo) / (hi - lo)) * 100));
-  return `linear-gradient(90deg, var(--hav-pin-cheap) 0%, color-mix(in srgb, var(--hav-pin-cheap) 78%, var(--hav-card)) ${p(60)}%, color-mix(in srgb, var(--hav-pin-cheap) 32%, var(--hav-card)) ${p(88)}%, color-mix(in srgb, var(--hav-pin-line) 10%, var(--hav-card)) ${p(100)}%, color-mix(in srgb, var(--hav-pin-expensive) 45%, var(--hav-card)) ${p(108)}%, var(--hav-pin-expensive) 100%)`;
 };
 
 type Props = { bands: PriceBand[]; signalOf: Record<string, Signal | null>; percentileOf: Record<string, number | null>; latestYear?: number };
@@ -43,7 +40,7 @@ function SignalCell({ stop, extra, signalOf, percentileOf, small }: { stop: Rout
   if (stop.country === "KR") return <span className="inline-flex items-center rounded-[6px] bg-sun px-3.5 py-[0.4375rem] text-[0.8125rem] font-bold whitespace-nowrap text-fg">한국 100 기준</span>;
   const s = extra.currency ? signalOf[extra.currency] : null;
   if (!s) return null;
-  const tone = s === "normal" ? "bg-card text-fg ring-[1.5px] ring-fg ring-inset" : s === "expensive" ? "bg-pin-expensive text-on-accent" : "bg-pin-cheap text-on-accent";
+  const tone = signalChipTone(s);
   return (
     <>
       <span className={`inline-flex items-center rounded-[6px] px-3.5 py-[0.4375rem] text-[0.8125rem] font-bold whitespace-nowrap ${tone}`}>{rateBadgeText(s, percentileOf[extra.currency ?? ""] ?? null)}</span>
@@ -57,13 +54,12 @@ const ROW = "grid grid-cols-[calc(var(--route-tile-w)*3+0.5rem)_1fr_1.25fr] bord
 /** 카드 한 장 — 정거장 하나의 모습 (움직이는 카드 · 정적 카드가 같은 틀) */
 function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap = 0 }: { swap?: number; stop: RouteStop; n: number; extra: Extra; latestYear?: number; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"]; live: boolean }) {
   const t = routeCardText(stop, stop.index, n);
-  const pctN = useCountTween(Math.abs(100 - stop.value));
-  const budN = useCountTween(stop.value * 1000);
+  const pctN = useCountTween(gapPct(stop.value));
+  const budN = useCountTween(budgetWon(stop.value));
   const tiles = useRouteTiles(t.tiles);
   const shownTiles = live ? tiles : t.tiles.map((ch) => ({ ch, out: false }));
-  const pctNum = live ? Math.round(pctN) : Math.abs(100 - stop.value);
-  const bud = live ? Math.round(budN / 1000) * 1000 : stop.value * 1000;
-  const year = extra.year !== null && extra.year !== latestYear ? `${extra.year}년 자료` : "";
+  const { pct: pctNum, bud } = cardNumbers(stop.value, live, pctN, budN);
+  const year = yearOnly(extra.year, latestYear);
   return (
     <>
       <div className="flex flex-wrap items-center gap-x-[1.125rem] gap-y-2 max-[760px]:gap-x-3.5">
@@ -120,7 +116,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
         <div>
           <p className="mb-1.5 text-[0.8125rem] text-fg-2">하루 예산 예시</p>
           <p data-testid="route-card-budget" className="text-(length:--route-big) leading-[1.1] font-bold tracking-display whitespace-nowrap text-(--c) tabular-nums max-[760px]:whitespace-normal">
-            약 {bud.toLocaleString("ko-KR")}
+            약 {wonText(bud)}
             <small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:text-[0.9375rem]">원</small>
           </p>
           <p className="mt-1.5 text-[0.8125rem] text-fg-2 max-[760px]:text-[0.75rem]">한국에서 하루 100,000원 쓰는 만큼 · 물가 비율로 계산</p>
@@ -136,7 +132,7 @@ const CARD = "relative mx-px overflow-hidden rounded-3xl bg-card px-8 pt-(--rout
 export function PriceRoute({ bands, signalOf, percentileOf, latestYear }: Props) {
   const stops = routeStops(bands);
   if (stops.length < 2) return null; // 나라가 없으면 노선 없음 (지어내지 않음)
-  const extras: Record<string, Extra> = Object.fromEntries(bands.flatMap((b) => b.rows).map((r) => [r.country, { currency: r.currency ?? null, year: r.year ?? null }]));
+  const extras: Record<string, Extra> = routeExtras(bands);
   return <Route stops={stops} extras={extras} signalOf={signalOf} percentileOf={percentileOf} latestYear={latestYear} />;
 }
 
@@ -151,9 +147,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
   const flipped = usePlaneFlip(dir, sameValue);
   const cur = stops[active] ?? stops[0];
   const nextName = moving ? (stops[target]?.name ?? "") : "";
-  const ticks: number[] = [];
-  for (let v = Math.ceil((scale.lo + 5) / 5) * 5; v <= scale.hi - 5; v += 5) ticks.push(v);
-  const labels = ticks.filter((v) => v % 20 === 0 && v < 100);
+  const { ticks, labels } = rulerTicks(scale);
   const x0 = x(stops[0].value);
   const x1 = x(stops[n - 1].value);
   return (
@@ -214,7 +208,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
             </div>
             <>
                 <div aria-hidden className="absolute top-[calc(var(--tt)+10px)] h-0.5 bg-[repeating-linear-gradient(90deg,color-mix(in_srgb,var(--hav-card)_95%,transparent)_0_6px,transparent_6px_12px)]" style={{ left: `${x0}%`, width: `${x1 - x0}%` }} />
-                <div aria-hidden className="absolute top-[calc(var(--tt)+8.5px)] h-[5px] rounded-[0.25rem] bg-card ring-[1.5px] ring-fg/35" style={{ left: `${x0}%`, width: `${Math.max(0, planeX - x0)}%` }} />
+                <div aria-hidden className="absolute top-[calc(var(--tt)+8.5px)] h-[5px] rounded-[0.25rem] bg-card ring-[1.5px] ring-fg/35" style={{ left: `${x0}%`, width: trailWidth(x0, planeX) }} />
             </>
             <div aria-hidden className="absolute top-[30px] h-[calc(var(--tt)+22px-30px)] w-0.5 -translate-x-px bg-fg" style={{ left: `${x(100)}%` }} />
             <div
@@ -233,9 +227,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
                 style={{ left: `${x(s.value)}%`, borderColor: COLOR[s.band] }}
               />
             ))}
-            {stops
-              .filter((s) => s.side !== "kr")
-              .map((s) => {
+            {awayStops(stops).map((s) => {
                 const on = s.index === active;
                 const past = s.index < active;
                 const up = s.side === "up";

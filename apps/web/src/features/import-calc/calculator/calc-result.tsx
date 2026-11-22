@@ -9,6 +9,7 @@ import { SOURCE_NAME } from "@hav/shared/currency";
 import type { ReactNode } from "react";
 import type { CalcResult as Result } from "./calc";
 import type { RateSource } from "../common/customs-rate";
+import { limitWidth, usdWhole } from "./calc-copy";
 
 // 원화 금액 — 값이 있으면 굴러가는 숫자(자리 이름 slot) · 없으면 "—" (작업 0227 · 값이 바뀌면 자리마다 굴러 맞춰짐 · 처음 값은 그대로)
 const won = (v: number | null, slot: string): ReactNode => (v == null ? "—" : <RollingNumber slot={slot} value={v} suffix="원" />);
@@ -37,10 +38,10 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
             {r?.ok ? (
               <>
                 <div aria-hidden className="h-2 overflow-hidden rounded-full bg-foam/20">
-                  <div data-testid="calc-limit-fill" className={`h-full rounded-full ${r.over ? "bg-pin-expensive" : "bg-sun"}`} style={{ width: `${Math.min(1, r.ratio) * 100}%` }} />
+                  <div data-testid="calc-limit-fill" className={`h-full rounded-full ${r.over ? "bg-pin-expensive" : "bg-sun"}`} style={{ width: limitWidth(r.ratio) }} />
                 </div>
                 <p className="mt-1.5 flex justify-between text-small font-semibold tabular-nums">
-                  <RollingNumber slot="usd" prefix="$" value={Math.round(r.priceUsd)} />
+                  <RollingNumber slot="usd" prefix="$" value={usdWhole(r.priceUsd)} />
                   <span>한도 ${r.limitUsd}</span>
                 </p>
               </>

@@ -20,7 +20,7 @@ function walk(dir: string, out: string[] = []): string[] {
   }
   return out;
 }
-const SELF = join(WEB_SRC, "shared/no-photos.test.ts");
+const SELF = join(WEB_SRC, "checks/no-photos.test.ts");
 const sourceFiles = (dirs: string[]) => dirs.flatMap((d) => walk(d)).filter((f) => /\.(tsx?|mjs|css)$/.test(f) && f !== SELF);
 
 describe("사진 파일 · 부품 · 스크립트가 없음", () => {

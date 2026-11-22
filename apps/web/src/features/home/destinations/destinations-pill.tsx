@@ -2,15 +2,12 @@
 //   카드 안 맨 위에 겹쳐 놓이는 한 줄 · 카드가 알약으로 접혀 있을 때(pill)와 펼치는 동안(expanding) 만 있고 끝(final)에는 DOM 에서 빠짐
 //   N = 도착지 수 · M = 사이트 신호 규칙(하위 30% 이하)으로 싼 편인 도착지 수 (cheapDestinationCount)
 import { Flag } from "@hav/ui/data/flag";
-import { cheapDestinationCount, type DestinationRowData, pillText } from "../common/destinations";
+import { cheapDestinationCount, type DestinationRowData, pillParts, pillText } from "../common/destinations";
 
 /** fade: 1 보임 → 0 사라짐 (펼치기 시작 0.18초) */
 export function DestinationsPill({ rows, windowDays, fade }: { rows: DestinationRowData[]; windowDays: number; fade: number }) {
   // 휴대폰에서 글이 꺾일 때 "편" 한 글자만 다음 줄에 남지 않게 — "최근 90일 중 싼 편" 은 한 덩어리로 묶어 그 앞에서 꺾임 (문구는 pillText 그대로 · 나누기만 여기서)
-  const text = pillText(rows.length, cheapDestinationCount(rows), windowDays);
-  const cut = text.indexOf("최근 ");
-  const head = cut < 0 ? text : text.slice(0, cut);
-  const tail = cut < 0 ? "" : text.slice(cut);
+  const { head, tail } = pillParts(pillText(rows.length, cheapDestinationCount(rows), windowDays));
   return (
     <div
       data-testid="dest-pill"

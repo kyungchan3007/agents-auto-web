@@ -11,6 +11,7 @@ import type { CSSProperties } from "react";
 import { useRouteList } from "./use-route-list";
 import { rateBadgeText } from "../bands/bands";
 import type { RouteStop } from "./price-route-view";
+import { barPct, budgetWon, cheaperText, digitCells, gapPct, signalChipTone, wonText, yearNote } from "../common/price-text";
 
 type Extra = { currency: string | null; year: number | null };
 type Props = { stops: RouteStop[]; extras: Record<string, Extra>; signalOf: Record<string, Signal | null>; percentileOf: Record<string, number | null>; latestYear?: number };
@@ -41,17 +42,15 @@ function Chevron() {
 function Detail({ stop, extra, latestYear, signalOf, percentileOf }: { stop: RouteStop; extra: Extra; latestYear?: number; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"] }) {
   const v = stop.value;
   const s = extra.currency ? signalOf[extra.currency] : null;
-  const note = extra.year !== null && extra.year !== latestYear ? ` · ${extra.year}년 자료` : "";
-  const tone = s === "normal" ? "bg-card text-fg ring-[1.5px] ring-fg ring-inset" : s === "expensive" ? "bg-pin-expensive text-on-accent" : "bg-pin-cheap text-on-accent";
+  const note = yearNote(extra.year, latestYear);
+  const tone = s ? signalChipTone(s) : signalChipTone("cheap");
   return (
     <div className="mt-1 mb-4 rounded-[0.875rem] bg-surface-2 p-5 [animation:route-rise_.3s_cubic-bezier(.3,.9,.3,1)] motion-reduce:animate-none">
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="m-0 text-[0.8125rem] whitespace-nowrap text-fg-2">물가 (한국 = 100)</p>
           <div role="img" aria-label={`물가 ${v} (한국 100)`} className="mt-2 inline-flex gap-1">
-            {String(v)
-              .split("")
-              .map((c, k) => (
+            {digitCells(v).map((c, k) => (
                 <span key={k} aria-hidden className="relative isolate grid h-11 w-8 place-items-center rounded-[0.25rem] bg-flap-cell text-[1.375rem] leading-none font-bold text-sun after:absolute after:inset-x-0 after:top-1/2 after:-z-10 after:h-px after:bg-on-band">
                   {c}
                 </span>
@@ -63,7 +62,7 @@ function Detail({ stop, extra, latestYear, signalOf, percentileOf }: { stop: Rou
             "기준이 되는 나라입니다"
           ) : (
             <>
-              한국보다 <b className="text-[1.75rem] leading-none font-bold tabular-nums text-(--c)">{Math.abs(100 - v)}%</b> {v < 100 ? "저렴합니다" : "비쌉니다"}
+              한국보다 <b className="text-[1.75rem] leading-none font-bold tabular-nums text-(--c)">{gapPct(v)}%</b> {cheaperText(v)}
             </>
           )}
         </p>
@@ -71,7 +70,7 @@ function Detail({ stop, extra, latestYear, signalOf, percentileOf }: { stop: Rou
       <div className="mt-4 flex items-baseline justify-between gap-3 border-t border-line pt-4">
         <p className="m-0 text-[0.8125rem] text-fg-2">하루 예산 예시</p>
         <p data-testid="route-row-budget" className="m-0 text-[1.75rem] leading-none font-bold tabular-nums text-(--c)">
-          약 {(v * 1000).toLocaleString("ko-KR")}
+          약 {wonText(budgetWon(v))}
           <small className="ml-0.5 text-[0.9375rem]">원</small>
         </p>
       </div>
@@ -123,8 +122,8 @@ export function PriceRouteList({ stops, extras, signalOf, percentileOf, latestYe
                   <Chevron />
                 </button>
                 <div aria-hidden className="relative mb-3 h-1 rounded-[0.125rem] bg-surface-2">
-                  <b className={`absolute inset-y-0 left-0 rounded-[0.125rem] bg-(--c) transition-opacity duration-[250ms] motion-reduce:transition-none ${on ? "opacity-100" : "opacity-45"}`} style={{ width: `${Math.min(100, (s.value / BAR_MAX) * 100).toFixed(1)}%` }} />
-                  <u className="absolute -top-[3px] -bottom-[3px] w-0.5 bg-fg no-underline" style={{ left: `${((100 / BAR_MAX) * 100).toFixed(1)}%` }} />
+                  <b className={`absolute inset-y-0 left-0 rounded-[0.125rem] bg-(--c) transition-opacity duration-[250ms] motion-reduce:transition-none ${on ? "opacity-100" : "opacity-45"}`} style={{ width: barPct(s.value, BAR_MAX) }} />
+                  <u className="absolute -top-[3px] -bottom-[3px] w-0.5 bg-fg no-underline" style={{ left: barPct(100, BAR_MAX) }} />
                 </div>
                 <div id={`route-more-${s.country}`} hidden={!on}>
                   <Detail stop={s} extra={extras[s.country] ?? noExtra} latestYear={latestYear} signalOf={signalOf} percentileOf={percentileOf} />

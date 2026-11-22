@@ -74,3 +74,25 @@ export function periodRange(points: IndexPoint[] | null | undefined): string | n
   const inWindow = ps.filter((p) => idx(p) > last - 36);
   return `${inWindow[0]} ~ ${inWindow[inWindow.length - 1]}`;
 }
+
+type WinMonth = { month: number; avg: number; text: string };
+
+/** 달 → 평균값 맵 (훅이 넘김 숫자에 씀 · 작업 0312 에 window-months.tsx 에서 옮김) */
+export const monthValues = (months: WinMonth[]) => Object.fromEntries(months.map((m) => [m.month, m.avg])) as Record<number, number>;
+
+/** 고른 달 · 값 폭 · 자리 · 가장 싼 달 글 */
+export function windowPick<T extends WinMonth>(months: T[], month: number, lowest: number) {
+  const cur = months.find((m) => m.month === month) ?? months[0]!;
+  const vals = months.map((m) => Number(m.text));
+  return {
+    cur,
+    vmin: Math.min(...vals),
+    vmax: Math.max(...vals),
+    idx: Math.max(0, months.findIndex((m) => m.month === cur.month)),
+    n: months.length,
+    lowText: months.find((m) => m.month === lowest)?.text,
+  };
+}
+
+/** 큰 숫자 — 소수 첫째 자리 */
+export const oneDecimal = (v: number) => v.toFixed(1);

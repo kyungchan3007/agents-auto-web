@@ -10,7 +10,7 @@ import { TripSwitcher } from "@hav/ui/form/trip-switcher";
 import type { ReactNode } from "react";
 import { usePickedDestination } from "./use-picked-destination";
 import type { RateRow, SignalRow } from "../common/destinations";
-import { pickedBoard, pickedChip } from "./picked";
+import { budgetText, passChipText, pctWidth, percentParts, pickedBoard, pickedChip } from "./picked";
 import type { BoardRow } from "./today-view";
 
 type Board = { title: string; rows: [BoardRow, BoardRow]; label: string; evidence: string; percentile: number | null };
@@ -21,8 +21,8 @@ const BOARD_COLS = 12;
 function Evidence({ text }: { text: string }) {
   return (
     <>
-      {text.split(/(\d+%)/).map((part, i) =>
-        /^\d+%$/.test(part) ? (
+      {percentParts(text).map(({ part, num }, i) =>
+        num ? (
           <em key={i} className="text-[1.375rem] font-bold text-cheap not-italic">
             {part}
           </em>
@@ -65,7 +65,7 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
               </p>
               {pct !== null && (
                 <div data-testid="ticket-bar" aria-hidden className="relative mt-3 h-2 rounded-full bg-surface-2">
-                  <div className="absolute inset-y-0 left-0 rounded-full bg-pin-cheap" style={{ width: `${Math.max(2, Math.round(pct * 100))}%` }} />
+                  <div className="absolute inset-y-0 left-0 rounded-full bg-pin-cheap" style={{ width: pctWidth(pct) }} />
                   <div className="absolute -inset-y-1 left-1/2 w-0.5 bg-fg-2" />
                 </div>
               )}
@@ -82,7 +82,7 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
                 onClick={togglePass}
                 className="self-start border-b-2 border-cheap pb-0.5 text-body font-semibold text-cheap hover:text-fg"
               >
-                {`${pickedChip(picked).replace(/^✈\s*/, "").replace(" · ", " ")} ›`}
+                {passChipText(pickedChip(picked))}
               </button>
             )}
           </div>
@@ -103,7 +103,7 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
                 {picked.budget > 0 && (
                   <>
                     <dt className="text-foam/70">예산</dt>
-                    <dd className="m-0 font-semibold">{picked.budget.toLocaleString("ko-KR")}원</dd>
+                    <dd className="m-0 font-semibold">{budgetText(picked.budget)}</dd>
                   </>
                 )}
                 <dt className="text-foam/70">환율</dt>

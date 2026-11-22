@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans_KR } from "next/font/google";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/shared/site";
-import { outageActive } from "@/shared/outage";
-import { OutageNotice } from "@/shared/outage-notice";
+import { outageActive } from "@/shared/outage/outage";
+import { OutageNotice } from "@/shared/outage/outage-notice";
 import "./globals.css";
 
 // 글꼴 — 본문 IBM Plex Sans KR (400 · 600 · 700) · 큰 제목 · 큰 숫자 · 로고는 Pretendard 800 (apps/web/src/app/pretendard.css · 자체 호스팅 · 작업 0176) · 빌드 때 받아 자체 호스팅 (런타임 외부 요청 없음 · next.config 변경 없음 · 작업 0168)

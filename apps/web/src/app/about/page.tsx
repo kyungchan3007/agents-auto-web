@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { AboutPage } from "@/features/about/about-page";
 import { DUTY_FREE_USD, RULES_SOURCE } from "@/features/import-calc/calculator/rules";
 import { api } from "@hav/shared/api";
-import { JsonLd } from "@/shared/json-ld";
-import { breadcrumbLd, pageMeta } from "@/shared/seo";
+import { JsonLd } from "@/shared/seo/json-ld";
+import { breadcrumbLd, pageMeta } from "@/shared/seo/seo";
 
 export const metadata: Metadata = pageMeta({ path: "/about", title: "소개 · 판단 기준 · Flapfx", description: "Flapfx가 쓰는 자료의 출처와 환율 신호 · 여행 물가 · 직구 세금을 계산하는 기준" });
 

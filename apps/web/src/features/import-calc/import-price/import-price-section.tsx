@@ -6,6 +6,7 @@ import { CountUp } from "@hav/ui/motion/count-up";
 import { SectionTitle } from "@hav/ui/text/heading";
 import type { ReactNode } from "react";
 import { type FxDay, type Kpi, type MonthPoint, deltaTone, importPriceKpis, importPriceView, kpiDigits } from "./import-price";
+import { importPriceChart } from "./import-price-chart";
 
 export function ImportPriceSection({ fxRows, price, children }: { fxRows: FxDay[] | null; price: MonthPoint[] | null; /** 그래프 아래 오른쪽 칸에 놓을 것 (이번 주 과세환율) */ children?: ReactNode }) {
   const v = importPriceView(fxRows, price);
@@ -63,39 +64,24 @@ function Kpis({ rows }: { rows: { period: string; fx: number | null; price: numb
 }
 
 function Chart({ rows }: { rows: { period: string; fx: number | null; price: number | null }[] }) {
-  // 두 값이 모두 있는 첫 달을 100 으로 — 선 모양만 맞춰 비교 (끝 말풍선 숫자는 실제 값)
-  const base = rows.find((r) => r.fx !== null && r.price !== null);
-  const norm = (key: "fx" | "price") => rows.flatMap((r) => (r[key] !== null && base?.[key] ? [{ x: monthIdx(r.period), v: ((r[key] as number) / (base[key] as number)) * 100, raw: r[key] as number, period: r.period }] : []));
-  const fx = norm("fx");
-  const price = norm("price");
-  const all = [...fx, ...price].map((p) => p.v);
-  const range = Math.max(...all) - Math.min(...all) || 1;
-  const lo = Math.min(...all) - range * 0.06;
-  const hi = Math.max(...all) + range * 0.06;
-  const last = rows[rows.length - 1];
-  const first = monthIdx(rows[0].period);
-  const lastIdx = monthIdx(last.period);
-  const xTicks = monthAxis(first, lastIdx);
-  const lastOf = (pts: typeof fx) => pts[pts.length - 1];
+  const c = importPriceChart(rows);
+  if (!c) return null;
   return (
     <div>
       <p className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-small text-fg-2">
         <span className="inline-flex items-center gap-2"><i className="inline-block h-1 w-5 rounded-pill" style={{ background: "var(--hav-cheap)" }} />원/달러 월평균</span>
         <span className="inline-flex items-center gap-2"><i className="inline-block h-1 w-5 rounded-pill" style={{ background: "var(--hav-band)" }} />수입물가지수</span>
-        <span>· {base?.period} = 100 으로 맞춤</span>
+        <span>· {c.base} = 100 으로 맞춤</span>
       </p>
       {/* 그래프 높이 고정 — 넓은 화면 400px · 휴대폰 280px (작업 0208 · 값이 바뀌어도 크기 고정) */}
       <div data-testid="import-chart" className="mt-3">
         <LineChart
-          aria={`원/달러 월평균과 수입물가지수 — ${rows[0].period}부터 ${last.period}까지, ${base?.period}을 100으로 맞춤`}
-          x={[first, lastIdx]}
-          y={{ min: lo, max: hi, ticks: Array.from({ length: 6 }, (_, i) => ({ v: lo + ((hi - lo) * i) / 5 })) }}
-          xTicks={xTicks}
-          series={[
-            ...(price.length ? [{ id: "price", color: "var(--hav-band)", points: price, area: 0.22, maxStep: 1, end: { label: `수입물가 ${lastOf(price).period}`, value: lastOf(price).raw, digits: 2 } }] : []),
-            ...(fx.length ? [{ id: "fx", color: "var(--hav-pin-cheap)", points: fx, area: 0.3, maxStep: 1, end: { label: `원/달러 ${lastOf(fx).period}`, value: Math.round(lastOf(fx).raw), digits: 0, unit: "원" } }] : []),
-          ]}
-          refs={base ? [{ v: 100, text: `${base.period} = 100`, short: "= 100", tone: "navy" }] : []}
+          aria={c.aria}
+          x={c.x}
+          y={c.y}
+          xTicks={c.xTicks}
+          series={c.series}
+          refs={c.refs}
           height={400}
           heightPhone={280}
           pad={{ l: 24 }}
@@ -104,17 +90,4 @@ function Chart({ rows }: { rows: { period: string; fx: number | null; price: num
       </div>
     </div>
   );
-}
-
-/** "2026-10" → 달 번호(연 × 12 + 월 − 1) */
-const monthIdx = (period: string) => Number(period.slice(0, 4)) * 12 + Number(period.slice(5, 7)) - 1;
-const periodOf = (i: number) => `${Math.floor(i / 12)}-${String((i % 12) + 1).padStart(2, "0")}`;
-/** 가로 눈금 — 처음 · 끝을 포함해 고르게 5개(달이 5개 미만이면 달마다) */
-function monthAxis(first: number, last: number): { x: number; label: string; short: string }[] {
-  const n = Math.min(5, last - first + 1);
-  return Array.from({ length: n }, (_, i) => {
-    const x = n === 1 ? first : Math.round(first + ((last - first) * i) / (n - 1));
-    const p = periodOf(x);
-    return { x, label: p, short: `${p.slice(2, 4)}.${p.slice(5, 7)}` };
-  });
 }

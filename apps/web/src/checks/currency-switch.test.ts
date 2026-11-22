@@ -5,7 +5,8 @@ import { describe, expect, it } from "vitest";
 const read = (p: string) => readFileSync(new URL(p, import.meta.url), "utf8");
 const code = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
 const F = "../features/currencies";
-const chips = () => code(read(`${F}/chips/currency-chips.tsx`));
+// 작업 0312: 칩 저장(commitPick)은 use-recent-currencies.ts 로 — 함께 읽음
+const chips = () => code(read(`${F}/chips/currency-chips.tsx`)) + code(read(`${F}/chips/use-recent-currencies.ts`));
 
 describe("고른 통화 칩", () => {
   it("저장은 즐겨찾기와 같은 방식(useSyncExternalStore + localStorage + storage 이벤트) · 새 키", () => {

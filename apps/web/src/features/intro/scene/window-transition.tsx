@@ -3,6 +3,7 @@
 // 로고는 홈 메뉴 로고의 실제 자리 · 글 모양에 도착해 있고, 출발 자리에서 옮겨 오는 것처럼 translate · scale 로 시작 (끝 값은 변형 없음 = 정확히 그 자리) · 흰 flap + 노랑 fx
 import { motion } from "motion/react";
 import type { IntroView } from "../state/use-intro";
+import { logoFrom } from "./logo-move";
 
 const EASE = [0.65, 0, 0.3, 1] as const;
 
@@ -10,7 +11,7 @@ export function WindowTransition({ s }: { s: IntroView }) {
   const { phase, logo, still } = s;
   if (phase === 0) return null;
   const d = (sec: number) => (still ? 0 : sec);
-  const from = logo ? { x: logo.from.left - logo.to.left, y: logo.from.top - logo.to.top, scale: logo.from.width / Math.max(1, logo.to.width) } : null;
+  const from = logoFrom(logo);
   return (
     <>
       {/* 파랑 면 — 메뉴 띠 · 새 홈 첫 면과 같은 값 */}

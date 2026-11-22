@@ -51,3 +51,6 @@ export function boxPage(list: string[], page: number, size = BOX_PAGE): { items:
   const p = Math.min(pages - 1, Math.max(0, page));
   return { items: list.slice(p * size, p * size + size), page: p, pages, label: `${p + 1} / ${pages}` };
 }
+
+/** 고른 통화가 저장돼 있으면 <html data-recent-chips> 를 다는 아주 작은 스크립트 글 (작업 0231 · 0312 에 app/currencies/layout.tsx 에서 옮김) */
+export const recentMarkScript = () => `try{var v=localStorage.getItem(${JSON.stringify(RECENT_KEY)});if(v&&v!=="[]")document.documentElement.setAttribute("data-recent-chips","")}catch(e){}`;

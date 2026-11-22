@@ -1,4 +1,4 @@
-// 어드민 화면 소스 검사 — 작업실 /log (P5 · SR-LOG-01) · GEO 측정 /geo (P6 · SR-GEO-01) (작업 0312 에 apps/web/src/shared/pages-redesign.test.ts 에서 옮김)
+// 어드민 화면 소스 검사 — 작업실 /log (P5 · SR-LOG-01) · GEO 측정 /geo (P6 · SR-GEO-01) (작업 0312 에 apps/web/src/checks/pages-redesign.test.ts 에서 옮김)
 //   화면 · 훅 · 로직이 하위 폴더로 나뉘어도 같은 기능의 소스 전체(테스트 제외)에서 찾음
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";

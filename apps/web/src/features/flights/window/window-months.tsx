@@ -5,7 +5,7 @@
 //   오른쪽(휴대폰은 아래): 달 글자판 · 계절 · 꼬리표 · 같은 달 평균 지수(홈 12달 막대와 같은 계산) · 달 고르기 막대 · 다시 보기 · 설명
 //   지수는 페이지가 이미 받는 air-fare 로 계산(추가 API 없음) · 값이 없는 달은 없는 채로(지어내지 않음) · 숫자 · 달은 화면 읽기에도 같은 글 (글자판은 aria-hidden)
 import { useFlapChar, useWindowMonths } from "./use-window-months";
-import { type IndexPoint, flapChars, periodRange, windowMonths } from "./window-months-view";
+import { type IndexPoint, flapChars, monthValues, oneDecimal, periodRange, windowMonths, windowPick } from "./window-months-view";
 
 function FlapCell({ char }: { char: string }) {
   const { ref, shown } = useFlapChar(char);
@@ -28,15 +28,9 @@ export function WindowMonths({ points }: { points: IndexPoint[] | null }) {
 
 function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof windowMonths>>; range: string | null }) {
   const { months, lowest, highest, complete } = data;
-  const values = Object.fromEntries(months.map((m) => [m.month, m.avg]));
+  const values = monthValues(months);
   const { month, shade, value, pick, replay, view, back, near, front, grain, trip } = useWindowMonths(months.map((m) => m.month), lowest, values);
-  const cur = months.find((m) => m.month === month) ?? months[0];
-  const vals = months.map((m) => Number(m.text));
-  const vmin = Math.min(...vals);
-  const vmax = Math.max(...vals);
-  const idx = Math.max(0, months.findIndex((m) => m.month === cur.month));
-  const n = months.length;
-  const lowText = months.find((m) => m.month === lowest)?.text;
+  const { cur, vmin, vmax, idx, n, lowText } = windowPick(months, month, lowest);
   const chars = flapChars(cur.month);
   return (
     <section data-testid="window-section" aria-labelledby="window-title" className="bg-surface-2 px-4 pt-14 pb-[4.5rem] text-fg sm:px-8 max-sm:pt-10 max-sm:pb-14">
@@ -100,7 +94,7 @@ function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof wi
               <p className="text-small font-semibold text-fg-2">국제항공료 지수 · 같은 달 평균</p>
               <div className="mt-0.5 flex items-baseline gap-2.5">
                 <b data-testid="window-value" data-final={cur.text} className={`text-[3.5rem] leading-[1.05] font-bold tracking-display tabular-nums max-sm:text-[3rem] ${cur.tone === "high" ? "text-expensive" : cur.tone === "low" ? "text-figure" : "text-fg"}`}>
-                  {value.toFixed(1)}
+                  {oneDecimal(value)}
                 </b>
                 <span className="text-small text-fg-2">2020년 = 100</span>
               </div>

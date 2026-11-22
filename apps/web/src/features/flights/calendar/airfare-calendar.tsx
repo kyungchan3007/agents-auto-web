@@ -9,7 +9,7 @@ import { formatDay, receivedNote } from "@hav/shared/airfare-domain";
 import { Flag } from "@hav/ui/data/flag";
 import type { ReactNode } from "react";
 import { useAirfareCalendar, type AirfareItem } from "./use-airfare-calendar";
-import { AIRPORT_FLAG, cityView, dotDay, manWon, subline, won } from "./airfare-view";
+import { AIRPORT_FLAG, calendarItems, dotDay, headParts, manWon, noBreakParts, subline, won } from "./airfare-view";
 import "./airfare-calendar.css";
 
 const PLANE = (
@@ -19,10 +19,7 @@ const PLANE = (
 );
 
 export function AirfareCalendarSection({ calendar }: { calendar: AirfareCalendar | null }) {
-  const cities: AirfareItem[] = (calendar?.cities ?? []).flatMap((c) => {
-    const view = cityView(c);
-    return view ? [{ city: c, view }] : [];
-  });
+  const cities: AirfareItem[] = calendarItems(calendar);
   return (
     <section data-testid="airfare-section" aria-labelledby="airfare-title" className="af bg-surface px-4 text-fg sm:px-8">
       <div className="mx-auto max-w-page">
@@ -40,8 +37,8 @@ export function AirfareCalendarSection({ calendar }: { calendar: AirfareCalendar
 
 /** 숫자 · 금액(예: "(685,748원)" · "27.5만 원" · "2.5배")은 줄 중간에서 쪼개지지 않게 */
 function noBreak(text: string): ReactNode[] {
-  return text.split(/(\(?[\d,.]+(?:만 원|원|배)\)?)/).map((part, i) =>
-    i % 2 === 1 ? (
+  return noBreakParts(text).map(({ part, keep }, i) =>
+    keep ? (
       <span key={i} className="whitespace-nowrap">{part}</span>
     ) : (
       part
@@ -54,7 +51,7 @@ function Calendar({ items, fetchedOn }: { items: AirfareItem[]; fetchedOn: strin
   const { city, view } = item;
   const picked = view.cells[sel] ?? view.cells[view.bestIndex];
   const isBest = picked.best;
-  const [headStart, headDate, headEnd] = view.head.split(/(\d+월 \d+일\([월화수목금토일]\))/);
+  const [headStart, headDate, headEnd] = headParts(view.head);
 
   return (
     <div ref={rootRef}>

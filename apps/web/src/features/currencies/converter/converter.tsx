@@ -8,7 +8,7 @@ import { UnitInput } from "@hav/ui/form/field";
 import { SectionTitle } from "@hav/ui/text/heading";
 import { SOURCE_NAME } from "@hav/shared/currency";
 import type { FxRate } from "@hav/shared/fx";
-import { amountText, presets } from "./convert";
+import { amountText, boardAmount, presets } from "./convert";
 import { useConverter } from "./use-converter";
 import { useSwitchFrom } from "../switch/use-switch-from";
 import { ResultBoard } from "./result-board";
@@ -29,7 +29,7 @@ export function Converter({ code, rate }: { code: string; rate: FxRate }) {
           <UnitInput unit={code} inputMode="decimal" autoComplete="off" value={value("foreign")} onChange={edit("foreign")} onFocus={(e) => e.target.select()} className="h-14 text-xl font-semibold" aria-describedby="converter-note" />
         </label>
         <div data-testid="converter-board" aria-live="polite" className="mt-4 flex">
-          <ResultBoard amount={invalid || !foreign || result == null ? null : Math.round(result)} label={shown} from={from?.won ?? null} />
+          <ResultBoard amount={boardAmount(invalid, foreign, result)} label={shown} from={from?.won ?? null} />
         </div>
         <div className="mt-4 grid grid-cols-4 gap-2" role="group" aria-label="빠른 금액">
           {presets("foreign", rate).map((p) => (

@@ -1,6 +1,6 @@
 // 나머지 화면 — 작업 0170 (디자인 변경 ③) · 실행은 lead 가 PR 직전에 (빌드한 사이트를 읽음 · 단위 테스트가 아니라 여기서는 문구 · 쌓임 순서 · 연결만)
 // 값은 날마다 · 자료 유무에 따라 달라서 동작 · 순서 · 문구만 봄
-//   builder · geo 가 다는 표시: src/shared/pages-redesign.test.ts 머리 주석의 data-testid 목록
+//   builder · geo 가 다는 표시: src/checks/pages-redesign.test.ts 머리 주석의 data-testid 목록
 //   모바일 쌓임 순서(Figma 설명)는 "휴대폰" 프로젝트에서만 · 2단 배치(입력 왼쪽 · 결과 오른쪽 등)는 "넓은 화면" 프로젝트에서만
 import { type Locator, type Page, expect, test } from "@playwright/test";
 import { hydrated, openMenuIfCollapsed } from "./helpers";

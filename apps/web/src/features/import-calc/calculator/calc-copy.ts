@@ -30,3 +30,9 @@ export function summaryLine(result: CalcResult | null): string {
   const total = result.tax?.total ?? null;
   return total !== null ? `모두 합쳐 약 ${numberText(total)}원` : `물건 값 ${won} · 관세율을 넣으면 합계`;
 }
+
+/** 한도 막대 너비 — 넘으면 끝까지 (작업 0312 에 calc-result.tsx 에서 옮김) */
+export const limitWidth = (ratio: number) => `${Math.min(1, ratio) * 100}%`;
+
+/** 글자판 달러 — 정수 */
+export const usdWhole = (usd: number) => Math.round(usd);

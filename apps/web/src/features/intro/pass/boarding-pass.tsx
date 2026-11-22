@@ -2,13 +2,7 @@
 // 내용은 ticketOf(경로 · 여섯 줄 · 바코드 글) — 값이 없으면 "환율 없음" · "판정 없음" · "데이터 없음"
 import { motion } from "motion/react";
 import type { IntroView } from "../state/use-intro";
-
-/** 바코드 글 → 막대 (같은 글이면 같은 막대) */
-const bars = (code: string) =>
-  Array.from(code).flatMap((ch, i) => {
-    const v = Number.isNaN(Number(ch)) ? ch.charCodeAt(0) % 4 : Number(ch) % 4;
-    return [{ key: `b${i}`, grow: 1 + v, ink: true }, { key: `g${i}`, grow: 1 + ((v + i) % 3), ink: false }];
-  });
+import { bars } from "./pass-cells";
 
 export function BoardingPass({ s }: { s: IntroView }) {
   const t = s.ticket;

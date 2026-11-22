@@ -1,7 +1,7 @@
 // 여행 물가 페이지 — 새 디자인(작업 0220 · 시안 B): 메뉴와 이어지는 파랑 첫 면(큰 문장 + 오른쪽 하루 예산 카드가 경계에 걸침) → 한국 = 100 물가 자 → 물가 구간 3칸 표 (작업 0170 · Figma 04)
 // 물가 · 환율 신호는 빌드 때 받은 값만 · 없으면 이유 (docs/domain/travel-price.md) · 숫자를 지어내지 않음
 import type { Fetched } from "@hav/shared/api";
-import { SiteNav } from "@/shared/site-nav";
+import { SiteNav } from "@/shared/nav/site-nav";
 import { RATE_SOURCE_LABEL } from "@hav/shared/currency";
 import type { PriceLevels } from "@hav/shared/prices";
 import type { SignalList } from "@hav/shared/signal";
@@ -16,13 +16,13 @@ import { PriceBands } from "./bands/price-bands";
 import { PriceRoute } from "./route/price-route";
 import { PricesHeader } from "./prices-header";
 import { PriceView } from "./price-view";
+import { signalMaps } from "@/shared/signal/signal-maps";
+import { allRows } from "./bands/bands";
 
 export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; signals: Fetched<SignalList> }) {
   const data = levels.ok ? travelBands(levels.data) : null;
-  const signalOf = Object.fromEntries((signals.ok ? signals.data.signals : []).map((s) => [s.currency, s.signal]));
-  const percentileOf = Object.fromEntries((signals.ok ? signals.data.signals : []).map((s) => [s.currency, s.percentile]));
-  const latestOf = Object.fromEntries((signals.ok ? signals.data.signals : []).map((s) => [s.currency, s.latest]));
-  const rows = data ? data.bands.flatMap((b) => b.rows) : [];
+  const { signalOf, percentileOf, latestOf } = signalMaps(signals);
+  const rows = data ? allRows(data.bands) : [];
   const headline = pricesHeadline(rows);
 
   return (

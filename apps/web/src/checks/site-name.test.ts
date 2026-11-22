@@ -5,11 +5,11 @@ import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { SITE_NAME } from "./site";
+import { SITE_NAME } from "../shared/site";
 
 const ROOT = join(__dirname, "../../../..");
 // 검사 자신 · 그 e2e 는 "플랩" 을 설명 글로 적으므로 뺌
-const SKIP_PREFIX = ["apps/api/data/", ".agents/", "apps/web/wrangler.jsonc", "apps/web/src/shared/site-name.test.ts", "apps/web/e2e/site-name.spec.ts"];
+const SKIP_PREFIX = ["apps/api/data/", ".agents/", "apps/web/wrangler.jsonc", "apps/web/src/checks/site-name.test.ts", "apps/web/e2e/site-name.spec.ts"];
 const BINARY = /\.(png|jpe?g|webp|gif|ico|woff2?|glb|gltf|bin|jpg|mp4|pdf)$/i;
 
 function trackedTextFiles(): string[] {
@@ -37,6 +37,6 @@ describe("사이트 이름 — 한글 '플랩' 이 남지 않음", () => {
   });
 
   it("로고 워드마크는 소문자 flapfx 그대로 (메뉴 · 인트로)", () => {
-    expect(readFileSync(join(ROOT, "apps/web/src/shared/site-nav.tsx"), "utf8")).toContain('title="flapfx"');
+    expect(readFileSync(join(ROOT, "apps/web/src/shared/nav/site-nav.tsx"), "utf8")).toContain('title="flapfx"');
   });
 });

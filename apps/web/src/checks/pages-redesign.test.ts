@@ -23,7 +23,7 @@ function sources(dir: string): string[] {
   });
 }
 const text = (files: string[]) => files.map((f) => codeOf(read(join(WEB_SRC, f)))).join("\n");
-const comps = (feature: string, skip: RegExp | null = null) => sources(`features/${feature}`).filter((f) => f.endsWith(".tsx") && (!skip || !skip.test(f)));
+const comps = (feature: string, skip: RegExp | null = null) => sources(`features/${feature}`).filter((f) => !skip || !skip.test(f)) // 작업 0312: 화면(.tsx) + 옆 로직(.ts) 함께;
 
 const SCREENS = {
   currencies: [...comps("currencies"), ...sources("app/currencies")],

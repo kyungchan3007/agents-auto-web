@@ -109,3 +109,9 @@ export function cheapDestinationCount(rows: { signal: Signal | null }[]): number
 export function pillText(total: number, cheap: number, windowDays = 90): string {
   return `도착지 ${total}곳 중 ${cheap}곳이 최근 ${windowDays}일 중 싼 편`;
 }
+
+/** 알약 글을 "최근 90일 중 싼 편" 앞에서 나눔 — 휴대폰에서 "편" 한 글자만 다음 줄에 남지 않게 (작업 0228 · 0312 에 destinations-pill.tsx 에서 옮김) */
+export function pillParts(text: string): { head: string; tail: string } {
+  const cut = text.indexOf("최근 ");
+  return cut < 0 ? { head: text, tail: "" } : { head: text.slice(0, cut), tail: text.slice(cut) };
+}

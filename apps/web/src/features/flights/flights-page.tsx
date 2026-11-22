@@ -2,7 +2,7 @@
 // 큰 문장 · 카드는 지수로 계산 · 자료가 없으면 "준비 중" · 그래프 · 비행기 · 카드 없음 (숫자 · 달을 지어내지 않음)
 // 여행 타이밍 페이지 — 새 디자인(작업 0218 · 시안 A + 머리 글자판): 메뉴(파랑) 아래 흰 머리(제목 · 설명 + 글자판 세 줄) → 하늘 종이 위 탑승권 한 장(왼쪽 그래프 · 절취선 · 오른쪽 숫자) → 한 줄 띠(최고 · 최저 · 환율)
 // 큰 문장 · 글자판 · 숫자 · 띠는 지수로 계산 · 자료가 없으면 "준비 중" · 글자판 · 탑승권 · 띠 없음 (숫자 · 달을 지어내지 않음) · 사진 없음 (사진 파일 · 부품은 그대로 · 삭제는 0222)
-import { SiteNav } from "@/shared/site-nav";
+import { SiteNav } from "@/shared/nav/site-nav";
 import { FlapBoard } from "@hav/ui/data/flap-board";
 import { PageFooter } from "@hav/ui/layout/page-footer";
 import { TextLink } from "@hav/ui/text/text-link";
@@ -11,9 +11,11 @@ import { FadeUpGroup } from "@hav/ui/motion/fade-up";
 import { SlideIn } from "@hav/ui/motion/slide-in";
 import { EmphText } from "@hav/ui/text/emph";
 import { Title } from "@hav/ui/text/heading";
-import { averageYears, cheapMonth, type IndexPoint } from "./travel-index";
-import { cheapMonthsCard, flightsHeadline, yoyCard } from "./flights-copy";
-import { flightsBoard, latestNumbers, stripStats } from "./flights-view";
+import type { IndexPoint } from "./travel-index";
+import { yoyCard } from "./flights-copy";
+import { fxText, indexText, latestNumbers, yoyParts } from "./flights-view";
+import { type TravelItem, flightsPageView } from "./flights-page-view";
+import { signalDot } from "@/shared/signal/signal-tone";
 import type { AirfareCalendar } from "@hav/shared/airfare";
 import { RATE_SOURCE_LABEL } from "@hav/shared/currency";
 import { AirfareCalendarSection } from "./calendar/airfare-calendar";
@@ -21,9 +23,7 @@ import { FlightsGraph } from "./graph/flights-graph";
 import { MiniBoard } from "./mini-board";
 import { WindowMonths } from "./window/window-months";
 
-export type TravelItem = { key: string; name: string; points: IndexPoint[] | null };
-
-const DOT = { cheap: "bg-pin-cheap", normal: "bg-pin-line", expensive: "bg-pin-expensive" } as const;
+export type { TravelItem };
 
 /** 탑승권 오른쪽 숫자 한 칸 — 이름 · 월 / 큰 지수(카운트업) / 점 + "작년보다 ±N.N%"(카운트업) */
 function YoyItem({ name, points }: { name: string; points: IndexPoint[] | null }) {
@@ -37,23 +37,15 @@ function YoyItem({ name, points }: { name: string; points: IndexPoint[] | null }
         <CountUp value={n.value} digits={1} />
       </p>
       <p className="mt-1 flex items-center gap-2 text-small font-semibold text-fg">
-        <span data-testid="yoy-dot" aria-hidden className={`size-2 shrink-0 rounded-full ${card.signal ? DOT[card.signal] : "bg-pin-line"}`} />
-        {n.yoy !== null ? <CountUp value={Math.abs(n.yoy)} digits={1} prefix={`작년보다 ${n.yoy >= 0 ? "+" : "-"}`} suffix="%" /> : card.pinText}
+        <span data-testid="yoy-dot" aria-hidden className={`size-2 shrink-0 rounded-full ${signalDot(card.signal)}`} />
+        {n.yoy !== null ? <CountUp value={yoyParts(n.yoy).value} digits={1} prefix={yoyParts(n.yoy).prefix} suffix="%" /> : card.pinText}
       </p>
     </div>
   );
 }
 
 export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: TravelItem[]; fxMonthly: IndexPoint[]; airfare?: AirfareCalendar | null }) {
-  const air = travel.find((t) => t.key === "air-fare")?.points ?? null;
-  const tour = travel.find((t) => t.key === "package-tour")?.points ?? null;
-  const airCheap = air ? cheapMonth(air) : null;
-  const tourCheap = tour ? cheapMonth(tour) : null;
-  const headline = flightsHeadline(airCheap, tourCheap);
-  const ready = !!air && air.length > 1;
-  const cheaps = cheapMonthsCard(airCheap, tourCheap, Math.max(averageYears(air ?? []), averageYears(tour ?? [])));
-  const board = ready ? flightsBoard({ airCheap, tourCheap, air, tour }) : null;
-  const strip = ready ? stripStats(air, fxMonthly) : null;
+  const { air, graphAir, tour, ready, headline, cheaps, board, strip } = flightsPageView(travel, fxMonthly);
   return (
     <>
       <SiteNav page="flights" />
@@ -91,7 +83,7 @@ export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: Tra
                     <div className="min-w-0 px-5 py-6 sm:px-8 sm:py-8">
                       <h2 className="text-[1.375rem] font-bold text-fg">국제항공료 · 해외단체여행비 지수와 환율 그래프</h2>
                       <div className="mt-2">
-                        <FlightsGraph air={air} tour={tour} fx={fxMonthly} />
+                        {graphAir && <FlightsGraph air={graphAir} tour={tour} fx={fxMonthly} />}
                       </div>
                     </div>
                     <div className="relative border-t-2 border-dashed border-line px-5 py-6 sm:px-8 sm:py-8 lg:border-t-0 lg:border-l-2">
@@ -124,20 +116,20 @@ export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: Tra
                         <span aria-hidden className="size-2.5 rounded-full bg-pin-expensive" />
                         {strip.max.period} 최고
                       </p>
-                      <p className="mt-1 text-small text-fg-2">국제항공료 지수 {strip.max.value.toFixed(1)}</p>
+                      <p className="mt-1 text-small text-fg-2">{indexText(strip.max.value)}</p>
                     </div>
                     <div data-testid="strip-min" data-fu={1} className="border-t border-line py-5 sm:border-t-0 sm:px-6">
                       <p className="flex items-center gap-2 text-[1.125rem] font-bold text-fg">
                         <span aria-hidden className="size-2.5 rounded-full bg-sun ring-1 ring-fg" />
                         {strip.min.period} 최저
                       </p>
-                      <p className="mt-1 text-small text-fg-2">국제항공료 지수 {strip.min.value.toFixed(1)}</p>
+                      <p className="mt-1 text-small text-fg-2">{indexText(strip.min.value)}</p>
                     </div>
                     {strip.fx && (
                       <div data-testid="strip-fx" data-fu={2} className="border-t border-line py-5 sm:border-t-0 sm:pl-6">
                         <p className="flex items-center gap-2 text-[1.125rem] font-bold text-fg">
                           <span aria-hidden className="size-2.5 rounded-full bg-pin-line" />
-                          원/달러 {Math.round(strip.fx.value).toLocaleString("ko-KR")}원
+                          {fxText(strip.fx.value)}
                         </p>
                         <p className="mt-1 text-small text-fg-2">{strip.fx.period} 월평균 · 한국수출입은행</p>
                       </div>

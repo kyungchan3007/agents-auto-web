@@ -8,10 +8,10 @@ import { CurrencyFlag } from "@hav/ui/data/currency-flag";
 import Link from "next/link";
 import { currencyListLabel } from "../detail/detail-view";
 import type { ListItem } from "./list";
-import { type RateRow, rateRows, splitColumns } from "./rate-table";
+import { type RateRow, rateRows, splitColumns, barWidth } from "./rate-table";
 import { useCurrencyList } from "./use-currency-list";
 import { useCurrencyPick } from "./use-currency-pick";
-import { commitPick } from "../chips/currency-chips";
+import { commitPick } from "../chips/use-recent-currencies";
 
 const BAR_PX = 96;
 const GRID = "grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-4 lg:grid-cols-[minmax(0,1fr)_6.5rem_11.5rem]";
@@ -60,7 +60,7 @@ export function CurrencyTable({ items }: { items: ListItem[] }) {
           <span data-testid="currency-rate" className="text-right font-bold whitespace-nowrap text-fg tabular-nums">{rate}</span>
           <span className="flex items-center justify-end gap-3">
             <span aria-hidden className="hidden h-1.5 lg:block" style={{ width: BAR_PX }}>
-              <span data-testid="currency-bar" className="block h-full rounded-pill bg-pin-cheap" style={{ width: `${(r.bar * BAR_PX).toFixed(1)}px` }} />
+              <span data-testid="currency-bar" className="block h-full rounded-pill bg-pin-cheap" style={{ width: barWidth(r.bar, BAR_PX) }} />
             </span>
             <span data-testid="currency-drop" className={`w-[4.25rem] text-right text-small font-semibold whitespace-nowrap tabular-nums ${r.drop === null ? "text-fg-2" : "text-fg"}`}>{r.text}</span>
           </span>
