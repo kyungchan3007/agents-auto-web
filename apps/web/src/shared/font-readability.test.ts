@@ -99,14 +99,13 @@ describe("구간 · 카드 · 단계 제목 · 역할 이름 · 도시 이름은
     "apps/web/src/features/import-calc/components/import-price-section.tsx", // 수입물가와 환율
     "apps/web/src/features/travel-price/components/budget-planner.tsx", // 여행 하루 예산
     "apps/web/src/features/travel-price/components/price-bands.tsx", // 물가 구간 제목
-    "apps/web/src/features/log/components/story-section.tsx", // 이 사이트를 어떻게 만들었나 · 단계 제목
-    "apps/web/src/features/log/components/team-desks.tsx", // 팀 책상 역할 이름
+    // 작업실(story-section · team-desks)은 어드민으로 옮겨 어드민 글자 체계(@hav/ui/admin · 고정폭 이름)를 씀 — 목록에서 뺌 (작업 0303)
     "apps/web/src/features/about/components/about-page.tsx", // 기준 카드 제목
   ];
   const present = FILES.filter((f) => existsSync(join(ROOT, f)));
 
-  it("목록 파일이 대부분 그대로 있음 (이름 바뀐 것만 빠져도 6개 이상)", () => {
-    expect(present.length).toBeGreaterThanOrEqual(6);
+  it("목록 파일이 대부분 그대로 있음 (이름 바뀐 것만 빠져도 5개 이상)", () => {
+    expect(present.length).toBeGreaterThanOrEqual(5);
   });
 
   for (const f of FILES.filter((x) => existsSync(join(ROOT, x)))) {

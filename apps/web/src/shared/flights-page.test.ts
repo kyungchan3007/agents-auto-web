@@ -33,12 +33,12 @@ describe("/flights — 검색 · 메뉴", () => {
     for (const p of ["/log", "/geo"]) expect(PUBLIC_PAGES).not.toContain(p);
   });
 
-  it("상단 메뉴에 '여행 타이밍' → /flights · Page 타입에 flights · 메뉴는 7개", () => {
+  it("상단 메뉴에 '여행 타이밍' → /flights · Page 타입에 flights · 메뉴는 5개 (작업 0302 · 0303: 작업실 · GEO 측정은 어드민)", () => {
     const nav = read("shared/site-nav.tsx");
     expect(nav).toMatch(/href:\s*"\/flights"\s*,\s*label:\s*"여행 타이밍"/);
     expect(nav).toMatch(/page === "flights"/);
     expect(nav).toMatch(/export type Page\s*=[^;]*"flights"/);
-    expect(nav.match(/\{\s*href:\s*"/g)?.length).toBe(7);
+    expect(nav.match(/\{\s*href:\s*"/g)?.length).toBe(5);
     expect(nav).toContain('label: "여행 물가"'); // 기존 메뉴는 그대로
   });
 });

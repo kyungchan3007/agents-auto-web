@@ -1,7 +1,7 @@
 // 작업 0213 (#252) — 접근성 · 기본기: 제목 구조 · 본문 바로가기 · 버튼 눌림 · 가로 넘침 방지 · 경고 아이콘
 import { type Page, expect, test } from "@playwright/test";
 
-const PAGES = ["/", "/currencies/USD", "/prices", "/flights", "/calc", "/log", "/about", "/geo"];
+const PAGES = ["/", "/currencies/USD", "/prices", "/flights", "/calc", "/log", "/about", "/geo", "/how"];
 
 async function headings(page: Page) {
   return page.evaluate(() => {

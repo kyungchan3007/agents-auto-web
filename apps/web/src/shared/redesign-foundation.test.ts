@@ -36,11 +36,11 @@ describe("메뉴 — 순서 · 주소 (R4)", () => {
   const nav = read(join(WEB_SRC, "shared/site-nav.tsx"));
   const links = [...nav.matchAll(/\{\s*href:\s*"([^"]+)"\s*,\s*label:\s*"([^"]+)"/g)].map((m) => [m[2], m[1]]);
 
-  // 작업실 · GEO 측정은 어드민(admin.flapfx.com)으로 옮김 — 방문자 메뉴 다섯 개 · 두 화면은 어드민 메뉴 (작업 0302)
+  // 작업실 · GEO 측정은 어드민(admin.flapfx.com)으로 옮김 — 방문자 메뉴 다섯 개 · 어드민은 자기 틀 (작업 0302 · 0303)
   const pairs = (page: Page) => navLinks(page).map((l) => [l.label, l.href]);
 
   it("여행 타이밍 · 오늘 환율 · 통화 · 여행 물가 · 직구 계산 순서 + 주소 (작업실 · GEO 측정 없음)", () => {
-    for (const page of ["home", "currencies", "prices", "flights", "calc", "about"] as const) {
+    for (const page of ["home", "currencies", "prices", "flights", "calc", "about"] as const satisfies readonly Page[]) {
       expect(pairs(page)).toEqual([
         ["여행 타이밍", "/flights"],
         ["오늘 환율", "/#today"],
@@ -51,16 +51,6 @@ describe("메뉴 — 순서 · 주소 (R4)", () => {
     }
   });
 
-  it("작업실 · GEO 측정 화면은 어드민 메뉴 — 작업실 · GEO 측정 · 사이트로 가기 (작업 0302)", () => {
-    for (const page of ["log", "geo"] as const) {
-      expect(pairs(page)).toEqual([
-        ["작업실", "/log"],
-        ["GEO 측정", "/geo"],
-        ["사이트로 가기", "https://flapfx.com"],
-      ]);
-    }
-    expect(navLinks("geo").find((l) => l.current)?.label).toBe("GEO 측정");
-  });
 
   it("소개(/about)는 메뉴에 없음 · 현재 페이지 표시(current)는 유지", () => {
     expect(links.map((l) => l[1])).not.toContain("/about");
