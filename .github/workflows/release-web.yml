@@ -1,0 +1,40 @@
+name: "배포 · 운영 릴리스 만들기"
+# 작업 0313 — 운영 사이트(@hav/web) 버전이 main 에 올라가면 web-v<버전> 태그와 GitHub 릴리스를 만든다
+#   버전은 Changesets 로 올린다(.changeset/README.md · develop 에서 npm run release:version → main fast-forward)
+#   릴리스 글 = apps/web/CHANGELOG.md 의 그 버전 칸 · 같은 버전 릴리스가 이미 있으면 건너뜀(실패 아님)
+#   어드민 · API 는 버전 관리 대상이 아님
+on:
+  push:
+    branches: [main]
+    paths: ["apps/web/package.json", "apps/web/CHANGELOG.md"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 운영 버전 · 릴리스 글 읽기
+        id: v
+        run: |
+          VERSION=$(node -p "require('./apps/web/package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=web-v$VERSION" >> "$GITHUB_OUTPUT"
+          node scripts/release-notes.mjs "$VERSION" > .release-notes.md
+          echo "운영 v$VERSION 릴리스 글:" >> "$GITHUB_STEP_SUMMARY"
+          cat .release-notes.md >> "$GITHUB_STEP_SUMMARY"
+      - name: 태그 · 릴리스 만들기
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.v.outputs.tag }}
+          VERSION: ${{ steps.v.outputs.version }}
+        run: |
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            echo "$TAG 릴리스가 이미 있어 건너뜁니다" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          gh release create "$TAG" --target "$GITHUB_SHA" --title "운영 v$VERSION" --notes-file .release-notes.md --latest
+          echo "$TAG 릴리스를 만들었습니다" >> "$GITHUB_STEP_SUMMARY"
