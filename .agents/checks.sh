@@ -55,13 +55,15 @@ run "보호 파일" node .agents/scripts/protected-check.mjs
 # 2) 프로젝트 검사 — package.json 에 있는 것만 (없으면 건너뜀). 다른 언어면 여기에 명령 추가
 #    Quick: typecheck · lint · test   /   Full: + build · test:e2e
 #    CI 의 PR 실행은 e2e 를 PR 의 대상 브랜치(GITHUB_BASE_REF)에 따라 고름 (e2e-select.mjs · 작업 0244)
-#      main → build + 전체 e2e(넓은 화면 + 휴대폰)   /   develop → build + 연결표로 고른 spec(넓은 화면만)
-#      조용한 파일뿐이면 none → 건너뜀 (Full 이어도) · 연결표 밖 화면 파일은 smoke + 경고 줄
+#      main → build + 전체 e2e(넓은 화면 + 휴대폰)   /   develop → build 만 · e2e 없음 (작업 0295 · 사용자 결정)
+#        develop 은 작업마다 고른 spec 이 20 ~ 30개 · 테스트 200 ~ 300개라 PR 마다 3 ~ 6분 → 로컬은 바꾼 spec 만 · 전체는 main PR 에서
+#      조용한 파일뿐이면 none → 건너뜀 (Full 이어도)
 #      GITHUB_BASE_REF 가 없으면 예전 규칙(0243): Full 은 늘 · Quick 은 화면에 영향 있는 변경일 때 전체
 #    로컬 · push(main) 은 그대로(Quick 은 e2e 없음 · Full 은 전체). 바뀐 파일은 검사 전에 한 번만 구함 (빌드가 만드는 파일이 섞이지 않게)
 QUICK_SCRIPTS="typecheck lint test"
 WITH_LONG=0
 E2E_ARGS=()   # test:e2e 에 더 줄 인자 (고른 프로젝트 · spec) — 비면 전체
+SKIP_E2E=0    # 1 이면 build 만 돌리고 test:e2e 는 건너뜀 (대상 develop · 작업 0295)
 if [ "${CI:-}" = "true" ] && [ "${GITHUB_EVENT_NAME:-}" = "pull_request" ] && [ -n "${GITHUB_BASE_REF:-}" ]; then
   # 디자인 PR 판정 (작업 0246) — design 라벨 그리고 바뀐 파일이 모두 화면 쪽일 때만. 판정을 못 하면 평소 PR(막는 쪽)
   DJSON=$(node .agents/scripts/design-pr.mjs 2>/dev/null) || DJSON=""
@@ -75,7 +77,11 @@ if [ "${CI:-}" = "true" ] && [ "${GITHUB_EVENT_NAME:-}" = "pull_request" ] && [ 
   SEL=$(node .agents/scripts/e2e-select.mjs) || SEL=""
   if [ -z "$SEL" ]; then
     # 고르기가 실패하면 안전하게 전체
-    WITH_LONG=1; echo "🔁 CI PR — e2e 고르기 실패, 전체 e2e 로 돎"
+    if [ "$GITHUB_BASE_REF" = "main" ]; then
+      WITH_LONG=1; echo "🔁 CI PR — e2e 고르기 실패, 전체 e2e 로 돎"
+    else
+      WITH_LONG=1; SKIP_E2E=1; echo "🔁 CI PR(대상 $GITHUB_BASE_REF) — e2e 고르기 실패 · 대상이 main 이 아니라 build 만 (작업 0295)"
+    fi
   else
     E2E_MODE=$(SEL="$SEL" node -e 'process.stdout.write(JSON.parse(process.env.SEL).mode)')
     SEL="$SEL" node -e 'const r = JSON.parse(process.env.SEL); if (r.warn) console.log("⚠️  " + r.warn);'
@@ -83,9 +89,8 @@ if [ "${CI:-}" = "true" ] && [ "${GITHUB_EVENT_NAME:-}" = "pull_request" ] && [ 
       none) echo "🔁 CI PR(대상 $GITHUB_BASE_REF) — 문서 · 하네스 · 자료만 바뀌어 e2e 건너뜀" ;;
       full) WITH_LONG=1; echo "🔁 CI PR(대상 $GITHUB_BASE_REF) — build + 전체 e2e (넓은 화면 · 휴대폰)" ;;
       *)
-        WITH_LONG=1
-        while IFS= read -r line; do E2E_ARGS+=("$line"); done < <(SEL="$SEL" node -e 'const r = JSON.parse(process.env.SEL); for (const p of r.projects) console.log("--project=" + p); for (const s of r.specs) console.log("e2e/" + s);')
-        echo "🔁 CI PR(대상 $GITHUB_BASE_REF) — build + 고른 e2e ($E2E_MODE · ${#E2E_ARGS[@]}개 인자)" ;;
+        WITH_LONG=1; SKIP_E2E=1
+        echo "🔁 CI PR(대상 $GITHUB_BASE_REF) — build 만 · e2e 없음(로컬은 바꾼 spec 만 · 전체 e2e 는 main 으로 가는 PR 에서) (작업 0295)" ;;
     esac
   fi
 elif [ "$MODE" = "full" ]; then
@@ -114,7 +119,9 @@ if [ "$WITH_LONG" = "1" ]; then
   else
     has_script build && run "프로젝트 build" npm run -s build
     # 루트 test:e2e 는 npm -w 를 한 번 더 거쳐서 인자 앞에 -- 가 두 번 필요
-    if has_script test:e2e; then
+    if [ "$SKIP_E2E" = "1" ]; then
+      echo ""; echo "▶ test:e2e 건너뜀 — 대상 develop 은 build 만 (전체 e2e 는 main 으로 가는 PR 에서 · 작업 0295)"
+    elif has_script test:e2e; then
       if [ "$DESIGN" = "1" ]; then
         # 디자인 PR: 같은 spec 을 기능(--grep-invert · 막음) · 디자인(--grep · 막지 않음) 두 번
         blocking_run "프로젝트 test:e2e (기능)" npm run -s test:e2e -- -- ${E2E_ARGS[@]+"${E2E_ARGS[@]}"} --grep-invert=@design
