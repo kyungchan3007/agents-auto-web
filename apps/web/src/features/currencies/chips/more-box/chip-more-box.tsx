@@ -3,7 +3,7 @@
 // 더보기 상자 — 칩 줄 아래에 떠 있는(absolute) 상자 · 고른 통화 모두 · 한 쪽 5개 · 넘으면 ‹ 1 / 2 › 옆으로 미끄러지며 넘김 (작업 0231)
 //   옆 검색칸 · 아래 내용을 밀지 않음 · 고르면 닫히고 전환 · Esc · 바깥 누르기로 닫힘 · 움직임 줄이기는 움직임 없이 바로
 import { currencyName } from "@hav/shared/currency";
-import { CurrencyFlag } from "@hav/ui/data/currency-flag";
+import { CurrencyFlag } from "@/shared/rate/currency-flag";
 import { useBoxDismiss, useBoxPage } from "./use-chip-box";
 import { boxPage } from "../recent-chips";
 

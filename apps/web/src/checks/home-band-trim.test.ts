@@ -79,7 +79,7 @@ describe("다른 화면은 그대로 — 통화 상세의 기준일 · 출처 ·
   });
 
   it("FreshnessNote 부품 · freshness 규칙 함수는 그대로 있음 (통화 상세가 씀)", () => {
-    expect(readFileSync(resolve(WEB_SRC, "../../../packages/ui/src/components/feedback/freshness-note.tsx"), "utf8")).toContain("FreshnessNote");
+    expect(readFileSync(resolve(WEB_SRC, "../../../apps/web/src/shared/rate/freshness-note.tsx"), "utf8")).toContain("FreshnessNote");
     expect(readFileSync(resolve(WEB_SRC, "../../../packages/shared/src/domain/freshness.ts"), "utf8")).toContain("export function freshness");
   });
 });

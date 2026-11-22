@@ -3,7 +3,7 @@
 import { SectionTitle } from "@hav/ui/text/heading";
 import { numberText } from "@hav/shared/format";
 import type { FxRate } from "@hav/shared/fx";
-import { YearChart } from "@hav/ui/data/year-chart";
+import { YearChart } from "@/shared/rate/year-chart";
 import { type Point, canChart, customsView } from "../common/customs-rate";
 import { CustomsBoard } from "./customs-board";
 

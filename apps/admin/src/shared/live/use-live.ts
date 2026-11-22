@@ -4,7 +4,7 @@
 //   load 는 바뀌지 않는 함수로 넘김 (모듈 함수)
 import { type Fetched, pickLive } from "@hav/shared/fetched";
 import { useCallback, useEffect, useState } from "react";
-import { useVisibleInterval } from "@hav/ui/hooks/use-visible-interval";
+import { useVisibleInterval } from "@hav/ui/hooks/view/use-visible-interval";
 
 /** 페이지를 열 때 한 번 */
 export function useLive<T>(build: Fetched<T>, load: () => Promise<Fetched<T>>): Fetched<T> {

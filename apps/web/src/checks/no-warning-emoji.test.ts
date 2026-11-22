@@ -27,6 +27,6 @@ describe("경고 아이콘 (작업 0213)", () => {
     expect(icon).toContain("currentColor");
     expect(icon).toContain('aria-hidden="true"');
     expect(readFileSync(join(ROOT, "apps/web/src/shared/outage/outage-notice.tsx"), "utf8")).toContain("WarnIcon");
-    expect(readFileSync(join(ROOT, "packages/ui/src/components/feedback/freshness-note.tsx"), "utf8")).toContain("WarnIcon");
+    expect(readFileSync(join(ROOT, "apps/web/src/shared/rate/freshness-note.tsx"), "utf8")).toContain("WarnIcon");
   });
 });

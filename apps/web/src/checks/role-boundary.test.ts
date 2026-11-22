@@ -16,7 +16,8 @@ function files(dir: string): string[] {
 
 describe("코드 자리 (작업 0126 · 0137 · 0312)", () => {
   it("앱 공통(src/shared)에는 이 사이트 고유 파일만 · 묶음 폴더(nav · seo · outage · signal)로 — 두 앱이 함께 쓰면 @hav/shared · @hav/ui · @hav/edge", () => {
-    // nav: 상단 메뉴 · 링크 / seo: 검색 · 공유 정보(메타 · 구조화 자료 · sitemap · 공유 이미지 글꼴) / outage: 장애 안내 / signal: 신호 점 색 · 신호 맵(두 기능 이상이 씀)
+    // nav: 상단 메뉴 · 링크 / seo: 검색 · 공유 정보(메타 · 구조화 자료 · sitemap · 공유 이미지 글꼴) / outage: 장애 안내
+    // signal: 판정 핀 · 점 색 · 판정 글 · 신호 맵 · 눈금 위치 / trip: 여행지 고르기 · 바꾸기 · 도착지 줄 / rate: 통화 국기 · 1년 그래프 · 기준일 안내 (운영만 쓰는 도메인 UI · 작업 0312 에 @hav/ui 에서 옮김)
     const allowed = [
       "nav/nav-links.ts",
       "nav/site-nav.tsx",
@@ -27,8 +28,23 @@ describe("코드 자리 (작업 0126 · 0137 · 0312)", () => {
       "seo/og-fonts.server.ts",
       "seo/seo.ts",
       "seo/sitemap-entries.ts",
+      "rate/currency-flag.tsx",
+      "rate/freshness-note.tsx",
+      "rate/use-freshness.ts",
+      "rate/use-year-chart.ts",
+      "rate/year-chart-scale.ts",
+      "rate/year-chart.tsx",
+      "signal/scale-position.ts",
       "signal/signal-maps.ts",
+      "signal/signal-pin-text.ts",
+      "signal/signal-pin.tsx",
       "signal/signal-tone.ts",
+      "trip/destination-row.tsx",
+      "trip/pick-trip.tsx",
+      "trip/trip-switcher.tsx",
+      "trip/use-pick-trip.ts",
+      "trip/use-picked-trip.ts",
+      "trip/use-trip-switcher.ts",
       "site.ts",
     ];
     const here = files(join(SRC, "shared")).map((f) => relative(join(SRC, "shared"), f)).sort();
@@ -37,8 +53,8 @@ describe("코드 자리 (작업 0126 · 0137 · 0312)", () => {
 
   it("패키지 파일은 묶음 폴더 안에 — 바로 아래에 두지 않음 (작업 0137)", () => {
     const PKG = resolve(SRC, "../../../packages");
-    const loose = (dir: string) => readdirSync(dir, { withFileTypes: true }).filter((d) => d.isFile() && /\.tsx?$/.test(d.name)).map((d) => join(relative(PKG, dir), d.name));
-    expect([loose(join(PKG, "ui/src")), loose(join(PKG, "ui/src/components")), loose(join(PKG, "shared/src"))].flat()).toEqual([]);
+    const loose = (dir: string) => readdirSync(dir, { withFileTypes: true }).filter((d) => d.isFile() && /\.tsx?$/.test(d.name) && !/\.test\.tsx?$/.test(d.name)).map((d) => join(relative(PKG, dir), d.name));
+    expect([loose(join(PKG, "ui/src")), loose(join(PKG, "ui/src/components")), loose(join(PKG, "ui/src/hooks")), loose(join(PKG, "ui/src/lib")), loose(join(PKG, "shared/src"))].flat()).toEqual([]);
   });
 
   it("API 기능 폴더끼리 직접 가져오지 않음 (작업 0126)", () => {

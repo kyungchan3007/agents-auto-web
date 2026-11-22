@@ -4,7 +4,7 @@ import { currencyName } from "@hav/shared/currency";
 import { type PickedTrip, TRAVEL_CITIES, TRAVEL_COUNTRIES, monthlyAverages } from "@hav/shared/travel";
 import { wonText } from "@hav/shared/format";
 import type { Signal } from "@hav/shared/signal";
-import { SIGNAL_TEXT } from "@/shared/signal/signal-tone";
+import { SIGNAL_LEVEL_TEXT as SIGNAL_TEXT } from "@/shared/signal/signal-tone";
 
 export const ORIGIN = "ICN";
 /** 출발 안내판 한 줄의 칸 수 (홈 안내판과 같음) */

@@ -2,7 +2,7 @@
 
 // 줄 글이 바뀌면 바뀐 칸만 넘어가는 출발 안내판 (작업 0194 · 인트로 로딩) — 홈 FlapBoard 와 같은 판 · 칸 · 이음선 · 노랑 글자
 // 글자 하나 = 한 칸 · 정해진 글자판을 거침(난수 없음) · still(움직임 줄이기)이면 바로 최종 글자 · 화면 읽기 도구는 판 전체를 label 한 문장으로
-import { useFlapRows } from "../../hooks/use-flap-rows";
+import { useFlapRows } from "../../hooks/flap/use-flap-rows";
 
 type Props = { rows: string[]; cols: number; label: string; still?: boolean; testId?: string; rowTestId?: string; className?: string };
 

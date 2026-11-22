@@ -2,7 +2,7 @@
 // 큰 제목 · 구간 제목 안의 숫자 · 퍼센트 · 금액을 한 부품으로 강조 — 하늘 종이 위: 글자색 그대로 + 해 노랑 형광펜 띠(글자 아래 40~50%) · 비쌈 뜻: 주홍 글자 · 바다 띠 위: 해 노랑 글자 (노란 글자는 하늘 종이 위 대비 부족이라 쓰지 않음)
 //
 // builder 가 할 것 (prd N1~N4 · sdd)
-//   packages/ui/src/lib/emphasis.ts: splitNumbers · numberTone (emphasis.test.ts)
+//   packages/ui/src/lib/text/emphasis.ts: splitNumbers · numberTone (emphasis.test.ts)
 //   packages/ui/src/components/text/emph.tsx: Emph({ children, bg?: "light" | "sea", tone?: "neutral" | "expensive" }) · EmphText({ text, bg?, tone? }) — text 를 splitNumbers 로 나눠 숫자 조각만 Emph 로 · tone 을 안 주면 numberTone(text)
 //     Emph: data-testid="emph" · data-tone · data-bg · light+neutral = 해 노랑 형광펜 띠(--hav-sun · 아래 40~50% — 그라데이션 transparent 50~60% 에서 시작) · expensive = text-expensive(주홍) · sea = 해 노랑 글자(text-figure 또는 text-sun)
 //     이 부품만 그라데이션 허용(0168 "장식 그라데이션 없음" 검사에서 제외)
@@ -27,7 +27,7 @@ describe("Emph · EmphText 공통 부품", () => {
     expect(s).toMatch(/"neutral"\s*\|\s*"expensive"/);
     expect(s).toMatch(/\bsplitNumbers\(/);
     expect(s).toMatch(/\bnumberTone\(/);
-    expect(s).toMatch(/from\s*"\.\.\/\.\.\/lib\/emphasis"/);
+    expect(s).toMatch(/from\s*"\.\.\/\.\.\/lib\/text\/emphasis"/); // 작업 0312: lib 묶음 폴더
   });
 
   it("e2e 가 찾는 표시 — emph · data-tone · data-bg", () => {

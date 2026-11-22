@@ -27,7 +27,8 @@ describe("env · 연결 (R9 · R11)", () => {
     expect((w.match(/"crons"\s*:\s*\[([^\]]*)\]/)?.[1].match(/"[^"]+"/g) ?? []).length).toBe(4);
   });
   it("BFF 허용 목록에 /airfare 를 넣지 않음 (빌드 때만 읽음)", () => {
-    expect(read("apps/web/src/bff/proxy.ts")).not.toMatch(/airfare/);
+    // 작업 0312: BFF 경로표는 앱마다(운영 apps/web/worker/bff-routes.ts · 어드민 apps/admin/worker/bff-routes.ts) · 프록시는 @hav/edge
+    for (const f of ["apps/web/worker/bff-routes.ts", "apps/admin/worker/bff-routes.ts"]) expect(read(f), f).not.toMatch(/airfare/);
   });
 });
 

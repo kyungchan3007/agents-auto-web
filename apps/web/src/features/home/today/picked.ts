@@ -4,7 +4,7 @@ import { currencyName } from "@hav/shared/currency";
 import { type PickedTrip, TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import { type RateRow, type SignalRow, shortName } from "../common/destinations";
 import { wonText } from "@hav/shared/format";
-import { SIGNAL_TEXT } from "@/shared/signal/signal-tone";
+import { SIGNAL_LEVEL_TEXT as SIGNAL_TEXT } from "@/shared/signal/signal-tone";
 import { ORIGIN_CODE } from "./today-view";
 import type { BoardRow } from "./today-view";
 

@@ -3,8 +3,8 @@
 // 여행 물가 맨 위 글 — 넓은 화면은 제목을 왼쪽 칼럼에 묶어(lg:max-w-7.4em) 시안처럼 세 줄 "인도는 한국보다 / 물가가 63% / 낮습니다" (작업 0220 사용자 지적) · 파랑 면 위: 굵은 큰 제목(제목 위 라벨 "여행 물가"는 작업 0265 에서 지움)(숫자 %는 노랑) · 지금 설명 (작업 0220 · 시안 B · 사진은 걷어 냄)
 // 고른 나라가 있으면 "일본은 한국보다 물가가 12% 높습니다" + "다른 나라 보기" · 안 골랐거나 자료 없는 나라는 지금 문장(가장 싼 나라) (작업 0201)
 // 서버 HTML 은 지금과 같고(검색 · AI 가 읽는 글) 마운트 뒤에 고른 값을 읽어 바뀜 · 파랑 면과 예산 카드는 price-page 가 그림
-import { PickTrip } from "@hav/ui/form/pick-trip";
-import { usePickedTrip } from "@hav/ui/hooks/use-picked-trip";
+import { PickTrip } from "@/shared/trip/pick-trip";
+import { usePickedTrip } from "@/shared/trip/use-picked-trip";
 import { EmphText } from "@hav/ui/text/emph";
 import { pickedHeadline } from "./prices-copy";
 

@@ -10,7 +10,7 @@
 //     formatCount(value, digits) 가 rateText(rate).value 와 같음 (카운트업 끝 글 = 지금 글)
 //   cardDigits({ baseRate: 카드 값 }): number — 그 값에 대한 rateDigits 규칙(작업 0287 정정: 1,000원 이상 첫째 · 미만 둘째 · 끝자리 0 생략) · formatCount(v, cardDigits) + unit 이 cardRateText 와 같음
 import { rateText } from "@hav/shared/currency";
-import { formatCount } from "@hav/ui/hooks/use-count-up";
+import { formatCount } from "@hav/ui/hooks/motion/use-count-up";
 import { describe, expect, it } from "vitest";
 import { cardRateText } from "./detail-view";
 import { bigRate, cardDigits, chipCodes, routePosition } from "./range/redesign";

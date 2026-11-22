@@ -9,7 +9,7 @@
 //   heading.tsx: 새 부품 SectionTitle(구간 제목 · 카드 제목) — font-sans + font-bold (font-display 아님) · Title 은 font-display 유지
 //   구간 제목 · 카드 제목 · 단계 제목 · 역할 이름 · 도시 이름은 font-display 대신 SectionTitle 이나 font-bold 를 씀 (아래 목록 파일) — 도착지 줄의 도시 이름(dest-city)은 font-bold
 //   apps/web/src/app/layout.tsx: IBM_Plex_Sans_KR 굵기에 700 추가 (400 · 600 · 700)
-//   크기 토큰(--text-section · --text-city …)은 그대로 — packages/ui/src/lib/tokens.test.ts 가 값을 계속 검사
+//   크기 토큰(--text-section · --text-city …)은 그대로 — packages/ui/src/tokens.test.ts 가 값을 계속 검사
 //   ※ 허용 목록에 없는 큰 숫자(여행 타이밍 카드 값 · GEO 측정 카드 수치 · 작업 흐름 단계 번호)는 IBM Plex 굵게가 됨 — 큰 숫자로 남기려면 lead 가 허용 목록에 더함 (보고에 적음)
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -40,7 +40,6 @@ const ALLOWED = [
   "packages/ui/src/components/data/flap-board.tsx", // 작업 0177 출발 안내판 칸 글자 (옛 today-band 자리)
   "packages/ui/src/components/data/line-chart.tsx", // 작업 0216 그래프 2D 끝 말풍선 큰 숫자
   "apps/web/src/features/home/timing/hero-section.tsx", // 작업 0217 새 홈 첫 면 큰 제목 "N월에 떠나세요" (Pretendard 800 · 시안 B)
-  "packages/ui/src/components/data/ruler-chart.tsx", // 작업 0220 그래프 2D 여행 물가 자의 큰 숫자
   "apps/web/src/features/currencies/detail/currency-detail.tsx",
   "apps/web/src/features/currencies/converter/result-board.tsx", // 작업 0219 지적: 계산 결과 글자판 칸 글자 (FlapBoard 와 같은 Pretendard 800)
   "apps/web/src/features/import-calc/calculator/calc-result.tsx",
@@ -117,7 +116,7 @@ describe("구간 · 카드 · 단계 제목 · 역할 이름 · 도시 이름은
   }
 
   it("도착지 줄 도시 이름(dest-city)은 font-bold · font-display 아님", () => {
-    const row = read(join(UI_SRC, "components/data/destination-row.tsx"));
+    const row = read(join(WEB_SRC, "shared/trip/destination-row.tsx")); // 작업 0312: 도착지 줄은 운영 앱 공통(trip)
     const tag = /<[^>]*data-testid="dest-city"[^>]*>/.exec(row)?.[0] ?? "";
     expect(tag, "dest-city 요소").not.toBe("");
     expect(tag).toMatch(/\bfont-bold\b/);

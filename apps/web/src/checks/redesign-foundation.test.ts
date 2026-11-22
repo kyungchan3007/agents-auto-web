@@ -59,7 +59,8 @@ describe("메뉴 — 순서 · 주소 (R4)", () => {
 });
 
 describe("메뉴 바 — 모바일 메뉴 버튼 (aria-expanded)", () => {
-  const src = read(join(UI_SRC, "components/layout/nav-bar.tsx"));
+  // 작업 0312: 열고 닫기 · Esc 는 훅(hooks/nav/use-nav-menu.ts)으로 — 부품과 함께 읽음
+  const src = read(join(UI_SRC, "components/layout/nav-bar.tsx")) + read(join(UI_SRC, "hooks/nav/use-nav-menu.ts"));
 
   it("메뉴 버튼: <button> · aria-expanded · aria-controls · 접근 이름에 '메뉴'", () => {
     expect(src).toMatch(/<button\b/);

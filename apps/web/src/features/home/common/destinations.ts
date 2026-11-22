@@ -2,7 +2,7 @@
 // 판정 · 눈금은 사이트 신호 규칙 그대로 (docs/domain/signal.md SIG-01~05) — 최근 90일 백분위 · 핀 글은 근거 숫자 + 판정 ("하위 12% · 쌈" · 작업 0170) · 없는 숫자는 지어내지 않음
 import { currencyFlag, currencyName } from "@hav/shared/currency";
 import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
-import { pinBasis } from "@hav/ui/data/signal-pin";
+import { pinBasis } from "@/shared/signal/signal-pin-text";
 import { wonText } from "@hav/shared/format";
 import type { Signal } from "@hav/shared/signal";
 

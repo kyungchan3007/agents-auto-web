@@ -3,7 +3,7 @@
 // 국기 칩 줄 — 고른 통화 칩 (작업 0231 · 사용자 요구: 고른 통화는 맨 앞에 붙고 5개까지 + 더보기) · 처음(저장 없음)은 지금 운영 그대로: 자주 보는 통화(홈 도착지 네 통화 + 지금 통화) (작업 0219 · 시안 A)
 // 고르면 환율 자리까지 올라간 뒤 맨 앞에 붙고 나머지는 한 칸씩 밀림(6번째로 밀린 칩은 오른쪽으로 빠지며 사라짐) · "더보기 +N" 은 칩 줄 아래 떠 있는 상자(고른 통화 모두 · 한 쪽 5개 · 쪽 넘김)
 // 지금 통화는 짙은 알약 + aria-current · 목록 계산은 lib/recent-chips · 저장은 브라우저(use-recent-currencies) · 보기만 해서는 저장하지 않음 · 움직임 줄이기는 prefers-reduced-motion 이면 움직임 없이 바로 (훅이 확인)
-import { CurrencyFlag } from "@hav/ui/data/currency-flag";
+import { CurrencyFlag } from "@/shared/rate/currency-flag";
 import { currencyName } from "@hav/shared/currency";
 import Link from "next/link";
 import { useChipRow } from "./use-chip-row";

@@ -7,7 +7,7 @@
 //   서버 첫 그림 · 움직임 줄이기 · 자바스크립트 꺼짐 = 처음부터 끝 상태 · 중간값이 없으면 금액은 오늘 값 그대로(카운트업 없음 · 숫자를 지어내지 않음)
 //   눈금 · 판정은 사이트 신호 규칙 그대로 (최근 90일 안의 위치 · SIG-01~05) · 신호가 없으면 "신호 없음" · 줄 전체가 그 통화 상세로
 import { Flag } from "@hav/ui/data/flag";
-import { formatCount } from "@hav/ui/hooks/use-count-up";
+import { formatCount } from "@hav/ui/hooks/motion/use-count-up";
 import Link from "next/link";
 import { useDestinationsPill } from "./use-destinations-pill";
 import type { DestinationRowData } from "../common/destinations";

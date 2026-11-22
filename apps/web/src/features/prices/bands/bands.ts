@@ -2,7 +2,7 @@
 import { REGIONS, type Region } from "@hav/shared/currency";
 import type { Signal } from "@hav/shared/signal";
 import type { Band, TravelRow } from "@hav/shared/travel";
-import { pinBasis } from "@hav/ui/data/signal-pin";
+import { pinBasis } from "@/shared/signal/signal-pin-text";
 
 export type PriceBand = { id: Band; label: string; rows: TravelRow[] };
 

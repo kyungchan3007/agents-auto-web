@@ -1,7 +1,7 @@
 "use client";
 
 // 머리 맨 위 국기 라벨 줄 — 국기 + "이름 · 코드" (작업 0231) · 통화를 바꾸면 칩의 국기가 포물선으로 이 자리까지 날아와 앉음(그동안 이 자리 국기는 숨음) · 날아가는 국기(flag-fly)는 전환 중에만 DOM 에 있음
-import { CurrencyFlag } from "@hav/ui/data/currency-flag";
+import { CurrencyFlag } from "@/shared/rate/currency-flag";
 import { Eyebrow } from "@hav/ui/text/heading";
 import { createPortal } from "react-dom";
 import { useFlagFly } from "./use-flag-fly";

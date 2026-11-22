@@ -4,8 +4,8 @@
 import type { SignalList } from "@hav/shared/signal";
 import type { TravelRow } from "@hav/shared/travel";
 import { useState } from "react";
-import { usePickedTrip } from "@hav/ui/hooks/use-picked-trip";
-import { useQueryParam } from "@hav/ui/hooks/use-query-param";
+import { usePickedTrip } from "@/shared/trip/use-picked-trip";
+import { useQueryParam } from "@hav/ui/hooks/browser/use-query-param";
 import { budgetCountry, budgetOf, parseDaily, parseDays } from "./budget";
 
 export type Latest = SignalList["signals"][number]["latest"];

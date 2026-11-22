@@ -2,11 +2,11 @@
 // 테두리는 칸 안쪽 border (ring 은 칸 밖에 그려져 스크롤 영역에서 잘렸음) · 시안(작업 0221): 흰 바탕 + 옅은 선(field-line · 도형 대비 3 이상) · 더 둥근 모서리 · 높이 56px · 포커스일 때만 파랑 테두리 + 옅은 파랑 윤곽 (예전 작업 0170 은 2px 남색 테두리 · 48px)
 import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from "react";
 
-export const fieldClass =
+const FIELD_CLASS =
   "h-14 w-full rounded-[0.875rem] border-2 border-field-line bg-card px-4 text-base text-fg placeholder:text-fg-2 transition-colors hover:border-cheap/60 focus:border-cheap";
 
 export function Input({ className = "", ...rest }: InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={`${fieldClass} ${className}`} {...rest} />;
+  return <input className={`${FIELD_CLASS} ${className}`} {...rest} />;
 }
 
 /** 오른쪽에 단위가 붙는 입력 칸 */
@@ -23,7 +23,7 @@ export function UnitInput({ unit, className = "", ...rest }: InputHTMLAttributes
 export function Select({ className = "", children, ...rest }: SelectHTMLAttributes<HTMLSelectElement> & { children: ReactNode }) {
   return (
     <div className="relative">
-      <select className={`${fieldClass} appearance-none pr-11 ${className}`} {...rest}>
+      <select className={`${FIELD_CLASS} appearance-none pr-11 ${className}`} {...rest}>
         {children}
       </select>
       <svg aria-hidden viewBox="0 0 16 16" className="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2 text-fg-2">

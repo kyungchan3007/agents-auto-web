@@ -8,7 +8,7 @@ import type { Signal } from "@hav/shared/signal";
 import type { Band } from "@hav/shared/travel";
 import { Flag } from "@hav/ui/data/flag";
 import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
-import { SignalPin } from "@hav/ui/data/signal-pin";
+import { SignalPin } from "@/shared/signal/signal-pin";
 import { CountUp } from "@hav/ui/motion/count-up";
 import Link from "next/link";
 import { usePriceBands } from "./use-price-bands";

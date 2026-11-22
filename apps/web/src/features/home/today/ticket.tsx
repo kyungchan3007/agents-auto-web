@@ -6,7 +6,7 @@
 //   여행지 바꾸기는 카드 안 칩 · 검색(TripSwitcher · 버튼 · 시트 없음 · 작업 0217 사용자 지적)
 //   안내판 규칙은 지금 그대로 — 서버가 그린 지금 안내판(initial) · 인트로나 시트로 고른 나라가 있으면 같은 판이 그 나라로(고르면 바로 바뀜) · 처음 한 번만 넘어감
 import { FlapBoard } from "@hav/ui/data/flap-board";
-import { TripSwitcher } from "@hav/ui/form/trip-switcher";
+import { TripSwitcher } from "@/shared/trip/trip-switcher";
 import type { ReactNode } from "react";
 import { usePickedDestination } from "./use-picked-destination";
 import type { RateRow, SignalRow } from "../common/destinations";

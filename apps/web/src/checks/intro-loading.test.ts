@@ -3,7 +3,7 @@
 //   로딩 부품은 열린 뒤 내려감(done 이면 그리지 않음 · 작업 0186 교훈) · 움직임 줄이기면 넘김 · 열림 없이 페이드만
 //
 // builder 가 만들 것
-//   packages/ui/src/hooks/use-flap-rows.ts · packages/ui/src/components/data/flap-rows.tsx   (@hav/ui/data/flap-rows · 줄 글이 바뀌면 바뀐 칸만 넘어감 — flap.ts 의 cellsAt · flipPlan · toCells)
+//   packages/ui/src/hooks/flap/use-flap-rows.ts · packages/ui/src/components/data/flap-rows.tsx   (@hav/ui/data/flap-rows · 줄 글이 바뀌면 바뀐 칸만 넘어감 — flap.ts 의 cellsAt · flipPlan · toCells)
 //   apps/web/src/features/intro/loading/use-intro-loading.ts · components/intro-loading.tsx · lib/loading.ts
 //   intro.tsx 가 <IntroLoading> 을 그림 (data-testid="intro-loading" · 안내판 data-testid="intro-loading-board" · 줄 글은 data-text)
 import { existsSync, readFileSync } from "node:fs";
@@ -17,7 +17,7 @@ const read = (p: string) => readFileSync(p, "utf8");
 const code = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
 
 describe("파일 구성", () => {
-  for (const f of ["packages/ui/src/hooks/use-flap-rows.ts", "packages/ui/src/components/data/flap-rows.tsx", "apps/web/src/features/intro/loading/use-intro-loading.ts", "apps/web/src/features/intro/loading/intro-loading.tsx", "apps/web/src/features/intro/loading/loading.ts"]) {
+  for (const f of ["packages/ui/src/hooks/flap/use-flap-rows.ts", "packages/ui/src/components/data/flap-rows.tsx", "apps/web/src/features/intro/loading/use-intro-loading.ts", "apps/web/src/features/intro/loading/intro-loading.tsx", "apps/web/src/features/intro/loading/loading.ts"]) {
     it(`${f} 가 있음`, () => expect(existsSync(join(ROOT, f)), f).toBe(true));
   }
 });
@@ -46,14 +46,14 @@ describe("로딩 부품 — 진행률 없음 · 난수 없음 · 움직임 줄�
     }
   });
   it("난수 없음 (Math.random 을 쓰지 않음)", () => {
-    for (const s of [...files(), code(read(join(ROOT, "packages/ui/src/hooks/use-flap-rows.ts")))]) expect(s).not.toMatch(/Math\.random/);
+    for (const s of [...files(), code(read(join(ROOT, "packages/ui/src/hooks/flap/use-flap-rows.ts")))]) expect(s).not.toMatch(/Math\.random/);
   });
   it("글자 넘김은 flap.ts 의 순수 함수를 씀 (cellsAt · flipPlan · toCells)", () => {
-    const hook = code(read(join(ROOT, "packages/ui/src/hooks/use-flap-rows.ts")));
+    const hook = code(read(join(ROOT, "packages/ui/src/hooks/flap/use-flap-rows.ts")));
     for (const fn of ["cellsAt", "flipPlan", "toCells"]) expect(hook, fn).toMatch(new RegExp(`\\b${fn}\\b`));
   });
   it("움직임 줄이기(still)면 넘김 · 열림 없이 페이드 — 훅이 still 을 받음", () => {
     expect(code(read(join(INTRO, "loading/use-intro-loading.ts")))).toMatch(/\bstill\b/);
-    expect(code(read(join(ROOT, "packages/ui/src/hooks/use-flap-rows.ts")))).toMatch(/\bskip\b|\bstill\b/);
+    expect(code(read(join(ROOT, "packages/ui/src/hooks/flap/use-flap-rows.ts")))).toMatch(/\bskip\b|\bstill\b/);
   });
 });

@@ -4,7 +4,7 @@
 import { groupByRegion } from "@hav/shared/currency";
 import type { FxRate } from "@hav/shared/fx";
 import { type ChangeEvent, useState } from "react";
-import { useQueryParam } from "@hav/ui/hooks/use-query-param";
+import { useQueryParam } from "@hav/ui/hooks/browser/use-query-param";
 import { kstDate } from "@hav/shared/date";
 import { type CalcInput, type Rate, calc } from "./calc";
 import { type CustomsRate, pickRate } from "../common/customs-rate";

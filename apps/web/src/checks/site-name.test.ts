@@ -32,7 +32,7 @@ describe("사이트 이름 — 한글 '플랩' 이 남지 않음", () => {
   });
 
   it("글자판 이름 '스플릿 플랩' 은 그대로 (사이트 이름이 아님)", () => {
-    const flap = readFileSync(join(ROOT, "packages/ui/src/lib/flap.ts"), "utf8");
+    const flap = readFileSync(join(ROOT, "packages/ui/src/lib/motion/flap.ts"), "utf8");
     expect(flap).toContain("스플릿 플랩");
   });
 

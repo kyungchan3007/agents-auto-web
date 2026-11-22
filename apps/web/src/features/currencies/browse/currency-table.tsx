@@ -4,7 +4,7 @@
 //   줄 순서 = 많이 내린 순(rateRows) · 넓은 화면(lg)은 두 단(앞 절반 · 뒤 절반 · 단마다 머리 줄) · 휴대폰은 한 단 · 줄 전체가 그 통화 상세로 가는 링크 · 지금 보는 통화는 aria-current + 줄 표시
 //   값은 /signal 이 준 오늘 값 · 90일 최고로만 계산(받지 못했으면 "—" · 지어내지 않음) · "최근 90일 중 하위 N%" 글은 쓰지 않음 · 낭독 이름에 이름 · 환율 · 내린 폭
 import { currencyName } from "@hav/shared/currency";
-import { CurrencyFlag } from "@hav/ui/data/currency-flag";
+import { CurrencyFlag } from "@/shared/rate/currency-flag";
 import Link from "next/link";
 import { currencyListLabel } from "../detail/detail-view";
 import type { ListItem } from "./list";

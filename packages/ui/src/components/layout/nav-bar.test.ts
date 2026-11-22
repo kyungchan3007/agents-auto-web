@@ -4,7 +4,7 @@
 //   색은 토큰 이름으로만 (원색 값을 코드에 쓰지 않음 · no-raw-color.test)
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { contrastRatio, readSurfaces } from "../../lib/contrast";
+import { contrastRatio, readSurfaces } from "../../lib/color/contrast";
 
 const read = (name: string) => readFileSync(new URL(name, import.meta.url), "utf8");
 const code = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");

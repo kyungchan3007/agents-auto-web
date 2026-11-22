@@ -2,8 +2,8 @@
 // C1 최고 · 최저 지점 점 + 금액 라벨("최고 1,554.4원" 비쌈 색 · "최저 1,322.6원" 쌈 색) · C2 기간 버튼을 바꾸면 그 기간 값 · C3 오늘 점 · 평균 점선은 그대로 · 겹치면 비킴 · C4 카드와 같은 계산
 //
 // builder 가 할 것
-//   packages/ui/src/lib/extreme-labels.ts: placeExtremeLabels (extreme-labels.test.ts)
-//   packages/ui/src/components/data/year-chart.tsx: 최고 · 최저 점 + 라벨(시안 모양 compact 에서도 · 예전엔 compact 가 뺐음) — placeExtremeLabels 로 위치 · data-testid="extreme-max"(비쌈 색) · "extreme-min"(쌈 색) · 오늘 점(판정 색) · 평균 점선 · aria-label 의 최저 · 최고 글은 유지 · 라벨 글은 props 로 받음(extremeText: { max: string; min: string })
+//   packages/ui/src/lib/chart/extreme-labels.ts: placeExtremeLabels (extreme-labels.test.ts)
+//   apps/web/src/shared/rate/year-chart.tsx: 최고 · 최저 점 + 라벨(시안 모양 compact 에서도 · 예전엔 compact 가 뺐음) — placeExtremeLabels 로 위치 · data-testid="extreme-max"(비쌈 색) · "extreme-min"(쌈 색) · 오늘 점(판정 색) · 평균 점선 · aria-label 의 최저 · 최고 글은 유지 · 라벨 글은 props 로 받음(extremeText: { max: string; min: string })
 //   apps/web/src/features/currencies/period-chart/period-chart.tsx: 고른 기간(shown)의 extremeDays · extremeLabelText 로 글을 만들어 YearChart 에 넘김 — 카드(yearStats)와 같은 값
 //   e2e: pages.spec.ts "그래프 최고 · 최저 금액" (실행은 lead)
 import { readFileSync } from "node:fs";
@@ -14,14 +14,15 @@ const WEB_SRC = resolve(__dirname, ".."); // apps/web/src
 const UI_SRC = resolve(WEB_SRC, "../../../packages/ui/src");
 const codeOf = (src: string) => src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
 const read = (p: string) => codeOf(readFileSync(p, "utf8"));
-const chart = () => read(join(UI_SRC, "components/data/year-chart.tsx"));
+// 작업 0312: 1년 그래프는 운영 앱 공통(rate) · 그릴 값 계산은 옆 year-chart-scale.ts
+const chart = () => ["year-chart.tsx", "year-chart-scale.ts"].map((f) => read(join(WEB_SRC, "shared/rate", f))).join("\n");
 // 작업 0312: 그래프 값 계산은 옆 period-chart-view.ts 로 — 화면과 함께 읽음
 const period = () => ["period-chart.tsx", "period-chart-view.ts"].map((f) => read(join(WEB_SRC, "features/currencies/period-chart", f))).join("\n");
 
 describe("YearChart — 최고 · 최저 점과 금액 라벨", () => {
   it("라벨 위치는 placeExtremeLabels 로 (겹치면 비킴 · 화면 안)", () => {
     expect(chart()).toMatch(/placeExtremeLabels\(/);
-    expect(chart()).toMatch(/from\s*"\.\.\/\.\.\/lib\/extreme-labels"/);
+    expect(chart()).toMatch(/from\s*"@hav\/ui\/lib\/chart\/extreme-labels"/); // 작업 0312: 1년 그래프는 운영 앱 공통 · 라벨 위치 계산은 디자인 시스템 그대로
   });
 
   it("e2e 가 찾는 표시 — extreme-max · extreme-min", () => {
