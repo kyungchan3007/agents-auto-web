@@ -117,8 +117,11 @@ export function rateText(rate: Pick<FxRate, "baseRate" | "unit">): { value: stri
   };
 }
 
+/** 환율 출처 이름 하나 — 환율을 쓰는 다섯 페이지(홈 · 통화 · 직구 · 여행 물가 · 여행 타이밍) 바닥 띠가 같이 씀 (작업 0299 · 수출입은행 값을 받지 못한 날은 Frankfurter 값을 씀 · docs/domain/fx.md) */
+export const RATE_SOURCE_LABEL = "한국수출입은행 · Frankfurter(수출입은행 값을 받지 못한 날)";
+
 /** 환율 출처 한 줄 — 꼬리말 · 소개가 같이 씀 (작업 0115) */
-export const SOURCE_NOTE = "환율: 한국수출입은행";
+export const SOURCE_NOTE = `환율: ${RATE_SOURCE_LABEL}`;
 
 export const SOURCE_NAME: Record<FxRate["source"], string> = { koreaexim: "한국수출입은행", frankfurter: "Frankfurter (예비)" };
 

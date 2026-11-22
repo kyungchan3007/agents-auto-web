@@ -15,6 +15,7 @@ import { averageYears, cheapMonth, type IndexPoint } from "../lib/travel-index";
 import { cheapMonthsCard, flightsHeadline, yoyCard } from "../lib/flights-copy";
 import { flightsBoard, latestNumbers, stripStats } from "../lib/flights-view";
 import type { AirfareCalendar } from "@hav/shared/airfare";
+import { RATE_SOURCE_LABEL } from "@hav/shared/currency";
 import { AirfareCalendarSection } from "./airfare-calendar";
 import { FlightsGraph } from "./flights-graph";
 import { MiniBoard } from "./mini-board";
@@ -149,7 +150,7 @@ export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: Tra
         </div>
       </main>
       <PageFooter width="max-w-page" className="space-y-1">
-        <p>자료: 통계청 KOSIS 소비자물가지수(국제항공료 · 해외단체여행비, 매달 최근 24개월) · 한국수출입은행 · <TextLink href="/about">소개 · 판단 기준</TextLink></p>
+        <p>자료: 통계청 KOSIS 소비자물가지수(국제항공료 · 해외단체여행비, 매달 최근 24개월) · {RATE_SOURCE_LABEL} · <TextLink href="/about">소개 · 판단 기준</TextLink></p>
       </PageFooter>
     </>
   );
