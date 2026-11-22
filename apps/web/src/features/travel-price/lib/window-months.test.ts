@@ -9,7 +9,7 @@
 //   export function windowMonths(points: { period: string; value: number }[] | null | undefined): WindowMonths | null
 //     // 홈 12달 막대와 같은 계산(monthlyAverages · 최근 36개월 같은 달 평균 · travelTiming 의 싼 달 · 비싼 달 규칙: 같은 값이면 싼 달은 앞선 달 · 비싼 달은 뒤선 달)
 //     // 값이 있는 달이 2개 미만이면 null · months 는 값이 있는 달만 1월부터 순서대로 · text = avg.toFixed(1) (소수 한 자리)
-//     // tone/tag: 가장 싼 달 "low" · `${달}월 가장 쌈` · 가장 비싼 달 "high" · `${달}월 가장 비쌈` · 나머지 null
+//     // tone/tag: 가장 싼 달 "low" · "가장 저렴한 달" · 가장 비싼 달 "high" · "가장 비싼 달" · 나머지 null
 //     // cmp: 차이는 화면에 보이는 한 자리 값끼리(text) 뺀 값 .toFixed(1)
 //          가장 싼 달 = complete ? "1년 중 가장 낮은 달" : "받은 달 중 가장 낮은 달"
 //          가장 비싼 달 = `${complete ? "1년" : "받은 달"} 중 가장 높은 달 · ${싼 달}월보다 ${차이} 높음`
@@ -58,8 +58,8 @@ describe("windowMonths — 같은 달 평균(홈 12달 막대와 같은 계산)"
   it("가장 싼 달 11월 · 가장 비싼 달 5월 · 꼬리표 · tone", () => {
     expect(w.lowest).toBe(11);
     expect(w.highest).toBe(5);
-    expect(w.months.find((m) => m.month === 11)).toMatchObject({ tone: "low", tag: "11월 가장 쌈" });
-    expect(w.months.find((m) => m.month === 5)).toMatchObject({ tone: "high", tag: "5월 가장 비쌈" });
+    expect(w.months.find((m) => m.month === 11)).toMatchObject({ tone: "low", tag: "가장 저렴한 달" });
+    expect(w.months.find((m) => m.month === 5)).toMatchObject({ tone: "high", tag: "가장 비싼 달" });
     expect(w.months.filter((m) => m.tone === null).map((m) => m.tag)).toEqual(new Array(10).fill(null));
   });
   it("달마다 계절 · 한마디가 붙음", () => {

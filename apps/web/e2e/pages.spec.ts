@@ -30,9 +30,9 @@ test.describe("통화 /currencies/USD (SR-CUR-01)", () => {
     await expect(tid(page, "currency-detail")).toContainText(/\d{4}-\d{2}-\d{2} (한국수출입은행|Frankfurter)/);
   });
 
-  test("판정 핀은 쌈 · 보통 · 비쌈 글자와 함께 (색만으로 전하지 않음)", async ({ page }) => {
+  test("판정 핀은 낮음 · 보통 · 높음 글자와 함께 (색만으로 전하지 않음)", async ({ page }) => {
     await page.goto("/currencies/USD");
-    await expect(tid(page, "currency-detail")).toContainText(/쌈|보통|비쌈|신호/);
+    await expect(tid(page, "currency-detail")).toContainText(/낮음|보통|높음|신호/);
   });
 
   test("그래프 최고 · 최저 금액 — 카드와 같은 값 · 기간을 바꾸면 그 기간 값 · 라벨이 그래프 안 (작업 0175)", async ({ page }) => {

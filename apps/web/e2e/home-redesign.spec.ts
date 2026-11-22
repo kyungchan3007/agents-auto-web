@@ -140,8 +140,11 @@ test.describe("새 홈 — 12달 막대 (작업 0217)", () => {
     // 그래프 2D(시안 F): 막대는 SVG 그라데이션(위 진하고 아래로 옅어짐) — 색은 fill 이 url(#…) 이고 톤(data-tone)으로 구분 (색 값은 홈 12달 막대 spec 에서)
     for (const i of [hiI, loI]) expect(await bars.nth(i).evaluate((e) => (e.getAttribute("fill") ?? "").startsWith("url(#") || !!e.querySelector('[fill^="url(#"]')), `${i + 1}월 막대 그라데이션`).toBe(true);
     await expect(tid(page, "year-bars")).toHaveAttribute("role", "img");
-    await expect(tid(page, "year-bars")).toContainText(`${hiI + 1}월 가장 비쌈`);
-    await expect(tid(page, "year-bars")).toContainText(`${loI + 1}월 가장 쌈`);
+    // 작업 0276: 말풍선은 달 이름 없이 '가장 비싼 달' · '가장 저렴한 달' · 달 이름은 구간 제목 '가장 저렴한 달은 11월, 가장 비싼 달은 5월' 과 눈금에 있음
+    await expect(tid(page, "year-bars")).toContainText("가장 비싼 달");
+    await expect(page.locator("#year-title")).toContainText(`가장 비싼 달은 ${hiI + 1}월`);
+    await expect(tid(page, "year-bars")).toContainText("가장 저렴한 달");
+    await expect(page.locator("#year-title")).toContainText(`가장 저렴한 달은 ${loI + 1}월`);
     const link = tid(page, "year-link");
     await expect(link).toHaveAttribute("href", "/flights");
     await expect(link).toContainText("항공료 그래프 자세히");
@@ -163,7 +166,7 @@ test.describe("새 홈 — 도착지별 환전 타이밍 (작업 0217)", () => {
     expect(await list.locator('[data-testid="dest-row"]').count()).toBe(n);
     await expect(tid(page, "dest-flag")).toHaveCount(n);
     await expect(list.locator("svg").first()).toBeVisible(); // 도시 사진 대신 국기 (SVG)
-    await expect(tid(page, "dest-row").first()).toContainText(/하위 \d+% · 쌈|하위 \d+% · 보통|상위 \d+% · 비쌈/);
+    await expect(tid(page, "dest-row").first()).toContainText(/하위 \d+% · 낮음|하위 \d+% · 보통|상위 \d+% · 높음/);
     await expect(tid(page, "more-currencies")).toContainText("다른 통화");
   });
 

@@ -99,9 +99,9 @@ test.describe("여행 타이밍 — 창밖으로 보는 12달 (작업 0229 · �
       const lo = home.find((b) => b.m === byValue[i - 1].m)!.h, hi = home.find((b) => b.m === byValue[i].m)!.h;
       expect(hi, `${byValue[i].m}월(${byValue[i].v}) 막대가 ${byValue[i - 1].m}월(${byValue[i - 1].v})보다 낮음`).toBeGreaterThanOrEqual(lo - 0.5);
     }
-    // 홈의 말풍선 글과 같은 달 (N월 가장 쌈 · 가장 비쌈)
-    await expect(page.locator("body")).toContainText(`${low}월 가장 쌈`);
-    await expect(page.locator("body")).toContainText(`${high}월 가장 비쌈`);
+    // 홈의 말풍선 글과 같은 글 (작업 0276: '가장 저렴한 달' · '가장 비싼 달' — 달 이름은 글자판 · 눈금에 있음)
+    await expect(page.locator("body")).toContainText("가장 저렴한 달");
+    await expect(page.locator("body")).toContainText("가장 비싼 달");
   });
 
   test("달 고르기 — 글자판 · 계절 · 꼬리표 · 큰 숫자(카운트업 뒤 같은 값) · 비교 글 · 눌림 표시 · 창 설명이 함께 바뀜", async ({ page }) => {
@@ -121,7 +121,7 @@ test.describe("여행 타이밍 — 창밖으로 보는 12달 (작업 0229 · �
       await expect(tid(page, "window-season")).toContainText(desc);
       await expect(tid(page, "window-value")).toHaveAttribute("data-final", v);
       await expect(tid(page, "window-value"), `${m}월 큰 숫자(카운트업 뒤)`).toHaveText(v, { timeout: 2000 });
-      const tag = m === low ? `${low}월 가장 쌈` : m === high ? `${high}월 가장 비쌈` : "";
+      const tag = m === low ? "가장 저렴한 달" : m === high ? "가장 비싼 달" : "";
       await expect(tid(page, "window-tag")).toHaveText(tag);
       const diff = (Number(v) - lowV).toFixed(1);
       const span = complete ? "1년" : "받은 달";
@@ -226,7 +226,7 @@ test.describe("여행 타이밍 — 창밖으로 보는 12달 (작업 0229 · �
     // 처음(누르기 전)에 보이던 달은 앞에 붙을 수 있으니 1월(첫 달)부터 비교
     const from = seen.indexOf(ms[0].m, seen.length > expected.length ? 1 : 0);
     expect(seen.slice(Math.max(0, from)), "재생 순서(글자판 달)").toEqual(expected);
-    await expect(tid(page, "window-tag")).toHaveText(`${low}월 가장 쌈`);
+    await expect(tid(page, "window-tag")).toHaveText("가장 저렴한 달");
     const pressed = await tid(page, "window-month").evaluateAll((els) => els.filter((e) => e.getAttribute("aria-pressed") === "true").map((e) => Number(e.getAttribute("data-month"))));
     expect(pressed).toEqual([low]);
   });
@@ -251,7 +251,7 @@ test.describe("여행 타이밍 — 창밖으로 보는 12달 (작업 0229 · �
     await tid(page, "window-replay").click();
     await expect(tid(page, "window-flap")).toHaveText(`${low}월`, { timeout: 400 });
     expect(await tid(page, "window-view").getAttribute("data-state")).toBe("open");
-    await expect(tid(page, "window-tag")).toHaveText(`${low}월 가장 쌈`);
+    await expect(tid(page, "window-tag")).toHaveText("가장 저렴한 달");
   });
 
   test("자바스크립트를 꺼도 — 창이 열린 모양 · 값 · 달 버튼이 보임 (닫힌 채 안 남음)", async ({ browser, baseURL }) => {
