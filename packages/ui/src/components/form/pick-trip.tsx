@@ -52,7 +52,7 @@ export function PickTrip({ label, changeLabel, testId = "pick-trip-open", classN
               <h2 id={s.ids.title} className="text-[1.375rem] leading-tight font-bold text-cheap">
                 어디로 떠나세요?
               </h2>
-              <button type="button" onClick={s.close} aria-label="닫기" className="-mt-1 -mr-2 grid size-11 place-items-center rounded-pill text-[1.5rem] text-fg-2 hover:bg-surface-2">
+              <button type="button" onClick={s.close} aria-label="닫기" className="-mt-1 -mr-2 grid size-11 place-items-center rounded-pill text-[1.375rem] text-fg-2 hover:bg-surface-2">
                 ×
               </button>
             </div>
