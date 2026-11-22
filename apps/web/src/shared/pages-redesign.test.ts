@@ -81,11 +81,11 @@ describe("여행 타이밍 /flights (P2 · SR-TRV-01)", () => {
 describe("여행 물가 /prices (P3 · SR-PRC-01)", () => {
   const bands = codeOf(read(join(SHARED_SRC, "domain/travel.ts")));
 
-  it("큰 문장(pricesHeadline) · 물가 구간 3칸 이름 · 하루 예산 · 판정 핀 · 환율 없음", () => {
+  it("큰 문장(pricesHeadline) · 물가 구간 3칸 이름 · 하루 예산 · 판정 핀 · '환율 없음' 표기는 없어짐(작업 0285)", () => {
     expect(T.prices).toMatch(/\bpricesHeadline\b/);
     for (const s of ["한국보다 싼 곳", "비슷한 곳", "한국보다 비싼 곳"]) expect(`${T.prices}\n${bands}`, s).toContain(s);
     expect(T.prices).toContain("여행 하루 예산");
-    expect(T.prices).toContain("환율 없음");
+    expect(T.prices).not.toContain("환율 없음"); // 작업 0285: 환율 자료가 없는 나라는 표기 자체를 지움(자료가 있는 나라의 판정은 그대로)
     expect(T.prices).toMatch(/\bSignalPin\b/);
   });
 

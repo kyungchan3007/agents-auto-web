@@ -5,7 +5,7 @@
 //       [data-testid="route-stage"] — 판(고정되지 않음: position sticky 아님)
 //       [data-testid="route-stops"] 안 [data-testid="route-stop"] 단추(정거장마다 · data-country · data-value · data-active="true"(지금 정거장) · 누르면 그 정거장으로 비행기 · 카드가 바뀜) — 휴대폰에서도 보임(가로로 밀 수 있는 한 줄)
 //       [data-testid="route-ruler"] 자 · "route-pin"(한국 뺀 정거장마다) · "route-kr-tag"(글 "한국 100 기준") · "route-plane"(가운데 x = 지금 값의 자 위 위치 · data-dir)
-//       [data-testid="route-card"] 카드 안 route-card-name · route-card-meta("정거장 N / M · 띠 이름") · route-card-value · route-card-pct · route-card-budget · route-card-signal
+//       [data-testid="route-card"] 카드 안 route-card-name · route-card-meta("띠 이름" · 작업 0285: 정거장 번호 삭제) · route-card-value · route-card-pct · route-card-budget · route-card-signal
 //     처음에는 첫 정거장(가장 싼 나라)이 골라져 있음 · 스크롤로는 바뀌지 않음 · 값이 같은 나라 사이(작업 0251)는 비행기가 가만히
 //     자바스크립트가 꺼져도 첫 정거장 카드와 자(물가 자)가 보임
 //   노선 구간과 아래 세 칸 목록 사이 간격: 넓은 화면 96px · 휴대폰 72px (다른 구간과 같음 · 굵은 남색 선은 그대로)
@@ -131,7 +131,7 @@ test.describe("여행 물가 — 나라 단추로 고르는 물가 노선 (작�
     const exp = expectedStops(await listPins(page));
     await stopsReady(page);
     await expect(tid(page, "route-card-name"), "처음 카드").toHaveText(exp[0].name);
-    await expect(tid(page, "route-card-meta")).toHaveText(new RegExp(`^정거장 1 / ${exp.length} · `));
+    await expect(tid(page, "route-card-meta"), "정거장 번호 없이 띠 이름만(작업 0285)").toHaveText(new RegExp(`^(${Object.values(BANDNAME).join("|")})( · \\d{4}년 자료)?$`));
     expect((await stopsOf(page)).map((x) => x.active), "처음에는 첫 단추만 켜짐").toEqual(exp.map((_, i) => i === 0));
     // 비행기가 자리를 잡을 때까지(연속 두 번 읽은 값이 같음) 기다린 뒤의 값을 기준으로 삼음 (하이드레이션 · 글꼴 뒤 흔들림 방지)
     let last = Number.NaN;
@@ -161,12 +161,15 @@ test.describe("여행 물가 — 나라 단추로 고르는 물가 노선 (작�
       await pickStop(page, exp, k);
       const e = exp[k];
       const band = e.kr ? "base" : e.value / 100 < 0.9 ? "cheap" : e.value / 100 > 1.1 ? "exp" : "mid";
-      await expect(tid(page, "route-card-meta")).toHaveText(new RegExp(`^정거장 ${k + 1} / ${n} · ${BANDNAME[band]}( · \\d{4}년 자료)?$`));
+      await expect(tid(page, "route-card-meta")).toHaveText(new RegExp(`^${BANDNAME[band]}( · \\d{4}년 자료)?$`)); // 작업 0285: 정거장 번호를 지움
       await expect.poll(async () => Number((await text(page, "route-card-value")).replace(/\s/g, "")), { message: "물가 숫자(숫자가 넘어가는 움직임이 끝난 값)" }).toBe(e.value);
       await expect(tid(page, "route-card-pct")).toHaveText(e.value === 100 ? /^기준/ : e.value < 100 ? `${100 - e.value}% 저렴합니다` : `${e.value - 100}% 비쌉니다`);
       await expect(tid(page, "route-card-budget")).toContainText(`약 ${(e.value * 1000).toLocaleString("ko-KR")}원`);
-      const signal = e.kr ? "한국 100 기준" : e.pill && /^환율 .*·/.test(e.pill) ? e.pill : "환율 없음";
-      await expect(tid(page, "route-card-signal")).toContainText(signal);
+      // 작업 0285: 환율 자료가 없는 나라는 "환율 없음" 표기 자체를 지움(신호 칸을 그리지 않음) · 자료가 있는 나라의 판정은 그대로
+      if (e.kr) await expect(tid(page, "route-card-signal")).toContainText("한국 100 기준");
+      else if (e.pill && /^환율 .*·/.test(e.pill)) await expect(tid(page, "route-card-signal")).toContainText(e.pill);
+      else await expect(tid(page, "route-card-signal"), "환율 자료가 없는 나라는 신호 칸이 없음").toHaveCount(0);
+      await expect(tid(page, "route-card"), "'환율 없음' 글자 없음").not.toContainText("환율 없음");
       expect(await tid(page, "route-card").getAttribute("data-moving"), "움직이는 중 아님").not.toBe("true");
     }
   });
@@ -285,10 +288,12 @@ test.describe("여행 물가 — 나라 단추로 고르는 물가 노선 (작�
     expect(Math.max(...gaps) - Math.min(...gaps), "화면 높이에 따라 변함").toBeLessThanOrEqual(1);
   });
 
-  test("노선 아래 — 기존 세 칸 목록 · 나라 더 보기 · (자료 없어 뺀 나라 줄)이 그대로 이어짐", async ({ page }) => {
+  test("노선 아래 — 기존 세 칸 목록 · 나라 더 보기 · 이 그대로 이어짐 · '자료가 없어 뺀 나라' 줄은 없음(작업 0285)", async ({ page }) => {
     test.skip(!(await ready(page)), "물가 자료 없음");
     await expect(tid(page, "price-bands").locator("section")).toHaveCount(3);
     await expect(page.getByText("나라 더 보기").first()).toBeVisible();
+    await expect(page.getByText("자료가 없어 뺀 나라"), "작업 0285: 뺀 나라 줄은 여행 물가에서 지움").toHaveCount(0);
+    await expect(page.locator("main")).not.toContainText("환율 없음");
     await stopsReady(page);
     await expect
       .poll(async () => { const sec = (await tid(page, "route-section").boundingBox())!; const bands = (await tid(page, "price-bands").boundingBox())!; return bands.y - (sec.y + sec.height); }, { message: "목록이 노선 구간 아래", timeout: 8000 })

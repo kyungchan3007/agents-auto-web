@@ -63,7 +63,9 @@ describe("price-route — 부품", () => {
     expect(s).not.toMatch(/setInterval/);
   });
   it("문구", () => {
-    for (const t of ["나라별 물가 노선", "나라 이름을 누르면 그 나라로 갑니다 · 싼 나라에서 한국을 지나 비싼 나라 순서입니다", "한국 100 기준", "물가 (한국 = 100)", "한국과 비교", "하루 예산 예시", "한국에서 하루 100,000원 쓰는 만큼 · 물가 비율로 계산", "환율 없음"]) expect(route(), t).toContain(t);
+    for (const t of ["나라별 물가 노선", "나라 이름을 누르면 그 나라로 갑니다 · 싼 나라에서 한국을 지나 비싼 나라 순서입니다", "한국 100 기준", "물가 (한국 = 100)", "한국과 비교", "하루 예산 예시", "한국에서 하루 100,000원 쓰는 만큼 · 물가 비율로 계산"]) expect(route(), t).toContain(t);
+    expect(route(), "환율 없음 표기는 지움(작업 0285)").not.toContain("환율 없음");
+    expect(route(), "정거장 번호 글(정거장 N / M)은 지움(작업 0285)").not.toMatch(/정거장\s*\$?\{?[^"']{0,20}\/\s*\$?\{?/);
     for (const old of ["스크롤로 떠나는 물가 노선", "올리면 거꾸로 돌아옵니다"]) expect(route(), `옛 문구 ${old}`).not.toContain(old); // 작업 0266: 새 제목 · 설명으로 바뀜
     expect(route()).not.toContain("한국보다 싼 곳 · 비슷한 곳 · 비싼 곳"); // 정적 자 제목은 없어짐
     expect(route()).not.toMatch(/<Eyebrow>\s*한국 = 100/); // 작업 0251 ㄷ: 제목 위 라벨 없음
