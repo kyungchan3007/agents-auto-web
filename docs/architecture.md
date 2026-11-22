@@ -17,7 +17,7 @@
 | 공개 일지 | git 커밋 · PR · 작업 폴더 (데이터 저장 위치와 무관 · 수집 기록은 운영용) | 확인됨 |
 | 로그인 · 알림 수단 | 이메일 매직 링크 · 이메일 알림 | 가정 |
 | 패키지 매니저 · 이름 | npm workspaces · `@hav/<이름>` | 가정 |
-| 주소 | 사이트 `flapfx.com` (Flapfx · Workers `agents-auto-web`) · API `tripfx-api.developfff.workers.dev` | 확인됨 (2026-11-17 · 작업 0190 · 옛 `tripfx.pages.dev` 는 삭제) |
+| 주소 | 사이트 `flapfx.com` (Flapfx · Workers `agents-auto-web`) · 어드민 `admin.flapfx.com`(작업실 · GEO 측정 · 같은 Worker 가 주소로 나눔 `worker/host.ts` · 검색에 막음 · 작업 0302) · API `tripfx-api.developfff.workers.dev` | 확인됨 (2026-11-17 · 작업 0190 · 옛 `tripfx.pages.dev` 는 삭제) |
 
 ## 전체 그림
 ```text
