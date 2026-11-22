@@ -35,11 +35,13 @@ describe("직구 계산 — 파랑 첫 면", () => {
     expect(m).toMatch(/relative z-10/);
   });
 
-  it("제목 + 설명 덩어리의 자리(0208 크기 고정)는 640 이상만 min-h 계산식 유지 · 639 이하(휴대폰)는 미리 잡지 않음(작업 0245)", () => {
+  it("제목 + 설명 덩어리의 자리(0208 크기 고정): 휴대폰도 두 줄 높이로 미리 잡음(작업 0296 · 0245 의 '639 이하는 미리 잡지 않음'을 바꿈) · 389 이하는 설명이 두 줄로 꺾여 한 줄 높이(13.6px) 더 · 768 이상은 한 줄 높이", () => {
     const c = code(page);
-    expect(c).toMatch(/sm:min-h-\[calc\(2\.68\*clamp\(2\.25rem,4\.5vw,3\.5rem\)/);
-    expect(c).toMatch(/md:min-h-\[calc\(1\.34\*clamp\(2\.25rem,4\.5vw,3\.5rem\)/);
-    expect(c, "휴대폰 기본 min-h 없음").not.toMatch(/(?<![:\w-])min-h-\[calc\(4\.02\*/);
+    expect(c, "휴대폰 기본 min-h(두 줄 높이)").toMatch(/(?<![:\w-])min-h-\[calc\(2\.68\*clamp\(2\.25rem,4\.5vw,3\.5rem\)\+3\.4rem\)\]/);
+    expect(c, "389 이하 +13.6px").toMatch(/max-\[389px\]:min-h-\[calc\(2\.68\*clamp\(2\.25rem,4\.5vw,3\.5rem\)\+3\.4rem\+13\.6px\)\]/);
+    expect(c, "768 이상 한 줄 높이").toMatch(/md:min-h-\[calc\(1\.34\*clamp\(2\.25rem,4\.5vw,3\.5rem\)/);
+    expect(c, "옛 sm: 접두(640 이상만) 없음").not.toMatch(/sm:min-h-\[calc\(2\.68\*/);
+    expect(c, "세 줄 높이(4.02) 기본 min-h 없음").not.toMatch(/(?<![:\w-])min-h-\[calc\(4\.02\*/);
     expect(c, "휴대폰 아래 여백 12.875rem").toMatch(/pb-\[12\.875rem\]/);
   });
 
