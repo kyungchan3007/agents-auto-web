@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CURRENCIES, currencyFlag, currencySymbol, groupByRegion, headline, matchCurrency, percentileText, rangeOf, rateText, sampleText, toUnit } from "./currency";
+import { CURRENCIES, USD_PEGGED, currencyFlag, currencyName, currencySymbol, groupByRegion, headline, matchCurrency, pegText, percentileText, rangeOf, rateText, sampleText, toUnit } from "./currency";
 
 // 배포한 API 가 2026-10-28 에 준 22개
 const LIVE = ["AED", "AUD", "BHD", "BND", "CAD", "CHF", "CNH", "DKK", "EUR", "GBP", "HKD", "IDR", "JPY", "KWD", "MYR", "NOK", "NZD", "SAR", "SEK", "SGD", "THB", "USD"].map((currency) => ({ currency }));
@@ -129,5 +129,22 @@ describe("통화 둘러보기 (작업 0058)", () => {
       [947.24, 100],
     ]);
     expect(toUnit(rows, 100)[0]).toBe(rows[0]);
+  });
+});
+
+// 작업 0289 — 미국 달러에 고정된 통화(중앙은행이 공식으로 단일 고정 환율을 밝힌 곳만: docs/domain/fx.md)
+describe("달러에 고정된 통화 · 셋째 줄 (작업 0289)", () => {
+  it("SAR · AED · BHD 만 — 홍콩 달러(범위 연동) · 쿠웨이트 디나르 등은 없음", () => {
+    expect([...USD_PEGGED].sort()).toEqual(["AED", "BHD", "SAR"]);
+    for (const c of ["USD", "JPY", "EUR", "HKD", "KWD", "CNH", "BND", "DKK"]) expect(pegText(c), c).toBeNull();
+  });
+  it("문장: '(통화 이름)은(는) 미국 달러에 고정된 통화라 달러와 같이 움직입니다' — 받침에 따라 은 · 는", () => {
+    for (const c of ["SAR", "AED", "BHD"]) {
+      const t = pegText(c) ?? "";
+      expect(t, c).toMatch(/^.+(은|는) 미국 달러에 고정된 통화라 달러와 같이 움직입니다$/);
+      expect(t.startsWith(currencyName(c)), c).toBe(true);
+      const last = currencyName(c).charCodeAt(currencyName(c).length - 1);
+      expect(t.slice(currencyName(c).length, currencyName(c).length + 1), c).toBe((last - 0xac00) % 28 !== 0 ? "은" : "는");
+    }
   });
 });

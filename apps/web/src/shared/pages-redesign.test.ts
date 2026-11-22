@@ -48,7 +48,7 @@ describe("울트라마린 전면 화면 없음 (P10) — 이 화면들에는 바
 describe("통화 (P1 · SR-CUR-01)", () => {
   it("목록 · 상세 구성 문구 · 순수 함수 · 판정 핀", () => {
     for (const s of ["둘러보기", "실제로 바꿀 때", "1년 최저", "1년 최고", "1년 평균", "이 통화 쓰는 나라 물가 보기"]) expect(T.currencies, s).toContain(s);
-    for (const fn of ["yearStats", "currencyListLabel", "detailLine"]) expect(T.currencies, fn).toMatch(new RegExp(`\\b${fn}\\b`));
+    for (const fn of ["yearStats", "currencyListLabel", "verdictLines"]) expect(T.currencies, fn).toMatch(new RegExp(`\\b${fn}\\b`));
     // 작업 0260: 둘러보기 표에서는 판정 핀(SignalPin)과 "하위 N%" 글을 뺌(사용자 결정) — 판정 표시는 상세 본문이 pinBasis(색 점 + 근거 숫자)로 계속 보임 · 그래서 핀 부품 또는 pinBasis 둘 중 하나가 통화 화면에 있으면 됨
     expect(T.currencies).toMatch(/\b(SignalPin|pinBasis)\b/);
   });
