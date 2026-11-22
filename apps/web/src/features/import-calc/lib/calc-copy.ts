@@ -17,7 +17,7 @@ export function calcHeadline(result: CalcResult | null, input: Pick<CalcInput, "
   if (!result.over) return `${money(input.currency, input.price)} 물건, 세금 없이 받습니다`;
   const { duty, vat } = result.tax ?? { duty: null, vat: null };
   if (duty !== null && vat !== null) return `관세 · 부가세 약 ${numberText(duty + vat)}원이 붙습니다`;
-  return "한도 초과 · 관세율을 넣어 보세요";
+  return "관세율을 넣어 보세요"; // 한도를 넘은 것은 결과 카드 머리 · 한도 막대에서 보임 (작업 0296)
 }
 
 /** 휴대폰 폼 위 결과 요약 한 줄 (작업 0208) — 금액 · 판정 · 숫자는 계산 결과만 (관세율이 없으면 세금을 지어내지 않고 안내) */
@@ -26,6 +26,7 @@ export function summaryLine(result: CalcResult | null): string {
   if (!result.ok) return result.reason;
   const won = `${numberText(result.priceKrw)}원`;
   if (!result.over) return `${won} · 면세 한도 안`;
-  const { duty, vat } = result.tax ?? { duty: null, vat: null };
-  return duty !== null && vat !== null ? `${won} · 한도 넘음 · 세금 약 ${numberText(duty + vat)}원` : `${won} · 한도 넘음 · 관세율을 넣으면 세금 계산`;
+  // 한도 넘음 — 합계가 있으면 합계 · 관세율이 없어 합계를 못 구하면 물건 값 + 안내 (작업 0296 · 숫자는 계산 결과에서만)
+  const total = result.tax?.total ?? null;
+  return total !== null ? `모두 합쳐 약 ${numberText(total)}원` : `물건 값 ${won} · 관세율을 넣으면 합계`;
 }
