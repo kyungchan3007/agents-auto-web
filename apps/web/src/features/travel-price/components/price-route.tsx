@@ -12,6 +12,7 @@ import type { CSSProperties } from "react";
 import { useCountTween, usePlaneFlip, usePriceRoute, useRouteTiles } from "../hooks/use-price-route";
 import { type PriceBand, rateBadgeText } from "../lib/bands";
 import { type RouteBand, type RouteStop, routeCardText, routeStops } from "../lib/price-route";
+import { PriceRouteList } from "./price-route-list";
 import { rulerScale, rulerX } from "../lib/ruler";
 
 const COLOR: Record<RouteBand, string> = {
@@ -161,9 +162,10 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
             <SectionTitle data-testid="route-title" className="text-(length:--route-title) leading-[1.125] text-fg">
               나라별 물가 노선
             </SectionTitle>
-            <p className="mt-1.5 text-small text-fg-2">나라 이름을 누르면 그 나라로 갑니다 · 싼 나라에서 한국을 지나 비싼 나라 순서입니다</p>
+            <p className="mt-1.5 text-small text-fg-2 max-[760px]:hidden">나라 이름을 누르면 그 나라로 갑니다 · 싼 나라에서 한국을 지나 비싼 나라 순서입니다</p>
+            <p className="mt-1.5 hidden text-[0.9375rem] text-fg-2 max-[760px]:block">물가가 낮은 나라부터 차례로 놓았습니다. 나라를 누르면 하루 예산이 펼쳐지고, 다시 누르면 접힙니다</p>
           </div>
-          <ol data-testid="route-stops" className="m-0 flex min-w-0 list-none flex-wrap justify-end gap-1 p-0 max-[760px]:flex-nowrap max-[760px]:justify-start max-[760px]:overflow-x-auto sm:max-[760px]:pb-1 max-sm:-my-2 max-sm:pt-2 max-sm:pb-3">
+          <ol data-testid="route-stops" className="m-0 flex max-[760px]:hidden min-w-0 list-none flex-wrap justify-end gap-1 p-0 max-[760px]:flex-nowrap max-[760px]:justify-start max-[760px]:overflow-x-auto sm:max-[760px]:pb-1 max-sm:-my-2 max-sm:pt-2 max-sm:pb-3">
             {stops.map((s) => (
               <li key={s.country} className="max-[760px]:shrink-0">
                 <button
@@ -182,6 +184,10 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
             ))}
           </ol>
         </div>
+        <div className="hidden max-[760px]:block">
+          <PriceRouteList stops={stops} extras={extras} signalOf={signalOf} percentileOf={percentileOf} latestYear={latestYear} />
+        </div>
+        <div className="max-[760px]:hidden">
         <div ref={vp} className={`relative -mx-2 mt-1 px-2 max-[760px]:mx-[-1rem] max-[760px]:px-0 max-[760px]:overflow-hidden`}>
           <div
             ref={ruler}
@@ -297,6 +303,7 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
             {moving ? `다음 정거장 → ${nextName}` : ""}
           </p>
         </article>
+        </div>
       </div>
     </section>
   );
