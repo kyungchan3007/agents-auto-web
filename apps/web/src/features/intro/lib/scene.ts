@@ -80,15 +80,8 @@ function shade<T extends THREE.Object3D>(o: T, cast = true): T {
 /** 인트로 장면을 el 안에 그리고 정리 함수를 돌려줌 */
 export function mountIntroScene(el: HTMLElement, api: SceneApi): () => void {
   const { state, still } = api;
-  const X = new URLSearchParams(location.search).get("x") ?? ""; // 측정용 임시 스위치(.tmp 전용)
-  const has = (k: string) => X.split(",").includes(k);
-  const PR = has("dpr1") ? 1 : Math.min(devicePixelRatio, 2);
-  const perf: any = { mountAt: performance.now(), dt: [], cpu: [], gpu: [], info: null, first: 0, calls: [], tris: [] };
-  (window as any).__perf = perf;
-  const renderer = new THREE.WebGLRenderer({ antialias: !has("msaa0") && !has("aa0") });
-  renderer.info.autoReset = false;
-  perf.renderer = renderer;
-  renderer.setPixelRatio(PR);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   el.appendChild(renderer.domElement);
@@ -123,9 +116,7 @@ export function mountIntroScene(el: HTMLElement, api: SceneApi): () => void {
   const sun = new THREE.DirectionalLight(0xfff3e2, 1.7);
   sun.position.set(-40, 60, 30);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(has("shadow2048") ? 2048 : 4096, has("shadow2048") ? 2048 : 4096);
-  if (has("shadow0")) { sun.castShadow = false; renderer.shadowMap.enabled = false; }
-  if (has("pcf")) renderer.shadowMap.type = THREE.PCFShadowMap;
+  sun.shadow.mapSize.set(4096, 4096);
   sun.shadow.bias = -0.0004;
   sun.shadow.radius = 4;
   Object.assign(sun.shadow.camera, { left: -110, right: 110, top: 90, bottom: -90, far: 260 });
@@ -540,22 +531,23 @@ export function mountIntroScene(el: HTMLElement, api: SceneApi): () => void {
   // 카메라 — 정사영 · 도시 미니어처를 비스듬히 내려다봄
   const VIEW = 30, DIST = 160, ELEV = (32 * Math.PI) / 180;
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 600);
-  const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(4, 4, { samples: has("msaa0") ? 0 : 4, type: THREE.HalfFloatType })); // 계단 현상 줄이기 (MSAA)
+  const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(4, 4, { samples: 4, type: THREE.HalfFloatType })); // 계단 현상 줄이기 (MSAA)
   composer.addPass(new RenderPass(scene, camera));
   // 구석 그림자(GTAO)는 화면 배율이 1 보다 클 때만 절반 해상도로 계산 — 배율 2 에서 배율 1 과 같은 해상도(느려지지 않게) · 배율 1 은 그대로 · 더 줄여야 하면 AO_SAMPLES_RETINA 를 8 로
+  const PR = Math.min(devicePixelRatio, 2);
   const AO_SCALE_RETINA = 0.5;
   const AO_SAMPLES_RETINA = 16;
   const aoScale = PR > 1 ? AO_SCALE_RETINA : 1;
   const ao = new GTAOPass(scene, camera, 2, 2);
   ao.updateGtaoMaterial({ radius: 2.2, distanceExponent: 1.4, thickness: 1.5, scale: 1.2, samples: PR > 1 ? AO_SAMPLES_RETINA : 16 });
   ao.blendIntensity = 0.85;
-  if (!has("gtao0")) composer.addPass(ao);
+  composer.addPass(ao);
   composer.addPass(new OutputPass());
   const resize = () => {
     const w = el.clientWidth;
     const h = el.clientHeight;
     renderer.setSize(w, h, false);
-    composer.setPixelRatio(PR);
+    composer.setPixelRatio(Math.min(devicePixelRatio, 2));
     composer.setSize(w, h);
     ao.setSize(Math.max(1, Math.round(w * PR * aoScale)), Math.max(1, Math.round(h * PR * aoScale))); // 창 크기가 바뀔 때도 같은 규칙
     const a = w / Math.max(h, 1);
@@ -644,8 +636,7 @@ export function mountIntroScene(el: HTMLElement, api: SceneApi): () => void {
       staff.group.rotation.y = staffTo.rot;
       play(staff, "idle");
     }
-    if (has("people0")) for (const p of people) p.group.visible = false;
-    else for (const p of people) p.mixer?.update(still ? 0 : dt);
+    for (const p of people) p.mixer?.update(still ? 0 : dt);
     if (state.hidden) return;
 
     let p = 0;
@@ -669,18 +660,7 @@ export function mountIntroScene(el: HTMLElement, api: SceneApi): () => void {
     hero.position.set(...pl.pos);
     hero.rotation.set(0, pl.heading, pl.pitch);
     placeCamera(cam);
-    const t0 = performance.now();
-    renderer.info.reset();
     composer.render();
-    const t1 = performance.now();
-    if (has("sync")) { renderer.getContext().finish(); perf.gpu.push(performance.now() - t0); }
-    perf.cpu.push(t1 - t0);
-    perf.dt.push(t0 - (perf.lastT ?? t0));
-    perf.lastT = t0;
-    if (!perf.first) perf.first = performance.now();
-    perf.calls.push(renderer.info.render.calls);
-    perf.tris.push(renderer.info.render.triangles);
-    perf.info = { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures, programs: renderer.info.programs?.length };
 
     let staffScreen: { x: number; y: number } | null = null;
     if (api.onFrame) {
