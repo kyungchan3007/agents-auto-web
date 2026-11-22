@@ -26,10 +26,11 @@
 - .agents/specs/0283-prices-route-mobile/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- apps/web/src/app/globals.css — 펼침 움직임 키프레임(route-rise) 한 개. 키프레임 정의가 이 파일에 모여 있음.
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (CI `결과: ✅ ALL PASS`)
 - [ ] 390px 에서 일곱 정거장이 옆으로 밀지 않고 보임 · 펼침/접힘 · 넓은 화면 그대로
 
 ## 허점
--
+- 0268 ~ 0282: lead 가 builder 지시에 '로컬 빌드 확인 · 단위 테스트'를 붙여 보내 builder · test 가 같은 확인을 두 번 함(team.md: 확인은 test 가 이어받음 위반) · PC 부하 증가. 0283 부터 builder 는 구현 · 푸시만.
