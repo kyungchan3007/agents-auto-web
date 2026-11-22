@@ -20,6 +20,7 @@
 - .agents/specs/0275-type-scale-3/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- apps/web/src/features/intro/components/intro.tsx — 0274 에서 놓친 인트로 '건너뛰기' text-sm(14px)을 15px 단계로. tokens.css 에서 Tailwind 기본 이름을 통째로 바꾸는 안은 /geo · /log 까지 바뀌어 되돌림(lead 판단).
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (CI `결과: ✅ ALL PASS`)
