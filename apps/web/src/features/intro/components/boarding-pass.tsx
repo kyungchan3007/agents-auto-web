@@ -27,9 +27,9 @@ export function BoardingPass({ s }: { s: IntroView }) {
           <span>TFX 1116</span>
         </div>
         <div className="my-2 flex items-baseline gap-3">
-          <b className="text-[32px] font-bold tracking-tight">{t.route[0]}</b>
+          <b className="text-[36px] font-bold tracking-tight">{t.route[0]}</b>
           <i className="text-[22px] font-bold text-cheap not-italic">→</i>
-          <b className="text-[32px] font-bold tracking-tight">{t.route[1]}</b>
+          <b className="text-[36px] font-bold tracking-tight">{t.route[1]}</b>
         </div>
         <dl className="m-0 grid grid-cols-2 gap-x-3.5 gap-y-2">
           {t.rows.map((r) => (

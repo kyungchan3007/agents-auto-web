@@ -6,7 +6,7 @@ export function BubbleGate({ s }: { s: IntroView }) {
   return (
     <div className="grid gap-3">
       <div className="flex items-center justify-between gap-2">
-        <p className="m-0 text-sm font-bold text-accent">{printing ? "즐거운 여행 되세요" : "탑승 수속을 시작합니다"}</p>
+        <p className="m-0 text-[0.9375rem] font-bold text-accent">{printing ? "즐거운 여행 되세요" : "탑승 수속을 시작합니다"}</p>
         {!printing && (
           <button type="button" data-testid="intro-back" onClick={s.back} className="border-0 bg-transparent py-0.5 text-[13px] font-semibold text-fg-2 hover:text-fg hover:underline">
             ← 이전

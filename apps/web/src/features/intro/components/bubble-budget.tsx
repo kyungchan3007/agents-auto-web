@@ -9,7 +9,7 @@ export function BubbleBudget({ s }: { s: IntroView }) {
   return (
     <div className="grid gap-3">
       <div className="flex items-center justify-between gap-2">
-        <p className="m-0 text-sm font-bold text-accent">
+        <p className="m-0 text-[0.9375rem] font-bold text-accent">
           {c.country} · {s.pickedCity}로 가시는군요
         </p>
         <button type="button" data-testid="intro-back" onClick={s.back} className="border-0 bg-transparent py-0.5 text-[13px] font-semibold text-fg-2 hover:text-fg hover:underline">
@@ -28,14 +28,14 @@ export function BubbleBudget({ s }: { s: IntroView }) {
           onKeyDown={(e) => {
             if (e.key === "Enter") s.next2();
           }}
-          className="min-w-0 flex-1 border-0 bg-transparent text-[26px] font-bold text-fg tabular-nums"
+          className="min-w-0 flex-1 border-0 bg-transparent text-[28px] font-bold text-fg tabular-nums"
         />
         <span className="font-semibold text-fg-2">원</span>
       </label>
       {hasRate ? (
         <div className="flex flex-wrap items-baseline gap-2.5">
           {s.outText && (
-            <strong data-testid="intro-out" className="bg-[linear-gradient(transparent_55%,var(--hav-sun)_55%)] text-[30px] font-bold tracking-tight text-cheap tabular-nums">
+            <strong data-testid="intro-out" className="bg-[linear-gradient(transparent_55%,var(--hav-sun)_55%)] text-[28px] font-bold tracking-tight text-cheap tabular-nums">
               {s.outText}
             </strong>
           )}

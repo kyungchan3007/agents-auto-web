@@ -8,7 +8,7 @@ export function IntroCells({ text, cols, testId, tone = "yellow", size = "md", c
   // 한 글자 한 칸 — 모자라면 빈 칸으로 채우고 넘치면 자름 (글은 보통 boardRows 가 이미 칸 수 안으로 맞춤)
   const chars = Array.from(text).slice(0, cols);
   const cells = [...chars, ...Array.from({ length: cols - chars.length }, () => " ")];
-  const cell = size === "sm" ? "h-[34px] w-[26px] text-[18px]" : "aspect-[0.8] text-[17px]";
+  const cell = size === "sm" ? "h-[34px] w-[26px] text-[18px]" : "aspect-[0.8] text-[18px]";
   return (
     <div data-testid={testId} data-text={text} aria-hidden className={`grid gap-[3px] ${className}`} style={{ gridTemplateColumns: size === "sm" ? `repeat(${cols}, 26px)` : `repeat(${cols}, minmax(0, 1fr))` }}>
       {cells.map((ch, i) => (

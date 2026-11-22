@@ -66,7 +66,7 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
       <div className="grid items-start border-t-[3px] border-fg lg:grid-cols-3 lg:divide-x lg:divide-line">
         {bands.map((b, bi) => (
           <section key={b.id} data-fu={bi} aria-labelledby={`band-${b.id}`} className="min-w-0 border-b border-line py-5 lg:border-b-0 lg:px-6 lg:first:pl-0 lg:last:pr-0">
-            <SectionTitle id={`band-${b.id}`} className={`flex items-center gap-3 text-[1.625rem] leading-tight ${BAND_TEXT[b.id]}`}>
+            <SectionTitle id={`band-${b.id}`} className={`flex items-center gap-3 text-[1.75rem] leading-tight ${BAND_TEXT[b.id]}`}>
               <span data-testid="band-mark" aria-hidden className={`size-3 shrink-0 rounded-pill ${BAND_MARK[b.id]}`} />
               {BAND_TITLE[b.id]}
             </SectionTitle>
