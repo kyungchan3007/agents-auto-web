@@ -23,7 +23,7 @@ export function CurrencyKicker({ code, label }: { code: string; label: string })
       </Eyebrow>
       {flying &&
         createPortal(
-          <div ref={fly} data-testid={FLAG_FLY_ID} aria-hidden className="pointer-events-none fixed z-[60] origin-top-left overflow-hidden rounded-[3px] opacity-0 shadow-ticket [&_svg]:block [&_svg]:size-full">
+          <div ref={fly} data-testid={FLAG_FLY_ID} aria-hidden className="pointer-events-none fixed z-[60] origin-top-left overflow-hidden rounded-[0.25rem] opacity-0 shadow-ticket [&_svg]:block [&_svg]:size-full">
             <CurrencyFlag currency={code} className="h-full w-full" />
           </div>,
           document.body,

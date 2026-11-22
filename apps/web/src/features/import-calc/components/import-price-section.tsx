@@ -42,7 +42,7 @@ function Kpis({ rows }: { rows: { period: string; fx: number | null; price: numb
         if (!i.k) return null;
         const tone = deltaTone(i.k.delta);
         return (
-          <div key={i.key} data-testid="import-kpi" className="min-w-0 rounded-[1.25rem] border border-line bg-card px-4 py-4 sm:px-5">
+          <div key={i.key} data-testid="import-kpi" className="min-w-0 rounded-[1.5rem] border border-line bg-card px-4 py-4 sm:px-5">
             <p className="text-small text-fg-2">
               {i.label} ({i.k.period})
             </p>

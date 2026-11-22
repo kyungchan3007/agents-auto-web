@@ -20,7 +20,7 @@ export function ChipMoreBox({ id, list, current, onPick, onClose }: Props) {
       data-testid="chip-box"
       role="region"
       aria-label="고른 통화 모두"
-      className={`absolute top-[calc(100%+4px)] left-0 z-30 w-[min(37.5rem,100%)] rounded-[1.125rem] border-2 border-line bg-card px-4 pt-3.5 pb-3 shadow-ticket [@media(prefers-reduced-motion:no-preference)]:animate-[chip-box-in_.36s_cubic-bezier(.3,.9,.3,1)]`}
+      className={`absolute top-[calc(100%+4px)] left-0 z-30 w-[min(37.5rem,100%)] rounded-[0.875rem] border-2 border-line bg-card px-4 pt-3.5 pb-3 shadow-ticket [@media(prefers-reduced-motion:no-preference)]:animate-[chip-box-in_.36s_cubic-bezier(.3,.9,.3,1)]`}
     >
       <div className="mb-2.5 flex items-center justify-between text-small text-fg">
         <b>고른 통화 {list.length}개</b>
