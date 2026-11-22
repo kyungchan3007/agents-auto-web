@@ -61,8 +61,8 @@ export function RulerChart({ pins, stops, ticks, korea, maxTier, lo, hi, aria, c
               {t.v}
             </span>
           ))}
-        <span className="absolute left-0 hidden text-small font-semibold text-pin-cheap sm:block">← 쌈</span>
-        <span className="absolute right-0 hidden text-small font-semibold text-pin-expensive sm:block">비쌈 →</span>
+        <span className="absolute left-0 hidden text-small font-semibold text-pin-cheap sm:block">← 물가 낮음</span>
+        <span className="absolute right-0 hidden text-small font-semibold text-pin-expensive sm:block">물가 높음 →</span>
       </div>
 
       {pins.map((p) => {

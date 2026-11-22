@@ -110,7 +110,7 @@ export const bandOf = (relative: number): Band => (relative < BAND_EDGE.cheap ? 
 export function relativeText(relative: number): string {
   const pct = Math.round((relative - 1) * 100);
   if (pct === 0) return "거의 같음";
-  return pct > 0 ? `${pct}% 비쌈` : `${-pct}% 쌈`;
+  return pct > 0 ? `${pct}% 비쌉니다` : `${-pct}% 저렴합니다`;
 }
 
 export type TravelRow = PriceLevels["rows"][number] & Country & { band: Band };

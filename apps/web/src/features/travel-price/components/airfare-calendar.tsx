@@ -58,7 +58,7 @@ function Calendar({ items, fetchedOn }: { items: AirfareItem[]; fetchedOn: strin
 
   return (
     <div ref={rootRef}>
-      <p data-testid="airfare-lede" className="af-lede">출발일마다 그날 떠나 1주 뒤 돌아오는 왕복 최저가입니다. 날짜를 고를 필요 없이 가장 싼 날을 바로 봅니다.</p>
+      <p data-testid="airfare-lede" className="af-lede">출발일마다 그날 떠나 1주 뒤 돌아오는 왕복 최저가입니다. 날짜를 고를 필요 없이 가장 저렴한 날을 바로 봅니다.</p>
       <div className="af-chips" role="group" aria-label="도시 고르기">
         {items.map(({ city: c }) => (
           <button key={c.airport} type="button" data-testid="airfare-chip" data-airport={c.airport} aria-pressed={c.airport === airport} onClick={() => chooseCity(c.airport)}>
@@ -72,7 +72,7 @@ function Calendar({ items, fetchedOn }: { items: AirfareItem[]; fetchedOn: strin
       <div className="af-card">
         <div data-testid="airfare-pass" className="af-pass">
           <div className="main">
-            <span data-testid="airfare-tag" className="tag">{isBest ? "가장 싼 출발" : "고른 출발"}</span>
+            <span data-testid="airfare-tag" className="tag">{isBest ? "가장 저렴한 출발" : "고른 출발"}</span>
             <div className="route">
               <span className="code">ICN<small>인천</small></span>
               <span className="fly" aria-hidden="true">{PLANE}</span>
@@ -133,7 +133,7 @@ function Calendar({ items, fetchedOn }: { items: AirfareItem[]; fetchedOn: strin
               <span data-testid="airfare-plane" className="af-plane" aria-hidden="true">{PLANE}</span>
             </div>
             <div className="af-legend">
-              <span><i className="ring" />가장 싼 날</span>
+              <span><i className="ring" />가장 저렴한 날</span>
               <span><b className="lo">파랑</b> 싼 편</span>
               <span><b className="hi">빨강</b> 비싼 편</span>
               <span>가격은 만 원 단위</span>
@@ -143,7 +143,7 @@ function Calendar({ items, fetchedOn }: { items: AirfareItem[]; fetchedOn: strin
           </div>
         </div>
         <div className="af-side">
-          <h3>요일별 평균 <small>(막대는 가장 싼 요일 ~ 비싼 요일 차이)</small></h3>
+          <h3>요일별 평균 <small>(막대는 가장 저렴한 요일 ~ 비싼 요일 차이)</small></h3>
           <div className="af-week">
             {view.weekBars.map((b) => (
               <div key={b.label} data-testid="airfare-week-row" className={`af-row${b.min ? " min" : ""}`}>

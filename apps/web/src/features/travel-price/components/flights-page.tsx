@@ -94,7 +94,7 @@ export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: Tra
                     </div>
                     <div className="relative border-t-2 border-dashed border-line px-5 py-6 sm:px-8 sm:py-8 lg:border-t-0 lg:border-l-2">
                       <div data-testid="yoy-cards">
-                        <h2 className="text-small font-bold text-fg">작년 대비와 가장 싼 달</h2>
+                        <h2 className="text-small font-bold text-fg">작년 대비와 가장 저렴한 달</h2>
                         <div className="mt-3 divide-y divide-line">
                           <YoyItem name="국제항공료" points={air} />
                           <YoyItem name="해외단체여행비" points={tour} />
@@ -103,7 +103,7 @@ export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: Tra
                           <div className="border-t border-line pt-4">
                             <p className="text-small text-fg-2">{cheaps.label}</p>
                             <div data-testid="cheap-board" className="mt-2">
-                              <MiniBoard text={cheaps.value} label={`가장 싼 달 ${cheaps.value}`} />
+                              <MiniBoard text={cheaps.value} label={`가장 저렴한 달 ${cheaps.value}`} />
                             </div>
                             <p className="mt-2 flex items-center gap-2 text-small font-semibold text-fg">
                               <span aria-hidden className="size-2 shrink-0 rounded-full bg-sun ring-1 ring-fg" />
