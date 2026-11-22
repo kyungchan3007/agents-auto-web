@@ -28,7 +28,9 @@ const tsx = (dir: string): string[] => {
 describe("/flights — 검색 · 메뉴", () => {
   it("PUBLIC_PAGES 에 /flights 가 있음 (sitemap 자동 포함) · 기존 페이지는 그대로", () => {
     expect(PUBLIC_PAGES).toContain("/flights");
-    for (const p of ["/", "/currencies", "/prices", "/calc", "/log", "/about", "/geo"]) expect(PUBLIC_PAGES).toContain(p);
+    for (const p of ["/", "/currencies", "/prices", "/calc", "/about"]) expect(PUBLIC_PAGES).toContain(p);
+    // 작업실 · GEO 측정은 어드민으로 옮겨 검색에서 뺌 (작업 0302)
+    for (const p of ["/log", "/geo"]) expect(PUBLIC_PAGES).not.toContain(p);
   });
 
   it("상단 메뉴에 '여행 타이밍' → /flights · Page 타입에 flights · 메뉴는 7개", () => {
