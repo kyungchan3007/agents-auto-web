@@ -3,7 +3,7 @@
 > 모든 AI 에이전트(Claude Code · Codex 등)의 단일 진입점. **50줄 이내로 유지**하고 상세는 링크로 넘긴다.
 
 ## 0. 프로젝트 한 줄
-환율 · 물가 오픈 API를 하루 한 번 받아 여행 · 직구 타이밍을 보여 주는 대시보드 (Next.js 정적 사이트 · Cloudflare Pages). 에이전트가 만드는 과정은 "만드는 중" 페이지에 공개한다.
+환율 · 물가 오픈 API를 하루 한 번 받아 여행 · 직구 타이밍을 보여 주는 대시보드 (Next.js 정적 사이트 · Cloudflare Pages). 에이전트가 만드는 과정은 어드민(admin.flapfx.com)의 작업실에 공개한다.
 
 ## 1. 절대 규칙
 1. **완료 = PR 최신 커밋의 CI gate 통과.** CI 가 `bash .agents/checks.sh` 를 돌려 PASS 여야 "완료"라고 말한다 (판정: .agents/orchestration/verdict.md).
