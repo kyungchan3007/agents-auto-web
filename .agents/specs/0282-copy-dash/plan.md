@@ -27,6 +27,7 @@
 - .agents/specs/0282-copy-dash/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- 직구 폼 높이 보정(파일은 계획 안 · 내용은 작업서 밖): 도움말이 짧아져 1024px 에서 폼 높이가 상태마다 20px 달라져 '값이 바뀌어도 밀리지 않는다'(calc-title.spec · 사용자 조건)가 깨짐 → 예시 안내 · 좁은 칸 오류 두 줄 자리를 미리 잡음(보이는 모양 변화 없음).
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (CI `결과: ✅ ALL PASS`)
