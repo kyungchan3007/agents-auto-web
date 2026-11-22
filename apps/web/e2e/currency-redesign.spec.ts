@@ -70,7 +70,7 @@ test.describe("새 통화 상세 — 위쪽 · 머리 (작업 0219)", () => {
     expect(final).toMatch(/^[\d,.]+원$/);
     expect(await big.evaluate((e) => e.textContent)).toBe(final);
     await expect(tid(page, "currency-detail")).toContainText(/(하위|상위) \d+% · (낮음|보통|높음)|신호를 받지 못했습니다/);
-    await expect(tid(page, "currency-detail")).toContainText(/\d{1,2}월 \d{1,2}일 (한국수출입은행 고시|Frankfurter 값) · 예측이 아닙니다/); // 작업 0289: 판정 설명 둘째 줄
+    await expect(page.locator("#converter-note")).toContainText(/매매기준율 · \d{4}-\d{2}-\d{2} · (한국수출입은행|Frankfurter)/); // 작업 0298: 판정 설명 두 줄은 지우고 기준일 · 출처는 '실제로 바꿀 때' 카드 아래 줄에 늘 남음(FX-01)
     // 시안의 영문 작은 라벨은 넣지 않음 (사용자 확인 전)
     for (const en of ["BOARDING PASS", "EXCHANGE", "FROM", "TO · KRW", "USD / KRW"]) await expect(tid(page, "currency-detail")).not.toContainText(en);
   });

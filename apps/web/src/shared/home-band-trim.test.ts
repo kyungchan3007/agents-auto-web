@@ -64,10 +64,13 @@ describe("홈 바다 띠 — 남기는 것", () => {
 });
 
 describe("다른 화면은 그대로 — 통화 상세의 기준일 · 출처 · 예측 아님 안내 (유지 검사)", () => {
-  it("통화 상세가 FreshnessNote 와 기준일 · 출처 줄(verdictLines · 작업 0289)을 씀", () => {
+  it("통화 상세가 FreshnessNote 를 쓰고 · 기준일 · 출처는 '실제로 바꿀 때' 카드 아래 줄에 늘 남음(작업 0298: 판정 설명 두 줄은 지움)", () => {
     const detail = read(join(WEB_SRC, "features/currencies/components/currency-detail.tsx"));
     expect(detail).toMatch(/\bFreshnessNote\b/);
-    expect(detail).toMatch(/\bverdictLines\(/);
+    expect(detail, "판정 설명 두 줄(verdictLines)은 화면에서 안 씀").not.toMatch(/\bverdictLines\(/);
+    const conv = read(join(WEB_SRC, "features/currencies/components/converter.tsx"));
+    expect(conv, "카드 아래 줄: 매매기준율 · 날짜 · 출처").toMatch(/매매기준율 · \{rate\.date\} · \{SOURCE_NAME\[rate\.source\]\}/);
+    expect(conv, "금액이 틀려도 그 줄은 늘 남김(오류 글은 따로 한 줄 · role=alert)").toMatch(/role="alert"/);
   });
 
   it("통화 화면의 '예측하지 않으며 · 예측이 아닙니다' 안내가 남음 (꼬리말 · 요약 글)", () => {
