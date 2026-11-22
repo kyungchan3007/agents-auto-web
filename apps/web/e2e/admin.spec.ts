@@ -221,6 +221,47 @@ test.describe("만드는 방식 (ADD-06 · ADD-07)", () => {
   });
 });
 
+test.describe("만드는 방식 — 세 칸 · 검색 · 시행착오 (작업 0306)", () => {
+  test("세 칸 · 검색 설명 → 규칙 → 궁금한 것 → 시행착오 순서", async ({ page }) => {
+    await page.goto("/how");
+    await expect(page.getByTestId("how-focus").locator(".adm-panel")).toHaveCount(3);
+    const order = await page.evaluate(() => ["how-focus", "how-search", "how-rules", "how-faq", "how-trials"].map((id) => document.querySelector(`[data-testid="${id}"]`)?.getBoundingClientRect().top ?? -1));
+    for (let i = 1; i < order.length; i++) expect(order[i], `순서 ${i}`).toBeGreaterThan(order[i - 1]);
+  });
+
+  test("검색 예시 — 다낭 → VND(도시 앞글자) · 화살표 · Enter 로 고름 · 없으면 안내", async ({ page }) => {
+    await page.goto("/how");
+    const box = page.getByTestId("how-search");
+    const input = box.getByRole("combobox", { name: "통화 검색 예시" });
+    await input.fill("다낭");
+    const first = box.getByRole("option").first();
+    await expect(first).toContainText("VND");
+    await expect(first).toContainText("도시 앞글자");
+    await input.press("ArrowDown");
+    await expect(first).toHaveAttribute("aria-selected", "true");
+    await input.press("Enter");
+    await expect(box.locator(".adm-srch-picked")).toContainText("/currencies/VND");
+    await input.fill("없는도시이름");
+    await expect(box).toContainText("찾는 통화가 없습니다");
+  });
+
+  test("시행착오 — 종류로 골라 보기 · 펼치면 원인 · 바꾼 것 · 근거 링크", async ({ page }) => {
+    await page.goto("/how");
+    const tr = page.getByTestId("how-trials");
+    const all = await tr.locator("[data-trial]").count();
+    expect(all).toBeGreaterThan(10);
+    await tr.getByRole("group", { name: "시행착오 종류" }).getByRole("button", { name: /^데이터/ }).click();
+    const data = await tr.locator("[data-trial]").count();
+    expect(data).toBeLessThan(all);
+    const first = tr.locator("[data-trial]").first();
+    await first.getByRole("button").first().click();
+    await expect(first).toContainText("원인");
+    await expect(first).toContainText("바꾼 것");
+    await expect(first.locator(".src a").first()).toHaveAttribute("href", /github\.com\/kyungchan3007\/agents-auto-web/);
+    await expect(tr).not.toContainText("영어로 답함");
+  });
+});
+
 test.describe("움직임 줄이기 (ADD-08)", () => {
   test.use({ reducedMotion: "reduce" });
   test("안내판 숫자는 처음부터 최종 값 · 화면 읽기 이름도 최종 값", async ({ page }) => {
