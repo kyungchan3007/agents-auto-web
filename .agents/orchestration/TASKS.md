@@ -115,4 +115,5 @@
 | 0291 | 직구 큰 숫자를 합계로 · 흰 점 지움 — 계산 불가 상태는 사용자 결정 전까지 그대로 (Quick · 평소 PR · 시안 58 · 구성) | builder → test | 머지됨 (#345) | task/0291-calc-big-total | features/import-calc/** |
 | 0292 | 통화 상세 링크 모양 — 홈 링크와 같은 모양 · 링크 없는 통화 간격 같게 (Quick · 디자인 PR · 시안 61 · 구성 마지막) | builder → test | 머지됨 (#347) | task/0292-link-one | features/currencies/** · 링크 부품 |
 | 0293 | 마우스 올렸을 때 변화 같게 — 칩 · 달력 · 날짜 칸 · 달 버튼 · 나라 단추 · 링크 (Quick · 디자인 PR · 시안 62 · 맨 마지막) | builder → test | 머지됨 (#349) | task/0293-hover-same | features/{travel-price,currencies,home}/** · packages/ui · globals.css |
-| 0296 | 직구 합계 안내 · 휴대폰 요약 띠를 합계로 · 큰 제목 줄임 (Quick · 평소 PR · 시안 65 · 사용자 결정 · 작업 종류 ③) | builder → test | 진행 중 | task/0296-calc-total-note | features/import-calc/** |
+| 0296 | 직구 합계 안내 · 휴대폰 요약 띠를 합계로 · 큰 제목 줄임 (Quick · 평소 PR · 시안 65 · 사용자 결정 · 작업 종류 ③) | builder → test | 머지됨 (#350) | task/0296-calc-total-note | features/import-calc/** |
+| 0298 | 통화 상세 판정 설명 두 줄 · 빈 칸 지우기 — 달러 고정 통화 셋째 줄만 (Quick · 평소 PR · 시안 67 · 작업 종류 ③) | builder → test | 진행 중 | task/0298-verdict-one-line | features/currencies/** · shared 판정 문장 |
