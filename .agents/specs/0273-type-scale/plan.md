@@ -9,6 +9,8 @@
 ## 애매한 곳
 - 바뀌는 곳 수(여행 타이밍 74 · 78 / 여행 물가 36 / 통화 상세 5 / 홈 1 / 직구 약 4)는 claude-desktop 측정 → builder 대조, 크게 다르면 먼저 보고. (작업서)
 - 파일이 10개를 넘으면 lead 가 나눈다(작업서). 나누는 기준: 토큰 + 공용 부품 / 페이지별. builder 가 바꿀 파일 수를 먼저 알려 주면 그때 정한다. (가정)
+- (정함 · lead 02:11Z) 바꿀 파일 22개 → 세 PR 로 나눔(각 10개 이하 · 한 번에 하나): **0273** 토큰(tokens.css) + 공용 부품(ruler-chart · pick-trip · line-chart · month-bars) + 여행 타이밍(airfare-calendar.css · flights-page · window-months) / **0274** 여행 물가(price-route · price-bands · budget-planner · mini-board) + 인트로 4 / **0275** 통화 상세(currency-detail · period-chart · range-card) + 홈(ticket · destinations-pill) + 직구(result-board · import-calc 3). 0274 · 0275 는 같은 작업서(handoff.md)를 따른다.
+- (정함 · lead) 반응형 clamp 제목(홈 휴대폰 57.6 · 통화 상세 휴대폰 34 · 직구 32 · 여행 물가 휴대폰 40)은 작업서 규칙 그대로 가장 가까운 단계로(57.6 → 56 · 34 → 36 · 32 → 36 · 40 → 36). 각 PR 에 적는다.
 - 옮긴 뒤 줄바꿈이 바뀌어 겹치거나 넘치면 멈추고 보고. (작업서)
 - 대상 아님: /geo · /log · 글자판 · 통화 상세 큰 환율 숫자. 12px 미만은 0272 로 이미 없음. (작업서)
 - 크기를 고정한 @design 테스트가 깨지면 미뤄 둔 목록(docs/design-tests-pending.md)에 쌓이고 개수 · 이름을 claude-desktop 에 알림. 표시 없는 테스트가 깨지면 멈춤. (작업서 · verdict.md)
