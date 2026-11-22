@@ -12,7 +12,7 @@ export function ImportPriceSection({ fxRows, price, children }: { fxRows: FxDay[
   return (
     <section data-testid="import-price-section" className="grid min-w-0 gap-6 lg:grid-cols-[22rem_minmax(0,1fr)] lg:gap-10" aria-labelledby="import-price-title">
       <div className="min-w-0">
-        <SectionTitle id="import-price-title" data-fu={1} className="text-[1.875rem] leading-tight text-fg">
+        <SectionTitle id="import-price-title" data-fu={1} className="text-[1.75rem] leading-tight text-fg">
           수입물가와 환율
         </SectionTitle>
         <p data-fu={2} className="mt-2 max-w-md text-body text-fg-2">환율이 오르면 수입물가도 따라 오릅니다 (한국은행)</p>
@@ -46,7 +46,7 @@ function Kpis({ rows }: { rows: { period: string; fx: number | null; price: numb
             <p className="text-small text-fg-2">
               {i.label} ({i.k.period})
             </p>
-            <p className="mt-1 text-[1.625rem] leading-tight font-bold tracking-display text-fg tabular-nums sm:text-[2rem]">
+            <p className="mt-1 text-[1.75rem] leading-tight font-bold tracking-display text-fg tabular-nums sm:text-[2.25rem]">
               <CountUp value={i.k.value} digits={i.digits(i.k.value)} suffix={i.suffix} />
             </p>
             {i.k.delta !== null && tone && (

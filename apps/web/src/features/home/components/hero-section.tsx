@@ -15,7 +15,7 @@ export function HeroSection({ timing }: { timing: TravelTiming }) {
         <Eyebrow className="text-fg-2!">여행 타이밍</Eyebrow>
         {parts ? (
           <>
-            <h1 id="timing-title" className="mt-5 font-display text-[clamp(3.6rem,11vw,9.4rem)] leading-[0.98] font-extrabold tracking-display text-fg lg:[@media(max-height:880px)]:mt-1 lg:[@media(max-height:880px)]:text-[clamp(3.6rem,min(11vw,9vh),9.4rem)] lg:[@media(min-height:881px)_and_(max-height:1000px)]:mt-2 lg:[@media(min-height:881px)_and_(max-height:1000px)]:text-[clamp(3.6rem,min(11vw,9vh),9.4rem)] lg:[@media(min-height:1001px)_and_(max-height:1180px)]:mt-3 lg:[@media(min-height:1001px)_and_(max-height:1180px)]:text-[clamp(3.6rem,min(11vw,10vh),9.4rem)]">
+            <h1 id="timing-title" className="mt-5 font-display text-[clamp(3.5rem,11vw,9.4rem)] leading-[0.98] font-extrabold tracking-display text-fg lg:[@media(max-height:880px)]:mt-1 lg:[@media(max-height:880px)]:text-[clamp(3.5rem,min(11vw,9vh),9.4rem)] lg:[@media(min-height:881px)_and_(max-height:1000px)]:mt-2 lg:[@media(min-height:881px)_and_(max-height:1000px)]:text-[clamp(3.5rem,min(11vw,9vh),9.4rem)] lg:[@media(min-height:1001px)_and_(max-height:1180px)]:mt-3 lg:[@media(min-height:1001px)_and_(max-height:1180px)]:text-[clamp(3.5rem,min(11vw,10vh),9.4rem)]">
               <span data-testid="hero-month" className="text-sun">
                 {parts.month}
               </span>

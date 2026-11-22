@@ -42,7 +42,7 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
           </div>
           <h1 data-testid="big-rate" className="mt-4 font-display font-extrabold tracking-display tabular-nums">
             <SwitchFade code={code} delay={100} className="block">
-              <span className="block text-[1.5rem] text-fg-2 sm:text-[1.875rem]">
+              <span className="block text-[1.375rem] text-fg-2 sm:text-[1.75rem]">
                 {name}({code}) 환율
               </span>
             </SwitchFade>

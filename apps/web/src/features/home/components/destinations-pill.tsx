@@ -24,7 +24,7 @@ export function DestinationsPill({ rows, windowDays, fade }: { rows: Destination
           </span>
         ))}
       </span>
-      <b data-testid="dest-pill-text" className="text-[0.875rem] leading-[1.35] font-bold tracking-display text-balance text-fg sm:text-[1.125rem]">
+      <b data-testid="dest-pill-text" className="text-[0.9375rem] leading-[1.35] font-bold tracking-display text-balance text-fg sm:text-[1.125rem]">
         {head}
         <span className="whitespace-nowrap">{tail}</span>
       </b>

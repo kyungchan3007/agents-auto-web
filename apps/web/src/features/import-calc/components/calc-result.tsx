@@ -71,7 +71,7 @@ function Row({ k, v, total = false }: { k: string; v: ReactNode; total?: boolean
   return (
     <div className={`flex flex-wrap items-baseline justify-between gap-x-4 py-2.5 ${total ? "mt-1 border-t-2 border-fg pt-4 text-[1rem] font-bold" : "border-b border-dashed border-line"}`}>
       <dt className={total ? "" : "text-fg-2"}>{k}</dt>
-      <dd className={`text-right ${total ? "text-[1.25rem] font-bold tabular-nums" : "font-semibold"}`}>{v}</dd>
+      <dd className={`text-right ${total ? "text-[1.375rem] font-bold tabular-nums" : "font-semibold"}`}>{v}</dd>
     </div>
   );
 }
