@@ -25,5 +25,6 @@ export function bigRate(rate: { baseRate: number; unit: number }): { value: numb
   return { value: rate.baseRate, digits: frac ? frac.length : 0, unit: t.unit };
 }
 
-/** 1년 최저 · 최고 · 평균 글의 소수 자리 — cardRateText 와 같은 규칙 (현재 환율이 100 이상이면 1 · 아니면 2) */
-export const cardDigits = (rate: { baseRate: number }): 1 | 2 => (rate.baseRate >= 100 ? 1 : 2);
+/** 1년 최저 · 최고 · 평균 글의 소수 자리 — 통화 상세는 늘 소수 둘째 자리 (작업 0287 · 큰 숫자 · 그래프 · 표와 같은 형식) */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- 부르는 쪽 모양 유지(작업 0287)
+export const cardDigits = (_rate?: { baseRate: number }): 1 | 2 => 2;

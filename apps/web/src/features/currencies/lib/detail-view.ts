@@ -43,9 +43,9 @@ export function extremeLabelText(kind: "max" | "min", rate: { baseRate: number; 
   return `${kind === "max" ? "최고" : "최저"} ${t.value}${t.unit}`;
 }
 
-/** 1년 최저 · 최고 · 평균 카드 글 — 세 카드가 같은 자릿수(현재 환율이 100원 이상이면 소수 첫째 · 아니면 둘째 자리) · 표시만 반올림 (작업 0212) */
+/** 1년 최저 · 최고 · 평균 카드 글 — 세 카드가 소수 둘째 자리로 같은 형식 (작업 0212 → 0287: 100원 이상도 둘째 자리) */
 export function cardRateText(v: number, rate: { baseRate: number; unit: number }): string {
-  const d = rate.baseRate >= 100 ? 1 : 2;
+  const d = 2;
   const unit = rateText(rate).unit;
   return `${numberText(v, { minimumFractionDigits: d, maximumFractionDigits: d })}${unit}`;
 }
