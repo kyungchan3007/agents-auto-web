@@ -11,7 +11,7 @@ import { describe, expect, it } from "vitest";
 
 const read = (name: string) => readFileSync(new URL(name, import.meta.url), "utf8");
 const code = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
-const src = () => code(read("./flap-board.tsx"));
+const src = () => code(read("./flap-board.tsx")) + code(read("../../hooks/flap/use-flap-once.ts")) + code(read("../../lib/motion/flap.ts")); // 작업 0312: 상태 · 효과는 훅 · 계산은 lib
 const tokens = () => code(readFileSync(new URL("../../tokens.css", import.meta.url), "utf8"));
 const tag = (s: string, id: string) => new RegExp(`<[^>]*data-testid="${id}"[^>]*>`).exec(s)?.[0] ?? "";
 
@@ -22,7 +22,7 @@ describe("구성 · 표시", () => {
     for (const p of ["rows", "cols", "label"]) expect(s, p).toMatch(new RegExp(`\\b${p}\\b`));
     expect(s).toMatch(/\btoCells\(/);
     expect(s).toMatch(/\bflipPlan\(/);
-    expect(s).toMatch(/from\s*"\.\.\/\.\.\/lib\/flap"/);
+    expect(s).toMatch(/from\s*"\.\.\/\.\.\/lib\/motion\/flap"/); // 작업 0312: lib 는 묶음 폴더(motion)
   });
 
   it("e2e 가 찾는 표시 — flap-board · flap-row(data-tone) · flap-cell · flap-seam", () => {

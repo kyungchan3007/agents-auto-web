@@ -24,7 +24,9 @@
     "./geo": "./src/contracts/geo.ts",
     "./geo-visit": "./src/domain/geo-visit.ts",
     "./airfare": "./src/contracts/airfare.ts",
-    "./airfare-domain": "./src/domain/airfare.ts"
+    "./airfare-domain": "./src/domain/airfare.ts",
+    "./site": "./src/site/site.ts",
+    "./api": "./src/client/api.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

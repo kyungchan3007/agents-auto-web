@@ -1,6 +1,6 @@
 // 나머지 화면 — 작업 0170 (디자인 변경 ③) · 실행은 lead 가 PR 직전에 (빌드한 사이트를 읽음 · 단위 테스트가 아니라 여기서는 문구 · 쌓임 순서 · 연결만)
 // 값은 날마다 · 자료 유무에 따라 달라서 동작 · 순서 · 문구만 봄
-//   builder · geo 가 다는 표시: src/shared/pages-redesign.test.ts 머리 주석의 data-testid 목록
+//   builder · geo 가 다는 표시: src/checks/pages-redesign.test.ts 머리 주석의 data-testid 목록
 //   모바일 쌓임 순서(Figma 설명)는 "휴대폰" 프로젝트에서만 · 2단 배치(입력 왼쪽 · 결과 오른쪽 등)는 "넓은 화면" 프로젝트에서만
 import { type Locator, type Page, expect, test } from "@playwright/test";
 import { hydrated, openMenuIfCollapsed } from "./helpers";
@@ -283,35 +283,6 @@ test.describe("직구 계산 — 예시 값 · 고정 크기 (작업 0200)", () 
   });
 });
 
-test.describe("작업실 /log (SR-LOG-01)", () => {
-  test("큰 제목 · 상태판 · 팀 책상 네 역할 · 작업 흐름 여섯 단계", async ({ page }) => {
-    await page.goto("/log");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("AI 에이전트 팀이 이 사이트를 만듭니다");
-    await expect(tid(page, "status-board")).toContainText("사이트 상태");
-    const desks = tid(page, "team-desks");
-    for (const role of ["lead", "builder", "test", "geo"]) await expect(desks).toContainText(role);
-    const flow = tid(page, "work-flow");
-    for (const step of ["요청 원문 보관", "계획", "테스트 먼저", "구현", "자동 검사 통과", "사람 머지"]) await expect(flow).toContainText(step);
-  });
-
-  // 작업 0303(어드민): 요약 구간은 맨 아래 — 운영자가 매일 볼 상태 · 기록을 위로 (시안 Version 6 · 사용자 "이대로 진행")
-  test("요약 구간 — 이 사이트를 어떻게 만들었나 · 다섯 단계 (작업 0172) · 작업 흐름보다 아래", async ({ page }) => {
-    await page.goto("/log");
-    const story = tid(page, "site-story");
-    await expect(story).toContainText("이 사이트를 어떻게 만들었나");
-    await expect(tid(page, "story-step")).toHaveCount(5);
-    for (const title of ["문제 정의", "외부 공공 API 연결", "구현 · 운영", "사고 대응", "결과 측정"]) await expect(story).toContainText(title);
-    expect((await box(story)).y).toBeGreaterThan((await box(tid(page, "work-flow"))).y);
-  });
-
-  test("위에서 아래 순서 — 상태판 → 팀 책상 → 작업 흐름", async ({ page }) => {
-    await page.goto("/log");
-    const [board, desks, flow] = [await box(tid(page, "status-board")), await box(tid(page, "team-desks")), await box(tid(page, "work-flow"))];
-    expect(board.y).toBeLessThan(desks.y);
-    expect(desks.y).toBeLessThan(flow.y);
-  });
-});
-
 test.describe("소개 /about (SR-ABT-01)", () => {
   test("기준 카드 8개 · 큰 제목 · '작업실' 링크 → 어드민 작업실 (작업 0267 · 0302)", async ({ page }) => {
     await page.goto("/about");
@@ -322,17 +293,6 @@ test.describe("소개 /about (SR-ABT-01)", () => {
     await expect(maker).toHaveCount(1);
     await expect(maker.getByRole("link", { name: "작업실" })).toHaveAttribute("href", "https://admin.flapfx.com/log");
     await expect(maker.getByRole("link")).toHaveCount(1);
-  });
-});
-
-test.describe("GEO 측정 /geo (SR-GEO-01)", () => {
-  test("큰 제목 · 측정 수치 카드 4개 · 읽는 법", async ({ page }) => {
-    await page.goto("/geo");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("AI 검색에서 이 사이트가 어떻게 쓰이는지 잽니다");
-    const cards = tid(page, "geo-cards");
-    for (const label of ["AI 답변 인용", "구글 검색 노출", "AI · 검색 봇 방문", "AI 서비스 유입"]) await expect(cards).toContainText(label);
-    await expect(tid(page, "geo-reading")).toContainText("이 수치를 읽는 법");
-    await expect(tid(page, "geo-reading")).toContainText("숫자를 추정하지 않습니다");
   });
 });
 

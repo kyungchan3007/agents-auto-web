@@ -1,15 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans_KR } from "next/font/google";
+import { IBM_Plex_Sans_KR } from "next/font/google";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/shared/site";
-import { outageActive } from "@/shared/outage";
-import { OutageNotice } from "@/shared/outage-notice";
+import { outageActive } from "@/shared/outage/outage";
+import { OutageNotice } from "@/shared/outage/outage-notice";
 import "./globals.css";
 
 // 글꼴 — 본문 IBM Plex Sans KR (400 · 600 · 700) · 큰 제목 · 큰 숫자 · 로고는 Pretendard 800 (apps/web/src/app/pretendard.css · 자체 호스팅 · 작업 0176) · 빌드 때 받아 자체 호스팅 (런타임 외부 요청 없음 · next.config 변경 없음 · 작업 0168)
 //   CSS 변수는 tokens.css 의 --font-display · --font-sans 가 읽음 · 한글 조각은 글자가 쓰일 때만 받음 (unicode-range)
 const sans = IBM_Plex_Sans_KR({ weight: ["400", "600", "700"], subsets: ["latin"], variable: "--font-ibm-plex-sans-kr", display: "swap" });
-// 어드민 숫자 · 시각 · 경로용 고정폭 (작업 0303) — 미리 받지 않음(preload: false · 방문자 화면은 쓰지 않아 받지 않음) · CSS 변수 --font-adm-mono
-const mono = IBM_Plex_Mono({ weight: ["400", "500"], subsets: ["latin"], variable: "--font-adm-mono", display: "swap", preload: false });
 
 // 공유 미리보기 — 이미지는 app/opengraph-image.tsx · 페이지마다 제목 · 설명은 각 page 의 metadata (작업 0076)
 export const metadata: Metadata = {
@@ -31,7 +29,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ko" data-surface="light" className={`${sans.variable} ${mono.variable}`}>
+    <html lang="ko" data-surface="light" className={sans.variable}>
       <body className="bg-surface text-fg">
         {/* 본문 바로가기 — 평소엔 숨김 · 첫 Tab 에서 보이고 누르면 main 으로 (작업 0213) */}
         <a

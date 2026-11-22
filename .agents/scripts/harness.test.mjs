@@ -487,6 +487,8 @@ test("CI(PR) Full 은 문서만 바뀌어도 늘 build · test:e2e (Full 은 줄
 const WIDE = "넓은 화면";
 const PHONE = "휴대폰";
 const E2E_DIR = pathJoin(REPO, "apps", "web", "e2e");
+const ADMIN_E2E_DIR = pathJoin(REPO, "apps", "admin", "e2e"); // 작업 0312 — 어드민 e2e 는 어드민 앱에
+const ALL_SPECS = () => [...list(E2E_DIR), ...list(ADMIN_E2E_DIR)];
 const REAL_MAP = () => JSON.parse(fsRead(pathJoin(REPO, ".agents", "e2e-map.json"), "utf8"));
 const FAKE_MAP = {
   smoke: ["home.spec.ts", "prices-redesign.spec.ts"],
@@ -498,7 +500,7 @@ const FAKE_MAP = {
 
 test("연결표: e2e/*.spec.ts 가 모두 연결표에 있고, 표의 spec · smoke 는 모두 실제 파일 (작업 0244)", () => {
   const map = REAL_MAP();
-  const specs = list(E2E_DIR).filter((f) => f.endsWith(".spec.ts"));
+  const specs = ALL_SPECS().filter((f) => f.endsWith(".spec.ts"));
   assert.ok(specs.length >= 45, `spec 파일이 ${specs.length}개뿐 — 위치가 바뀐 건 아닌지`);
   const listed = new Set(Object.values(map).flat());
   assert.deepEqual(specs.filter((f) => !listed.has(f)), [], "연결표에 없는 spec — 새 spec 은 연결표 한 줄까지가 작업");
@@ -522,7 +524,7 @@ test("연결표: smoke 는 주요 확인 몇 개(3 ~ 8개) · 경로 접두어�
 
 test("연결표: 주요 화면(홈 · 환율 · 여행 물가 · 여행 타이밍 · 직구 계산)이 기능 폴더에 연결됨 (작업 0244)", () => {
   const map = REAL_MAP();
-  for (const prefix of ["apps/web/src/features/home/", "apps/web/src/features/currencies/", "apps/web/src/features/travel-price/", "apps/web/src/features/import-calc/", "packages/ui/src/"]) {
+  for (const prefix of ["apps/web/src/features/home/", "apps/web/src/features/currencies/", "apps/web/src/features/prices/", "apps/web/src/features/flights/", "apps/web/src/features/import-calc/", "packages/ui/src/"]) {
     assert.ok(map[prefix]?.length > 0, `${prefix} 가 연결표에 없음`);
   }
 });
@@ -595,11 +597,11 @@ test("고르기: 진짜 연결표로 — 홈 · 타이밍 파일은 맞는 spec 
   assert.equal(home.mode, "selected");
   assert.ok(home.specs.includes("home.spec.ts"));
   assert.deepEqual(home.projects, [WIDE]);
-  const flights = selectE2e(["apps/web/src/features/travel-price/components/flights-graph.tsx"], { target: "develop", map });
+  const flights = selectE2e(["apps/web/src/features/flights/graph/flights-graph.tsx"], { target: "develop", map });
   assert.ok(flights.specs.includes("flights-chart.spec.ts") && !flights.specs.includes("prices-route.spec.ts"));
   const ui = selectE2e(["packages/ui/src/components/text/a.tsx"], { target: "develop", map });
   assert.equal(ui.mode, "selected", "공용 UI 는 연결표 안 — 경고 없이 공용 spec");
-  for (const s of [...home.specs, ...flights.specs, ...ui.specs]) assert.ok(list(E2E_DIR).includes(s), `${s} 파일 없음`);
+  for (const s of [...home.specs, ...flights.specs, ...ui.specs]) assert.ok(ALL_SPECS().includes(s), `${s} 파일 없음`);
 });
 
 // baseRef — 진짜 git 저장소를 만들어 확인 (origin/main ← origin/develop ← task 브랜치)
@@ -675,7 +677,7 @@ test("e2e 필요 판정: rigs/ 는 조용한 파일 — 폴더 경계까지 맞�
 
 test("고르기: 연결표 안 기능 파일 + 연결표 밖 공용 파일이 같이 바뀌면 '고른 spec ∪ smoke' + 경고 — smoke 만이면 바꾼 기능 spec 이 빠짐 (작업 0244)", async () => {
   const { selectE2e } = await import("./e2e-select.mjs");
-  const files = ["apps/web/src/features/travel-price/components/flights-graph.tsx", "apps/web/src/bff/proxy.ts"]; // 뒤 파일은 진짜 연결표에 없는 공용 파일
+  const files = ["apps/web/src/features/flights/graph/flights-graph.tsx", "apps/web/src/bff/proxy.ts"]; // 뒤 파일은 진짜 연결표에 없는 공용 파일
   const map = REAL_MAP();
   assert.ok(!Object.keys(map).some((p) => files[1].startsWith(p)), "시험 전제: 이 파일은 연결표 밖이어야 함 (연결표에 넣었다면 다른 연결표 밖 파일로 바꿀 것)");
   const r = selectE2e(files, { target: "develop", map });
@@ -780,11 +782,13 @@ test("디자인 PR 판정: 라벨 있음 + 밖 파일 → 평소 + 경고 (밖 �
   }
 });
 
-test("디자인 PR 판정: 허용 목록 방식 — 폴더 이름이 비슷한 것 · 화면 부품 밖 폴더는 속지 않음 (작업 0246)", async () => {
+test("디자인 PR 판정: 허용 목록 방식 — 화면 부품(.tsx) 밖 · 비슷한 이름의 폴더는 속지 않음 (작업 0246 · 0312 하위 도메인 폴더)", async () => {
   const { designPr } = await import("./design-pr.mjs");
   for (const f of [
-    "apps/web/src/features/home/componentsx/a.tsx",
-    "apps/web/src/features/home/lib/components/a.tsx",
+    "apps/web/src/features/home/today/today-view.ts",
+    "apps/web/src/features/home/today/use-picked.ts",
+    "apps/admin/src/features/geo/common/geo-view.ts",
+    "apps/web/src/featuresx/a.tsx",
     "apps/web/src/lib/a.ts",
     "packages/ui/src/hooks/a.ts",
     "apps/web/next.config.ts",

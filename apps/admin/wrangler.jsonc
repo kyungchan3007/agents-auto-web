@@ -1,0 +1,28 @@
+// 어드민 Worker 설정 — Cloudflare Workers Builds 가 배포 (작업 0312 · 운영 사이트 Worker 와 따로)
+//   빌드: npx turbo run build --filter=@hav/admin (저장소 맨 위에서) → apps/admin/out
+//   배포: npx wrangler deploy --config apps/admin/wrangler.jsonc
+//   미리보기(브랜치): npx wrangler versions upload --config apps/admin/wrangler.jsonc
+//   평일 다시 만들기: 배포 후크 — GitHub Secrets ADMIN_DEPLOY_HOOK (.github/workflows/rebuild-site.yml)
+// 운영 사이트 Worker 설정은 apps/web/wrangler.jsonc · API Worker 설정은 apps/api/wrangler.jsonc
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  // 대시보드 Worker 이름과 같아야 함 (다르면 Workers Builds 가 경고하고 CI 이름으로 덮어씀)
+  "name": "flapfx-admin",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "out",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    // 모든 요청이 Worker 를 먼저 지남 — 검색 막음 머리글 · 운영 주소로 넘기기 (worker/index.ts)
+    "run_worker_first": true
+  },
+  // /bff/* 가 API Worker 를 바로 부름 (인터넷을 거치지 않음)
+  "services": [{ "binding": "API", "service": "tripfx-api" }],
+  "routes": [{ "pattern": "admin.flapfx.com", "custom_domain": true }],
+  "workers_dev": true,
+  "preview_urls": true,
+  "observability": { "enabled": true },
+  "upload_source_maps": true
+}

@@ -23,3 +23,12 @@ export function weekStartOf(date: string): string {
 }
 
 export { kstDate, kstMonthDay, kstNow } from "./kst";
+
+/** "2025-05" → 달 번호(연 × 12 + 월 − 1) — 달끼리 빼거나 비교할 때 (작업 0312 에 여행 타이밍 · 직구 · 여행 계산의 같은 함수를 모음) */
+export const monthIndex = (period: string) => Number(period.slice(0, 4)) * 12 + Number(period.slice(5, 7)) - 1;
+
+/** 달 번호 → "2025-05" */
+export const periodOfIndex = (i: number) => `${Math.floor(i / 12)}-${String((i % 12) + 1).padStart(2, "0")}`;
+
+/** "2025-05" → "25.05" (휴대폰 눈금) */
+export const shortPeriod = (p: string) => `${p.slice(2, 4)}.${p.slice(5, 7)}`;

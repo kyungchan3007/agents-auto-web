@@ -3,7 +3,7 @@
 //   운영 사이트를 열기만 함 — 빌드하지 않아 D1 을 읽지 않음
 import { expect, test } from "@playwright/test";
 
-const PAGES = ["/", "/currencies", "/currencies/USD", "/prices", "/flights", "/calc", "/log", "/about", "/geo"];
+const PAGES = ["/", "/currencies", "/currencies/USD", "/prices", "/flights", "/calc", "/about"]; // 어드민 화면은 apps/admin (작업 0312)
 const WIDTHS = [320, 375, 768, 1280];
 // 메뉴 순서 = 여행 타이밍 · 오늘 환율 · 통화 · 여행 물가 · 직구 계산 · 작업실 · GEO 측정 (작업 0168 · R4)
 const MENU = ["여행 타이밍", "오늘 환율", "통화", "여행 물가", "직구 계산", "작업실", "GEO 측정"];

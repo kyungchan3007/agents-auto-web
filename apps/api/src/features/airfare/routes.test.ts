@@ -2,7 +2,7 @@
 //
 // builder 가 만들 것 — apps/api/src/features/airfare/routes.ts 의 airfareRoutes 를 index.ts 에 .route("/airfare", airfareRoutes) 로 연결
 //   GET /airfare/calendar → 200 AirfareCalendar (도시별 최근 묶음 · 자료 없으면 { fetchedOn: null, cities: [] }) · cached() 사용 · 쓰기 경로 없음 (POST 등은 404/405)
-//   BFF 허용 목록(apps/web/src/bff/proxy.ts)에는 넣지 않음 — 빌드 때만 읽음
+//   BFF 허용 목록(apps/web/worker/bff-routes.ts · apps/admin/worker/bff-routes.ts)에는 넣지 않음 — 빌드 때만 읽음
 import { AirfareCalendar } from "@hav/shared/airfare";
 import { describe, expect, it } from "vitest";
 import type { Env } from "../../env";

@@ -2,23 +2,14 @@
 // 새 디자인 1안 (작업 0216 · 사용자 "새 디자인으로" → "1안" · 시안 .tmp/redesign-1118/og/og-1.png): 사진 없이 파랑 한 면 · 왼쪽 위 B 로고(flap 흰 + fx 노랑) · 큰 제목 · 출발 안내판 한 줄
 // 이미지 그리기는 CSS 변수를 못 읽어 토큰 색을 값으로 적음: 파랑 #2438A8 · 노랑 #F7C548 · 안내판 판 #16246E · 칸 #1F3190 · 이음선 #0E1648
 // 숫자는 넣지 않음 — 이미지는 캐시돼 오래 남아서 그날 환율이 틀린 값으로 보일 수 있음 (FX-02 · 지어내지 않음)
-import { existsSync } from "node:fs";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import { ImageResponse } from "next/og";
+import { ogFont as font } from "@/shared/seo/og-fonts.server";
 
 export const dynamic = "force-static";
 export const alt = "Flapfx — 지금 환율이 싼 편인지, 여행 · 직구 전에 한눈에";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-// 빌드는 apps/web 에서 돌고 패키지는 저장소 맨 위 node_modules 로 올라가 있을 수 있음 — 번들러가 require.resolve 를 모듈 번호로 바꿔서 경로로 찾음
-const FONT_DIRS = ["node_modules/pretendard/dist/public/static", "../../node_modules/pretendard/dist/public/static"].map((d) => join(process.cwd(), d));
-const font = (weight: "Black" | "ExtraBold" | "Medium") => {
-  const dir = FONT_DIRS.find((d) => existsSync(d));
-  if (!dir) throw new Error("Pretendard 글꼴 파일을 찾지 못함 (pretendard 패키지)");
-  return readFile(join(dir, `Pretendard-${weight}.otf`));
-};
 
 const SUN = "#F7C548";
 // 안내판 한 줄 — 18칸 · 글자 하나 = 한 칸 · 빈칸은 "" (시안 1안)

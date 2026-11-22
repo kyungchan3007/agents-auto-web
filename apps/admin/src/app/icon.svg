@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><title>Flapfx</title>
+<rect width="64" height="64" rx="14" fill="#16246E"/>
+<rect x="9" y="9" width="46" height="46" rx="7" fill="#24337F"/>
+<path fill="#F7C548" d="M20 15H44V24H30V28H41V36H30V49H20Z"/>
+<rect x="9" y="30.8" width="46" height="2.6" fill="#16246E"/>
+<circle cx="9" cy="32.1" r="2.2" fill="#16246E"/><circle cx="55" cy="32.1" r="2.2" fill="#16246E"/>
+</svg>

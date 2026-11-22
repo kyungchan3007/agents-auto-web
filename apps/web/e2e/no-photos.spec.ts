@@ -3,7 +3,7 @@
 // /about: 사진 없는 머리 (흰 면 · 라벨 · 큰 제목) · 공유 미리보기는 1200×630 PNG
 import { expect, test } from "@playwright/test";
 
-const PATHS = ["/", "/flights", "/prices", "/currencies/USD", "/calc", "/about", "/log", "/geo"];
+const PATHS = ["/", "/flights", "/prices", "/currencies/USD", "/calc", "/about"]; // 어드민은 apps/admin/e2e/basics.spec.ts (작업 0312)
 
 for (const path of PATHS) {
   test(`${path} — 사진 요청 0 · 깨진 이미지 0 · 사진 구간 없음 · 가로 넘침 없음`, async ({ page }) => {

@@ -122,3 +122,4 @@
 | 0304 | SEO 기본 보강 — 구조화 자료(사이트 · 통화 상세 · 경로) · 홈 설명 · og:url · twitter · sitemap 갱신일 (Quick · 평소 PR · 화면 변화 없음 · 작업 종류 ①) | builder → test | 머지됨 (#360) | task/0304-seo-basics | apps/web/src/app/** · apps/web/src/shared/** |
 | 0310 | 알리기 탭 그림을 R2 공개 주소에서 · 없으면 raw 로 (Quick · 평소 PR · 어드민 · develop 머지 뒤 바로 main ff) | builder → test | 머지됨 (#365) | task/0310-marketing-r2 | app/marketing · features/marketing · shared/site.ts |
 | 0311 | 알리기 탭에 사용자가 올린 인스타 게시물 2개(자료만 · 어드민 · 머지 뒤 바로 main ff) | geo | 진행 중 | task/0311-marketing-posts | docs/marketing/2026-11-22 · 2026-11-23 |
+| 0312 | 어드민을 apps/admin 으로 분리 · 코드 역할 분담(tsx 는 그리기만 · 커스텀 훅 · 하위 도메인 폴더 · 공통은 패키지 · 앱 도메인 공통) · 디자인 시스템 범용 / 도메인 나누기 (Full · 보호 파일 · 사용자 "팀에게 넘기지말고 니가 직접해") | claude-desktop | PR 대기 | task/0312-admin-split | apps/** · packages/** · .agents/e2e-map.json · .agents/scripts/** · .github/workflows/rebuild-site.yml · docs/architecture.md |

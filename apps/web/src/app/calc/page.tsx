@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { CalcPage } from "@/features/import-calc/components/calc-page";
-import type { CustomsRate } from "@/features/import-calc/lib/customs-rate";
-import { api } from "@/shared/api";
-import { JsonLd } from "@/shared/json-ld";
-import { breadcrumbLd, pageMeta } from "@/shared/seo";
+import { CalcPage } from "@/features/import-calc/calc-page";
+import type { CustomsRate } from "@/features/import-calc/common/customs-rate";
+import { api } from "@hav/shared/api";
+import { JsonLd } from "@/shared/seo/json-ld";
+import { breadcrumbLd, pageMeta } from "@/shared/seo/seo";
 
 export const metadata: Metadata = pageMeta({ path: "/calc", title: "직구 계산기 · Flapfx", description: "해외 직구 물건 값을 원화로 · 면세 한도 안인지 · 넘으면 관세 · 부가세 예상" });
 

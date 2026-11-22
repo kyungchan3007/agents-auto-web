@@ -4,10 +4,11 @@
 //   움직임(화면에 들어오면 한 번 · useChartTimeline · 약 2.8초): 눈금 서서히 → 1월부터 차례로 자람 → 가장 비싼 · 싼 달이 튀며 색 → 말풍선 톡 · 움직임 줄이기 · 서버 첫 그림 = 최종 모양
 //   높이 · 눈금 숫자는 쓰는 쪽이 받은 실제 지수로 계산해 넘김 · 휴대폰(폭 < 560)은 월 이름이 숫자 · 옆 막대와 겹치는 말풍선은 위로 올려 점선으로 이음
 //   DOM 약속: svg[data-testid=year-bars][data-state] 안에 year-bar[data-month · data-tone · data-reveal] · year-tag[data-kind=high|low · data-reveal]
-import { type ReactNode, useId, useRef } from "react";
-import { useChartTimeline } from "../../hooks/use-chart-timeline";
-import { useElementWidth } from "../../hooks/use-element-width";
-import { ease, progressAt, textWidth } from "../../lib/line-chart";
+import type { ReactNode } from "react";
+import { useChartBox } from "../../hooks/chart/use-chart-box";
+import { useChartTimeline } from "../../hooks/chart/use-chart-timeline";
+import { useElementWidth } from "../../hooks/view/use-element-width";
+import { ease, progressAt, textWidth } from "../../lib/chart/line-chart";
 
 export type MonthBar = { month: number; tone: "high" | "low" | "mid" | "none"; /** 0~1 높이 (없으면 막대 없음) */ rel: number | null };
 
@@ -25,8 +26,7 @@ const barPath = (x: number, w: number, top: number, B: number, r0: number) => {
 };
 
 export function MonthBars({ bars, ticks, aria, highText, lowText }: { bars: MonthBar[]; /** 가로 눈금선(0~1 높이)과 왼쪽 숫자 */ ticks: { f: number; t: string }[]; aria: string; highText: string; lowText: string }): ReactNode {
-  const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
-  const box = useRef<HTMLDivElement>(null);
+  const { uid, box } = useChartBox();
   const W = Math.max(280, useElementWidth(box, 720));
   const phone = W < 560;
   const H = phone ? 300 : 380;

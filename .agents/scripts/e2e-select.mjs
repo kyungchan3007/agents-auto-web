@@ -3,7 +3,7 @@
 //   대상 main                          → full     (전부 · 넓은 화면 + 휴대폰)
 //   대상 develop(그 밖)                → selected (연결표로 고른 spec · 넓은 화면만)
 //     연결표 밖 화면 파일이 있으면      → smoke    (smoke ∪ 고른 spec + 경고 줄 — 전체는 하루 마무리 PR 에서)
-//   파일마다 "가장 긴 접두어" 하나가 이김 · apps/web/e2e/<이름>.spec.ts 가 바뀌면 그 spec 자신
+//   파일마다 "가장 긴 접두어" 하나가 이김 · apps/(web|admin)/e2e/<이름>.spec.ts 가 바뀌면 그 spec 자신
 //   CLI: node .agents/scripts/e2e-select.mjs → 결과를 JSON 한 줄로 (대상은 GITHUB_BASE_REF · 없으면 develop)
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -13,7 +13,7 @@ import { ROOT, changedFiles } from "./lib.mjs";
 
 const WIDE = "넓은 화면";
 const PHONE = "휴대폰";
-const OWN_SPEC = /^apps\/web\/e2e\/[^/]+\.spec\.ts$/;
+const OWN_SPEC = /^apps\/(?:web|admin)\/e2e\/[^/]+\.spec\.ts$/; // 운영 · 어드민 두 앱 (작업 0312)
 
 /** 이 파일이 가리키는 spec 목록 — 연결표 밖이면 null */
 function specsFor(file, map) {

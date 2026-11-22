@@ -7,9 +7,9 @@
 | 항목 | 결정 | 상태 |
 | --- | --- | --- |
 | 저장소 | 모노레포 · Turborepo (`apps/*` · `packages/*`) | 확인됨 |
-| 프론트 | `apps/web` Next.js 16 · 정적 내보내기 → Cloudflare Pages · VSA | 확인됨 |
+| 프론트 | `apps/web`(운영) · `apps/admin`(어드민) Next.js 16 · 정적 내보내기 → Cloudflare Workers 정적 자산 · 앱마다 Worker 하나 · VSA | 확인됨 (어드민 분리 2026-11-23 · 작업 0312) |
 | 백엔드 | `apps/api` Hono → Cloudflare Workers · D1 · Cron Triggers · VSA | 확인됨 |
-| 디자인 시스템 | `packages/ui` (토큰 · 컴포넌트) — **내용은 디자인 논의 때** | 자리만 확인됨 |
+| 디자인 시스템 | `packages/ui` — 두 앱이 함께 쓰는 범용 부품 · 토큰 · 훅만 · 한 앱만 쓰는 도메인 UI 는 그 앱의 `src/shared/<도메인>` | 확인됨 (작업 0312) |
 | 백엔드가 필요한 이유 | 환율 알림 · 즐겨찾기 저장 (사용자 설정 · 매일 확인 · 알림) | 확인됨 |
 | 데이터 원본 | **D1** (SQLite) + **Drizzle ORM** — 나중에 Postgres 로 옮길 수 있게 (Drizzle 은 둘 다 지원) | 확인됨 (2026-10-28) |
 | 수집 | `apps/api` Worker **Cron** 이 매일 수집 → 형식 검사 → D1 (스크립트 · AI 아님) | 확인됨 |
@@ -17,7 +17,7 @@
 | 공개 일지 | git 커밋 · PR · 작업 폴더 (데이터 저장 위치와 무관 · 수집 기록은 운영용) | 확인됨 |
 | 로그인 · 알림 수단 | 이메일 매직 링크 · 이메일 알림 | 가정 |
 | 패키지 매니저 · 이름 | npm workspaces · `@hav/<이름>` | 가정 |
-| 주소 | 사이트 `flapfx.com` (Flapfx · Workers `agents-auto-web`) · 어드민 `admin.flapfx.com`(작업실 · GEO 측정 · 같은 Worker 가 주소로 나눔 `worker/host.ts` · 검색에 막음 · 작업 0302) · API `tripfx-api.developfff.workers.dev` | 확인됨 (2026-11-17 · 작업 0190 · 옛 `tripfx.pages.dev` 는 삭제) |
+| 주소 | 사이트 `flapfx.com` (Flapfx · Workers `agents-auto-web`) · 어드민 `admin.flapfx.com`(작업실 · GEO 측정 · 만드는 방식 · 알리기 · `apps/admin` · Worker `flapfx-admin` · 검색에 막음 · 작업 0302 · 0312) · API `tripfx-api.developfff.workers.dev` | 확인됨 (2026-11-17 · 작업 0190 · 옛 `tripfx.pages.dev` 는 삭제) |
 
 ## 전체 그림
 ```text
@@ -63,20 +63,32 @@
 | 사이트 다시 빌드 | 평일 03:30 UTC (수집 30분 뒤) | `.github/workflows/rebuild-site.yml` — Pages 배포 훅 |
 | 비밀값 | 사람이 GitHub Secrets 에 | `CLOUDFLARE_API_TOKEN` · `CLOUDFLARE_ACCOUNT_ID` · `PAGES_DEPLOY_HOOK` — 없으면 건너뜀 |
 
-## 저장소 구조 (목표)
+## 어드민 분리 (2026-11-23 · 작업 0312 · 사용자 요청 "어드민을 apps/admin 으로 분리")
+- 기준은 사용자 저장소 `kyungchan3007/frontend-architecture` 의 정리: 앱은 배포 단위 · 앱끼리 참조하지 않음 · 두 앱이 함께 쓰는 코드는 `packages/` · 한 앱만 쓰는 공통은 그 앱의 `src/shared` (자세한 근거는 `.agents/specs/0312-admin-split/sdd.md` "기준")
+- `apps/admin`: 별도 Next 정적 앱 · Worker `flapfx-admin`(`apps/admin/wrangler.jsonc` · 도메인 `admin.flapfx.com`) · 모든 응답에 검색 막음 · `/` → `/log` · 운영 주소는 `flapfx.com` 으로 301 (`apps/admin/worker/host.ts`)
+- `apps/web` Worker 는 옛 어드민 경로(`/log` · `/geo` · `/how` · `/marketing`)를 `admin.flapfx.com` 으로 301 만 (`apps/web/worker/host.ts`) · 어드민 경로 목록은 `@hav/shared/site` 의 `ADMIN_PATHS` 한 곳
+- BFF 프록시는 `@hav/edge/bff` 하나 · 경로표는 앱마다(`apps/*/worker/bff-routes.ts`) — 운영은 환율 · 신호 · 물가 · 시계열, 어드민은 작업 · 상태 · GEO · 작업 기록
+- 배포: Workers Builds 를 앱마다 연결(사람이 설정) · 평일 다시 빌드는 `PAGES_DEPLOY_HOOK`(운영) · `ADMIN_DEPLOY_HOOK`(어드민 · 없으면 건너뜀)
+
+## 저장소 구조
 ```text
 apps/
-├── web/                         @hav/web — Next.js
+├── web/                         @hav/web — 운영 flapfx.com (Next.js 정적 + worker/)
 │   └── src/
-│       ├── app/                 라우트 조립만 (기능 로직 없음)
-│       └── features/<기능>/     VSA 슬라이스: components/ 화면 · hooks/ use-* · lib/ 계산과 테스트
+│       ├── app/                 라우트 조립만 (기능 로직 · 파일 읽기 없음 — 빌드 때 읽기는 *.server.ts)
+│       ├── features/<기능>/<하위 도메인>/   화면(.tsx) · 훅(use-*.ts) · 로직(*.ts) · 테스트를 한 폴더에 (종류별 components · hooks · lib 폴더 금지)
+│       ├── shared/<묶음>/       운영 앱 공통 — nav · seo · outage · signal · trip · rate
+│       └── checks/              사이트 전체 소스 검사 테스트
+├── admin/                       @hav/admin — 어드민 admin.flapfx.com (Next.js 정적 + worker/)
+│   └── src/ app/ · features/<기능>/<하위 도메인>/ · shared/<묶음>/(nav · ui · time · text · repo · clipboard · fold · live · search)
 └── api/                         @hav/api — Hono (Workers)
     └── src/
         ├── index.ts             app.route() 로 슬라이스 묶기 + scheduled(Cron)
         └── features/<기능>/     VSA 슬라이스: 라우트(핸들러 직접) · 로직 · D1 쿼리 · 스키마 · 테스트
 packages/
-├── ui/                          @hav/ui — components/{layout,text,form,data,feedback,motion} · hooks · three/{characters,objects,scene,lib} · lib
-├── shared/                      @hav/shared — contracts/ 스키마 · domain/ 업무 규칙 · utils/ 공통 도구 (공개 이름은 exports 로 유지)
+├── ui/                          @hav/ui — 범용 디자인 시스템: components/{layout,text,form,data,feedback,motion} · hooks/<묶음>(browser · view · motion · flap · chart · nav) · lib/<묶음>(chart · motion · text · color) · tokens.css · three/(보관)
+├── shared/                      @hav/shared — contracts/ 스키마 · domain/ 업무 규칙 · utils/ 공통 도구 · site/ 주소 · client/ API 받기 (공개 이름은 exports 로 유지)
+├── edge/                        @hav/edge — Worker 공용: bff(프록시 · 경로표는 앱이 넘김) · noindex(검색 막음)
 └── config/                      @hav/config — tsconfig · eslint 공용 설정
 turbo.json                       작업 그래프 (build · lint · typecheck · test)
 ```
@@ -110,11 +122,12 @@ turbo.json                       작업 그래프 (build · lint · typecheck ·
 ## 경계 규칙 → 강제 위치
 | 규칙 | 강제 | 위치 |
 | --- | --- | --- |
-| 슬라이스끼리 import 금지 | 테스트 | `apps/web/src/shared/role-boundary.test.ts` |
-| 앱 공용 폴더는 사이트 고유 파일만 — 2개 이상이 쓰는 공통은 `@hav/shared`(로직) · `@hav/ui`(화면 · 훅) · 의존 방향 shared ← ui ← apps | 허용 목록 테스트 (작업 0126) | `apps/web/src/shared/role-boundary.test.ts` |
-| 화면(`.tsx`)은 그리기만 · 상태 · 효과는 `use-*.ts` · 계산은 순수 `*.ts` | 테스트 (작업 0125) | `apps/web/src/shared/role-boundary.test.ts` |
-| 숫자 · 변화율 · 날짜 표기는 `@hav/shared/format` · `date` · JSON 받기는 `@hav/shared/fetched` · 빌드 값 뒤 새로 받기는 `@hav/ui/hooks/use-live` | 작업 0136 | 해당 패키지 |
-| 기능 폴더 · 패키지 파일은 성격별 폴더 안에 | 테스트 (작업 0137) | `apps/web/src/shared/role-boundary.test.ts` |
+| 슬라이스끼리 import 금지 · 앱 공통은 기능을 가져오지 않음 | 테스트 | `apps/{web,admin}/src/role-boundary.test.ts` |
+| 화면(`.tsx`)은 그리기만 — 상태 · 효과 훅 직접 금지(커스텀 훅 `use-*.ts`) · 계산(거르기 · 정렬 · 자르기 · Math · 정규식 · 날짜 · 서식) 금지 · 로직 함수 export 금지 | 테스트 (작업 0125 · 0312) | `apps/{web,admin}/src/role-boundary.test.ts` · `packages/ui/src/role-boundary.test.ts` |
+| 종류별 폴더(components · hooks · lib) 금지 · 한 폴더에 훅 4개까지 · 파일 읽기는 `*.server.ts` 만 | 테스트 (작업 0312 · 0137 을 뒤집음) | 같은 곳 |
+| 앱 공통(`src/shared`)은 묶음 폴더 · 허용 목록 — 두 앱이 함께 쓰면 `@hav/shared` · `@hav/ui` · `@hav/edge` · 의존 방향 shared ← ui ← apps | 허용 목록 테스트 (작업 0126 · 0312) | `apps/web/src/checks/role-boundary.test.ts` |
+| 숫자 · 원 · 변화율 · 날짜 · 달 번호 표기는 `@hav/shared/format` · `date` · JSON 받기는 `@hav/shared/fetched` · API 받기는 `@hav/shared/api` | 작업 0136 · 0312 | 해당 패키지 |
+| 어드민 메뉴 경로 = `ADMIN_PATHS` (두 Worker 가 같은 목록) | 테스트 (작업 0312) | `apps/admin/src/shared/nav/admin-pages.test.ts` |
 | 패키지끼리 `../` import 금지 | (예정) eslint `no-restricted-imports` | `@hav/config` eslint |
 | `apps/web` 은 외부 환율 API를 직접 부르지 않음 | (예정) eslint · 테스트 | `@hav/config` eslint |
 | API 입력은 zod 검증을 거침 | 슬라이스 테스트 | `apps/api` 테스트 |
@@ -128,5 +141,6 @@ turbo.json                       작업 그래프 (build · lint · typecheck ·
 | --- | --- |
 | 환율 출처 (수출입은행 + Frankfurter 예비 제안) · 신호 계산 · 직구 범위 | 데이터 논의 (#4) |
 | 디자인 토큰 · 컴포넌트 목록 | 디자인 논의 (#3) |
+| 선 그래프 · 월 막대(SVG)의 그리기 안 좌표 계산 나누기 | 작업 0312 다음 (배치 묶음은 `lib/chart/line-chart-layout.ts` 로 옮김) |
 | 로그인 · 알림 방식 · D1 테이블 | 백엔드 이슈 만들 때 |
 | Cloudflare 무료 한도 (Cron 개수 등) | 설정할 때 공식 한도 페이지로 확인 (출처마다 숫자가 다름) |

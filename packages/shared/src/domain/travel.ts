@@ -2,6 +2,7 @@
 // 세계은행 안내대로 정밀 순위 대신 "싼 편 · 비슷 · 비싼 편" 묶음 (docs/domain/travel-price.md)
 import type { Region } from "./currency";
 import type { PriceLevels } from "../contracts/prices";
+import { monthIndex } from "../utils/date";
 
 type Country = { name: string; flag: string; currency: string | null; region: Exclude<Region, "other"> };
 
@@ -140,7 +141,7 @@ export const countriesOf = (currency: string) => Object.entries(TRAVEL_COUNTRIES
 /** 월 단위 지표 한 점 — period 는 YYYY-MM (통계청 국제항공료 지수 등) */
 export type MonthPoint = { period: string; value: number };
 
-const monthIndex = (period: string) => Number(period.slice(0, 4)) * 12 + Number(period.slice(5, 7)) - 1;
+// 달 번호는 utils/date 의 monthIndex (작업 0312)
 
 /**
  * 가장 최근 달부터 36개월(최근 달 포함)만 보고 달(1~12)마다 평균 · n 은 쓴 값의 수 · 값이 없는 달은 키가 없음
