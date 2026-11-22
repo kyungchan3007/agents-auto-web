@@ -368,7 +368,7 @@ test.describe("하나씩 다 눌러 보기 (작업 0186)", () => {
 
   test("다른 페이지의 메뉴를 하나씩 — 어느 페이지에서도 인트로 없음 · 홈 메뉴로 와도 없음", async ({ page }) => {
     test.setTimeout(240_000);
-    for (const start of ["/flights", "/currencies", "/prices", "/calc", "/log", "/geo", "/about"]) {
+    for (const start of ["/flights", "/currencies", "/prices", "/calc", "/about"]) { // 작업실 · GEO 측정은 어드민 메뉴라 "오늘 환율" 이 없음 (작업 0302)
       await test.step(`${start} 에서`, async () => {
         await page.goto(start);
         await page.waitForTimeout(800);

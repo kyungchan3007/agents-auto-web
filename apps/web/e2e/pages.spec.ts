@@ -312,14 +312,14 @@ test.describe("작업실 /log (SR-LOG-01)", () => {
 });
 
 test.describe("소개 /about (SR-ABT-01)", () => {
-  test("기준 카드 8개 · 큰 제목 · '작업실' 링크 → /log (작업 0267)", async ({ page }) => {
+  test("기준 카드 8개 · 큰 제목 · '작업실' 링크 → 어드민 작업실 (작업 0267 · 0302)", async ({ page }) => {
     await page.goto("/about");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("어떤 자료를, 어떤 기준으로 보여 주나요");
     await expect(tid(page, "criteria-card")).toHaveCount(8);
-    // 누가 만드나요 칸의 "작업실" 낱말은 /log 로 가는 링크
+    // 누가 만드나요 칸의 "작업실" 낱말은 어드민 작업실로 가는 링크 (작업 0302)
     const maker = tid(page, "criteria-card").filter({ hasText: "누가 만드나요" });
     await expect(maker).toHaveCount(1);
-    await expect(maker.getByRole("link", { name: "작업실" })).toHaveAttribute("href", "/log");
+    await expect(maker.getByRole("link", { name: "작업실" })).toHaveAttribute("href", "https://admin.flapfx.com/log");
     await expect(maker.getByRole("link")).toHaveCount(1);
   });
 });
@@ -336,8 +336,9 @@ test.describe("GEO 측정 /geo (SR-GEO-01)", () => {
 });
 
 test("메뉴 — 새 화면으로 이동 (휴대폰은 메뉴 버튼을 먼저 펼침)", async ({ page }) => {
-  for (const [name, path] of [["직구 계산", "/calc"], ["작업실", "/log"], ["GEO 측정", "/geo"]] as const) {
-    await page.goto("/");
+  // 작업실 · GEO 측정은 어드민 메뉴 안에서 오감 (작업 0302)
+  for (const [from, name, path] of [["/", "직구 계산", "/calc"], ["/geo", "작업실", "/log"], ["/log", "GEO 측정", "/geo"]] as const) {
+    await page.goto(from);
     await openMenuIfCollapsed(page);
     await page.getByRole("banner").getByRole("navigation").getByRole("link", { name, exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`${path}/?$`));
