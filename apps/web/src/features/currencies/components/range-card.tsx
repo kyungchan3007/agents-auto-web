@@ -25,11 +25,11 @@ export function RangeCard({ code, stats, rate, unitText }: { code: string; stats
       <div className="flex items-start justify-between gap-4">
         <div data-testid="route-min">
           <p className="text-small text-fg-2">1년 최저</p>
-          <p className="mt-1 text-[1.5rem] font-bold whitespace-nowrap text-figure tabular-nums sm:text-[1.75rem]">{stats ? <><CountUp value={stats.min} digits={d} suffix="원" from={from?.min ?? null} delayMs={220} />{per}</> : "—"}</p>
+          <p className="mt-1 text-[1.375rem] font-bold whitespace-nowrap text-figure tabular-nums sm:text-[1.75rem]">{stats ? <><CountUp value={stats.min} digits={d} suffix="원" from={from?.min ?? null} delayMs={220} />{per}</> : "—"}</p>
         </div>
         <div data-testid="route-max" className="text-right">
           <p className="text-small text-fg-2">1년 최고</p>
-          <p className="mt-1 text-[1.5rem] font-bold whitespace-nowrap text-expensive tabular-nums sm:text-[1.75rem]">{stats ? <><CountUp value={stats.max} digits={d} suffix="원" from={from?.max ?? null} delayMs={220} />{per}</> : "—"}</p>
+          <p className="mt-1 text-[1.375rem] font-bold whitespace-nowrap text-expensive tabular-nums sm:text-[1.75rem]">{stats ? <><CountUp value={stats.max} digits={d} suffix="원" from={from?.max ?? null} delayMs={220} />{per}</> : "—"}</p>
         </div>
       </div>
       {stats && pos !== null && (

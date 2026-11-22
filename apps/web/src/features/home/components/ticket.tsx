@@ -49,7 +49,7 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
               {board.title}
             </h2>
             <div className="mt-4 flex justify-center lg:[@media(max-height:880px)]:mt-2 lg:[@media(min-height:881px)_and_(max-height:1000px)]:mt-3">
-              <FlapBoard key={picked && chosen ? `${picked.country}-${picked.city}` : "today"} rows={board.rows} cols={BOARD_COLS} label={board.label} className="lg:[@media(max-height:880px)]:gap-2 lg:[@media(max-height:880px)]:p-3 lg:[@media(max-height:880px)]:**:data-[testid=flap-cell]:h-9 lg:[@media(max-height:880px)]:**:data-[testid=flap-cell]:text-[1.4rem] lg:[@media(min-height:881px)_and_(max-height:1000px)]:p-4 lg:[@media(min-height:881px)_and_(max-height:1000px)]:**:data-[testid=flap-cell]:h-11 lg:[@media(min-height:881px)_and_(max-height:1000px)]:**:data-[testid=flap-cell]:text-[1.75rem]" />
+              <FlapBoard key={picked && chosen ? `${picked.country}-${picked.city}` : "today"} rows={board.rows} cols={BOARD_COLS} label={board.label} className="lg:[@media(max-height:880px)]:gap-2 lg:[@media(max-height:880px)]:p-3 lg:[@media(max-height:880px)]:**:data-[testid=flap-cell]:h-9 lg:[@media(max-height:880px)]:**:data-[testid=flap-cell]:text-[1.375rem] lg:[@media(min-height:881px)_and_(max-height:1000px)]:p-4 lg:[@media(min-height:881px)_and_(max-height:1000px)]:**:data-[testid=flap-cell]:h-11 lg:[@media(min-height:881px)_and_(max-height:1000px)]:**:data-[testid=flap-cell]:text-[1.75rem]" />
             </div>
           </div>
           <div className="relative flex flex-col gap-5 px-4 pt-5 pb-6 sm:px-8 sm:pb-7 lg:[@media(max-height:880px)]:gap-3 lg:[@media(max-height:880px)]:pt-3 lg:[@media(max-height:880px)]:pb-4 lg:[@media(min-height:881px)_and_(max-height:1000px)]:gap-4 lg:[@media(min-height:881px)_and_(max-height:1000px)]:pt-4 lg:[@media(min-height:881px)_and_(max-height:1000px)]:pb-5">
@@ -60,7 +60,7 @@ export function Ticket({ initial, rates, signals, windowDays, notice }: { initia
             </div>
             <div aria-hidden data-testid="ticket-perf" className="absolute top-0 right-[22px] left-[22px] border-t-2 border-dashed border-line" />
             <div className="min-w-0">
-              <p data-testid="ticket-evidence" className="text-[1.0625rem] font-bold text-fg">
+              <p data-testid="ticket-evidence" className="text-[1.125rem] font-bold text-fg">
                 <Evidence text={board.evidence} />
               </p>
               {pct !== null && (
