@@ -86,16 +86,6 @@ export function percentileText(signal: Signal | null, percentile: number | null,
   return `최근 ${windowDays}일 중간 수준`;
 }
 
-/** 판정 설명 첫 줄 — 말끝을 "…합니다" 로 맞춘 문장 (작업 0289 · 통화 상세 판정 줄 · 요약 문장의 percentileText 는 그대로) */
-export function verdictText(signal: Signal | null, percentile: number | null, windowDays: number): string {
-  if (signal == null || percentile == null) return `최근 ${windowDays}일 자료가 모자라 신호를 내지 않았습니다`;
-  if (percentile === 0) return `최근 ${windowDays}일 중 가장 낮습니다`;
-  if (percentile === 1) return `최근 ${windowDays}일 중 가장 높습니다`;
-  if (signal === "cheap") return `최근 ${windowDays}일 중 ${Math.round((1 - percentile) * 100)}%의 날보다 낮습니다`;
-  if (signal === "expensive") return `최근 ${windowDays}일 중 ${Math.round(percentile * 100)}%의 날보다 높습니다`;
-  return `최근 ${windowDays}일 중간 수준입니다`;
-}
-
 /**
  * 미국 달러에 고정된 통화 (작업 0289) — 각 중앙은행이 공식으로 밝힌 단일 고정 환율이 있는 통화만 (근거 · 출처는 docs/domain/fx.md "달러에 고정된 통화")
  * 홍콩 달러는 7.75 ~ 7.85 범위 연동이라 고정이 아니어서 넣지 않음 · 쿠웨이트 디나르는 달러 고정이 아니어서 넣지 않음
