@@ -42,7 +42,7 @@ function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof wi
     <section data-testid="window-section" aria-labelledby="window-title" className="bg-surface-2 px-4 pt-14 pb-[4.5rem] text-fg sm:px-8 max-sm:pt-10 max-sm:pb-14">
       <div className="mx-auto max-w-page">
         <p className="text-small text-accent">창밖으로 보는 12달</p>
-        <h2 id="window-title" className="mt-1.5 text-[1.5rem] leading-tight font-bold tracking-display sm:text-[1.875rem]">
+        <h2 id="window-title" className="mt-1.5 text-[1.375rem] leading-tight font-bold tracking-display sm:text-[1.75rem]">
           계절이 바뀌는 동안 항공료 지수도 오르내립니다
         </h2>
         <p className="mt-1.5 text-small text-fg-2">1월부터 12월까지 같은 달의 국제항공료 지수를 창밖 계절과 함께 봅니다.</p>
@@ -91,7 +91,7 @@ function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof wi
               </div>
               <span
                 data-testid="window-tag"
-                className={`inline-flex h-[1.875rem] items-center rounded-[6px] px-3.5 text-[0.84375rem] font-bold ${cur.tone === "low" ? "bg-sun text-fg" : cur.tone === "high" ? "bg-pin-expensive text-on-accent" : "hidden"}`}
+                className={`inline-flex h-[1.875rem] items-center rounded-[6px] px-3.5 text-[0.8125rem] font-bold ${cur.tone === "low" ? "bg-sun text-fg" : cur.tone === "high" ? "bg-pin-expensive text-on-accent" : "hidden"}`}
               >
                 {cur.tag ?? ""}
               </span>
@@ -99,7 +99,7 @@ function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof wi
             <div className="mt-6 border-t border-line pt-5">
               <p className="text-small font-semibold text-fg-2">국제항공료 지수 · 같은 달 평균</p>
               <div className="mt-0.5 flex items-baseline gap-2.5">
-                <b data-testid="window-value" data-final={cur.text} className={`text-[3.5rem] leading-[1.05] font-bold tracking-display tabular-nums max-sm:text-[2.875rem] ${cur.tone === "high" ? "text-expensive" : cur.tone === "low" ? "text-figure" : "text-fg"}`}>
+                <b data-testid="window-value" data-final={cur.text} className={`text-[3.5rem] leading-[1.05] font-bold tracking-display tabular-nums max-sm:text-[3rem] ${cur.tone === "high" ? "text-expensive" : cur.tone === "low" ? "text-figure" : "text-fg"}`}>
                   {value.toFixed(1)}
                 </b>
                 <span className="text-small text-fg-2">2020년 = 100</span>
@@ -139,7 +139,7 @@ function WindowSection({ data, range }: { data: NonNullable<ReturnType<typeof wi
               </div>
             </div>
             <div className="mt-auto flex flex-col items-start gap-3.5 pt-5">
-              <button type="button" data-testid="window-replay" onClick={replay} className="tap-44 inline-flex cursor-pointer items-center gap-2 rounded-pill border-[1.5px] border-figure bg-card px-[1.125rem] py-[0.5625rem] text-[0.875rem] font-bold text-figure">
+              <button type="button" data-testid="window-replay" onClick={replay} className="tap-44 inline-flex cursor-pointer items-center gap-2 rounded-pill border-[1.5px] border-figure bg-card px-[1.125rem] py-[0.5625rem] text-[0.9375rem] font-bold text-figure">
                 ↻ 다시 보기
               </button>
               <p data-testid="window-note" className="max-w-none text-[0.75rem] leading-[1.55] text-fg-2">

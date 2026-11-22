@@ -31,7 +31,7 @@ function YoyItem({ name, points }: { name: string; points: IndexPoint[] | null }
   return (
     <div className="py-4 first:pt-0">
       <p className="text-small text-fg-2">{card.label}</p>
-      <p className="mt-0.5 text-[2rem] leading-tight font-bold tracking-display text-fg tabular-nums">
+      <p className="mt-0.5 text-[2.25rem] leading-tight font-bold tracking-display text-fg tabular-nums">
         <CountUp value={n.value} digits={1} />
       </p>
       <p className="mt-1 flex items-center gap-2 text-small font-semibold text-fg">
@@ -87,7 +87,7 @@ export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: Tra
                 <SlideIn from="left">
                   <div data-testid="flights-ticket" className="relative grid rounded-[1.75rem] bg-card shadow-ticket lg:grid-cols-[minmax(0,1fr)_21rem]">
                     <div className="min-w-0 px-5 py-6 sm:px-8 sm:py-8">
-                      <h2 className="text-[1.25rem] font-bold text-fg">국제항공료 · 해외단체여행비 지수와 환율 그래프</h2>
+                      <h2 className="text-[1.375rem] font-bold text-fg">국제항공료 · 해외단체여행비 지수와 환율 그래프</h2>
                       <div className="mt-2">
                         <FlightsGraph air={air} tour={tour} fx={fxMonthly} />
                       </div>

@@ -144,13 +144,13 @@
   --tracking-display: -0.03em;
   --text-poster: clamp(3rem, 9vw, 6rem); /* 포스터 큰 제목 Pretendard 800 96/102 */
   --text-poster--line-height: 1.0625;
-  --text-section: clamp(2rem, 5vw, 3rem); /* 구간 제목 Pretendard 800 48/54 */
+  --text-section: clamp(2.25rem, 5vw, 3rem); /* 구간 제목 Pretendard 800 48/54 */
   --text-section--line-height: 1.125;
-  --text-city: 2.125rem; /* 도시 이름 Pretendard 800 34/36 */
+  --text-city: 2.25rem; /* 도시 이름 Pretendard 800 36 */
   --text-city--line-height: 1.0588;
   --text-body: 1rem; /* 설명 IBM Plex Sans KR 16/26 */
   --text-body--line-height: 1.625;
-  --text-number: 1.625rem; /* 강조 숫자 SemiBold 26/32 */
+  --text-number: 1.75rem; /* 강조 숫자 SemiBold 28/32 */
   --text-number--line-height: 1.2308;
   --text-small: 0.8125rem; /* 작은 글 13/20 */
   --text-small--line-height: 1.5385;
@@ -163,9 +163,9 @@
   --text-hero--line-height: 1.0625;
   --text-title: var(--text-section);
   --text-title--line-height: 1.125;
-  --text-eyebrow: 1.3125rem;
+  --text-eyebrow: 1.375rem;
   --text-eyebrow--line-height: 1.2;
-  --text-lead: 1.3125rem;
+  --text-lead: 1.375rem;
   --text-lead--line-height: 1.5;
 
   /* 본문 폭 1200px (시안 · 1440 화면에서 왼쪽 선 x=120) — 메뉴 · 본문 · 바닥 띠가 같은 폭 (max-w-page · 작업 0170) */

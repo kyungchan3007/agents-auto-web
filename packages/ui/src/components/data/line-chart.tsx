@@ -73,7 +73,7 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
   const pp = { ...p0, ...(phone ? padPhone : pad) };
 
   // 끝 말풍선 크기 — 글자 폭을 어림해 오른쪽 여백을 정함
-  const numSize = phone ? 14 : 20;
+  const numSize = phone ? 15 : 22;
   const ends = series
     .filter((s) => s.end && s.points.length > 0)
     .map((s) => {
