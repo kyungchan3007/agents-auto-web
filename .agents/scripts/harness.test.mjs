@@ -921,3 +921,87 @@ test("게이트: 로컬(CI 아님)은 라벨이 있어도 지금 그대로 — @
     sb.done();
   }
 });
+
+// ── e2e 범위 훅 (작업 0294) ──
+import { cdOf, decideE2e, e2eRuns, playwrightArgs, words as e2eWords } from "./e2e-guard.mjs";
+
+const e2eEvent = (command, cwd = "/repo") => ({ tool_name: "Bash", tool_input: { command }, cwd });
+const pick = (specs, mode = "selected") => () => ({ mode, specs, projects: ["넓은 화면"] });
+const quick = () => "quick";
+const full = () => "full";
+
+test("e2e 훅: e2e · 게이트가 아닌 명령은 통과 (단위 · typecheck · lint · git · 글 안의 낱말)", () => {
+  for (const c of [
+    "npx vitest run",
+    "npm test",
+    "npm run -s typecheck && npm run lint",
+    "cd apps/web && npx eslint src/a.tsx",
+    'git commit -m "npx playwright test 로 확인"',
+    'rig send dev-test@hav "npm run test:e2e 는 돌리지 마"',
+    "node .tmp/mock/fix.mjs",
+  ]) assert.equal(decideE2e(e2eEvent(c), "/repo", { allowed: pick([]), loop: quick }), null, c);
+  assert.equal(decideE2e({ tool_name: "Edit", tool_input: {} }, "/repo"), null);
+});
+
+test("e2e 훅: spec 없는 로컬 e2e 는 전체 실행이라 막음 (npx · npm run · turbo · pnpm · node_modules/.bin)", () => {
+  for (const c of [
+    "cd /repo/.tmp/wt-0290 && npx playwright test",
+    "npm run -s test:e2e",
+    "npm run -s test:e2e -- -- --project='넓은 화면'",
+    "npx turbo run test:e2e",
+    "cd apps/web && pnpm exec playwright test --project=휴대폰",
+    "(cd apps/web && ./node_modules/.bin/playwright test --workers=4)",
+  ]) {
+    const r = decideE2e(e2eEvent(c), "/repo", { allowed: pick(["a.spec.ts"]), loop: quick });
+    assert.match(r ?? "", /전체 실행/, c);
+    assert.match(r, /a\.spec\.ts/, "돌릴 수 있는 목록을 알려 줌");
+  }
+});
+
+test("e2e 훅: 고른 목록 안 spec 은 통과 · 밖 spec 은 막고 이름을 알려 줌", () => {
+  const deps = { allowed: pick(["a.spec.ts", "b.spec.ts"]), loop: quick };
+  assert.equal(decideE2e(e2eEvent("cd apps/web && npx playwright test e2e/a.spec.ts e2e/b.spec.ts:38"), "/repo", deps), null);
+  assert.equal(decideE2e(e2eEvent('npm run -s test:e2e -- -- --project="넓은 화면" e2e/a.spec.ts'), "/repo", deps), null);
+  assert.equal(decideE2e(e2eEvent("cd apps/web && AIRFARE_FIXTURE=1 npx playwright test -c e2e/airfare.config.ts e2e/a.spec.ts"), "/repo", deps), null, "-c 값은 걸러내기 인자가 아님");
+  const r = decideE2e(e2eEvent("npx playwright test e2e/a.spec.ts e2e/tap-44.spec.ts e2e/home.spec.ts"), "/repo", deps);
+  assert.match(r ?? "", /목록 밖 spec 입니다: tap-44\.spec\.ts, home\.spec\.ts/);
+});
+
+test("e2e 훅: 목록이 비면(화면 변경 없음) spec 실행도 막고 '대상이 없다'고 알려 줌", () => {
+  const r = decideE2e(e2eEvent("npx playwright test e2e/a.spec.ts"), "/repo", { allowed: pick([], "none"), loop: quick });
+  assert.match(r ?? "", /로컬 e2e 대상이 없습니다/);
+});
+
+test("e2e 훅: spec 이름이 아닌 걸러내기 인자 · --only-changed 는 막음", () => {
+  for (const c of ["npx playwright test prices", "npx playwright test e2e/", "npx playwright test --only-changed=origin/develop"]) {
+    assert.match(decideE2e(e2eEvent(c), "/repo", { allowed: pick(["prices-route.spec.ts"]), loop: quick }) ?? "", /걸러내기 인자/, c);
+  }
+});
+
+test("e2e 훅: --last-failed · --list 는 통과", () => {
+  const deps = { allowed: pick(["a.spec.ts"]), loop: quick };
+  assert.equal(decideE2e(e2eEvent("npx playwright test --last-failed"), "/repo", deps), null);
+  assert.equal(decideE2e(e2eEvent("npx playwright test --list"), "/repo", deps), null);
+});
+
+test("e2e 훅: checks.sh — Quick 은 통과 · Full 은 로컬 전체 게이트라 막음 · LOOP 앞붙임은 그대로 따름", () => {
+  assert.equal(decideE2e(e2eEvent("bash .agents/checks.sh"), "/repo", { allowed: pick([]), loop: quick }), null);
+  assert.match(decideE2e(e2eEvent("bash .agents/checks.sh"), "/repo", { allowed: pick([]), loop: full }) ?? "", /로컬 전체 게이트/);
+  assert.equal(decideE2e(e2eEvent("LOOP=quick bash .agents/checks.sh"), "/repo", { allowed: pick([]), loop: full }), null);
+  assert.match(decideE2e(e2eEvent("LOOP=full bash .agents/checks.sh"), "/repo", { allowed: pick([]), loop: quick }) ?? "", /로컬 전체 게이트/);
+});
+
+test("e2e 훅: 목록을 못 구하면(예외 · null) spec 지정 실행은 막지 않음 · 전체 실행은 그래도 막음", () => {
+  const broken = { allowed: () => { throw new Error("git 없음"); }, loop: quick };
+  assert.equal(decideE2e(e2eEvent("npx playwright test e2e/a.spec.ts"), "/repo", broken), null);
+  assert.match(decideE2e(e2eEvent("npx playwright test"), "/repo", broken) ?? "", /전체 실행/);
+});
+
+test("e2e 훅: 실행 위치는 첫 cd 를 따름 · heredoc 본문은 명령이 아님 · 따옴표 값은 한 낱말", () => {
+  assert.equal(cdOf("cd /repo/.tmp/wt-0290 && npx playwright test", "/x"), "/repo/.tmp/wt-0290");
+  assert.equal(cdOf("(cd apps/web && npx playwright test)", "/repo"), "/repo/apps/web");
+  assert.deepEqual(e2eRuns("cat > a.md <<'EOF'\nnpx playwright test\nEOF"), []);
+  assert.deepEqual(e2eWords(`--project="넓은 화면" e2e/a.spec.ts`), ["--project=넓은 화면", "e2e/a.spec.ts"]);
+  assert.deepEqual(playwrightArgs(["--project", "휴대폰", "e2e/a.spec.ts:12:3", "-g", "제목"]).specs, ["a.spec.ts"]);
+  assert.deepEqual(playwrightArgs(["--project", "휴대폰", "-g", "제목"]).filters, []);
+});
