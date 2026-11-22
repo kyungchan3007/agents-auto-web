@@ -57,7 +57,7 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
               <Row k={`관세${r.tax && dutyRate ? ` (${dutyRate}%)` : ""}`} v={won(r.tax ? r.tax.duty : 0, "duty")} />
               <Row k="부가세 10% ((과세 가격 + 관세) × 10%)" v={won(r.tax ? r.tax.vat : 0, "vat")} />
               <Row k="적용 환율" v={rateText} />
-              <Row k="모두 합쳐 예상" v={r.tax ? (r.tax.total === null ? "— 관세율을 넣으면 계산" : won(r.tax.total, "total")) : won(r.priceKrw, "total")} total />
+              <Row k="모두 합쳐 예상" v={r.tax ? (r.tax.total === null ? "— 관세율을 넣으면 계산" : won(r.tax.total, "total")) : won(r.priceKrw, "total")} total soft={r.tax?.total === null} />
             </dl>
           )}
           <p className="mt-4 text-small text-fg-2">예상 금액입니다. 실제 세금은 통관 때 정해집니다.</p>
@@ -67,11 +67,11 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
   );
 }
 
-function Row({ k, v, total = false }: { k: string; v: ReactNode; total?: boolean }) {
+function Row({ k, v, total = false, soft = false }: { k: string; v: ReactNode; total?: boolean; soft?: boolean }) {
   return (
     <div className={`flex flex-wrap items-baseline justify-between gap-x-4 py-2.5 ${total ? "mt-1 border-t-2 border-fg pt-4 text-[1rem] font-bold" : "border-b border-dashed border-line"}`}>
       <dt className={total ? "" : "text-fg-2"}>{k}</dt>
-      <dd className={`text-right ${total ? "text-[1.375rem] font-bold tabular-nums" : "font-semibold"}`}>{v}</dd>
+      <dd className={`text-right ${total ? `${soft ? "text-[1rem]" : "text-[1.375rem]"} font-bold tabular-nums` : "font-semibold"}`}>{v}</dd>
     </div>
   );
 }
