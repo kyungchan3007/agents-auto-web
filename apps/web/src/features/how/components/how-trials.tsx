@@ -6,10 +6,10 @@ import { useTrials } from "../hooks/use-trials";
 import { HOW_TRIALS, TRIAL_CATS } from "../lib/story";
 
 export function HowTrials() {
-  const t = useTrials();
+  const { cat, setCat, open, toggle, toggleAll, allOpen, shown, list } = useTrials();
   const count = (c: string) => HOW_TRIALS.filter((x) => x.cat === c).length;
   const seg = (id: (typeof TRIAL_CATS)[number] | "all", label: string) => (
-    <button key={id} type="button" aria-pressed={t.cat === id} onClick={() => t.setCat(id)}>
+    <button key={id} type="button" aria-pressed={cat === id} onClick={() => setCat(id)}>
       {label}
     </button>
   );
@@ -24,8 +24,8 @@ export function HowTrials() {
             {seg("all", `전체 ${HOW_TRIALS.length}`)}
             {TRIAL_CATS.filter((c) => count(c) > 0).map((c) => seg(c, `${c} ${count(c)}`))}
           </div>
-          <button type="button" className="adm-btn" onClick={t.toggleAll}>
-            {t.allOpen ? "모두 접기" : "모두 펼치기"}
+          <button type="button" className="adm-btn" onClick={toggleAll}>
+            {allOpen ? "모두 접기" : "모두 펼치기"}
           </button>
         </div>
       }
@@ -33,21 +33,21 @@ export function HowTrials() {
       <div className="adm-pb" style={{ paddingBottom: 4 }}>
         <p className="adm-note">무슨 일이 있었고, 왜 그랬고, 무엇을 바꿨는지 · 작업 문서와 PR 로 확인한 것만 적었습니다. 줄을 누르면 펼쳐집니다.</p>
       </div>
-      <ol ref={t.list} className="adm-trials">
-        {t.shown.map(({ t: x, i }) => (
+      <ol ref={list} className="adm-trials">
+        {shown.map(({ t: x, i }) => (
           <li key={x.title} data-trial={i} data-cmd="시행착오" data-cmd-label={x.title}>
-            <button type="button" className="adm-trial-h" aria-expanded={t.open.has(i)} aria-controls={`trial-${i}`} onClick={() => t.toggle(i)}>
+            <button type="button" className="adm-trial-h" aria-expanded={open.has(i)} aria-controls={`trial-${i}`} onClick={() => toggle(i)}>
               <span className="d">{x.day}</span>
               <span className="tt">
                 <span className="ct">{x.cat}</span>
                 {x.title}
                 {!x.done && <span className="open">해결 중</span>}
               </span>
-              <svg className="adm-chev" viewBox="0 0 24 24" aria-hidden style={{ transform: t.open.has(i) ? "rotate(180deg)" : undefined }}>
+              <svg className="adm-chev" viewBox="0 0 24 24" aria-hidden style={{ transform: open.has(i) ? "rotate(180deg)" : undefined }}>
                 <path d="m6 9 6 6 6-6" />
               </svg>
             </button>
-            {t.open.has(i) && (
+            {open.has(i) && (
               <dl id={`trial-${i}`} className="adm-trial-b">
                 <div>
                   <dt>무슨 일</dt>
