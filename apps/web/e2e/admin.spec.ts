@@ -26,10 +26,12 @@ test.describe("어드민 틀 (ADD-01)", () => {
   }
 
   test("메뉴로 다른 화면에 감", async ({ page }) => {
+    // 작업 0308: 화면을 옮긴 직후 스타일이 붙기 전에는 휴대폰 · 넓은 화면 메뉴가 둘 다 보일 수 있어 화면 폭에 맞는 메뉴 하나로 찾음
+    const nav = () => (isPhone(page) ? page.locator("header.adm-mtop") : page.locator("aside.adm-side")).getByRole("navigation", { name: "어드민 메뉴" });
     await page.goto("/log");
-    await visibleNav(page).getByRole("link", { name: /^GEO/ }).click();
+    await nav().getByRole("link", { name: /^GEO/ }).click();
     await expect(page).toHaveURL(/\/geo\/?$/);
-    await visibleNav(page).getByRole("link", { name: "만드는 방식" }).click();
+    await nav().getByRole("link", { name: "만드는 방식" }).click();
     await expect(page).toHaveURL(/\/how\/?$/);
   });
 
