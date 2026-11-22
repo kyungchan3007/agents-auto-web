@@ -2,12 +2,10 @@ import type { Metadata } from "next";
 import { CalcPage } from "@/features/import-calc/components/calc-page";
 import type { CustomsRate } from "@/features/import-calc/lib/customs-rate";
 import { api } from "@/shared/api";
+import { JsonLd } from "@/shared/json-ld";
+import { breadcrumbLd, pageMeta } from "@/shared/seo";
 
-export const metadata: Metadata = {
-  title: "직구 계산기 · Flapfx",
-  alternates: { canonical: "/calc" },
-  description: "해외 직구 물건 값을 원화로 · 면세 한도 안인지 · 넘으면 관세 · 부가세 예상",
-};
+export const metadata: Metadata = pageMeta({ path: "/calc", title: "직구 계산기 · Flapfx", description: "해외 직구 물건 값을 원화로 · 면세 한도 안인지 · 넘으면 관세 · 부가세 예상" });
 
 // 환율은 빌드 때 우리 API 에서 · 입력 · 계산은 브라우저 안에서만 (IMP-01)
 export default async function Page() {
@@ -22,5 +20,10 @@ export default async function Page() {
     const p = f.ok ? f.data.points.at(-1) : undefined;
     if (p) customs[c] = { perUnit: p.value, weekStart: p.period };
   });
-  return <CalcPage latest={latest} customs={customs} trend={trend.ok ? trend.data.points : null} usdDays={usd.ok ? usd.data.rates : null} importPrice={price.ok ? price.data.points : null} />;
+  return (
+    <>
+      <JsonLd data={breadcrumbLd([{ name: "직구 계산기", path: "/calc" }])} />
+      <CalcPage latest={latest} customs={customs} trend={trend.ok ? trend.data.points : null} usdDays={usd.ok ? usd.data.rates : null} importPrice={price.ok ? price.data.points : null} />
+    </>
+  );
 }
