@@ -153,11 +153,6 @@
   --text-number: 1.75rem; /* 강조 숫자 SemiBold 28/32 */
   --text-number--line-height: 1.2308;
   --text-small: 0.8125rem; /* 작은 글 13/20 */
-  /* Tailwind 기본 크기 이름도 11단계 값으로 (작업 0275) — 줄 높이 비율은 기본값 그대로 */
-  --text-sm: 0.9375rem;
-  --text-xl: 1.375rem;
-  --text-2xl: 1.375rem;
-  --text-3xl: 1.75rem;
   --text-small--line-height: 1.5385;
 
   /* 예전 이름 — 같은 단계로 이어 붙임 (화면 코드가 text-hero · text-title 을 아직 씀) */
