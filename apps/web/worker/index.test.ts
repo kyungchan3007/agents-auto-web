@@ -49,6 +49,44 @@ describe("사이트 Worker (작업 0189)", () => {
     expect(s.waits).toHaveLength(1);
   });
 
+  it("flapfx.com/log 는 어드민 주소로 301 · 자산 · 기록 없음 (작업 0302)", async () => {
+    const s = setup();
+    const res = await worker.fetch(new Request("https://flapfx.com/log"), s.env, s.ctx);
+    expect(res.status).toBe(301);
+    expect(res.headers.get("location")).toBe("https://admin.flapfx.com/log");
+    expect(s.assets).not.toHaveBeenCalled();
+  });
+
+  it("어드민 /geo 는 자산을 검색 막음 머리글과 함께 · 봇 방문이어도 기록 안 함 (작업 0302)", async () => {
+    const s = setup();
+    const res = await worker.fetch(new Request("https://admin.flapfx.com/geo", { headers: { "user-agent": GOOGLEBOT } }), s.env, s.ctx);
+    expect(res.status).toBe(200);
+    expect(await res.text()).toBe("<html>page</html>");
+    expect(res.headers.get("x-robots-tag")).toBe("noindex, nofollow");
+    expect(s.bind).not.toHaveBeenCalled();
+  });
+
+  it("어드민 /bff/* 는 API 로 · 검색 막음 머리글 (작업 0302)", async () => {
+    const s = setup();
+    const res = await worker.fetch(new Request("https://admin.flapfx.com/bff/activity"), s.env, s.ctx);
+    expect(s.api).toHaveBeenCalledTimes(1);
+    expect(res.headers.get("x-robots-tag")).toBe("noindex, nofollow");
+  });
+
+  it("어드민 robots.txt 는 전부 막음 (작업 0302)", async () => {
+    const s = setup();
+    const res = await worker.fetch(new Request("https://admin.flapfx.com/robots.txt"), s.env, s.ctx);
+    expect(await res.text()).toBe("User-agent: *\nDisallow: /\n");
+    expect(s.assets).not.toHaveBeenCalled();
+  });
+
+  it("미리보기 주소의 /log 는 지금처럼 자산 (작업 0302)", async () => {
+    const s = setup();
+    const res = await worker.fetch(new Request("https://develop-agents-auto-web.developfff.workers.dev/log"), s.env, s.ctx);
+    expect(res.status).toBe(200);
+    expect(s.assets).toHaveBeenCalledTimes(1);
+  });
+
   it("일반 방문은 기록하지 않음 · DB 가 없어도 페이지는 나옴", async () => {
     const s = setup();
     const res = await worker.fetch(new Request("https://flapfx.com/"), { ...s.env, DB: undefined }, s.ctx);
