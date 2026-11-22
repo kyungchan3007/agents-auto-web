@@ -8,6 +8,7 @@ import type { FxLatest } from "@hav/shared/fx";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
 import { FadeUpGroup } from "@hav/ui/motion/fade-up";
 import { PageFooter } from "@hav/ui/layout/page-footer";
+import { TextLink } from "@hav/ui/text/text-link";
 import { EmphText } from "@hav/ui/text/emph";
 import { Eyebrow, Title } from "@hav/ui/text/heading";
 import { calcHeadline } from "../lib/calc-copy";
@@ -59,7 +60,7 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
         </div>
         </div>
       </main>
-      <PageFooter width="max-w-page">자료: 관세청 과세환율 · 한국은행 ECOS 수입물가지수 · 한국수출입은행 · 면세 한도 관세법 기준</PageFooter>
+      <PageFooter width="max-w-page">자료: 관세청 과세환율 · 한국은행 ECOS 수입물가지수 · 한국수출입은행 · 면세 한도 관세법 기준 · <TextLink href="/about">소개 · 판단 기준</TextLink></PageFooter>
     </>
   );
 }
