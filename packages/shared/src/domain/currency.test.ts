@@ -66,8 +66,8 @@ describe("백분위 설명 (SIG-02)", () => {
 
 describe("환율 표시 (FX-04)", () => {
   it("엔은 100 단위를 붙여 그대로", () => {
-    expect(rateText({ baseRate: 838.3, unit: 100 })).toEqual({ value: "838.3", unit: "원 / 100" });
-    expect(rateText({ baseRate: 1324.3, unit: 1 })).toEqual({ value: "1,324.3", unit: "원" });
+    expect(rateText({ baseRate: 838.3, unit: 100 })).toEqual({ value: "838.30", unit: "원 / 100" });
+    expect(rateText({ baseRate: 1324.3, unit: 1 })).toEqual({ value: "1,324.30", unit: "원" });
     expect(rateText({ baseRate: 5.12, unit: 1 })).toEqual({ value: "5.12", unit: "원" });
   });
 });
