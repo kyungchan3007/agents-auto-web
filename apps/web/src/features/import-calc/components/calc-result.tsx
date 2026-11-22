@@ -23,8 +23,10 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
       <div className="flex h-full min-h-[inherit] flex-col">
         <div data-testid="calc-tag-top" className="relative bg-pin-ink px-6 pt-5 pb-6 text-foam">
           {/* 도장 · 넘음 글은 같은 높이 칸에 — 한도 안 · 밖이 바뀌어도 아래 줄이 같은 자리 (작업 0208) */}
-          <div className="flex h-14 items-center">
+          <div className="flex h-14 flex-col items-start justify-center">
             {r?.ok && (r.over ? <p className="text-[1.125rem] font-semibold text-sun">면세 한도 ${r.limitUsd} 넘음 · 세금 붙음</p> : <Stamp>면세 한도 안 (${r.limitUsd})</Stamp>)}
+            {/* 합계를 못 구할 때만(한도 넘음 · 관세율 없음) 큰 숫자가 물건 값임을 알림 — 같은 h-14 칸 안이라 아래 줄이 밀리지 않음 (작업 0296) */}
+            {r?.ok && r.over && r.tax?.total == null && <p className="mt-0.5 text-[0.75rem] leading-[1.2] text-foam">아래 금액은 물건 값입니다 · 관세율을 넣으면 합계로 바뀝니다</p>}
           </div>
           <p className="mt-2 font-display text-[clamp(2.25rem,6vw,3.5rem)] leading-tight font-extrabold tracking-display text-foam tabular-nums">
             {/* 긴 금액(열두 글자 넘음)은 휴대폰에서 글자를 줄여 한 줄 — 줄이 바뀌어 카드가 커지지 않게 (작업 0208 lead 리뷰) */}
