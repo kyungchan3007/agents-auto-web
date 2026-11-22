@@ -24,7 +24,7 @@ describe("주소로 나누기 (작업 0302)", () => {
   });
 
   it("어드민: /log · /geo · /bff/* 는 제공", () => {
-    for (const p of ["/log", "/geo", "/geo/", "/how", "/bff/activity", "/bff"]) expect(route(`https://admin.flapfx.com${p}`)).toEqual({ kind: "admin" });
+    for (const p of ["/log", "/geo", "/geo/", "/how", "/marketing", "/bff/activity", "/bff"]) expect(route(`https://admin.flapfx.com${p}`)).toEqual({ kind: "admin" });
   });
 
   it("어드민: 방문자 페이지 · sitemap 은 flapfx.com 같은 주소로 301", () => {

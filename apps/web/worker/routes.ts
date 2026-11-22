@@ -11,6 +11,7 @@ export const WORKER_FIRST_ROUTES = [
   "/about",
   "/geo",
   "/how",
+  "/marketing",
   "/robots.txt",
   "/sitemap.xml",
   "/bff/*",
