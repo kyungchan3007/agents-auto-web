@@ -50,7 +50,7 @@ export function TripSwitcher({ className = "" }: { className?: string }) {
           className="h-11"
         />
         {s.expanded && (
-          <ul id={s.ids.list} role="listbox" aria-label="여행지 제안" className="absolute inset-x-0 bottom-full z-20 mb-1 max-h-64 overflow-y-auto rounded-field border-2 border-fg bg-card sm:top-full sm:bottom-auto sm:mt-1 sm:mb-0">
+          <ul id={s.ids.list} role="listbox" aria-label="여행지 제안" className="absolute inset-x-0 bottom-full z-20 mb-1 max-h-64 overflow-y-auto rounded-[0.625rem] border-2 border-fg bg-card sm:top-full sm:bottom-auto sm:mt-1 sm:mb-0">
             {s.hits.map((hit, i) => (
               <li
                 key={`${hit.country}-${hit.city}`}

@@ -16,7 +16,7 @@ export function BubbleGate({ s }: { s: IntroView }) {
       <h2 className="m-0 text-[28px] leading-tight font-bold tracking-tight text-fg">{printing ? "탑승권을 출력합니다" : `이번 달 ${s.month}월에 떠나요`}</h2>
       {!printing && (
         <>
-          <p className="m-0 flex items-center gap-2.5 rounded-xl bg-surface-2 px-3 py-2.5 text-[15px] font-semibold">
+          <p className="m-0 flex items-center gap-2.5 rounded-[0.875rem] bg-surface-2 px-3 py-2.5 text-[15px] font-semibold">
             <span aria-hidden className="size-2.5 flex-none rounded-full bg-cheap" />
             {s.airfareLine}
           </p>
@@ -26,7 +26,7 @@ export function BubbleGate({ s }: { s: IntroView }) {
           </button>
         </>
       )}
-      {printing && <div aria-hidden className="mt-1 h-2.5 rounded-[5px] bg-pin-ink" />}
+      {printing && <div aria-hidden className="mt-1 h-2.5 rounded-[0.375rem] bg-pin-ink" />}
     </div>
   );
 }

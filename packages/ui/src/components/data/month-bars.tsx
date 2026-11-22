@@ -90,7 +90,7 @@ export function MonthBars({ bars, ticks, aria, highText, lowText }: { bars: Mont
         (box as { current: HTMLDivElement | null }).current = el;
         (ref as { current: HTMLDivElement | null }).current = el;
       }}
-      className="relative overflow-hidden rounded-[1.125rem] bg-gradient-to-b from-card to-surface-2 ring-1 ring-line/60 ring-inset"
+      className="relative overflow-hidden rounded-[0.875rem] bg-gradient-to-b from-card to-surface-2 ring-1 ring-line/60 ring-inset"
     >
       <svg data-testid="year-bars" data-state={state} width="100%" height={H} viewBox={`0 0 ${W} ${H}`} role="img" aria-label={aria} className="block overflow-visible">
         <defs>

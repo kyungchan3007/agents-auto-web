@@ -46,7 +46,7 @@ export function PickTrip({ label, changeLabel, testId = "pick-trip-open", classN
             aria-modal="true"
             aria-labelledby={s.ids.title}
             onKeyDown={s.onDialogKey}
-            className="relative max-h-[85svh] w-full overflow-y-auto rounded-t-[1.25rem] bg-card px-5 pt-6 pb-8 text-fg shadow-[0_24px_48px_-20px_rgba(14,22,72,0.55)] transition-[transform,opacity] duration-300 ease-out starting:translate-y-full group-data-[state=closed]:translate-y-full motion-reduce:transition-none sm:max-w-lg sm:rounded-[1.25rem] sm:duration-200 sm:starting:translate-y-0 sm:starting:scale-[0.96] sm:starting:opacity-0 sm:group-data-[state=closed]:translate-y-0 sm:group-data-[state=closed]:scale-[0.96] sm:group-data-[state=closed]:opacity-0"
+            className="relative max-h-[85svh] w-full overflow-y-auto rounded-t-[1.5rem] bg-card px-5 pt-6 pb-8 text-fg shadow-[0_24px_48px_-20px_rgba(14,22,72,0.55)] transition-[transform,opacity] duration-300 ease-out starting:translate-y-full group-data-[state=closed]:translate-y-full motion-reduce:transition-none sm:max-w-lg sm:rounded-[1.5rem] sm:duration-200 sm:starting:translate-y-0 sm:starting:scale-[0.96] sm:starting:opacity-0 sm:group-data-[state=closed]:translate-y-0 sm:group-data-[state=closed]:scale-[0.96] sm:group-data-[state=closed]:opacity-0"
           >
             <div className="flex items-start justify-between gap-4">
               <h2 id={s.ids.title} className="text-[1.375rem] leading-tight font-bold text-cheap">
@@ -74,7 +74,7 @@ export function PickTrip({ label, changeLabel, testId = "pick-trip-open", classN
                 onKeyDown={s.onInputKey}
               />
               {s.expanded && (
-                <ul id={s.ids.list} role="listbox" aria-label="여행지 제안" className="mt-2 max-h-64 overflow-y-auto rounded-field border-2 border-fg bg-card">
+                <ul id={s.ids.list} role="listbox" aria-label="여행지 제안" className="mt-2 max-h-64 overflow-y-auto rounded-[0.625rem] border-2 border-fg bg-card">
                   {s.hits.map((hit, i) => (
                     <li
                       key={`${hit.country}-${hit.city}`}
