@@ -15,7 +15,6 @@ export function RangeCard({ code, stats, rate, unitText }: { code: string; stats
   const from = useSwitchFrom(code);
   const pos = stats ? routePosition(rate.baseRate, stats.min, stats.max) : null;
   const avgPos = stats ? routePosition(stats.avg, stats.min, stats.max) : null;
-  const d = cardDigits(rate);
   // "833.5원 / 100" 이 두 줄로 꺾이던 것 — "/ 100" 을 작은 "100엔당" 으로 바꿔 한 줄에 둠 (작업 0248 · 11번 · 1년 평균 글은 그대로)
   const per = rate.unit !== 1 && unitText.startsWith("원") ? <small className="ml-1.5 text-[0.75rem] font-bold whitespace-nowrap text-fg-2">{`${rate.unit}${code === "JPY" ? "엔" : code}당`}</small> : unitText === "원" ? null : unitText.replace(/^원/, "");
   const { planePos, avgTickPos, heading, animated, avgRef, avgValue } = useRangeMotion(code, from, stats, pos, avgPos);
@@ -25,11 +24,11 @@ export function RangeCard({ code, stats, rate, unitText }: { code: string; stats
       <div className="flex items-start justify-between gap-4">
         <div data-testid="route-min">
           <p className="text-small text-fg-2">1년 최저</p>
-          <p className="mt-1 text-[1.375rem] font-bold whitespace-nowrap text-figure tabular-nums sm:text-[1.75rem]">{stats ? <><CountUp value={stats.min} digits={d} suffix="원" from={from?.min ?? null} delayMs={220} />{per}</> : "—"}</p>
+          <p className="mt-1 text-[1.375rem] font-bold whitespace-nowrap text-figure tabular-nums sm:text-[1.75rem]">{stats ? <><CountUp value={stats.min} digits={cardDigits({ baseRate: stats.min })} suffix="원" from={from?.min ?? null} delayMs={220} />{per}</> : "—"}</p>
         </div>
         <div data-testid="route-max" className="text-right">
           <p className="text-small text-fg-2">1년 최고</p>
-          <p className="mt-1 text-[1.375rem] font-bold whitespace-nowrap text-expensive tabular-nums sm:text-[1.75rem]">{stats ? <><CountUp value={stats.max} digits={d} suffix="원" from={from?.max ?? null} delayMs={220} />{per}</> : "—"}</p>
+          <p className="mt-1 text-[1.375rem] font-bold whitespace-nowrap text-expensive tabular-nums sm:text-[1.75rem]">{stats ? <><CountUp value={stats.max} digits={cardDigits({ baseRate: stats.max })} suffix="원" from={from?.max ?? null} delayMs={220} />{per}</> : "—"}</p>
         </div>
       </div>
       {stats && pos !== null && (

@@ -1,7 +1,6 @@
 // 통화 화면 순수 함수 (작업 0170 · Figma 02) — 목록 이름 · 1년 최저/최고/평균 · 오늘 환율 옆 한 줄
 // 판정은 사이트 신호 규칙 그대로(최근 90일 백분위) — 1년 평균은 숫자 카드 · 그래프 점선으로만 씀
 import { SOURCE_NAME, currencyName, percentileText, rateText } from "@hav/shared/currency";
-import { numberText } from "@hav/shared/format";
 import type { Signal } from "@hav/shared/signal";
 
 /** Figma 목록 이름 — 표에 없는 통화는 기존 이름(코드도 없으면 코드) */
@@ -43,9 +42,8 @@ export function extremeLabelText(kind: "max" | "min", rate: { baseRate: number; 
   return `${kind === "max" ? "최고" : "최저"} ${t.value}${t.unit}`;
 }
 
-/** 1년 최저 · 최고 · 평균 카드 글 — 세 카드가 소수 둘째 자리로 같은 형식 (작업 0212 → 0287: 100원 이상도 둘째 자리) */
+/** 1년 최저 · 최고 · 평균 카드 글 — 통화 상세 전부가 쓰는 같은 규칙 하나(rateText · 1,000원 이상 첫째 · 미만 둘째 · 끝자리 0 생략 · 작업 0287) */
 export function cardRateText(v: number, rate: { baseRate: number; unit: number }): string {
-  const d = 2;
-  const unit = rateText(rate).unit;
-  return `${numberText(v, { minimumFractionDigits: d, maximumFractionDigits: d })}${unit}`;
+  const t = rateText({ baseRate: v, unit: rate.unit });
+  return `${t.value}${t.unit}`;
 }

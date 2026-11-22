@@ -1,6 +1,6 @@
 // 새 통화 상세 계산 — 순수 함수 (작업 0219 · 테스트 redesign.test.ts)
 // 값은 받은 자료 그대로 — 범위가 없으면 점을 그리지 않음 (지어내지 않음)
-import { rateText } from "@hav/shared/currency";
+import { rateDigits, rateText } from "@hav/shared/currency";
 
 /** 비행 경로 위 오늘 점 위치 0(1년 최저) ~ 1(1년 최고) — 범위 밖은 자르고 · 범위가 없거나 숫자가 아니면 null */
 export function routePosition(today: number, min: number, max: number): number | null {
@@ -25,6 +25,5 @@ export function bigRate(rate: { baseRate: number; unit: number }): { value: numb
   return { value: rate.baseRate, digits: frac ? frac.length : 0, unit: t.unit };
 }
 
-/** 1년 최저 · 최고 · 평균 글의 소수 자리 — 통화 상세는 늘 소수 둘째 자리 (작업 0287 · 큰 숫자 · 그래프 · 표와 같은 형식) */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- 부르는 쪽 모양 유지(작업 0287)
-export const cardDigits = (_rate?: { baseRate: number }): 1 | 2 => 2;
+/** 1년 최저 · 최고 · 평균 카드 숫자의 소수 자리 — 그 값에 대한 rateDigits 규칙(1,000원 이상 첫째 · 미만 둘째 · 끝자리 0 생략 · 작업 0287) */
+export const cardDigits = (rate: { baseRate: number }): number => rateDigits(rate.baseRate);

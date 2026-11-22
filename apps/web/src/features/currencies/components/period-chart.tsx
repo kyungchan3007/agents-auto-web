@@ -2,7 +2,7 @@
 
 // 1년 흐름 — 새 디자인(작업 0219 · 시안 F): 왼쪽 큰 제목 "○ 흐름" · 오른쪽 기간 알약 묶음 "1개월 · 3개월 · 1년" · 가로 전체 2D 선 그래프(공통 LineChart · 0216) — 그라데이션 면 · 값 · 날짜 눈금 · 최고(빨강) · 최저(남색) 점 · 평균 점선 · 끝 "오늘" 큰 숫자 말풍선 · 순서 움직임(한 번)
 //   빌드 때 받은 1년치를 화면에서 자르기만 함 (다시 받지 않음) · 기간 탭 기능은 그대로 (6개월 칩은 화면에서 뺌) · 점은 모두 받은 실제 일별 값
-import { rateText } from "@hav/shared/currency";
+import { rateDigits, rateText } from "@hav/shared/currency";
 import { type ChartMark, LineChart } from "@hav/ui/data/line-chart";
 import { cardRateText, extremeDays, extremeLabelText, yearStats } from "../lib/detail-view";
 import { dateTicks, dayNumber, valueAxis } from "../lib/chart-axes";
@@ -53,7 +53,7 @@ export function PeriodChart({ rates, unit = 1, unitText, lastTone }: { rates: { 
             x={[dayNumber(shown[0].date), dayNumber(last.date)]}
             y={{ min: axis.min, max: axis.max, ticks: axis.ticks }}
             xTicks={dateTicks(shown[0].date, last.date)}
-            series={[{ id: "rate", color: "var(--hav-pin-cheap)", points: shown.map((d) => ({ x: dayNumber(d.date), v: d.baseRate })), area: 0.22, width: 2.6, end: { label: "오늘", value: last.baseRate, digits: 2, unit: rateText(rate).unit } }]}
+            series={[{ id: "rate", color: "var(--hav-pin-cheap)", points: shown.map((d) => ({ x: dayNumber(d.date), v: d.baseRate })), area: 0.22, width: 2.6, end: { label: "오늘", value: last.baseRate, digits: rateDigits(last.baseRate), unit: rateText(rate).unit } }]}
             marks={marks}
             refs={[{ v: stats.avg, text: `${period.label} 평균 ${cardRateText(stats.avg, rate)}`, short: `평균 ${cardRateText(stats.avg, rate)}`, tone: "navy" }]}
             height={380}
