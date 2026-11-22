@@ -37,7 +37,7 @@ export function Intro({ data }: { data: IntroData }) {
 
       {/* 상단 띠 — 홈 메뉴처럼 로고 · 단계 · 건너뛰기 */}
       <div className={`pointer-events-none fixed inset-x-0 top-0 z-[5] flex items-center justify-between gap-3 px-6 pt-4 transition-opacity duration-300 ${s.phase === 0 ? "opacity-100" : "opacity-0"}`}>
-        <div data-intro-logo className={`text-[22px] font-black tracking-tight text-cheap transition-opacity duration-500 ${s.revealed ? "opacity-100" : "opacity-0"}`}>flapfx</div>
+        <div data-intro-logo className={`text-[22px] font-bold tracking-tight text-cheap transition-opacity duration-500 ${s.revealed ? "opacity-100" : "opacity-0"}`}>flapfx</div>
         <div className={`pointer-events-auto flex items-center gap-2.5 rounded-pill border border-line bg-card/90 px-3.5 py-1.5 text-[13px] font-bold transition-opacity duration-500 ${s.revealed ? "opacity-100" : "opacity-0"}`}>
           <span data-testid="intro-step">{s.stepLabel}</span>
           <span aria-hidden className="flex gap-1">

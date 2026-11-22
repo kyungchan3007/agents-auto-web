@@ -51,7 +51,7 @@ export function BudgetPlanner({ rows, latestOf, className = "" }: { rows: Travel
                 하루 약 {wonText(b.dailyWon)}
               </p>
               <p className="mt-1 flex flex-wrap items-baseline gap-x-3 text-fg">
-                <span data-testid="budget-total" className="text-[2.25rem] leading-tight font-extrabold tracking-display tabular-nums sm:text-[2.75rem] lg:text-[2.75rem]">
+                <span data-testid="budget-total" className="text-[2.25rem] leading-tight font-bold tracking-display tabular-nums sm:text-[2.75rem] lg:text-[2.75rem]">
                   <CountUp value={b.totalWon} suffix="원" />
                 </span>
                 <span className="text-body font-bold text-fg-2">{n}일 약</span>

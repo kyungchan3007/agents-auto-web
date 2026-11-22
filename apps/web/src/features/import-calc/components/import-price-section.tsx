@@ -46,7 +46,7 @@ function Kpis({ rows }: { rows: { period: string; fx: number | null; price: numb
             <p className="text-small text-fg-2">
               {i.label} ({i.k.period})
             </p>
-            <p className="mt-1 text-[1.625rem] leading-tight font-extrabold tracking-display text-fg tabular-nums sm:text-[2rem]">
+            <p className="mt-1 text-[1.625rem] leading-tight font-bold tracking-display text-fg tabular-nums sm:text-[2rem]">
               <CountUp value={i.k.value} digits={i.digits(i.k.value)} suffix={i.suffix} />
             </p>
             {i.k.delta !== null && tone && (

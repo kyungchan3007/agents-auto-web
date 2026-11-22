@@ -16,7 +16,7 @@ export function BubbleBudget({ s }: { s: IntroView }) {
           ← 이전
         </button>
       </div>
-      <h2 className="m-0 text-[28px] leading-tight font-black tracking-tight text-fg">얼마나 환전할까요?</h2>
+      <h2 className="m-0 text-[28px] leading-tight font-bold tracking-tight text-fg">얼마나 환전할까요?</h2>
       <label className="flex items-center gap-2 rounded-[14px] border border-line bg-surface px-4 py-1.5 focus-within:border-cheap">
         <input
           data-testid="intro-budget"
@@ -28,14 +28,14 @@ export function BubbleBudget({ s }: { s: IntroView }) {
           onKeyDown={(e) => {
             if (e.key === "Enter") s.next2();
           }}
-          className="min-w-0 flex-1 border-0 bg-transparent text-[26px] font-extrabold text-fg tabular-nums"
+          className="min-w-0 flex-1 border-0 bg-transparent text-[26px] font-bold text-fg tabular-nums"
         />
         <span className="font-semibold text-fg-2">원</span>
       </label>
       {hasRate ? (
         <div className="flex flex-wrap items-baseline gap-2.5">
           {s.outText && (
-            <strong data-testid="intro-out" className="bg-[linear-gradient(transparent_55%,var(--hav-sun)_55%)] text-[30px] font-black tracking-tight text-cheap tabular-nums">
+            <strong data-testid="intro-out" className="bg-[linear-gradient(transparent_55%,var(--hav-sun)_55%)] text-[30px] font-bold tracking-tight text-cheap tabular-nums">
               {s.outText}
             </strong>
           )}

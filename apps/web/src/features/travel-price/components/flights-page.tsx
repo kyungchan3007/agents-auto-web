@@ -31,7 +31,7 @@ function YoyItem({ name, points }: { name: string; points: IndexPoint[] | null }
   return (
     <div className="py-4 first:pt-0">
       <p className="text-small text-fg-2">{card.label}</p>
-      <p className="mt-0.5 text-[2rem] leading-tight font-extrabold tracking-display text-fg tabular-nums">
+      <p className="mt-0.5 text-[2rem] leading-tight font-bold tracking-display text-fg tabular-nums">
         <CountUp value={n.value} digits={1} />
       </p>
       <p className="mt-1 flex items-center gap-2 text-small font-semibold text-fg">

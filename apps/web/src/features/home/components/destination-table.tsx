@@ -32,7 +32,7 @@ function Row({ row, f, motion }: { row: DestinationRowData; f: PillFrame; motion
           <Flag country={row.flag} label={row.flagLabel} className="h-7 w-[2.625rem] sm:h-8 sm:w-12" />
         </span>
         <div className="min-w-0">
-          <p data-testid="dest-city" className="text-[1.375rem] leading-tight font-extrabold tracking-display text-fg sm:text-[1.75rem]">
+          <p data-testid="dest-city" className="text-[1.375rem] leading-tight font-bold tracking-display text-fg sm:text-[1.75rem]">
             {row.city}
           </p>
           <p className="mt-0.5 text-small text-fg-2">{row.currencyLabel}</p>
@@ -40,7 +40,7 @@ function Row({ row, f, motion }: { row: DestinationRowData; f: PillFrame; motion
       </div>
       <div className="text-right sm:col-start-3 sm:row-start-1">
         {shown && (
-          <p data-testid="dest-rate" data-final={row.rateText} data-start={row.rateStart ?? undefined} className="text-[1.375rem] leading-tight font-extrabold tracking-display text-fg tabular-nums sm:text-[1.75rem]">
+          <p data-testid="dest-rate" data-final={row.rateText} data-start={row.rateStart ?? undefined} className="text-[1.375rem] leading-tight font-bold tracking-display text-fg tabular-nums sm:text-[1.75rem]">
             {shown}
           </p>
         )}

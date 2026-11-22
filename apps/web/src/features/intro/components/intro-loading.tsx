@@ -32,7 +32,7 @@ export function IntroLoading({ s }: { s: IntroView }) {
         className="relative flex h-full flex-col items-center justify-center gap-4 pb-10"
         style={{ opacity: open ? 0 : 1, transform: open && !s.still ? "translateY(120px)" : "translateY(0)", transition: s.still ? "none" : `transform ${OPEN_MS}ms ${EASE}, opacity 500ms ease` }}
       >
-        <p className="m-0 text-[72px] leading-none font-extrabold tracking-display text-cheap">{LOADING.brand}</p>
+        <p className="m-0 text-[72px] leading-none font-bold tracking-display text-cheap">{LOADING.brand}</p>
         <p className="m-0 mb-4 text-[18px] font-bold text-fg-2">{LOADING.sub}</p>
         <FlapRows rows={rows} cols={LOADING.cols} label="출발 안내판 — 탑승 준비 중" still={s.still} testId="intro-loading-board" rowTestId="intro-loading-row" className="shadow-board" />
         <div aria-hidden className="mt-3 flex gap-2.5">

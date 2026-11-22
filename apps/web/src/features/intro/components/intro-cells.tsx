@@ -12,7 +12,7 @@ export function IntroCells({ text, cols, testId, tone = "yellow", size = "md", c
   return (
     <div data-testid={testId} data-text={text} aria-hidden className={`grid gap-[3px] ${className}`} style={{ gridTemplateColumns: size === "sm" ? `repeat(${cols}, 26px)` : `repeat(${cols}, minmax(0, 1fr))` }}>
       {cells.map((ch, i) => (
-        <span key={i} className={`relative grid place-items-center overflow-hidden rounded-[4px] bg-flap-cell font-extrabold ${tone === "white" ? "text-foam" : "text-sun"} ${cell}`}>
+        <span key={i} className={`relative grid place-items-center overflow-hidden rounded-[4px] bg-flap-cell font-bold ${tone === "white" ? "text-foam" : "text-sun"} ${cell}`}>
           <motion.span key={ch} initial={{ rotateX: 80, opacity: 0.4 }} animate={{ rotateX: 0, opacity: 1 }} transition={{ duration: 0.16, delay: i * 0.02 }}>
             {ch === " " ? "" : ch}
           </motion.span>

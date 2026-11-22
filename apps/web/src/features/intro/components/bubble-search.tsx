@@ -7,7 +7,7 @@ export function BubbleSearch({ s }: { s: IntroView }) {
   return (
     <div className="grid gap-3">
       <p className="m-0 text-sm font-bold text-accent">안녕하세요, Flapfx입니다!</p>
-      <h2 className="m-0 text-[28px] leading-tight font-black tracking-tight text-fg">어디로 떠나세요?</h2>
+      <h2 className="m-0 text-[28px] leading-tight font-bold tracking-tight text-fg">어디로 떠나세요?</h2>
       <div className="rounded-[14px] bg-pin-ink p-3" aria-hidden>
         <div className="mx-0.5 mb-2 flex justify-between text-[11px] font-bold tracking-wider text-foam/70">
           <span>DEPARTURES · 출발</span>
