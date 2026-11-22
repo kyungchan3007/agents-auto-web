@@ -124,7 +124,7 @@ export function MonthBars({ bars, ticks, aria, highText, lowText }: { bars: Mont
         </g>
         <g data-testid="chart-axis" data-reveal={rv(axis)} opacity={axis}>
           {ticks.map((tk) => (
-            <text key={tk.f} x={L - 10} y={B - PH * tk.f + 4} textAnchor="end" fontSize={12} fontWeight={600} fill="var(--hav-fg-2)" opacity={0.75} className="font-sans tabular-nums">
+            <text key={tk.f} x={L - 10} y={B - PH * tk.f + 4} textAnchor="end" fontSize={12} fontWeight={600} fill="var(--hav-fg-2)" className="font-sans tabular-nums">
               {tk.t}
             </text>
           ))}
