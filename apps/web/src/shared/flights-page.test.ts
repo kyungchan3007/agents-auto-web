@@ -48,7 +48,7 @@ describe("/flights — 새 페이지", () => {
     expect(existsSync(join(SRC, "app/flights/page.tsx"))).toBe(true);
     const page = read("app/flights/page.tsx");
     expect(page).toMatch(/title:\s*"[^"]*여행 타이밍/);
-    expect(page).toMatch(/canonical:\s*"\/flights"/);
+    expect(page).toMatch(/pageMeta\(\{\s*path:\s*"\/flights"/); // canonical · og:url 은 공용 도우미(shared/seo.ts)가 같은 주소로 만듦 (작업 0304)
     expect(page).toMatch(/description:/);
   });
 
