@@ -15,7 +15,7 @@ import { CurrencyKicker } from "./currency-kicker";
 import { PeriodChart } from "./period-chart";
 import { RangeCard } from "./range-card";
 import { SwitchFade } from "./switch-fade";
-import { currencyListName, verdictLines, verdictSub, yearStats } from "../lib/detail-view";
+import { currencyListName, yearStats } from "../lib/detail-view";
 import { bigRate } from "../lib/redesign";
 
 const DOT = { cheap: "bg-pin-cheap", normal: "bg-pin-line", expensive: "bg-pin-expensive" } as const;
@@ -32,7 +32,6 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
   const s = signal.ok ? signal.data : null;
   const days = history.ok ? toUnit(history.data.rates, rate.unit) : [];
   const stats = yearStats(days);
-  const lines = s ? verdictLines({ signal: s.signal, percentile: s.percentile, windowDays: s.rule.windowDays, date: rate.date, source: rate.source }) : (["", ""] as [string, string]);
   const peg = pegText(code);
 
   return (
@@ -55,7 +54,7 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
             </span>
           </h1>
 
-          {/* 판정은 사이트 신호 규칙 그대로(최근 90일 백분위) — 색 점 + 근거 숫자 · 한 줄에 기준일 · 출처 (예비 출처면 그 사실) */}
+          {/* 판정은 사이트 신호 규칙 그대로(최근 90일 백분위) — 색 점 + 근거 숫자 한 줄 · 기준일 · 출처는 "실제로 바꿀 때" 카드 아래 줄에 늘 남음(FX-01 · 작업 0298: 판정 설명 두 줄은 지움) */}
           <SwitchFade code={code} delay={240} className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1">
             {s?.signal && (
               <span className="inline-flex items-center gap-2 font-bold text-fg">
@@ -63,15 +62,14 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
                 {pinBasis(s.signal, s.percentile)}
               </span>
             )}
-            <span className="text-small text-fg-2">
-              <span className="block">{s ? lines[0] : `신호를 받지 못했습니다${signal.ok ? "" : ` (${signal.reason})`}`}</span>
-              <span className="block">{s ? lines[1] : verdictSub(rate.date, rate.source)}</span>
-            </span>
+            {!s && <span className="text-small text-fg-2">{`신호를 받지 못했습니다${signal.ok ? "" : ` (${signal.reason})`}`}</span>}
           </SwitchFade>
-          {/* 셋째 줄 자리는 늘 같은 높이로 잡음 — 고정 통화가 아니어도 안 보이는 같은 글이 자리를 차지해 통화를 바꿔도 아래가 밀리지 않음 (작업 0289) */}
-          <p data-testid="peg-note" className="mt-2 text-small text-fg-2">
-            {peg ?? <span aria-hidden className="invisible">이 통화는 미국 달러에 고정된 통화라 달러와 같이 움직입니다</span>}
-          </p>
+          {/* 달러에 고정된 통화(디르함 · 리얄 · 바레인 디나르)에만 한 줄 — 나머지 통화는 보이지 않는 자리도 두지 않음 (작업 0298) */}
+          {peg && (
+            <p data-testid="peg-note" className="mt-2 text-small text-fg-2">
+              {peg}
+            </p>
+          )}
           <FreshnessNote date={rate.date} className="mt-2" />
 
           <div className="mt-8">
