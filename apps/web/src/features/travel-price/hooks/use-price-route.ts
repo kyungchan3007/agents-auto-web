@@ -109,7 +109,7 @@ export function useCountTween(target: number, ms = 750): number {
   return shown;
 }
 
-/** 세 칸 글자판 — 값이 바뀌면 칸마다 70ms 늦게 접히며(0.14초) 글자가 바뀜 */
+/** 글자판 — 값이 바뀌면 칸마다 70ms 늦게 접히며(0.14초) 글자가 바뀜 · 자릿수만큼만 칸을 그림(작업 0285) — 자릿수가 늘면 새 칸이 생기고 줄면 마지막에 남는 칸을 정리 */
 export function useRouteTiles(chars: string[]): { ch: string; out: boolean }[] {
   const [tiles, setTiles] = useState(() => chars.map((ch) => ({ ch, out: false })));
   const key = chars.join("");
@@ -124,11 +124,25 @@ export function useRouteTiles(chars: string[]): { ch: string; out: boolean }[] {
     want.forEach((ch, j) => {
       timers.push(
         window.setTimeout(() => {
-          setTiles((t) => t.map((x, k) => (k === j ? { ...x, out: true } : x)));
-          timers.push(window.setTimeout(() => setTiles((t) => t.map((x, k) => (k === j ? { ch, out: false } : x))), 140));
+          setTiles((t) => {
+            const o = t.slice();
+            o[j] = { ch: o[j]?.ch ?? ch, out: true };
+            return o;
+          });
+          timers.push(
+            window.setTimeout(() => {
+              setTiles((t) => {
+                const o = t.slice();
+                o[j] = { ch, out: false };
+                return o;
+              });
+            }, 140),
+          );
         }, j * 70),
       );
     });
+    // 자릿수가 줄면 마지막 칸이 바뀐 뒤 남는 옛 칸을 지움
+    timers.push(window.setTimeout(() => setTiles((t) => t.slice(0, want.length)), (want.length - 1) * 70 + 160));
     return () => timers.forEach(clearTimeout);
   }, [key]);
   return tiles;
