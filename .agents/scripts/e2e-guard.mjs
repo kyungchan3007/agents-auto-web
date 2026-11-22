@@ -1,17 +1,17 @@
 // PreToolUse 훅 — 로컬 e2e 범위 규칙을 실행 전에 강제한다 (exit 2 = 차단, 이유는 에이전트에게 전달 · 작업 0294)
 //   규칙(team.md test 절 · verdict.md "로컬 확인"): 로컬 전체 e2e · 로컬 전체 게이트는 돌리지 않는다.
-//   로컬 e2e 는 그 작업 폴더에서 e2e-select.mjs 가 고른 spec 만. 전체 e2e 는 main 으로 가는 PR 에서 CI 가 돈다.
-//   막음: spec 없는 로컬 e2e(전체) · 고른 목록 밖 spec · spec 이름이 아닌 걸러내기 인자 · Full 작업의 로컬 checks.sh
+//   로컬 e2e 는 그 작업 폴더에서 바꾼(새로 쓰거나 고친) spec 파일만 (작업 0295 · 사용자 결정 — 연결표로 고르면 20 ~ 30개라 오래 걸림).
+//   develop 으로 가는 PR 의 CI 는 e2e 를 돌리지 않고, 전체 e2e 는 main 으로 가는 PR 에서 CI 가 돈다.
+//   막음: spec 없는 로컬 e2e(전체) · 바꾸지 않은 spec · spec 이름이 아닌 걸러내기 인자 · Full 작업의 로컬 checks.sh
 //   허용: 목록 안 spec · --last-failed · --list · 단위 · typecheck · lint · Quick 작업의 checks.sh(e2e 없음)
 //   훅 스스로 고장 나면(예외 · git 실패) 통과시킨다 — 훅 때문에 일이 멈추지 않게
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename, join, resolve } from "node:path";
 import { changedFiles, currentSpec, git } from "./lib.mjs";
 import { loopMode } from "./loop-mode.mjs";
-import { selectE2e } from "./e2e-select.mjs";
 
-const RULE = "규칙: team.md test 절 · verdict.md \"로컬 확인\" — 전체 e2e 는 main 으로 가는 PR 에서 CI 가 돕니다";
+const RULE = "규칙: team.md test 절 · verdict.md \"로컬 확인\" — develop PR 은 e2e 없음 · 전체 e2e 는 main 으로 가는 PR 에서 CI 가 돕니다";
 
 /** 값을 하나 받는 playwright 옵션 — 다음 낱말은 걸러내기 인자가 아님 */
 const VALUE_OPTS = new Set([
@@ -137,15 +137,20 @@ export function cdOf(command, base) {
 
 const topOf = (cwd) => git(["rev-parse", "--show-toplevel"], cwd) || cwd;
 
-/** 그 작업 폴더에서 로컬로 돌릴 수 있는 spec — e2e-select 와 같은 계산(대상 develop) · 못 구하면 null */
+const OWN_SPEC = /^apps\/web\/e2e\/[^/]+\.spec\.ts$/;
+
+/** 바뀐 파일 목록 → 로컬로 돌릴 수 있는 spec(바꾼 spec 파일 이름 · 이름순) */
+export function changedSpecs(files) {
+  return [...new Set(files.filter((f) => OWN_SPEC.test(f)).map((f) => f.slice(f.lastIndexOf("/") + 1)))].sort();
+}
+
+/** 그 작업 폴더에서 로컬로 돌릴 수 있는 spec — 이 작업에서 바꾼 spec 파일(origin/develop 갈림점부터 · 커밋 안 한 것 포함) · 못 구하면 null */
 export function allowedSpecs(cwd) {
   const top = topOf(cwd);
-  const mapPath = join(top, ".agents", "e2e-map.json");
-  if (!existsSync(mapPath)) return null;
-  const map = JSON.parse(readFileSync(mapPath, "utf8"));
+  if (!existsSync(join(top, ".git"))) return null;
   const env = { ...process.env };
   delete env.GITHUB_BASE_REF;
-  return selectE2e(changedFiles(top, env), { target: "develop", map });
+  return { specs: changedSpecs(changedFiles(top, env)) };
 }
 
 /** 그 작업 폴더의 루프(quick · full) */
@@ -156,7 +161,7 @@ export function loopOf(cwd) {
 }
 
 const listText = (sel) =>
-  sel ? `이 작업 폴더에서 로컬로 돌릴 수 있는 spec(e2e-select): ${sel.specs.length ? sel.specs.join(", ") : "없음 — 이 작업은 로컬 e2e 대상이 없습니다"}` : "";
+  sel ? `이 작업 폴더에서 로컬로 돌릴 수 있는 spec(이 작업에서 바꾼 spec): ${sel.specs.length ? sel.specs.join(", ") : "없음 — 이 작업에서 바꾼 spec 이 없어 로컬 e2e 대상이 없습니다"}` : "";
 
 /**
  * @param {{ tool_name?: string, tool_input?: { command?: string }, cwd?: string }} event
@@ -193,7 +198,7 @@ export function decideE2e(event, root, { allowed = allowedSpecs, loop = loopOf }
     const s = getSel();
     if (!s) continue; // 목록을 못 구하면 막지 않음
     const extra = p.specs.filter((x) => !s.specs.includes(x));
-    if (extra.length) return `고른 목록 밖 spec 입니다: ${extra.join(", ")} — 로컬에서는 바꾼 기능의 spec 만 돌립니다 · ${tail()}`;
+    if (extra.length) return `이 작업에서 바꾸지 않은 spec 입니다: ${extra.join(", ")} — 로컬에서는 바꾼 spec 만 돌립니다 · ${tail()}`;
   }
   return null;
 }
