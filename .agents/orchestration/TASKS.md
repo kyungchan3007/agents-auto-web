@@ -106,4 +106,5 @@
 | 0282 | 긴 줄표 · 물음표 · 직구 도움말 — 달력 제목 · 직구 안내 문장 · 소개 물음표 · 2주 미만 줄 삭제 (Quick · 평소 PR · 시안 49 · 51 · 검수) | builder → test | 머지됨 (#335) | task/0282-copy-dash | features/{travel-price,import-calc,about}/** |
 | 0283 | 여행 물가 휴대폰 세로 노선 — 한 줄씩 · 누르면 펼침 · 다시 누르면 접힘 · 넓은 화면 그대로 (Quick · 평소 PR · 시안 64 A안 · 사용자 직접 지적) | builder → test | 머지됨 (#336) | task/0283-prices-route-mobile | features/travel-price/** |
 | 0284 | builder 는 푸시 전 타입 검사 · 바꾼 파일 lint — 나머지 확인은 test (Quick · 평소 PR · 팀 문서 · 사용자 결정) | builder → test | 머지됨 (#337) | task/0284-builder-checks | .agents/orchestration/team.md · verdict.md |
-| 0285 | 여행 물가 문구 — 예산 결과 순서 · 정거장 번호 · 환율 없음 · 뺀 나라 줄 → 소개 · 글자판 자릿수 (Quick · 평소 PR · 시안 50 · 검수) | builder → test | 진행 중 | task/0285-prices-copy | features/{travel-price,about}/** |
+| 0285 | 여행 물가 문구 — 예산 결과 순서 · 정거장 번호 · 환율 없음 · 뺀 나라 줄 → 소개 · 글자판 자릿수 (Quick · 평소 PR · 시안 50 · 검수) | builder → test | 머지됨 (#338) | task/0285-prices-copy | features/{travel-price,about}/** |
+| 0286 | 바닥 띠 같은 형식 — 소개 · 판단 기준 링크 · 지표 코드 · 예비 출처는 소개로 (Quick · 평소 PR · 시안 52 · 검수) | builder → test | 진행 중 | task/0286-footer-same | features/{travel-price,import-calc,currencies,about}/** · 바닥 띠 부품 |
