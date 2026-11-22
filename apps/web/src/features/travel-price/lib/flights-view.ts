@@ -31,12 +31,12 @@ export function flightsBoard(a: { airCheap: number | null; tourCheap: number | n
   const air = latestNumbers(a.air);
   const tour = latestNumbers(a.tour);
   const items: { name: string; value: string }[] = [];
-  if (months) items.push({ name: "가장 싼 달", value: months });
+  if (months) items.push({ name: "가장 저렴한 달", value: months });
   if (air) items.push({ name: "국제항공료", value: air.value.toFixed(1) });
   if (tour) items.push({ name: "단체여행비", value: tour.value.toFixed(1) });
   if (items.length === 0) return null;
   const cols = Math.max(MIN_COLS, ...items.map((i) => Array.from(i.name).length + 1 + Array.from(i.value).length));
-  const parts = [months ? `가장 싼 달은 ${months}입니다.` : "", [air ? `국제항공료 지수 ${air.value.toFixed(1)}` : "", tour ? `해외단체여행비 지수 ${tour.value.toFixed(1)}` : ""].filter(Boolean).join(" · ")].filter(Boolean);
+  const parts = [months ? `가장 저렴한 달은 ${months}입니다.` : "", [air ? `국제항공료 지수 ${air.value.toFixed(1)}` : "", tour ? `해외단체여행비 지수 ${tour.value.toFixed(1)}` : ""].filter(Boolean).join(" · ")].filter(Boolean);
   return { rows: items.map((i) => flapLine(i.name, i.value, cols)), cols, label: parts.join(" ") };
 }
 

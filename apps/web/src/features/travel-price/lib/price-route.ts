@@ -26,7 +26,7 @@ export function routeCardText(stop: { value: number; band: RouteBand }, index: n
   const v = stop.value;
   return {
     meta: `정거장 ${index + 1} / ${n} · ${BAND_NAME[stop.band]}`,
-    pct: v === 100 ? "기준" : v < 100 ? `${100 - v}% 쌉니다` : `${v - 100}% 비쌉니다`,
+    pct: v === 100 ? "기준" : v < 100 ? `${100 - v}% 저렴합니다` : `${v - 100}% 비쌉니다`,
     budget: `약 ${(v * 1000).toLocaleString("ko-KR")}원`,
     tiles: String(v).padStart(3, " ").split(""),
   };

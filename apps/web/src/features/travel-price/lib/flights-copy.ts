@@ -31,5 +31,5 @@ export function cheapMonthsCard(airCheap: number | null, tourCheap: number | nul
   // 같은 달이면 한 번만 (작업 0211)
   const months = [...new Set([airCheap, tourCheap].filter((m): m is number => m !== null))].map((m) => `${m}월`);
   if (months.length === 0) return null;
-  return { label: years > 0 ? `가장 싼 달 (최근 ${years}년 평균)` : "가장 싼 달 (같은 달 평균)", value: months.join(" · "), note: "같은 달 평균 기준" };
+  return { label: years > 0 ? `가장 저렴한 달 (최근 ${years}년 평균)` : "가장 저렴한 달 (같은 달 평균)", value: months.join(" · "), note: "같은 달 평균 기준" };
 }

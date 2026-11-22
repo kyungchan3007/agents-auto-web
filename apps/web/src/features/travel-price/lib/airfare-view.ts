@@ -40,7 +40,7 @@ export function cityView(city: AirfareCity): CityView | null {
       best: day === best,
       sat: w === 6,
       sun: w === 0,
-      label: `${formatDay(day.depart)} 출발 ${won(day.price)}${day === best ? " · 가장 싼 날" : ""}`,
+      label: `${formatDay(day.depart)} 출발 ${won(day.price)}${day === best ? " · 가장 저렴한 날" : ""}`,
     };
   });
   const avg = weekdayAverages(city.days);

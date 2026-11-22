@@ -78,13 +78,13 @@ const hasBatchim = (word: string) => {
 };
 
 export function headline(city: string, day: Day): string {
-  return `${city}${hasBatchim(city) ? "은" : "는"} ${formatDay(day.depart)} 출발이 가장 쌉니다`;
+  return `${city}${hasBatchim(city) ? "은" : "는"} ${formatDay(day.depart)} 출발이 가장 저렴합니다`;
 }
 export function bestSubline(best: Day, worst: Day): string {
-  return `${dot(best.depart)} → ${dot(best.return)} 왕복 · 가장 비싼 ${formatDay(worst.depart)} 출발(${won(worst.price)})보다 ${won(worst.price - best.price)} 쌈`;
+  return `${dot(best.depart)} → ${dot(best.return)} 왕복 · 가장 비싼 ${formatDay(worst.depart)} 출발(${won(worst.price)})보다 ${won(worst.price - best.price)} 저렴합니다`;
 }
 export function pickedSubline(picked: Day, best: Day): string {
-  return `고른 날 ${formatDay(picked.depart)} 출발 ${won(picked.price)} · 가장 싼 날보다 ${won(picked.price - best.price)} 비쌈`;
+  return `고른 날 ${formatDay(picked.depart)} 출발 ${won(picked.price)} · 가장 저렴한 날보다 ${won(picked.price - best.price)} 비쌉니다`;
 }
 
 export type SummaryFact = { label: string; big: string; say: string };
@@ -95,14 +95,14 @@ export function summaryFacts(days: readonly Day[]): { weekday: SummaryFact; spre
   if (!w || !s) return null;
   return {
     weekday: {
-      label: "가장 싼 요일",
+      label: "가장 저렴한 요일",
       big: `${WEEKDAYS[w.weekday]}요일`,
-      say: `출발 평균 ${man(w.average)}만 원으로, 가장 비싼 ${WEEKDAYS[w.priciest.weekday]}요일보다 ${man(w.priciest.average - w.average)}만 원 쌉니다.`,
+      say: `출발 평균 ${man(w.average)}만 원으로, 가장 비싼 ${WEEKDAYS[w.priciest.weekday]}요일보다 ${man(w.priciest.average - w.average)}만 원 저렴합니다.`,
     },
     spread: {
       label: "출발일에 따른 차이",
       big: `최대 ${s.ratio.toFixed(1)}배`,
-      say: `가장 싼 날 ${man(s.lo)}만 원부터 가장 비싼 날 ${man(s.hi)}만 원까지 벌어집니다.`,
+      say: `가장 저렴한 날 ${man(s.lo)}만 원부터 가장 비싼 날 ${man(s.hi)}만 원까지 벌어집니다.`,
     },
   };
 }

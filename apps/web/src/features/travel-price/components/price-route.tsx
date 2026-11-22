@@ -109,7 +109,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
             ) : (
               <>
                 {pctNum}
-                <small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:text-[0.9375rem]">{stop.value < 100 ? "% 쌉니다" : "% 비쌉니다"}</small>
+                <small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:text-[0.9375rem]">{stop.value < 100 ? "% 저렴합니다" : "% 비쌉니다"}</small>
               </>
             )}
           </p>
@@ -201,8 +201,8 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
               ))}
             </div>
             <div aria-hidden className="pointer-events-none absolute inset-x-0 top-[calc(var(--tt)+30px)] flex justify-between text-[0.75rem] font-bold">
-              <span className="text-pin-cheap">← 쌈</span>
-              <span className="text-pin-expensive">비쌈 →</span>
+              <span className="text-pin-cheap">← 물가 낮음</span>
+              <span className="text-pin-expensive">물가 높음 →</span>
             </div>
             <>
                 <div aria-hidden className="absolute top-[calc(var(--tt)+10px)] h-0.5 bg-[repeating-linear-gradient(90deg,color-mix(in_srgb,var(--hav-card)_95%,transparent)_0_6px,transparent_6px_12px)]" style={{ left: `${x0}%`, width: `${x1 - x0}%` }} />
