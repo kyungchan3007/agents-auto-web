@@ -66,9 +66,9 @@ function Row({ row, f, motion }: { row: DestinationRowData; f: PillFrame; motion
             />
           </div>
           <div className="mt-1 flex justify-between text-[0.75rem] text-fg-2" aria-hidden>
-            <span>쌈</span>
+            <span>낮음</span>
             <span>중간</span>
-            <span>비쌈</span>
+            <span>높음</span>
           </div>
         </div>
       )}

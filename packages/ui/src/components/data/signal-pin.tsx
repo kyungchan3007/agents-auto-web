@@ -4,7 +4,7 @@
 
 export type Signal = "cheap" | "normal" | "expensive";
 
-const LABEL: Record<Signal, string> = { cheap: "쌈", normal: "보통", expensive: "비쌈" };
+const LABEL: Record<Signal, string> = { cheap: "낮음", normal: "보통", expensive: "높음" };
 
 export function signalLabel(signal: Signal): string {
   return LABEL[signal];
