@@ -2,10 +2,17 @@ import type { Metadata } from "next";
 import { CurrencyDetail } from "@/features/currencies/components/currency-detail";
 import { loadDetail } from "@/features/currencies/lib/load";
 import { DEFAULT_CODE } from "@/features/currencies/lib/route";
+import { JsonLd } from "@/shared/json-ld";
+import { breadcrumbLd, pageMeta } from "@/shared/seo";
 
-export const metadata: Metadata = { alternates: { canonical: "/currencies" } };
+export const metadata: Metadata = pageMeta({ path: "/currencies" });
 
 // /currencies — 달러를 먼저 보여 줌
 export default async function Page() {
-  return <CurrencyDetail {...await loadDetail(DEFAULT_CODE)} />;
+  return (
+    <>
+      <JsonLd data={breadcrumbLd([{ name: "통화 둘러보기", path: "/currencies" }])} />
+      <CurrencyDetail {...await loadDetail(DEFAULT_CODE)} />
+    </>
+  );
 }
