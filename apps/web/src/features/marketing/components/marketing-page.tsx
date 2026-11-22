@@ -6,7 +6,7 @@ import { Flap } from "@hav/ui/admin/flap";
 import { Panel, Stamp } from "@hav/ui/admin/panel";
 import { toast } from "@hav/ui/lib/admin-events";
 import { AdminNav } from "@/shared/admin-nav";
-import type { Draft } from "../lib/drafts";
+import { type Draft, nextImage } from "../lib/drafts";
 
 const RULES = [
   "이미지 한 장 · 세로 4:5(1080×1350) · 사이트 색과 글자판 · 탑승권 모양 · 사진은 쓰지 않습니다",
@@ -15,6 +15,18 @@ const RULES = [
   "자료 제공처 설명은 문구에 넣지 않습니다",
   "계정 만들기 · 올리기 · 예산 · 유료 전환은 사람이 합니다. 팀은 초안까지 만듭니다",
 ];
+
+// 그림이 안 열리면(R2 에 그날 파일이 없는 이전 묶음) 되돌림 주소(저장소 raw)로 · 그것도 없으면 "이미지 없음" 칸으로 (작업 0310 · 상태 없이 DOM 만 바꿈 — 서버 HTML 의 그림이 손잡이보다 먼저 실패해도 ref 에서 다시 봄)
+function swapImage(el: HTMLImageElement, d: Draft) {
+  const next = nextImage(el.getAttribute("src"), d);
+  if (next) {
+    el.src = next;
+    return;
+  }
+  el.style.display = "none";
+  const none = el.nextElementSibling;
+  if (none instanceof HTMLElement) none.style.display = "";
+}
 
 async function copy(text: string, what: string) {
   try {
@@ -40,8 +52,23 @@ function DraftCard({ d }: { d: Draft }) {
       </div>
       <div className="adm-draft-b">
         {d.image ? (
-          // eslint-disable-next-line @next/next/no-img-element -- 정적 내보내기 · 공개 저장소의 소재 그림 주소 그대로 (next/image 최적화 서버 없음)
-          <img src={d.image} alt={d.alt || `${d.day} 소재`} width={1080} height={1350} loading="lazy" />
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element -- 정적 내보내기 · R2 공개 주소(안 열리면 저장소 raw)를 그대로 (next/image 최적화 서버 없음) */}
+            <img
+              ref={(el) => {
+                if (el && el.complete && el.naturalWidth === 0) swapImage(el, d);
+              }}
+              onError={(e) => swapImage(e.currentTarget, d)}
+              src={d.image}
+              alt={d.alt || `${d.day} 소재`}
+              width={1080}
+              height={1350}
+              loading="lazy"
+            />
+            <div className="adm-draft-noimg" style={{ display: "none" }}>
+              이미지 없음
+            </div>
+          </>
         ) : (
           <div className="adm-draft-noimg">이미지 없음</div>
         )}
