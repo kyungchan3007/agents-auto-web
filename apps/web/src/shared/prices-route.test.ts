@@ -42,9 +42,17 @@ describe("price-route — 부품", () => {
     expect(route()).toMatch(/onClick=/); // 단추를 눌러 고름
     expect(route()).toContain("route-stop");
   });
-  it("휴대폰에도 나라 단추 줄 — 단추 줄을 모든 폭에서 보임(max-[760px]:hidden 로 숨기지 않음) · 줄 안에서 가로 스크롤", () => {
-    expect(route()).not.toMatch(/route-stops[^>]*max-\[760px\]:hidden|max-\[760px\]:hidden[^>]*route-stops/);
-    expect(route()).toMatch(/overflow-x-auto/);
+  it("휴대폰(760 이하)은 세로 노선 — 가로 단추 줄은 숨기고 PriceRouteList(한 줄씩 · 누르면 펼침 · 다시 누르면 접힘 · 옆으로 밀지 않음)를 보임 · 넓은 화면은 가로 노선 그대로 (작업 0283 · 시안 64 A안 + 접기)", () => {
+    expect(route()).toMatch(/from "\.\/price-route-list"/);
+    expect(route()).toMatch(/<PriceRouteList\b/);
+    expect(route()).toMatch(/route-stops[^\n]*max-\[760px\]:hidden|max-\[760px\]:hidden[^\n]*route-stops/); // 단추 줄은 휴대폰에서 숨김
+    expect(route()).toMatch(/hidden max-\[760px\]:block/); // 세로 노선은 휴대폰에서만 보임
+    const list = code(read("../features/travel-price/components/price-route-list.tsx"));
+    for (const id of ["route-list", "route-row", "route-row-item", "route-row-plane"]) expect(list, id).toContain(id);
+    expect(list).toMatch(/aria-expanded=\{/);
+    expect(list).toMatch(/aria-controls=/);
+    expect(list).not.toMatch(/overflow-x-auto|overflow-x-scroll/); // 옆으로 밀지 않음
+    expect(list).not.toMatch(/sticky/);
   });
   it("같은 값 구간(스페인 111 ↔ 아랍에미리트 111)은 비행기 제자리 — 뛰기(routeHop)를 화면에서 안 씀 (작업 0251 ㄴ)", () => {
     expect(route()).not.toMatch(/routeHop|\bhop\b/);
