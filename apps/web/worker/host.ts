@@ -1,10 +1,10 @@
 // 주소(host)로 나누기 (작업 0302) — 같은 Worker · 같은 빌드에 어드민 주소(admin.flapfx.com)를 더함
-//   flapfx.com · www 의 /log · /geo → 어드민 같은 경로로 301
+//   flapfx.com · www 의 /log · /geo · /how(작업 0303) → 어드민 같은 경로로 301
 //   admin.flapfx.com: robots 는 전부 막음 · / → /log · /log · /geo · /bff/* 는 검색에 막고 제공 · 그 밖은 flapfx.com 으로 301
 //   그 밖의 host(미리보기 workers.dev · 로컬)는 손대지 않음
 export const PUBLIC_HOSTS = ["flapfx.com", "www.flapfx.com"] as const;
 export const ADMIN_HOST = "admin.flapfx.com";
-export const ADMIN_PAGES = ["/log", "/geo"] as const;
+export const ADMIN_PAGES = ["/log", "/geo", "/how"] as const;
 export const ADMIN_ROBOTS = "User-agent: *\nDisallow: /\n";
 export const NOINDEX = "noindex, nofollow";
 
