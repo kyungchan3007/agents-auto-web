@@ -39,7 +39,7 @@ function CountryRow({ r, signalOf, percentileOf, latestYear }: { r: Row; signalO
         </span>
       </span>
       {r.currency && signal ? (
-        <Link href={`/currencies/${r.currency}`} aria-label={`${r.name} 통화 상세`} className="tap-44 shrink-0">
+        <Link href={`/currencies/${r.currency}`} aria-label={`${r.name} 통화 상세`} className="tap-44 shrink-0 hover:[&>span]:underline">
           <SignalPin signal={signal} text={rateBadgeText(signal, percentileOf[r.currency] ?? null)} />
         </Link>
       ) : (

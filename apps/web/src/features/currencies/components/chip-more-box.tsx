@@ -46,11 +46,11 @@ export function ChipMoreBox({ id, list, current, onPick, onClose }: Props) {
       </div>
       {view.pages > 1 && (
         <div className="mt-3 flex items-center justify-center gap-3 text-[0.8125rem] font-bold text-fg">
-          <button type="button" data-testid="chip-box-prev" aria-label="앞 쪽" disabled={view.page === 0} onClick={() => go(view.page - 1, -1)} className="grid size-[1.875rem] cursor-pointer place-items-center rounded-full border-2 border-line text-[1rem] leading-none disabled:cursor-default disabled:opacity-35">
+          <button type="button" data-testid="chip-box-prev" aria-label="앞 쪽" disabled={view.page === 0} onClick={() => go(view.page - 1, -1)} className="grid size-[1.875rem] cursor-pointer place-items-center rounded-full border-2 border-line text-[1rem] leading-none transition-colors enabled:hover:border-cheap enabled:hover:bg-surface-2 disabled:cursor-default disabled:opacity-35">
             ‹
           </button>
           <span data-testid="chip-box-page">{view.label}</span>
-          <button type="button" data-testid="chip-box-next" aria-label="다음 쪽" disabled={view.page >= view.pages - 1} onClick={() => go(view.page + 1, 1)} className="grid size-[1.875rem] cursor-pointer place-items-center rounded-full border-2 border-line text-[1rem] leading-none disabled:cursor-default disabled:opacity-35">
+          <button type="button" data-testid="chip-box-next" aria-label="다음 쪽" disabled={view.page >= view.pages - 1} onClick={() => go(view.page + 1, 1)} className="grid size-[1.875rem] cursor-pointer place-items-center rounded-full border-2 border-line text-[1rem] leading-none transition-colors enabled:hover:border-cheap enabled:hover:bg-surface-2 disabled:cursor-default disabled:opacity-35">
             ›
           </button>
         </div>

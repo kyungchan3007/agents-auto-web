@@ -128,3 +128,9 @@
 @media (max-width:640px){.af-facts .big{font-size:28px}}
 
 @media (prefers-reduced-motion:reduce){.af-sel,.af-row .fill,.af-chips button,.af-pass .fly svg{transition:none}.af-sel[data-land]::before{animation:none}}
+/* 마우스를 올렸을 때 (작업 0293 · 시안 62) — 마우스가 있는 기기에서만 · 고른 것(aria-pressed=true)은 변화 없음 · 바탕 옅은 회색 · 테두리 파랑 · 새 색 없음 */
+@media (hover:hover){
+  .af-chips button[aria-pressed="false"]:hover{background:var(--hav-surface-2);border-color:var(--blue)}
+  .af-nav button:not(:disabled):hover{background:var(--blue);color:var(--hav-foam)}
+  .af-d[aria-pressed="false"]:hover{background:var(--hav-surface-2);border-radius:14px}
+}
