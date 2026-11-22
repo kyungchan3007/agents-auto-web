@@ -32,3 +32,5 @@
 ## 파일 계획
 - apps/web/src/features/intro/lib/scene.ts
 - .agents/specs/0300-intro-perf/** · .agents/orchestration/TASKS.md
+- (12:53Z 측정) 1안: 배율 1 변화 없음(60fps) · 배율 2 29 → 41.7fps(GPU 11.9 → 9.7ms). 샘플 8 로 줄여도 41.9fps — 샘플은 병목 아님.
+- **3안 (lead 고름):** 1안 + 레티나에서만 MSAA(후처리 버퍼 샘플 4) 끔 — 측정상 −4ms 쯤 · 배율 2 는 픽셀이 촘촘해 계단이 거의 안 보임 · 배율 1 화면은 그대로. AO 가 그리는 물체를 빼는 안(사람 · 구름 제외)은 구석 그림자 모습이 달라질 수 있어 뒤로 미룸. 샘플은 16 그대로(효과 없음).
