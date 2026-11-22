@@ -9,6 +9,7 @@ describe("주소로 나누기 (작업 0302)", () => {
     expect(route("https://flapfx.com/log")).toEqual({ kind: "redirect", location: "https://admin.flapfx.com/log", status: 301 });
     expect(route("https://www.flapfx.com/geo?x=1")).toEqual({ kind: "redirect", location: "https://admin.flapfx.com/geo?x=1", status: 301 });
     expect(route("https://flapfx.com/log/")).toEqual({ kind: "redirect", location: "https://admin.flapfx.com/log/", status: 301 });
+    expect(route("https://flapfx.com/how")).toEqual({ kind: "redirect", location: "https://admin.flapfx.com/how", status: 301 }); // 작업 0303
   });
 
   it("flapfx.com 의 다른 주소 · /logs 처럼 이름만 비슷한 주소는 그대로", () => {
@@ -23,7 +24,7 @@ describe("주소로 나누기 (작업 0302)", () => {
   });
 
   it("어드민: /log · /geo · /bff/* 는 제공", () => {
-    for (const p of ["/log", "/geo", "/geo/", "/bff/activity", "/bff"]) expect(route(`https://admin.flapfx.com${p}`)).toEqual({ kind: "admin" });
+    for (const p of ["/log", "/geo", "/geo/", "/how", "/bff/activity", "/bff"]) expect(route(`https://admin.flapfx.com${p}`)).toEqual({ kind: "admin" });
   });
 
   it("어드민: 방문자 페이지 · sitemap 은 flapfx.com 같은 주소로 301", () => {

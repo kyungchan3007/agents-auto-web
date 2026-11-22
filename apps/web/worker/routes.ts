@@ -10,6 +10,7 @@ export const WORKER_FIRST_ROUTES = [
   "/log",
   "/about",
   "/geo",
+  "/how",
   "/robots.txt",
   "/sitemap.xml",
   "/bff/*",
