@@ -119,4 +119,15 @@ packages/
 - 마지막: 두 앱 build, 어드민 e2e 전체 · 운영 e2e 중 옮기거나 고친 spec, 하네스 테스트, PR 의 CI gate.
 
 ## 계획과 달라진 점
-<!-- 끝나고 채움 -->
+- 3D 비행기 부품(`packages/ui/src/three/**` · `motion/lazy-near.tsx`)은 지우지 않았다. 쓰는 곳은 없지만 "비행기 부품 파일은 그대로 둔다"는 예전 결정을 지키는 테스트(home-flap-board)가 있어 보관하고, 디자인 시스템 검사에서만 뺐다.
+- 대비 계산(`lib/contrast`)은 쓰는 곳이 테스트뿐이라 지우려 했으나, 디자인 시스템 색 검사가 쓰고 있어 `lib/color/contrast.ts` 로 옮겨 남겼다.
+- 요약 글(`currencies/lib/summary.ts`)은 어디서도 그리지 않아 지웠다. 화면에 보이는 "예측이 아닙니다" 안내는 꼬리말에 그대로 있다.
+- 여행 물가(travel-price)는 `prices` · `flights` 두 기능 폴더로 나눴다. 두 페이지가 서로 가져오는 코드가 없어 경계가 그대로 드러난다.
+- 소스 경로를 읽는 옛 테스트(apps/web/src/shared/*.test.ts 44개)는 깊이가 같은 `src/checks/` 로 옮기고, 화면을 읽던 검사는 "화면 + 옆 로직"을 함께 읽게 고쳤다(로직을 lib 로 옮겨도 같은 약속을 지키는지 봄).
+- 작업 0137 의 "기능 폴더는 components · hooks · lib 로" 규칙은 이번 사용자 결정으로 뒤집었다. 새 검사는 종류별 폴더를 금지한다.
+- 하네스(e2e 선택 · 가드 · 디자인 PR 판정 · 연결표)와 API 테스트 한 곳(BFF 경로표 위치)을 두 앱 구조로 고쳤다.
+
+## 남은 일
+- 선 그래프 · 월 막대(SVG) 부품의 그리기 안 좌표 계산(말풍선 · 꼬리표 비킴 · 막대 튐) — 배치 묶음은 `lib/chart/line-chart-layout.ts` 로 옮겼고, 나머지는 디자인 시스템 검사의 예외 목록에 적어 둠
+- Cloudflare 설정(사람): Worker `flapfx-admin` Workers Builds 연결 · `ADMIN_DEPLOY_HOOK` 비밀값 · main 반영 순서는 위 "배포 전환"
+- 로컬 어드민 e2e: 메인 폴더의 e2e 가드(이 작업 전 판)가 `apps/admin/e2e` 를 몰라 막음 — 빌드 결과를 띄워 네 화면 응답 · 글 · 검색 막음 · 찾기 창 동작을 확인했고, 전체 어드민 e2e 는 main 으로 가는 PR 의 CI 가 돎

@@ -26,13 +26,13 @@
   - 디자인 PR 이어도 구현만 한다(작업 0246). 모양을 맞추려고 팀 안에서 왕복하지 않는다. 동작(lib · hooks · API)을 함께 바꾸게 되면 lead 에게 알려 `design` 라벨을 달지 않게 한다.
   - 같은 공용 파일 끝에 덧붙이지 않는다. 화면 스타일은 기능 폴더 안 파일이나 tokens.css 에 둔다. globals.css 끝에 이어 쓰지 않는다.
 - 고칠 수 있는 곳:
-  - apps/web/src/** (GEO 소유 파일 제외)
+  - apps/web/src/** · apps/web/worker/** · apps/admin/src/** · apps/admin/worker/** (GEO 소유 파일 제외 · 어드민은 작업 0312 부터 apps/admin)
   - apps/api/src/** (GEO 소유 파일 제외)
-  - packages/shared/src/** · packages/ui/src/**
+  - packages/shared/src/** · packages/ui/src/** · packages/edge/src/**
   - apps/api/drizzle/migrations/ 에 새 마이그레이션 추가 (기존 파일 수정은 금지)
   - docs/domain/** (규칙이 바뀌면 함께 갱신)
 - 고치면 안 되는 곳: 테스트 파일, 보호 파일
-  - 테스트 파일: *.test.ts · *.test.tsx · apps/web/e2e/** · apps/web/e2e-responsive/**
+  - 테스트 파일: *.test.ts · *.test.tsx · apps/web/e2e/** · apps/web/e2e-responsive/** · apps/admin/e2e/**
   - 보호 파일: .agents/protected.txt 목록 (DB 스키마 · wrangler 설정 · next.config · 워크플로 등)
 
 ## test (테스트)
@@ -57,7 +57,7 @@
     - 새 기능 · 새 spec 은 연결표(.agents/e2e-map.json) 한 줄까지가 작업이다(하네스 검사가 봄 · main PR 의 전체 e2e 와 앞으로의 고르기에 씀).
 - 고칠 수 있는 곳:
   - 소스 옆의 *.test.ts · *.test.tsx
-  - apps/web/e2e/** · apps/web/e2e-responsive/**
+  - apps/web/e2e/** · apps/web/e2e-responsive/** · apps/admin/e2e/** (작업 0312)
   - 테스트용 데이터 (fixture)
 - 주의: FAIL 단계의 게이트 실패는 정상. 구현하지 말고 보고하고 멈춤
 
@@ -83,7 +83,7 @@
   - 공개 저장소다. 계정 · 예산 · 내부 절차는 저장소에 적지 않는다.
 - 고칠 수 있는 곳:
   - apps/web/src/app/robots.ts · apps/web/src/app/sitemap.ts
-  - apps/web/src/app/geo/** · apps/web/src/features/geo/**
+  - apps/admin/src/app/geo/** · apps/admin/src/features/geo/** (작업 0312 에 어드민 앱으로)
   - apps/web/src/bff/track-visit.ts · packages/shared/src/domain/geo-visit.ts
   - apps/api/src/features/geo/** · apps/api/scripts/geo-ask.ts · apps/api/scripts/gsc-sync.ts
   - apps/api/data/geo-answers/** · docs/geo-measurement.md
