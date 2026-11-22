@@ -22,12 +22,14 @@ export function routeStops(bands: { rows: { country: string; name: string; relat
 const BAND_NAME: Record<RouteBand, string> = { cheap: "한국보다 싼 곳", mid: "비슷한 곳", base: "기준", exp: "한국보다 비싼 곳" };
 
 /** 카드 글 — 한국에서 하루 100,000원 쓰는 만큼을 물가 비율로 (천 원 단위) */
-export function routeCardText(stop: { value: number; band: RouteBand }, index: number, n: number): { meta: string; pct: string; budget: string; tiles: string[] } {
+// 정거장 번호(index · n)는 카드 글에서 뺐지만 부르는 쪽 모양은 그대로 둠 (작업 0285)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function routeCardText(stop: { value: number; band: RouteBand }, _index?: number, _n?: number): { meta: string; pct: string; budget: string; tiles: string[] } {
   const v = stop.value;
   return {
-    meta: `정거장 ${index + 1} / ${n} · ${BAND_NAME[stop.band]}`,
+    meta: BAND_NAME[stop.band],
     pct: v === 100 ? "기준" : v < 100 ? `${100 - v}% 저렴합니다` : `${v - 100}% 비쌉니다`,
     budget: `약 ${(v * 1000).toLocaleString("ko-KR")}원`,
-    tiles: String(v).padStart(3, " ").split(""),
+    tiles: String(v).split(""),
   };
 }

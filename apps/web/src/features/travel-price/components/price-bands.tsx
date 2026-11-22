@@ -43,7 +43,7 @@ function CountryRow({ r, signalOf, percentileOf, latestYear }: { r: Row; signalO
           <SignalPin signal={signal} text={rateBadgeText(signal, percentileOf[r.currency] ?? null)} />
         </Link>
       ) : (
-        <span className="shrink-0 text-small text-fg-2">{r.currency && r.currency in signalOf ? "신호 없음" : "환율 없음"}</span>
+        r.currency && r.currency in signalOf ? <span className="shrink-0 text-small text-fg-2">신호 없음</span> : null
       )}
     </li>
   );

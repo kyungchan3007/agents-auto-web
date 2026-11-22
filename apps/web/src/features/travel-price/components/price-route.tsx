@@ -42,7 +42,7 @@ function RouteFlag({ country, name, className }: { country: string; name: string
 function SignalCell({ stop, extra, signalOf, percentileOf, small }: { stop: RouteStop; extra: Extra; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"]; small: boolean }) {
   if (stop.country === "KR") return <span className="inline-flex items-center rounded-[6px] bg-sun px-3.5 py-[0.4375rem] text-[0.8125rem] font-bold whitespace-nowrap text-fg">한국 100 기준</span>;
   const s = extra.currency ? signalOf[extra.currency] : null;
-  if (!s) return <span className="inline-flex px-0 py-[0.4375rem] text-[0.8125rem] text-fg-2">환율 없음</span>;
+  if (!s) return null;
   const tone = s === "normal" ? "bg-card text-fg ring-[1.5px] ring-fg ring-inset" : s === "expensive" ? "bg-pin-expensive text-on-accent" : "bg-pin-cheap text-on-accent";
   return (
     <>
@@ -53,7 +53,7 @@ function SignalCell({ stop, extra, signalOf, percentileOf, small }: { stop: Rout
 }
 
 /** 정거장 카드 아랫줄 — 움직이는 카드는 넓은 화면에서 세 칸 가로 · 휴대폰(760 이하)은 하루 예산을 아랫줄로 */
-const ROW = "grid grid-cols-[auto_1fr_1.25fr] border-t-2 border-dashed border-line pt-(--route-row-pt) max-[760px]:grid-cols-2 max-[760px]:gap-y-(--route-row-gap) [&>div]:border-l [&>div]:border-line [&>div]:px-8 [&>div:first-child]:border-l-0 [&>div:first-child]:pl-0 max-[760px]:[&>div]:pr-0 max-[760px]:[&>div]:pl-4 max-[760px]:[&>div:first-child]:pl-0 max-[760px]:[&>div:nth-child(3)]:col-span-2 max-[760px]:[&>div:nth-child(3)]:border-t max-[760px]:[&>div:nth-child(3)]:border-l-0 max-[760px]:[&>div:nth-child(3)]:pt-(--route-row-gap) max-[760px]:[&>div:nth-child(3)]:pl-0";
+const ROW = "grid grid-cols-[calc(var(--route-tile-w)*3+0.5rem)_1fr_1.25fr] border-t-2 border-dashed border-line pt-(--route-row-pt) max-[760px]:grid-cols-2 max-[760px]:gap-y-(--route-row-gap) [&>div]:border-l [&>div]:border-line [&>div]:px-8 [&>div:first-child]:border-l-0 [&>div:first-child]:pl-0 max-[760px]:[&>div]:pr-0 max-[760px]:[&>div]:pl-4 max-[760px]:[&>div:first-child]:pl-0 max-[760px]:[&>div:nth-child(3)]:col-span-2 max-[760px]:[&>div:nth-child(3)]:border-t max-[760px]:[&>div:nth-child(3)]:border-l-0 max-[760px]:[&>div:nth-child(3)]:pt-(--route-row-gap) max-[760px]:[&>div:nth-child(3)]:pl-0";
 /** 카드 한 장 — 정거장 하나의 모습 (움직이는 카드 · 정적 카드가 같은 틀) */
 function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap = 0 }: { swap?: number; stop: RouteStop; n: number; extra: Extra; latestYear?: number; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"]; live: boolean }) {
   const t = routeCardText(stop, stop.index, n);
@@ -83,9 +83,11 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
             </span>
           </p>
         </div>
-        <div data-testid="route-card-signal" className="flex-none text-right max-[760px]:basis-full max-[760px]:pl-[4.375rem] max-[760px]:text-left">
-          <SignalCell stop={stop} extra={extra} signalOf={signalOf} percentileOf={percentileOf} small />
-        </div>
+        {(stop.country === "KR" || (extra.currency && signalOf[extra.currency])) && (
+          <div data-testid="route-card-signal" className="flex-none text-right max-[760px]:basis-full max-[760px]:pl-[4.375rem] max-[760px]:text-left">
+            <SignalCell stop={stop} extra={extra} signalOf={signalOf} percentileOf={percentileOf} small />
+          </div>
+        )}
       </div>
       <div className={`mt-(--route-row-mt) ${ROW}`}>
         <div>
