@@ -137,6 +137,7 @@ if [ "$DESIGN" = "1" ]; then echo ""; echo "디자인 PR: 예 · 디자인 테�
 # 3) 하네스
 run "하네스 자체 테스트" env -u LOOP node --test .agents/scripts/harness.test.mjs
 run "작업 범위 (경고)" node .agents/scripts/scope-check.mjs
+run "변경 기록 (경고 · 작업 0313)" node .agents/scripts/changeset-check.mjs
 
 echo ""; echo "════════════════════════════════════════"
 if [ "$fail" -eq 0 ]; then echo " 결과: ✅ ALL PASS ($MODE) — 완료라고 말해도 됨"; else echo " 결과: ❌ FAIL ($MODE) — 아직 완료 아님"; fi

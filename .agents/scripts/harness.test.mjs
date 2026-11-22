@@ -1031,3 +1031,31 @@ test("게이트: CI(PR) 대상 develop 은 build 만 · test:e2e 없음 — 대�
   assert.equal(main.status, 0, main.out);
   assert.ok(main.npm.includes("test:e2e"), `main: 전체 e2e 를 돎 ${main.npm}`);
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 작업 0313 — 운영 버전 관리(Changesets): 변경 기록 경고 · 릴리스 글 꺼내기
+
+test("변경 기록 경고: 운영 화면 코드가 바뀌었는데 .changeset 이 없으면 알림 · 자료 · 문서 · 어드민 · 테스트만이면 조용함 (작업 0313)", async () => {
+  const { checkChangesets } = await import("./changeset-check.mjs");
+  assert.equal(checkChangesets(["apps/web/src/features/home/home.tsx"]).warn.length, 1);
+  assert.equal(checkChangesets(["packages/ui/src/components/form/button.tsx"]).warn.length, 1);
+  for (const quiet of [["apps/api/data/geo-answers/2026-11-23.json"], ["docs/marketing/2026-11-23/문구.md"], ["apps/admin/src/features/geo/geo-page.tsx"], ["apps/web/src/features/home/today/picked.test.ts"], ["apps/web/e2e/home.spec.ts"]]) {
+    assert.deepEqual(checkChangesets(quiet).warn, [], quiet[0]);
+  }
+});
+
+test("변경 기록 경고: 운영(@hav/web) 말고 다른 패키지를 적으면 알림 (작업 0313)", async () => {
+  const { checkChangesets } = await import("./changeset-check.mjs");
+  const read = () => '---\n"@hav/web": minor\n"@hav/admin": patch\n---\n\n설명\n';
+  const r = checkChangesets([".changeset/README.md"], read);
+  assert.deepEqual(r.warn, [], "README 는 변경 기록이 아님");
+  assert.equal(checkChangesets([], read).warn.length, 0);
+});
+
+test("릴리스 글: CHANGELOG 의 그 버전 칸만 · 없으면 null (작업 0313)", async () => {
+  const { notesFor } = await import("../../scripts/release-notes.mjs");
+  const log = "# @hav/web\n\n## 1.1.0\n\n### 기능\n\n- 새 단추\n\n## 1.0.0\n\n첫 버전\n";
+  assert.equal(notesFor(log, "1.1.0"), "### 기능\n\n- 새 단추");
+  assert.equal(notesFor(log, "1.0.0"), "첫 버전");
+  assert.equal(notesFor(log, "2.0.0"), null);
+});
