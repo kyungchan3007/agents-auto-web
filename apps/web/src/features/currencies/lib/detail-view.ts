@@ -1,6 +1,6 @@
 // 통화 화면 순수 함수 (작업 0170 · Figma 02) — 목록 이름 · 1년 최저/최고/평균 · 오늘 환율 옆 한 줄
 // 판정은 사이트 신호 규칙 그대로(최근 90일 백분위) — 1년 평균은 숫자 카드 · 그래프 점선으로만 씀
-import { SOURCE_NAME, currencyName, percentileText, rateText } from "@hav/shared/currency";
+import { SOURCE_NAME, currencyName, percentileText, rateText, verdictText } from "@hav/shared/currency";
 import type { Signal } from "@hav/shared/signal";
 
 /** Figma 목록 이름 — 표에 없는 통화는 기존 이름(코드도 없으면 코드) */
@@ -21,6 +21,19 @@ export function yearStats(days: { baseRate: number }[]): { min: number; max: num
 /** 오늘 환율 옆 한 줄 — 90일 백분위 문장 · 기준일 · 출처 (예비 출처면 그 사실) */
 export function detailLine(p: { signal: Signal | null; percentile: number | null; windowDays: number; date: string; source: "koreaexim" | "frankfurter" }): string {
   return `${percentileText(p.signal, p.percentile, p.windowDays)} · ${p.date} ${SOURCE_NAME[p.source]}`;
+}
+
+/** 판정 설명 둘째 줄 — "11월 20일 한국수출입은행 고시 · 예측이 아닙니다" (날짜는 자료의 고시일 · 예비 출처면 그 사실) (작업 0289) */
+export function verdictSub(date: string, source: "koreaexim" | "frankfurter"): string {
+  const [, m, d] = date.split("-");
+  const day = m && d ? `${Number(m)}월 ${Number(d)}일` : date;
+  const where = source === "koreaexim" ? `${SOURCE_NAME[source]} 고시` : `${SOURCE_NAME[source]} 값`;
+  return `${day} ${where} · 예측이 아닙니다`;
+}
+
+/** 판정 설명 두 줄 (작업 0289) — 첫 줄 판정 문장 · 둘째 줄 고시일 · 출처 · 예측 아님 */
+export function verdictLines(p: { signal: Signal | null; percentile: number | null; windowDays: number; date: string; source: "koreaexim" | "frankfurter" }): [string, string] {
+  return [verdictText(p.signal, p.percentile, p.windowDays), verdictSub(p.date, p.source)];
 }
 
 /** 그래프에 찍을 최고 · 최저 날 — 같은 값이면 앞선 날짜 · 기록이 없으면 null · 값은 yearStats 의 max · min 과 같음 (작업 0175 · 카드와 같은 계산) */

@@ -32,6 +32,18 @@
 | 한국수출입은행 현재환율 API | 주 출처 | 영업일 11시 전후 갱신 · 하루 1,000회 · RESULT 1 성공 · 2 DATA코드 · 3 인증 · 4 한도 · 비영업일 null |
 | Frankfurter v2 | 예비 (키 없음 · 인증 오류 · 한도 · 장애일 때) | 키 없음 · 하루 · 월 한도 없음 · 주말도 값이 있음 → **주말은 채우지 않음** |
 
+## 달러에 고정된 통화 (작업 0289 · 통화 상세 셋째 줄)
+- 기준: 해당 중앙은행이 공식으로 밝힌 **단일 고정 환율**이 있는 통화만. 통화 상세에 "(통화 이름)은(는) 미국 달러에 고정된 통화라 달러와 같이 움직입니다" 를 더함 (`USD_PEGGED` · `pegText` — `packages/shared/src/domain/currency.ts`)
+
+| 통화 | 고정 환율 | 근거(공식) |
+| --- | --- | --- |
+| SAR 사우디 리얄 | 1달러 = 3.75 리얄 | 사우디중앙은행(SAMA) 2020-05-04 성명 "pegging the Saudi riyal to the US dollar … official rate of 3.75 riyals to the dollar" · sama.gov.sa/en-US/MediaCenter/News/Pages/news-557.aspx |
+| AED 아랍에미리트 디르함 | 1달러 ≈ 3.6725 디르함 (개입 환율 3.672 매수 · 3.673 매도) | 아랍에미리트중앙은행(CBUAE) Domestic Market Operations "UAE Dirham peg against the US dollar" · centralbank.ae/en/our-operations/monetary-policy-and-domestic-markets/domestic-market-operations/ |
+| BHD 바레인 디나르 | 1달러 = 0.376 디나르 | 바레인중앙은행(CBB) Monetary Policy "Bahrain maintains an exchange rate peg at 0.376 Bahraini dinars to the US dollar" · cbb.gov.bh/monetary-policy/ |
+
+- 넣지 않은 통화: 홍콩 달러(HKMA 연계환율제 — 7.75 ~ 7.85 범위 연동이라 단일 고정이 아님 · hkma.gov.hk/eng/key-functions/money/linked-exchange-rate-system/) · 그 밖의 통화(쿠웨이트 디나르 · 브루나이 달러 · 덴마크 크로네 · 위안 등)는 이번에 "달러 단일 고정"이라는 공식 근거를 확인하지 못해 넣지 않음
+- 새 통화를 더할 때는 위 표에 중앙은행 공식 안내를 먼저 적는다 (지어내지 않음)
+
 ## 확인 필요
 - 공휴일(평일): 수출입은행은 값이 없지만, 수출입은행이 실패한 날엔 예비가 채울 수 있음 — 한국 공휴일 목록이 생기면 막기
 - API 키 발급 · Cloudflare 등록은 사용자가 직접
