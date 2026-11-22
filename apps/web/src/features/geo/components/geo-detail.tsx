@@ -1,151 +1,198 @@
-// GEO 자세한 기록 — 작업 0214 시안 B: 표 대신 같은 크기 카드 4장(넓은 화면 2열 · 휴대폰 1열) — AI 답변(날마다 막대) · 봇 방문(가로 막대) · 읽은 페이지(가로 막대) · 검색 노출 · 유입
-// 막대마다 같은 숫자를 글로 함께 둠(검색 · AI 가 읽는 HTML) · 값이 없으면 빈 상태 글자 · 질문별 결과 · 검색어 표는 그대로(DataTable) · 자료 가공은 lib/geo-view.ts 의 geoDetail · 막대 계산은 lib/geo-bars.ts
+"use client";
+
+// GEO 자세한 기록 (작업 0214 → 작업 0303 어드민) — 날마다 측정 그래프(주) · 봇 방문 · 검색 노출 · AI 봇이 읽은 페이지 · AI 서비스 유입 · 봇별 읽은 페이지
+//   질문별 결과 · 판 설명은 그래프 판 안에 접어 둠 · 값이 없으면 빈 상태 글자 · 자료 가공은 lib/geo-view.ts · lib/geo-bars.ts 그대로
 import type { GeoReport } from "@hav/shared/geo";
-import { DataTable } from "@hav/ui/data/data-table";
 import type { ReactNode } from "react";
+import { Bars } from "@hav/ui/admin/bars";
+import { Panel, Stamp } from "@hav/ui/admin/panel";
 import { barRows, botPagesView, dayColumns } from "../lib/geo-bars";
 import { GEO_EDITION_NOTES, KIND_TEXT, geoDetail } from "../lib/geo-view";
-import { BarList, DayBars } from "./geo-bars";
+import { BotPages } from "./bot-pages";
+import { DayChart } from "./day-chart";
 
-const EMPTY = "아직 기록이 없습니다.";
+const EMPTY = "아직 기록이 없습니다";
 
-// wide: 넓은 화면에서 격자 두 칸 전체 폭 (기존 네 장의 2열 짝은 그대로 · 작업 0226 — 다섯 번째 카드는 맨 아래 한 줄)
-function Card({ id, title, wide = false, children }: { id: string; title: string; wide?: boolean; children: ReactNode }) {
+function Table({ head, rows, numFrom = 1 }: { head: string[]; rows: (string | number)[][]; numFrom?: number }) {
   return (
-    <section data-testid={id} aria-labelledby={`${id}-title`} className={`min-w-0 rounded-card bg-foam px-6 py-5${wide ? " min-[701px]:col-span-2" : ""}`}>
-      <h2 id={`${id}-title`} className="text-lg font-semibold">
-        {title}
-      </h2>
-      {children}
-    </section>
-  );
-}
-
-function Sub({ title, empty, children }: { title: string; empty: boolean; children: ReactNode }) {
-  return (
-    <div className="mt-5">
-      <h3 className="text-small font-semibold">{title}</h3>
-      <div className="mt-2">{empty ? <p className="rounded-card border-2 border-dashed border-line px-3 py-3 text-small text-fg-2">{EMPTY}</p> : children}</div>
+    <div className="adm-tw">
+      <table>
+        <thead>
+          <tr>
+            {head.map((h, i) => (
+              <th key={h} className={i >= numFrom ? "n" : undefined}>
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={String(r[0])}>
+              {r.map((v, i) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: 칸 순서가 곧 키
+                <td key={i} className={i >= numFrom ? "n" : i === 0 && String(v).startsWith("/") ? "mono" : undefined}>
+                  {v}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
 
-export function GeoDetail({ report }: { report: GeoReport }) {
+const Sub = ({ title, children }: { title: string; children: ReactNode }) => (
+  <>
+    <h3 className="adm-subh">{title}</h3>
+    {children}
+  </>
+);
+
+/** 주 그래프 판 */
+export function GeoAnswers({ report }: { report: GeoReport }) {
   const d = geoDetail(report);
   const measured = d.answers.filter((a) => a.measured);
   const columns = dayColumns(report.answers?.history ?? []);
-  const ai = report.bots.filter((b) => b.kind !== "engine");
-  const engines = report.bots.filter((b) => b.kind === "engine");
-  const byHits = <T extends { hits: number }>(list: T[]) => [...list].sort((a, b) => b.hits - a.hits);
-  const botPages = botPagesView(report.botPages);
+  const latest = measured[0];
   return (
-    <div data-testid="geo-grid" className="mt-6 grid gap-4 min-[701px]:grid-cols-2">
-      <Card id="geo-answers" title="AI 답변 인용">
-        <p className="mt-1 text-small text-fg-2">정해 둔 질문 24개를 Claude 웹 검색으로 직접 묻고, 검색 결과와 답의 출처에 이 사이트가 나왔는지 기록합니다.</p>
+    <Panel
+      id="geo-answers"
+      testId="geo-answers"
+      title="AI 답변 인용 — 측정한 날마다"
+      meta={<Stamp>{latest?.measured ? `${latest.name} · ${columns.length}일 · 최근 ${latest.day.slice(5)}` : "측정 전"}</Stamp>}
+    >
+      <div className="adm-pb">
+        <p className="adm-note" style={{ marginBottom: 12, color: "var(--a-sub)" }}>
+          정해 둔 질문 24개를 Claude 웹 검색으로 직접 묻고, 검색 결과와 답의 출처에 이 사이트가 나왔는지 기록합니다.
+        </p>
+        {columns.length === 0 ? <p className="adm-empty">{EMPTY}</p> : <DayChart columns={columns} />}
+        <p className="adm-note" style={{ marginTop: 8 }}>
+          측정한 날마다 기록 · 막대 = 그날 응답 받은 질문 수 · 파란 점 = 답에 인용 · 점선 = 측정 실패 (측정하지 않은 날은 비워 둠)
+        </p>
         {measured.map((a) =>
           a.measured ? (
-            <p key={a.engine} className="mt-2 text-small font-semibold tabular-nums">
+            <p key={a.engine} className="adm-note" style={{ marginTop: 6, color: "var(--a-ink)", fontWeight: 500 }}>
               {a.name} · {columns.length}일 측정 · 인용 {a.cited} · 검색 결과 {a.found} · 최근 {a.day}
               {a.failed > 0 ? ` · 실패 ${a.failed}` : ""}
             </p>
           ) : null,
         )}
-        {d.answers.some((a) => !a.measured) && <p className="mt-1 text-small text-fg-2">{d.answers.filter((a) => !a.measured).map((a) => a.name).join(" · ")} 는 키가 없어 측정 안 함</p>}
-        <Sub title="측정한 날마다 기록" empty={columns.length === 0}>
-          <p className="text-small text-fg-2">막대 = 그날 응답 받은 질문 수 · 노란 점 = 답에 인용 · 점선 = 측정 실패 (측정하지 않은 날은 비워 둠)</p>
-          <DayBars columns={columns} />
-        </Sub>
-        {measured.map((a) =>
-          a.measured ? (
-            <details key={a.engine} data-testid="geo-questions" className="mt-4">
-              <summary className="cursor-pointer text-small font-semibold">
-                {a.name} 질문별 결과 ({a.day}) · {a.results.length}개
-              </summary>
-              <div className="mt-3">
-                <DataTable head={["질문", "구분", "답에 인용", "검색 결과에 나옴", "상태"]} rows={a.results} />
-              </div>
-            </details>
-          ) : null,
+        {d.answers.some((a) => !a.measured) && (
+          <p className="adm-note" style={{ marginTop: 4 }}>
+            {d.answers
+              .filter((a) => !a.measured)
+              .map((a) => a.name)
+              .join(" · ")}{" "}
+            는 키가 없어 측정 안 함
+          </p>
         )}
-        <ul data-testid="geo-editions" className="mt-4 list-disc space-y-1 pl-5 text-small text-fg-2">
+      </div>
+      {measured.map((a) =>
+        a.measured ? (
+          <details key={a.engine} data-testid="geo-questions" className="adm-more" style={{ borderTop: "1px solid var(--a-line)" }}>
+            <summary>
+              {a.name} 질문별 결과 ({a.day}) · {a.results.length}개
+            </summary>
+            <Table head={["질문", "구분", "답에 인용", "검색 결과에 나옴", "상태"]} rows={a.results} numFrom={2} />
+          </details>
+        ) : null,
+      )}
+      <div className="adm-foot">
+        <ul data-testid="geo-editions" className="adm-note" style={{ margin: 0, paddingLeft: 16 }}>
           {GEO_EDITION_NOTES.map((t) => (
             <li key={t}>{t}</li>
           ))}
         </ul>
-      </Card>
+      </div>
+    </Panel>
+  );
+}
 
-      <Card id="geo-bots" title="AI 봇 · 검색 엔진 봇 방문">
-        <p className="mt-1 text-small text-fg-2">{d.period}</p>
-        <Sub title="AI 봇별 방문" empty={ai.length === 0}>
-          <p className="text-small text-fg-2">{ai.map((b) => `${b.name} ${KIND_TEXT[b.kind]}`).join(" · ")} (최근 방문 {ai.map((b) => b.lastDay).sort().at(-1)})</p>
-          <BarList rows={barRows(byHits(ai).map((b) => ({ label: b.name, value: b.hits })))} />
-        </Sub>
-        <Sub title="일반 검색 엔진" empty={engines.length === 0}>
-          <BarList tone="accent" rows={barRows(byHits(engines).map((b) => ({ label: b.name, value: b.hits })))} />
-        </Sub>
-      </Card>
+/** 봇 방문 판 (오른쪽 좁은 칸) */
+export function GeoBots({ report }: { report: GeoReport }) {
+  const d = geoDetail(report);
+  const byHits = <T extends { hits: number }>(list: T[]) => [...list].sort((a, b) => b.hits - a.hits);
+  const ai = byHits(report.bots.filter((b) => b.kind !== "engine"));
+  const engines = byHits(report.bots.filter((b) => b.kind === "engine"));
+  const max = Math.max(0, ...report.bots.map((b) => b.hits));
+  // 두 묶음을 같은 잣대로 (가장 많은 봇 = 끝)
+  const rows = (list: typeof ai) => barRows([...list.map((b) => ({ label: b.name, value: b.hits })), { label: "\u0000", value: max }]).slice(0, -1);
+  return (
+    <Panel id="geo-bots" testId="geo-bots" title="AI 봇 · 검색 엔진 봇 방문" meta={<Stamp>지난 30일</Stamp>}>
+      <Sub title="AI 봇별 방문">{ai.length === 0 ? <p className="adm-empty">{EMPTY}</p> : <Bars rows={rows(ai)} />}</Sub>
+      <Sub title="일반 검색 엔진">{engines.length === 0 ? <p className="adm-empty">{EMPTY}</p> : <Bars rows={rows(engines)} />}</Sub>
+      <div className="adm-foot">
+        <p className="adm-note">
+          {ai.map((b) => `${b.name} ${KIND_TEXT[b.kind]}`).join(" · ")}
+          {ai.length > 0 && ` (최근 방문 ${ai.map((b) => b.lastDay).sort().at(-1)})`} · {d.period}
+        </p>
+      </div>
+    </Panel>
+  );
+}
 
-      <Card id="geo-pages" title="AI 봇이 읽은 페이지">
-        <p className="mt-1 text-small text-fg-2">AI 봇이 읽은 횟수 (일반 검색 엔진 제외)</p>
-        <Sub title="페이지별 횟수" empty={report.pages.length === 0}>
-          <BarList rows={barRows(report.pages.map((p) => ({ label: p.path, value: p.hits })))} />
-        </Sub>
-      </Card>
-
-      <Card id="geo-search" title="구글 검색 노출 (Search Console)">
-        {!d.search ? (
-          <p className="mt-2 text-small text-fg-2">아직 가져온 자료가 없습니다.</p>
-        ) : (
-          <>
-            <dl className="mt-3 grid grid-cols-3 gap-2.5">
-              {[
-                ["노출", d.search.impressions],
-                ["클릭", d.search.clicks],
-                ["평균 순위", d.search.position],
-              ].map(([label, value]) => (
-                <div key={label} className="rounded-card bg-surface px-3 py-2.5">
-                  <dt className="text-small text-fg-2">{label}</dt>
-                  <dd className="mt-0.5 text-[1.375rem] leading-tight font-bold text-cheap tabular-nums">{value}</dd>
-                </div>
-              ))}
-            </dl>
-            <p className="mt-3 text-small text-fg-2">기간 {d.search.range} · Google Search Console 기준 · 구글 검색 전체 수치이며 AI 답변만 구분한 값이 아닙니다 · 며칠 늦게 반영됩니다</p>
-            <Sub title="상위 검색어" empty={d.search.queries.length === 0}>
-              <DataTable head={["검색어", "노출", "클릭", "순위"]} rows={d.search.queries} />
-            </Sub>
-            <Sub title="검색에 나온 페이지" empty={d.search.pages.length === 0}>
-              <DataTable head={["페이지", "노출", "클릭", "순위"]} rows={d.search.pages} />
-            </Sub>
-          </>
-        )}
-        <Sub title="AI 서비스 유입" empty={d.referrals.length === 0}>
-          <DataTable head={["서비스", "횟수", "최근"]} rows={d.referrals} />
-        </Sub>
-      </Card>
-
-      <Card id="geo-bot-pages" title="봇별 읽은 페이지" wide>
-        <p className="mt-1 text-small text-fg-2">봇마다 어떤 페이지를 몇 번 읽었는지 (Googlebot · bingbot 같은 검색 엔진 봇 포함 · 사람 유입 · 운영 확인 제외 · 많이 읽은 상위 5곳)</p>
-        {botPages.length === 0 ? (
-          <div className="mt-5">
-            <p className="rounded-card border-2 border-dashed border-line px-3 py-3 text-small text-fg-2">{EMPTY}</p>
+export function GeoSearch({ report }: { report: GeoReport }) {
+  const d = geoDetail(report);
+  return (
+    <Panel id="geo-search" testId="geo-search" title="구글 검색 노출 (Search Console)" meta={d.search ? <Stamp>{d.search.range}</Stamp> : undefined}>
+      {!d.search ? (
+        <p className="adm-empty">아직 가져온 자료가 없습니다.</p>
+      ) : (
+        <>
+          <dl className="adm-stats" style={{ ["--n" as string]: 3, borderBottom: "1px solid var(--a-line)" }}>
+            {[
+              ["노출", d.search.impressions],
+              ["클릭", d.search.clicks],
+              ["평균 순위", d.search.position],
+            ].map(([label, value]) => (
+              <div key={label} className="adm-stat">
+                <dt>{label}</dt>
+                <dd className="v" style={{ fontSize: 20 }}>
+                  {value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <Sub title="상위 검색어">{d.search.queries.length === 0 ? <p className="adm-empty">{EMPTY}</p> : <Table head={["검색어", "노출", "클릭", "순위"]} rows={d.search.queries} />}</Sub>
+          <Sub title="검색에 나온 페이지">{d.search.pages.length === 0 ? <p className="adm-empty">{EMPTY}</p> : <Table head={["페이지", "노출", "클릭", "순위"]} rows={d.search.pages} />}</Sub>
+          <div className="adm-foot">
+            <p className="adm-note">기간 {d.search.range} · Google Search Console 기준 · 구글 검색 전체 수치이며 AI 답변만 구분한 값이 아닙니다 · 며칠 늦게 반영됩니다</p>
           </div>
-        ) : (
-          botPages.map((b) => (
-            <div key={b.name} data-testid="bot-pages-bot" data-bot={b.name} className="mt-5">
-              <h3 className="text-small font-semibold">
-                {b.name} <span className="font-normal text-fg-2">· {KIND_TEXT[b.kind]}</span>
-              </h3>
-              <p className="mt-0.5 text-small text-fg-2 tabular-nums">{b.text}</p>
-              <BarList tone={b.kind === "engine" ? "accent" : "cheap"} rows={b.rows} />
-              {b.rest && (
-                <p data-testid="bot-pages-rest" className="mt-1.5 text-small text-fg-2 tabular-nums">
-                  {b.rest.text}
-                </p>
-              )}
-            </div>
-          ))
-        )}
-      </Card>
-    </div>
+        </>
+      )}
+    </Panel>
+  );
+}
+
+export function GeoPages({ report }: { report: GeoReport }) {
+  return (
+    <Panel id="geo-pages" testId="geo-pages" title="AI 봇이 읽은 페이지" meta={<Stamp>일반 검색 엔진 제외</Stamp>}>
+      {report.pages.length === 0 ? <p className="adm-empty">{EMPTY}</p> : <Bars rows={barRows(report.pages.map((p) => ({ label: p.path, value: p.hits })))} />}
+    </Panel>
+  );
+}
+
+export function GeoReferrals({ report }: { report: GeoReport }) {
+  const d = geoDetail(report);
+  return (
+    <Panel id="geo-referrals" testId="geo-referrals" title="AI 서비스 유입">
+      {d.referrals.length === 0 ? <p className="adm-empty">{EMPTY}</p> : <Table head={["서비스", "횟수", "최근"]} rows={d.referrals} />}
+    </Panel>
+  );
+}
+
+export function GeoBotPages({ report }: { report: GeoReport }) {
+  const bots = botPagesView(report.botPages);
+  return (
+    <Panel id="geo-bot-pages" testId="geo-bot-pages" title="봇별 읽은 페이지" meta={<Stamp>많이 읽은 상위 5곳 · 사람 유입 · 운영 확인 제외</Stamp>}>
+      <div className="adm-pb">
+        <p className="adm-note" style={{ marginBottom: 12 }}>
+          봇마다 어떤 페이지를 몇 번 읽었는지 (Googlebot · bingbot 같은 검색 엔진 봇 포함)
+        </p>
+        {bots.length === 0 ? <p className="adm-empty" style={{ padding: 0 }}>{EMPTY}</p> : <BotPages bots={bots} />}
+      </div>
+    </Panel>
   );
 }
