@@ -1,11 +1,12 @@
-// 작업 0287 — 통화 상세는 환율을 늘 소수 둘째 자리로(1,330.80 · 끝자리 0 은 덧붙인 표기) · 한 화면 한 형식 · 홈은 그대로(정수) (사용자가 정한 조건: 시안 53번)
+// 작업 0287(사용자 정정 08:34Z) — 통화 상세 환율: 1,000원 이상은 소수 첫째 자리까지(1,459.62 → 1,459.6) · 1,000원 미만은 둘째 자리(833.73) · 끝자리 0 은 쓰지 않음(1,330.80 → 1,330.8 · 1,331.0 → 1,331) · 한 화면 한 형식 · 홈은 그대로
 //   통화 상세: 큰 숫자 · 1년 최저 · 최고 · 평균 카드 · 그래프(읽기용 글 · 최고 · 최저 · 평균 꼬리표 · 끝 말풍선) · 환산 · 설명 문장 · 둘러보기 표
 //   큰 숫자가 한 자리 길어져도 390 등 좁은 폭에서 줄바꿈 · 가로 넘침 없음 · 글자판 칸이 밀리지 않음
 import { type Page, expect, test } from "@playwright/test";
 
 const CODES = ["USD", "JPY", "EUR"];
-/** 소수 한 자리로 끝난 환율 글(예: 1,330.8원 · 833.5원) — 소수 둘째 자리 고정이므로 없어야 함 */
-const ONE_DECIMAL = /\d[\d,]*\.\d(?!\d)\s*원/g;
+/** 규칙에 어긋난 환율 글: ① 끝자리 0(1,330.80원 · 7.30원) ② 1,000원 이상인데 소수 둘째 자리 이상(1,459.62원) ③ 1,000원 미만인데 소수 셋째 자리 이상 */
+const BAD = /(\d[\d,]*\.\d*0|\d{1,3}(?:,\d{3})+\.\d{2,}|\d{4,}\.\d{2,}|\b\d{1,3}\.\d{3,})(?!\d)\s*원/g;
+const ONE_DECIMAL = BAD;
 
 async function open(page: Page, path: string, width = 1280) {
   await page.setViewportSize({ width, height: 900 });
@@ -35,19 +36,19 @@ const allText = (page: Page) =>
 
 test.describe("환율 소수 둘째 자리 (작업 0287)", () => {
   for (const code of CODES) {
-    test(`/currencies/${code} — 환율 글은 모두 소수 둘째 자리(한 자리 환율 글 없음) · 큰 숫자 · 카드 · 말풍선이 같은 형식`, async ({ page }) => {
+    test(`/currencies/${code} — 환율 글은 모두 새 규칙(끝자리 0 없음 · 1,000원 이상 소수 첫째 자리 · 미만 둘째 자리) · 큰 숫자 = 말풍선`, async ({ page }) => {
       await open(page, `/currencies/${code}`);
       const text = await allText(page);
       const bad = [...new Set(text.match(ONE_DECIMAL) ?? [])];
-      expect(bad, "소수 한 자리로 보이는 환율 글").toEqual([]);
-      const two = text.match(/\d[\d,]*\.\d{2}\s*원/g) ?? [];
-      expect(two.length, "소수 둘째 자리 환율 글이 보임").toBeGreaterThan(5);
+      expect(bad, "규칙에 어긋난 환율 글").toEqual([]);
+      const rates = text.match(/\d[\d,]*(?:\.\d+)?\s*원/g) ?? [];
+      expect(rates.length, "환율 글이 보임").toBeGreaterThan(5);
       // 큰 숫자 · 그래프 끝 말풍선은 같은 날 값이라 같은 글
       const bv = bigValue(page);
       const big = (((await bv.getAttribute("data-final")) ?? (await bv.innerText())) || "").replace(/\s+/g, "");
-      expect(big, "큰 숫자가 소수 둘째 자리").toMatch(/\.\d{2}(?!\d)/);
       const end = page.locator('[data-testid="chart-end-value"]').first();
-      if (await end.count()) expect(((await end.getAttribute("data-final")) ?? "").replace(/원.*$/, ""), "끝 말풍선도 같은 형식").toMatch(/\.\d{2}$/);
+      // 큰 숫자와 끝 말풍선은 같은 날 값이라 숫자 글이 같아야 함(같은 규칙)
+      if (await end.count()) expect(((await end.getAttribute("data-final")) ?? "").replace(/원.*$/, ""), "끝 말풍선 = 큰 숫자 글").toBe(big.replace(/원.*$/, ""));
     });
   }
 
@@ -60,18 +61,18 @@ test.describe("환율 소수 둘째 자리 (작업 0287)", () => {
       await buttons.nth(i).click();
       await expect(page.locator('[data-testid="line-chart"]').first()).toHaveAttribute("data-state", "done", { timeout: 15000 });
       const bad = [...new Set(((await allText(page)).match(ONE_DECIMAL)) ?? [])];
-      expect(bad, `${i + 1}번째 기간의 소수 한 자리 환율 글`).toEqual([]);
+      expect(bad, `${i + 1}번째 기간의 규칙에 어긋난 환율 글`).toEqual([]);
     }
   });
 
-  test("값은 같고 표기만 — 끝자리 0 만 덧붙음: 큰 숫자의 값 = 그래프 끝 말풍선의 값", async ({ page }) => {
+  test("값은 같고 표기만 — 큰 숫자의 값 = 그래프 끝 말풍선의 값(반올림 자리 안에서 같음)", async ({ page }) => {
     await open(page, "/currencies/USD");
     const num = (s: string) => Number(s.replace(/[^\d.]/g, ""));
     const bv = bigValue(page);
     const big = num((await bv.getAttribute("data-final")) ?? (await bv.innerText()));
     const end = page.locator('[data-testid="chart-end-value"]').first();
     test.skip(!(await end.count()), "그래프 자료 없음");
-    expect(num((await end.getAttribute("data-final")) ?? ""), "큰 숫자 = 말풍선 값").toBeCloseTo(big, 2);
+    expect(num((await end.getAttribute("data-final")) ?? ""), "큰 숫자 = 말풍선 값").toBeCloseTo(big, 1);
   });
 
   test("홈은 그대로 — 안내판 · 도착지 줄 환율은 정수(100원 이상) · 둘째 자리 없음", async ({ page }) => {

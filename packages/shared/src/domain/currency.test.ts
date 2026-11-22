@@ -66,9 +66,16 @@ describe("백분위 설명 (SIG-02)", () => {
 
 describe("환율 표시 (FX-04)", () => {
   it("엔은 100 단위를 붙여 그대로", () => {
-    expect(rateText({ baseRate: 838.3, unit: 100 })).toEqual({ value: "838.30", unit: "원 / 100" });
-    expect(rateText({ baseRate: 1324.3, unit: 1 })).toEqual({ value: "1,324.30", unit: "원" });
+    expect(rateText({ baseRate: 838.3, unit: 100 })).toEqual({ value: "838.3", unit: "원 / 100" });
+    expect(rateText({ baseRate: 1324.3, unit: 1 })).toEqual({ value: "1,324.3", unit: "원" });
     expect(rateText({ baseRate: 5.12, unit: 1 })).toEqual({ value: "5.12", unit: "원" });
+    // 작업 0287(정정): 1,000원 이상은 소수 첫째 자리까지 · 1,000원 미만은 둘째 자리 · 끝자리 0 은 쓰지 않음
+    expect(rateText({ baseRate: 1459.62, unit: 1 }).value).toBe("1,459.6");
+    expect(rateText({ baseRate: 1330.8, unit: 1 }).value).toBe("1,330.8");
+    expect(rateText({ baseRate: 1331.0, unit: 1 }).value).toBe("1,331");
+    expect(rateText({ baseRate: 833.73, unit: 100 }).value).toBe("833.73");
+    expect(rateText({ baseRate: 7.3, unit: 1 }).value).toBe("7.3");
+    expect(rateText({ baseRate: 999.99, unit: 1 }).value).toBe("999.99");
   });
 });
 
