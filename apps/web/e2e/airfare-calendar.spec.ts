@@ -79,7 +79,8 @@ const RECORD = `
             return { d: c.getAttribute("data-depart"), cx: r.left + r.width / 2, l: r.left, w: r.width, inView: r.right > scr.left && r.left < scr.right,
               dtColor: dt ? getComputedStyle(dt).color : null, prColor: pr ? getComputedStyle(pr).color : null, wdColor: wd ? getComputedStyle(wd).color : null, op: eff(c), dtText: dt ? dt.textContent.trim() : null };
           }),
-          fills: [...document.querySelectorAll('[data-testid="airfare-week-fill"]')].map((f) => f.getBoundingClientRect().width),
+          // 작업 0281: 막대가 width 가 아니라 transform(옆으로 밀어 넣기)으로 자람 — 눈에 보이는 길이 = 막대 칸(track) 안에 든 부분의 폭
+          fills: [...document.querySelectorAll('[data-testid="airfare-week-fill"]')].map((f) => { const r = f.getBoundingClientRect(), t = f.parentElement.getBoundingClientRect(); return Math.max(0, Math.min(r.right, t.right) - Math.max(r.left, t.left)); }),
         });
       }
       if (!w.__afstop) requestAnimationFrame(tick);
@@ -250,7 +251,8 @@ for (const size of SIZES) {
       const rows = tid(page, "airfare-week-row");
       await expect(rows).toHaveCount(7);
       expect(await rows.evaluateAll((els) => els.map((e) => e.textContent?.trim().slice(0, 1)))).toEqual(["월", "화", "수", "목", "금", "토", "일"]);
-      const widths = await tid(page, "airfare-week-fill").evaluateAll((els) => els.map((e) => e.getBoundingClientRect().width));
+      // 작업 0281: 막대는 transform 으로 길이가 정해짐 — 보이는 길이(막대 칸 안에 든 부분)로 잼
+      const widths = await tid(page, "airfare-week-fill").evaluateAll((els) => els.map((e) => { const r = e.getBoundingClientRect(), t = (e.parentElement as HTMLElement).getBoundingClientRect(); return Math.max(0, Math.min(r.right, t.right) - Math.max(r.left, t.left)); }));
       expect(Math.min(...widths)).toBeGreaterThan(0);
       expect(new Set(widths.map((w) => Math.round(w))).size).toBeGreaterThan(1); // 길이가 다름
       const facts = tid(page, "airfare-fact");
