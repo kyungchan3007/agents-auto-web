@@ -10,12 +10,13 @@ import { describe, expect, it } from "vitest";
 import { TEAM_DESKS, WORK_FLOW } from "./team";
 
 describe("팀 책상", () => {
-  it("lead · builder · test · geo 네 역할 · 맡은 일 (Figma)", () => {
+  it("lead · builder · test · geo · data 다섯 역할 · 맡은 일 (작업 0303: data 더함)", () => {
     expect(TEAM_DESKS).toEqual([
       { id: "lead", duty: "계획 · 통합 · PR" },
       { id: "builder", duty: "화면 · API 구현" },
       { id: "test", duty: "테스트 먼저 작성" },
-      { id: "geo", duty: "검색 노출 측정" },
+      { id: "geo", duty: "검색 노출 측정 · 알리기" },
+      { id: "data", duty: "수집 상태 · 이상 값 점검" },
     ]);
   });
 });

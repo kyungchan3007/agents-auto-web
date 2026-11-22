@@ -1,42 +1,40 @@
-// 작업실 페이지 (예전 이름 "만드는 중" · 작업 0105) — 시안(작업 0170 · Figma 06): 라벨 → 큰 제목 2줄 → 이 사이트를 어떻게 만들었나(작업 0172) → 상태판 카드 4 → 팀 책상 카드 4 → 작업 흐름 칩 → 실시간 기록 카드 → 바닥 띠
-// 시안에 없는 구간(스크롤 장면 · 작업 책상 · 오늘 패치 수 · 패치 내역)은 화면에서 뺌
-import type { Fetched } from "@/shared/api";
-import { SiteNav } from "@/shared/site-nav";
+"use client";
+
+// 작업실 (작업 0105 → 작업 0303 어드민 · 시안 Version 6)
+//   머리(라벨 · 제목 · 기록 갱신 · 다시 받기) → 사이트 상태 숫자 4 → 실시간 기록 · 팀(같은 높이) → 작업 흐름 한 줄 → 이 사이트를 어떻게 만들었나
 import type { SiteStatus } from "@hav/shared/status";
 import type { TasksSummary } from "@hav/shared/tasks";
-import { PageFooter } from "@hav/ui/layout/page-footer";
-import { Eyebrow, Title } from "@hav/ui/text/heading";
+import { AdminNav } from "@/shared/admin-nav";
+import { Stamp } from "@hav/ui/admin/panel";
+import type { Fetched } from "../../../shared/api";
 import { RecordCard } from "./record-card";
-import { StatusBoard } from "./status-board";
+import { useSiteStatus } from "../hooks/use-site-status";
+import { RefreshButton, StatusBoard } from "./status-board";
 import { StorySection } from "./story-section";
 import { TeamDesks } from "./team-desks";
 import { WorkFlow } from "./work-flow";
 
 export function LogPage({ tasks, status, builtAt }: { tasks: Fetched<TasksSummary>; status: Fetched<SiteStatus>; builtAt: string }) {
+  const s = useSiteStatus(status);
   return (
-    <>
-      <SiteNav page="log" />
-      <main id="main" tabIndex={-1} className="bg-surface px-4 pt-8 pb-10 text-fg sm:px-8 sm:pt-10">
-        <div className="mx-auto max-w-page">
-          <Eyebrow>작업실</Eyebrow>
-          <Title as="h1" size="page" aria-label="AI 에이전트 팀이 이 사이트를 만듭니다" className="mt-6 text-cheap">
-            <span aria-hidden className="block">
-              AI 에이전트 팀이
-            </span>{" "}
-            <span aria-hidden className="block">
-              이 사이트를 만듭니다
-            </span>
-          </Title>
-          <StorySection />
-          <StatusBoard build={status} builtAt={builtAt} />
-          <TeamDesks />
-          <WorkFlow />
-          <div className="mt-4">
-            <RecordCard buildTasks={tasks} />
-          </div>
+    <AdminNav page="log">
+      <div className="adm-top">
+        <div>
+          <p className="adm-eyebrow">작업실</p>
+          <h1>AI 에이전트 팀이 이 사이트를 만듭니다</h1>
         </div>
-      </main>
-      <PageFooter width="max-w-page">자료: GitHub 이슈 · PR · 작업 기록 (3초마다 갱신)</PageFooter>
-    </>
+        <div className="adm-topr">
+          <Stamp live>기록 3초마다 갱신</Stamp>
+          <RefreshButton busy={s.busy} left={s.left} onClick={() => void s.refresh()} />
+        </div>
+      </div>
+      <StatusBoard s={s} builtAt={builtAt} />
+      <div className="adm-grid eq">
+        <RecordCard buildTasks={tasks} />
+        <TeamDesks />
+      </div>
+      <WorkFlow />
+      <StorySection />
+    </AdminNav>
   );
 }
