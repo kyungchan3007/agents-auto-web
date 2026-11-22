@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 export function PageFooter({ width = "max-w-page", className = "", children }: { width?: "max-w-page" | "max-w-5xl" | "max-w-6xl"; className?: string; children: ReactNode }) {
   return (
-    <footer className="border-t border-line bg-surface px-4 py-8 text-small text-fg-2 sm:px-8 [&_a]:text-fg-2 [&_a]:underline [&_a]:underline-offset-2">
+    <footer className="border-t border-line bg-surface px-4 py-8 text-small text-fg-2 sm:px-8 [&_a]:text-fg-2 [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:text-fg">
       <div className={`mx-auto ${width} ${className}`}>{children}</div>
     </footer>
   );
