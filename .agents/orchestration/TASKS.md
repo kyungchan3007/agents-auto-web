@@ -118,4 +118,5 @@
 | 0296 | 직구 합계 안내 · 휴대폰 요약 띠를 합계로 · 큰 제목 줄임 (Quick · 평소 PR · 시안 65 · 사용자 결정 · 작업 종류 ③) | builder → test | 머지됨 (#350) | task/0296-calc-total-note | features/import-calc/** |
 | 0298 | 통화 상세 판정 설명 두 줄 · 빈 칸 지우기 — 달러 고정 통화 셋째 줄만 (Quick · 평소 PR · 시안 67 · 작업 종류 ③) | builder → test | 머지됨 (#351) | task/0298-verdict-one-line | features/currencies/** · shared 판정 문장 |
 | 0299 | 바닥 띠에 예비 환율 출처 적기 — 한국수출입은행 · Frankfurter(받지 못한 날) (Quick · 평소 PR · 시안 68 · 작업 종류 ③) | builder → test | 머지됨 (#352) | task/0299-footer-fallback | shared 출처 상수 · features/{home,currencies,import-calc,travel-price}/** |
-| 0300 | 인덱스 3D 인트로가 느린 원인 측정 · 고치기 — 레티나에서만 GTAO 절반 해상도(모습 유지) (Quick · 평소 PR · 작업 종류 ①) | test(측정) → builder → test | 진행 중 | task/0300-intro-perf | apps/web/src/features/intro/lib/scene.ts |
+| 0300 | 인덱스 3D 인트로가 느린 원인 측정 · 고치기 — 레티나에서만 GTAO 절반 해상도(모습 유지) (Quick · 평소 PR · 작업 종류 ①) | test(측정) → builder → test | 머지됨 (#357) | task/0300-intro-perf | apps/web/src/features/intro/lib/scene.ts |
+| 0304 | SEO 기본 보강 — 구조화 자료(사이트 · 통화 상세 · 경로) · 홈 설명 · og:url · twitter · sitemap 갱신일 (Quick · 평소 PR · 화면 변화 없음 · 작업 종류 ①) | builder → test | 진행 중 | task/0304-seo-basics | apps/web/src/app/** · apps/web/src/shared/** |
