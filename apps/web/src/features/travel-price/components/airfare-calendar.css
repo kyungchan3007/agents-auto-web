@@ -61,7 +61,7 @@
 .af-legend .lo{color:var(--blue)}.af-legend .hi{color:var(--red)}
 /* 요일 경향 · 요약 */
 .af-side h3{font-family:var(--head);font-weight:800;font-size:16px;margin:0}
-.af-side h3 small{font-weight:600;font-size:11.5px;color:var(--sub)}
+.af-side h3 small{font-weight:800;font-size:11.5px;color:var(--sub)}
 .af-week{margin-top:14px;display:grid;gap:8px}
 .af-row{display:grid;grid-template-columns:28px minmax(0,1fr) 64px;align-items:center;gap:10px;font-size:13px}
 .af-row .w{font-weight:700;color:var(--sub)}
