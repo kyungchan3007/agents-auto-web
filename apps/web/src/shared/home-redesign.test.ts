@@ -100,7 +100,9 @@ describe("자료가 없을 때 문구 (H1 · H8) — 숫자를 지어내지 않�
 
 describe("바닥 띠 — 자료 출처 · 비행기 모델 출처 (H9)", () => {
   it("한국수출입은행 · 통계청 · 관세청 · 한국은행 · 세계은행", () => {
-    for (const name of ["한국수출입은행", "통계청", "관세청", "한국은행", "세계은행"]) expect(HOME_UI, name).toContain(name);
+    // 작업 0299: 환율 출처는 공용 상수 RATE_SOURCE_LABEL(한국수출입은행 · Frankfurter) 로 적음 — 상수 또는 옛 글자 둘 중 하나가 홈에 있으면 됨
+    expect(HOME_UI, "환율 출처").toMatch(/RATE_SOURCE_LABEL|한국수출입은행/);
+    for (const name of ["통계청", "관세청", "한국은행", "세계은행"]) expect(HOME_UI, name).toContain(name);
   });
 
   it("홈에는 3D 비행기가 없으므로 비행기 모델 출처 줄도 없음 (그래프 2D · lead 지시) — 인트로(intro.tsx)는 비행기를 쓰므로 거기서 그대로 보임", () => {

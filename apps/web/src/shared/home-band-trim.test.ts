@@ -58,8 +58,8 @@ describe("홈 바다 띠 — 남기는 것", () => {
     expect(read(join(WEB_SRC, "features/home/components/destinations-section.tsx"))).toContain("예측이 아니며 투자 · 금융 조언이 아닙니다");
   });
 
-  it("출처는 홈 바닥 띠에 — '자료: 한국수출입은행' 이 홈 코드에 있음", () => {
-    expect(homeText).toMatch(/자료:[^<\n]*한국수출입은행/);
+  it("출처는 홈 바닥 띠에 — '자료: {RATE_SOURCE_LABEL}'(한국수출입은행 · Frankfurter · 작업 0299 공용 상수)이 홈 코드에 있음", () => {
+    expect(homeText).toMatch(/자료:[^<\n]*(\{RATE_SOURCE_LABEL\}|한국수출입은행)/);
   });
 });
 
