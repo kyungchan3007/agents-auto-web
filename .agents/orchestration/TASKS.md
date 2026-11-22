@@ -120,4 +120,5 @@
 | 0299 | 바닥 띠에 예비 환율 출처 적기 — 한국수출입은행 · Frankfurter(받지 못한 날) (Quick · 평소 PR · 시안 68 · 작업 종류 ③) | builder → test | 머지됨 (#352) | task/0299-footer-fallback | shared 출처 상수 · features/{home,currencies,import-calc,travel-price}/** |
 | 0300 | 인덱스 3D 인트로가 느린 원인 측정 · 고치기 — 레티나에서만 GTAO 절반 해상도(모습 유지) (Quick · 평소 PR · 작업 종류 ①) | test(측정) → builder → test | 머지됨 (#357) | task/0300-intro-perf | apps/web/src/features/intro/lib/scene.ts |
 | 0304 | SEO 기본 보강 — 구조화 자료(사이트 · 통화 상세 · 경로) · 홈 설명 · og:url · twitter · sitemap 갱신일 (Quick · 평소 PR · 화면 변화 없음 · 작업 종류 ①) | builder → test | 머지됨 (#360) | task/0304-seo-basics | apps/web/src/app/** · apps/web/src/shared/** |
-| 0310 | 알리기 탭 그림을 R2 공개 주소에서 · 없으면 raw 로 (Quick · 평소 PR · 어드민 · develop 머지 뒤 바로 main ff) | builder → test | 진행 중 | task/0310-marketing-r2 | app/marketing · features/marketing · shared/site.ts |
+| 0310 | 알리기 탭 그림을 R2 공개 주소에서 · 없으면 raw 로 (Quick · 평소 PR · 어드민 · develop 머지 뒤 바로 main ff) | builder → test | 머지됨 (#365) | task/0310-marketing-r2 | app/marketing · features/marketing · shared/site.ts |
+| 0311 | 알리기 탭에 사용자가 올린 인스타 게시물 2개(자료만 · 어드민 · 머지 뒤 바로 main ff) | geo | 진행 중 | task/0311-marketing-posts | docs/marketing/2026-11-22 · 2026-11-23 |
