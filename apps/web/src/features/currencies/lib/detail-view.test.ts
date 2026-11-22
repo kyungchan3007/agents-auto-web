@@ -17,7 +17,7 @@
 //   detailLine(p: { signal: Signal | null; percentile: number | null; windowDays: number; date: string; source: "koreaexim" | "frankfurter" }): string
 //     - `${percentileText(signal, percentile, windowDays)} · ${date} ${SOURCE_NAME[source]}` — percentileText · SOURCE_NAME 은 @hav/shared/currency 의 것 그대로 (신호가 없으면 percentileText 의 "자료가 모자라 신호를 내지 않았습니다" 문장)
 import { describe, expect, it } from "vitest";
-import { currencyListLabel, currencyListName, detailLine, extremeDays, extremeLabelText, yearStats } from "./detail-view";
+import { currencyListLabel, currencyListName, detailLine, extremeDays, extremeLabelText, verdictLines, verdictSub, yearStats } from "./detail-view";
 import { PERIODS, sliceDays } from "./periods";
 
 describe("currencyListName · currencyListLabel", () => {
@@ -139,5 +139,31 @@ describe("cardRateText — 세 카드 같은 자릿수 (작업 0212)", () => {
   });
   it("계산 값은 바꾸지 않음 — yearStats 평균은 반올림 안 된 그대로", () => {
     expect(yearStats([{ baseRate: 1000 }, { baseRate: 1001.25 }])?.avg).toBe(1000.625);
+  });
+});
+
+// 작업 0289 — 판정 설명 두 줄 (첫 줄 판정 문장 · 둘째 줄 고시일 · 출처 · 예측이 아닙니다)
+describe("verdictSub · verdictLines — 판정 설명 두 줄 (작업 0289)", () => {
+  it("둘째 줄: '11월 20일 한국수출입은행 고시 · 예측이 아닙니다' (월 · 일은 앞의 0 없이)", () => {
+    expect(verdictSub("2026-11-20", "koreaexim")).toBe("11월 20일 한국수출입은행 고시 · 예측이 아닙니다");
+    expect(verdictSub("2026-01-05", "koreaexim")).toBe("1월 5일 한국수출입은행 고시 · 예측이 아닙니다");
+  });
+  it("예비 출처면 그 사실을 적음 · 날짜를 지어내지 않음(형식이 아니면 받은 글 그대로)", () => {
+    expect(verdictSub("2026-11-20", "frankfurter")).toContain("값 · 예측이 아닙니다");
+    expect(verdictSub("2026-11-20", "frankfurter")).not.toContain("고시");
+    expect(verdictSub("없음", "koreaexim")).toBe("없음 한국수출입은행 고시 · 예측이 아닙니다");
+  });
+  it("첫 줄 말끝은 '…합니다': 낮습니다 · 높습니다 · 중간 수준입니다 · 가장 낮습니다 · 가장 높습니다", () => {
+    const base = { windowDays: 90, date: "2026-11-20", source: "koreaexim" as const };
+    expect(verdictLines({ ...base, signal: "cheap", percentile: 0.1 })[0]).toBe("최근 90일 중 90%의 날보다 낮습니다");
+    expect(verdictLines({ ...base, signal: "expensive", percentile: 0.85 })[0]).toBe("최근 90일 중 85%의 날보다 높습니다");
+    expect(verdictLines({ ...base, signal: "normal", percentile: 0.5 })[0]).toBe("최근 90일 중간 수준입니다");
+    expect(verdictLines({ ...base, signal: "cheap", percentile: 0 })[0]).toBe("최근 90일 중 가장 낮습니다");
+    expect(verdictLines({ ...base, signal: "expensive", percentile: 1 })[0]).toBe("최근 90일 중 가장 높습니다");
+  });
+  it("자료가 모자라면 신호 없음 · 숫자를 지어내지 않음 · 옛 문구('낮음' · '예측 아님')는 없음", () => {
+    const l = verdictLines({ signal: null, percentile: null, windowDays: 90, date: "2026-11-20", source: "koreaexim" });
+    expect(l[0]).toBe("최근 90일 자료가 모자라 신호를 내지 않았습니다");
+    for (const t of l) { expect(t).not.toMatch(/낮음|높음|예측 아님/); }
   });
 });
