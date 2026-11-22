@@ -8,7 +8,7 @@
   - 담당에게는 request.md 경로를 넘긴다 (요약해서 넘기지 않는다)
   - builder 지시에 확인 일(빌드 · 단위 테스트 · e2e · 화면 비교)을 넣지 않는다 — builder 가 하는 확인은 푸시 전 타입 검사와 바꾼 파일의 lint 뿐이고, 나머지는 test 의 일이다 (2026-11-22 재발 방지)
   - test 의 보고(로컬에서 무엇을 돌렸는지)를 확인하고 PR 을 연다. PR 뒤에는 최신 커밋의 CI `gate` 결과를 [verdict.md "게이트 판정 규칙"](verdict.md) 대로 확인한 뒤에만 "확인 끝" · "통과"라고 쓴다 (미리보기 빌드 통과만 보고 통과라고 쓰지 않는다)
-  - 브랜치 흐름(작업 0244): main(운영) · develop(모으는 곳) · task/NNNN(develop 에서 땀). 작업 폴더와 브랜치는 origin/develop 에서 만들고, PR 의 base 는 develop 이다(급한 버그 같은 예외만 main). e2e 는 PR 의 대상에 따라 CI 가 고른다: develop 은 연결표(.agents/e2e-map.json)로 고른 spec 만(넓은 화면), main 은 전체(넓은 화면 + 휴대폰).
+  - 브랜치 흐름(작업 0244): main(운영) · develop(모으는 곳) · task/NNNN(develop 에서 땀). 작업 폴더와 브랜치는 origin/develop 에서 만들고, PR 의 base 는 develop 이다(급한 버그 같은 예외만 main). e2e 는 PR 의 대상에 따라 다르다: develop 은 CI e2e 없음(build 까지 · 로컬은 바꾼 spec 만 · 작업 0295), main 은 전체(넓은 화면 + 휴대폰).
   - lead 가 여는 PR 이 둘 더 있다: 하루 마무리 PR(develop → main · fast-forward · 전체 e2e)과 data · geo 반영 PR(그날 자료 커밋만 cherry-pick → main). 머지는 사람이 "머지해" 한 뒤에만 한다.
   - 디자인 PR(작업 0246 · [verdict.md "디자인 PR 판정"](verdict.md)): 화면만 바꾸는 작업이면 PR 을 **열 때** `design` 라벨을 단다(`gh pr create --label design` · 나중에 달면 다음 푸시부터 반영). 동작을 바꾸는 변경에는 달지 않는다. PR 본문에 "디자인 테스트 실패 N개"를 한 줄로 적고, 미리보기 주소와 볼 경로를 사용자에게 준다. 팀 안에서 모양을 맞추는 왕복은 하지 않는다 — 모양은 사용자가 미리보기에서 보고, 고칠 곳을 말하면 그때 고친다.
   - 하루 마무리 PR 의 `design` 라벨은 그날 머지된 PR 이 모두 design 일 때만 단다. 본문에는 그날 바뀐 화면 목록(페이지 · 무엇이 바뀌었는지 한 줄씩) · 미리보기 주소 · "미뤄 둔 디자인 테스트 N개" 한 줄(기한 알림은 두지 않음)을 적는다.
@@ -47,10 +47,10 @@
   - 테스트는 두 종류다(작업 0246 · [verdict.md "디자인 PR 판정"](verdict.md)). 기능 테스트(표시 없음)는 늘 막고, 디자인 테스트(이름에 `@design`)는 좌표 · 여백 · 색 · 글꼴 · 모서리 · 그림자 · 배치 순서 · 정렬 · 움직임의 시작과 끝 모양처럼 정해 둔 값을 본다. 한 테스트에 둘을 섞지 않고(섞였으면 둘로 나눔) 헷갈리면 표시하지 않는다. "첫 화면에 들어온다" · "가로로 넘치지 않는다" · "값이 바뀌어도 밀리지 않는다"처럼 사용자가 정한 조건은 기능 테스트로 둔다(조건 자체를 사용자가 바꿀 때만 고침). 630개를 전부 분류하지 않고, 디자인 작업에서 깨질 때마다 표시한다.
   - 디자인 PR 이면 기능 테스트가 깨졌을 때만 움직인다. 디자인 테스트는 고치지 않고 시안 비교 캡처도 하지 않는다. `@design` 표시가 빠진 것을 발견하면 표시만 붙인다. 실패한 디자인 테스트는 `docs/design-tests-pending.md` 에 쌓는다.
   - 로컬 전체 e2e · 로컬 전체 게이트는 돌리지 않는다. 전체 e2e 는 하루 마무리 PR(대상 main)에서 CI 가 본다. (작업 0244)
-    - 훅이 실행 전에 막는다(`.agents/scripts/e2e-guard.mjs` · 작업 0294): spec 없는 로컬 e2e · 그 작업 폴더의 e2e-select 목록 밖 spec · spec 이름이 아닌 걸러내기 인자 · Full 작업의 로컬 checks.sh. 막히면 이유와 돌릴 수 있는 spec 목록이 나온다. 지시(lead)로 범위를 넓히지 않는다.
-    - 푸시 전 로컬: 단위 · typecheck · lint 전체 + 바꾼 기능의 e2e. 바꾼 기능의 e2e 는 `node .agents/scripts/e2e-select.mjs` 가 찍는 spec 목록으로 정한다(연결표 .agents/e2e-map.json 기준). CI 에서 실패한 spec 만 로컬에서 고치고 다시 푸시한다.
-    - CI(PR 대상 develop)는 연결표로 고른 spec 만 넓은 화면으로 돈다. 문서 · 하네스 · 자료 · rigs 만 바뀌면 e2e 없음.
-    - 새 기능 · 새 spec 은 연결표(.agents/e2e-map.json) 한 줄까지가 작업이다. 연결표 밖 화면 파일을 바꾸면 CI 가 smoke spec 과 경고 줄을 낸다.
+    - 훅이 실행 전에 막는다(`.agents/scripts/e2e-guard.mjs` · 작업 0294 · 0295): spec 없는 로컬 e2e · 이 작업에서 바꾸지 않은 spec · spec 이름이 아닌 걸러내기 인자 · Full 작업의 로컬 checks.sh. 막히면 이유와 돌릴 수 있는 spec 목록이 나온다. 지시(lead)로 범위를 넓히지 않는다.
+    - 푸시 전 로컬: 단위 · typecheck · lint 전체 + **이 작업에서 새로 쓰거나 고친 spec 파일만**(작업 0295 · 사용자 결정 — 연결표로 고르면 20 ~ 30개 · 테스트 200 ~ 300개라 오래 걸림). 바꾼 spec 이 없으면 로컬 e2e 는 없다. 전체 e2e 실패는 main 으로 가는 PR 에서 그 spec 만 로컬에서 고친다.
+    - CI(PR 대상 develop)는 e2e 를 돌리지 않는다 — build 까지만(작업 0295). 문서 · 하네스 · 자료 · rigs 만 바뀌면 build 도 없음. 전체 e2e(넓은 화면 + 휴대폰)는 main 으로 가는 PR 에서만 돈다.
+    - 새 기능 · 새 spec 은 연결표(.agents/e2e-map.json) 한 줄까지가 작업이다(하네스 검사가 봄 · main PR 의 전체 e2e 와 앞으로의 고르기에 씀).
 - 고칠 수 있는 곳:
   - 소스 옆의 *.test.ts · *.test.tsx
   - apps/web/e2e/** · apps/web/e2e-responsive/**
