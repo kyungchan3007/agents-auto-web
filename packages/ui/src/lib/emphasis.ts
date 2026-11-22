@@ -28,7 +28,7 @@ export function splitNumbers(sentence: string): Piece[] {
 }
 
 const PRICEY = /높습니다|높고|높은|비쌉니다|비싼|비싸|올랐습니다|올랐|붙습니다|붙고/;
-const CHEAP = /낮습니다|낮고|낮은|내렸|없이/;
+const CHEAP = /낮습니다|낮고|낮은|내렸|없이|저렴/;
 
 /** 비싼 쪽을 뜻하는 문장이면 "expensive" · 싼 쪽 말이 함께 있으면 · 그 밖은 "neutral" */
 export function numberTone(sentence: string): "neutral" | "expensive" {

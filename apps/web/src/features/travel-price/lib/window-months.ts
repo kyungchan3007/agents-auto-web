@@ -47,7 +47,7 @@ export function windowMonths(points: IndexPoint[] | null | undefined): WindowMon
     const { season, desc } = seasonOf(m.month);
     const tone = m.month === low.month ? "low" : m.month === high.month ? "high" : null;
     const cmp = tone === "low" ? `${span} 중 가장 낮은 달` : tone === "high" ? `${span} 중 가장 높은 달 · ${low.month}월보다 ${diff} 높음` : `${low.month}월보다 ${diff} 높음`;
-    const tag = tone === "low" ? `${m.month}월 가장 쌈` : tone === "high" ? `${m.month}월 가장 비쌈` : null;
+    const tag = tone === "low" ? "가장 저렴한 달" : tone === "high" ? "가장 비싼 달" : null;
     return { month: m.month, avg: m.avg, text, season, desc, tone, tag, cmp } satisfies WindowMonth;
   });
   return { months, lowest: low.month, highest: high.month, complete };
