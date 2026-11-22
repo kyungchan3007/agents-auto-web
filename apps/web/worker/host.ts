@@ -4,7 +4,7 @@
 //   그 밖의 host(미리보기 workers.dev · 로컬)는 손대지 않음
 export const PUBLIC_HOSTS = ["flapfx.com", "www.flapfx.com"] as const;
 export const ADMIN_HOST = "admin.flapfx.com";
-export const ADMIN_PAGES = ["/log", "/geo", "/how"] as const;
+export const ADMIN_PAGES = ["/log", "/geo", "/how", "/marketing"] as const;
 export const ADMIN_ROBOTS = "User-agent: *\nDisallow: /\n";
 export const NOINDEX = "noindex, nofollow";
 
