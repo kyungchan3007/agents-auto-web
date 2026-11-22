@@ -7,7 +7,7 @@
 //     - result.ok 가 아니고 field 가 "rate" → "환율을 받지 못했습니다" · 다른 field 는 result.reason 그대로 (IMP-05 이유를 보여 줌)
 //     - ok · 한도 안(over false) → `${금액} 물건, 세금 없이 받습니다` — 금액 = currencySymbol(통화) + 입력한 물건 값(쉼표) → "$180" · "¥20,000" · 기호가 없는 통화는 코드 + 공백 ("THB 5,000")
 //     - ok · 한도 넘음 · 관세율을 넣음(tax.duty · tax.vat 가 숫자) → `관세 · 부가세 약 ${duty + vat 쉼표}원이 붙습니다`
-//     - ok · 한도 넘음 · 관세율 비움(duty · vat null) → "한도 초과 · 관세율을 넣어 보세요" (금액을 지어내지 않음)
+//     - ok · 한도 넘음 · 관세율 비움(duty · vat null) → "관세율을 넣어 보세요" (작업 0296: "한도 초과" 뺌 · 금액을 지어내지 않음)
 import { describe, expect, it } from "vitest";
 import { calc } from "./calc";
 import { calcHeadline } from "./calc-copy";
@@ -46,7 +46,7 @@ describe("calcHeadline", () => {
 
   it("한도 넘음 + 관세율 비움 → 금액을 지어내지 않음", () => {
     const r = calc({ ...base, price: "250" }, RATES);
-    expect(calcHeadline(r, { currency: "USD", price: "250" })).toBe("한도 초과 · 관세율을 넣어 보세요");
+    expect(calcHeadline(r, { currency: "USD", price: "250" })).toBe("관세율을 넣어 보세요"); // 작업 0296: 한도 넘은 것은 결과 카드 머리 · 한도 막대에서 보임
   });
 
   it("환율을 받지 못함 → '환율을 받지 못했습니다' · 다른 입력 오류는 이유 그대로", () => {
@@ -70,8 +70,11 @@ describe("summaryLine — 휴대폰 결과 요약 (작업 0208)", () => {
   it("한도 안 — 원화 금액 · 면세 한도 안", () => {
     expect(summaryLine(calc(input, RATES))).toBe("252,000원 · 면세 한도 안");
   });
-  it("한도 넘음 — 관세율이 있으면 세금 약 ○원 · 없으면 관세율 안내 (금액을 지어내지 않음)", () => {
-    expect(summaryLine(calc({ ...input, price: "201", dutyRate: "8" }, RATES))).toMatch(/^281,400원 · 한도 넘음 · 세금 약 [\d,]+원$/);
-    expect(summaryLine(calc({ ...input, price: "201" }, RATES))).toBe("281,400원 · 한도 넘음 · 관세율을 넣으면 세금 계산");
+  it("한도 넘음 — 관세율이 있으면 '모두 합쳐 약 합계원' · 없으면 '물건 값 N원 · 관세율을 넣으면 합계' (작업 0296 · 금액을 지어내지 않음)", () => {
+    const withRate = calc({ ...input, price: "201", dutyRate: "8" }, RATES);
+    const total = withRate.ok ? withRate.tax?.total : null;
+    expect(total, "합계가 계산됨").toBeGreaterThan(281400);
+    expect(summaryLine(withRate), "합계 있음 — 합계만(물건 값 · 한도 넘음 · 세금 글 없음)").toBe(`모두 합쳐 약 ${total!.toLocaleString("en-US")}원`);
+    expect(summaryLine(calc({ ...input, price: "201" }, RATES)), "합계를 못 구함 — 물건 값 + 안내(합계를 지어내지 않음)").toBe("물건 값 281,400원 · 관세율을 넣으면 합계");
   });
 });
