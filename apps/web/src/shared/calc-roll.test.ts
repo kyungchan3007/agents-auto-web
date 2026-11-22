@@ -23,7 +23,7 @@ describe("calc-result — 굴러가는 숫자", () => {
   it("기존 요소 그대로 — 데이터 id · 줄 이름 · 안내 글 · 도장", () => {
     const s = result();
     for (const t of ["calc-result", "calc-tag-top", "calc-limit-bar", "calc-limit-fill", "calc-tag-bottom"]) expect(s, t).toContain(t);
-    for (const t of ["물건 값 (원화)", "과세 가격 (물건 값 + 국제 배송비)", "부가세 10% ((과세 가격 + 관세) × 10%)", "적용 환율", "모두 합쳐 예상", "예상 금액입니다. 실제 세금은 통관 때 정해집니다.", "— 한도 안이라 계산 안 함", "— 관세율을 넣으면 계산", "물건 값을 넣으면 면세 한도 안인지 바로 보여 드립니다"]) expect(s, t).toContain(t);
+    for (const t of ["물건 값 (원화)", "과세 가격 (물건 값 + 국제 배송비)", "부가세 10% ((과세 가격 + 관세) × 10%)", "적용 환율", "모두 합쳐 예상", "예상 금액입니다. 실제 세금은 통관 때 정해집니다.", "한도 안이라 계산하지 않음", "— 관세율을 넣으면 계산", "물건 값을 넣으면 면세 한도 안인지 바로 보여 드립니다"]) expect(s, t).toContain(t);
     expect(s).toContain("Stamp");
   });
 });

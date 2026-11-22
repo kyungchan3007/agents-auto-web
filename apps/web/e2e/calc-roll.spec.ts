@@ -169,7 +169,7 @@ test.describe("직구 계산 — 숫자 굴러가기 (작업 0227 · 모션 4번
     await expect(tid(page, "calc-tag-top")).toContainText(`면세 한도 $${limit} 넘음 · 세금 붙음`);
   });
 
-  test("한도 안 → 넘음으로 바뀔 때 · 넘음 → 안으로 — 합계 · 관세 · 부가세가 굴러 0 으로/값으로 (과세 가격 칸의 글 '— 한도 안이라 계산 안 함' 은 그대로)", async ({ page }) => {
+  test("한도 안 → 넘음으로 바뀔 때 · 넘음 → 안으로 — 합계 · 관세 · 부가세가 굴러 0 으로/값으로 (과세 가격 칸의 글 '한도 안이라 계산하지 않음' — 작업 0282 문구)", async ({ page }) => {
     test.skip(!(await ready(page)), "환율 자료 없음");
     await setInputs(page, { currency: "USD", price: "100", shipping: "", duty: "" });
     await settleAll(page, "한도 안");
@@ -178,7 +178,7 @@ test.describe("직구 계산 — 숫자 굴러가기 (작업 0227 · 모션 4번
     expect(v.vat, "한도 안 부가세").toBe(0);
     expect(v.total, "한도 안 합계 = 물건 값").toBe(v.price);
     await expect(roll(page, "taxable"), "한도 안 과세 가격 자리").toHaveCount(0);
-    await expect(tid(page, "calc-tag-bottom")).toContainText("— 한도 안이라 계산 안 함");
+    await expect(tid(page, "calc-tag-bottom")).toContainText("한도 안이라 계산하지 않음");
     await expect(tid(page, "calc-tag-top")).toContainText("면세 한도 안");
     await setInputs(page, { price: "400", duty: "8" });
     await expect.poll(async () => await roll(page, "vat").count(), { timeout: 2000 }).toBe(1);
