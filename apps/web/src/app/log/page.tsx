@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { LogPage } from "@/features/log/components/log-page";
 import { api } from "@/shared/api";
+import { ADMIN_URL } from "@/shared/site";
 
 // 탭 제목에서 "만드는 중" 은 뺌 (2026-10-30 사용자 · 작업 0105) · 검색에서 구별되게 페이지 이름만 (작업 0114)
 export const metadata: Metadata = {
   title: "작업실 · Flapfx",
-  alternates: { canonical: "/log" },
+  // 어드민으로 옮김 · 검색에 막음 (작업 0302)
+  alternates: { canonical: `${ADMIN_URL}/log` },
+  robots: { index: false, follow: false },
   description: "AI 코딩 에이전트가 이 사이트를 만드는 과정을 실시간으로",
 };
 
