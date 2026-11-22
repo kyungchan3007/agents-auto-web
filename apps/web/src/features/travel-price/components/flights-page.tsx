@@ -5,6 +5,7 @@
 import { SiteNav } from "@/shared/site-nav";
 import { FlapBoard } from "@hav/ui/data/flap-board";
 import { PageFooter } from "@hav/ui/layout/page-footer";
+import { TextLink } from "@hav/ui/text/text-link";
 import { CountUp } from "@hav/ui/motion/count-up";
 import { FadeUpGroup } from "@hav/ui/motion/fade-up";
 import { SlideIn } from "@hav/ui/motion/slide-in";
@@ -148,7 +149,7 @@ export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: Tra
         </div>
       </main>
       <PageFooter width="max-w-page" className="space-y-1">
-        <p>자료: 통계청 KOSIS 소비자물가지수(국제항공료 · 해외단체여행비, 매달 최근 24개월) · 한국수출입은행</p>
+        <p>자료: 통계청 KOSIS 소비자물가지수(국제항공료 · 해외단체여행비, 매달 최근 24개월) · 한국수출입은행 · <TextLink href="/about">소개 · 판단 기준</TextLink></p>
       </PageFooter>
     </>
   );

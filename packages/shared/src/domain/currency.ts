@@ -95,7 +95,7 @@ export function rateText(rate: Pick<FxRate, "baseRate" | "unit">): { value: stri
 }
 
 /** 환율 출처 한 줄 — 꼬리말 · 소개가 같이 씀 (작업 0115) */
-export const SOURCE_NOTE = "환율: 한국수출입은행 (예비: Frankfurter)";
+export const SOURCE_NOTE = "환율: 한국수출입은행";
 
 export const SOURCE_NAME: Record<FxRate["source"], string> = { koreaexim: "한국수출입은행", frankfurter: "Frankfurter (예비)" };
 

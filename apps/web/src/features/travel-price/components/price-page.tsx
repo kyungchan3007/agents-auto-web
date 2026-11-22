@@ -6,6 +6,7 @@ import type { PriceLevels } from "@hav/shared/prices";
 import type { SignalList } from "@hav/shared/signal";
 import { travelBands } from "@hav/shared/travel";
 import { PageFooter } from "@hav/ui/layout/page-footer";
+import { TextLink } from "@hav/ui/text/text-link";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
 import { pricesHeadline } from "../lib/prices-copy";
 import { BudgetPlanner } from "./budget-planner";
@@ -69,7 +70,7 @@ export function PricePage({ levels, signals }: { levels: Fetched<PriceLevels>; s
         </div>
         </div>
       </main>
-      <PageFooter width="max-w-page">자료: 세계은행 물가 수준(PA.NUS.PRVT.PP ÷ PA.NUS.FCRF) · 한국수출입은행</PageFooter>
+      <PageFooter width="max-w-page">자료: 세계은행 물가 수준 · 한국수출입은행 · <TextLink href="/about">소개 · 판단 기준</TextLink></PageFooter>
     </>
   );
 }
