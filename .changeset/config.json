@@ -1,0 +1,10 @@
+{
+  "changelog": "@changesets/changelog-git",
+  "commit": false,
+  "baseBranch": "develop",
+  "access": "restricted",
+  "privatePackages": { "version": true, "tag": false },
+  "updateInternalDependencies": "patch",
+  "ignore": ["@hav/admin", "@hav/api"],
+  "format": false
+}
