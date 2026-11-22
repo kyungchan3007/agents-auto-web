@@ -260,6 +260,8 @@ test.describe("만드는 방식 — 세 칸 · 검색 · 시행착오 (작업 03
     await expect(first).toContainText("바꾼 것");
     await expect(first.locator(".src a").first()).toHaveAttribute("href", /github\.com\/kyungchan3007\/agents-auto-web/);
     await expect(tr).not.toContainText("영어로 답함");
+  });
+});
 
 test.describe("알리기 (작업 0307)", () => {
   test("소재 초안 카드(날짜 · 본문 · 복사 단추) · 소재 기준 · 광고 운영은 아직 연결 안 함", async ({ page }) => {
