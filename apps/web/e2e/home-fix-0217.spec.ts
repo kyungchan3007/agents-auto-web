@@ -79,7 +79,7 @@ test.describe("홈 첫 화면 높이 — 안내판 · 97% 줄 · 국기 칩 · �
     });
   }
 
-  test("휴대폰 390 — 높이가 달라도 큰 제목 크기 · 위 여백이 같고 시안 휴대폰 값(58px · 48px)이며 가로 넘침 0", async ({ page }) => {
+  test("휴대폰 390 — 높이가 달라도 큰 제목 크기 · 위 여백이 같고 휴대폰 값(56px · 48px — 작업 0275: 글자 크기 11단계로 58 → 56)이며 가로 넘침 0", async ({ page }) => {
     test.skip(isPhoneProject(page), "뷰포트를 직접 정하므로 넓은 화면 프로젝트에서만");
     const seen: { h: number; font: number; padTop: number; gap: number }[] = [];
     for (const height of [568, 667, 844, 1200]) {
@@ -102,7 +102,7 @@ test.describe("홈 첫 화면 높이 — 안내판 · 97% 줄 · 국기 칩 · �
       seen.push({ h: height, font: m.font, padTop: m.padTop, gap: m.gap });
     }
     for (const s of seen) {
-      expect(Math.abs(s.font - 58), `${s.h}: 큰 제목 ${s.font}px`).toBeLessThanOrEqual(1.5); // 시안 휴대폰 .mega 58px
+      expect(Math.abs(s.font - 56), `${s.h}: 큰 제목 ${s.font}px`).toBeLessThanOrEqual(1.5); // 작업 0275: 첫 제목 최소 57.6 → 56(글자 크기 11단계) · 예전 시안 .mega 58px
       expect(Math.abs(s.padTop - 48), `${s.h}: 위 여백 ${s.padTop}px`).toBeLessThanOrEqual(1); // 시안 휴대폰 .hero padding-top 48px
       expect(Math.abs(s.gap - seen[0].gap), `${s.h}: 설명 ↔ 카드 간격이 높이에 따라 변함`).toBeLessThanOrEqual(1);
     }
