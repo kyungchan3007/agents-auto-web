@@ -102,4 +102,5 @@
 | 0278 | 모서리 값을 여섯 가지로 — 4 · 6 · 10 · 14 · 24 · 알약 토큰 (Quick · 디자인 PR · 시안 47 · 3차 공-10) | builder → test | 머지됨 (#331) | task/0278-radius-six | packages/ui/src/** · apps/web/src/shared/** · features/{home,currencies,travel-price,import-calc,intro,about}/** |
 | 0279 | 모서리 여섯 가지 (2/3) — 여행 타이밍 · 여행 물가 · 홈 (Quick · 디자인 PR · 시안 47) | builder → test | 머지됨 (#332) | task/0279-radius-six-2 | features/{travel-price,intro,home,about}/** |
 | 0280 | 모서리 여섯 가지 (3/3) — 통화 상세 · 직구 (Quick · 디자인 PR · 시안 47) | builder → test | 머지됨 (#333) | task/0280-radius-six-3 | features/{currencies,import-calc}/** |
-| 0281 | 움직임 방식만 가볍게 — width · left → transform · 스크립트 없이도 최종 값 보임 (Quick · 평소 PR · 시안 48 · 3차 마지막) | builder → test | 진행 중 | task/0281-motion-light | airfare-calendar.css · range-card.tsx · packages/ui 움직임 부품 |
+| 0281 | 움직임 방식만 가볍게 — width · left → transform · 스크립트 없이도 최종 값 보임 (Quick · 평소 PR · 시안 48 · 3차 마지막) | builder → test | 머지됨 (#334) | task/0281-motion-light | airfare-calendar.css · range-card.tsx · packages/ui 움직임 부품 |
+| 0282 | 긴 줄표 · 물음표 · 직구 도움말 — 달력 제목 · 직구 안내 문장 · 소개 물음표 · 2주 미만 줄 삭제 (Quick · 평소 PR · 시안 49 · 51 · 검수) | builder → test | 진행 중 | task/0282-copy-dash | features/{travel-price,import-calc,about}/** |
