@@ -1,6 +1,7 @@
 "use client";
 
 // 물가 구간 + 통화로 거르기 안내 (작업 0193) · 위에 물가 노선(작업 0230 — 정거장이 거른 목록의 맨 위 나라들을 따름) — /prices?currency=EUR 이면 그 통화 쓰는 나라만 · 안내와 "전체 보기" · 물가 자료가 없는 나라는 "물가 자료 없음"
+import { MORE_LINK } from "@hav/ui/text/more-link";
 import type { Signal } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import { EmptyState } from "@hav/ui/feedback/empty-state";
@@ -35,7 +36,7 @@ export function PriceView({ bands, missing, signalOf, percentileOf, latestYear }
         <p role="status" className="text-body font-semibold text-fg">
           {f.notice}
         </p>
-        <Link href="/prices" className="text-body text-cheap hover:underline">
+        <Link href="/prices" className={MORE_LINK}>
           전체 보기 ›
         </Link>
       </div>

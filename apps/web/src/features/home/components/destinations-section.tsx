@@ -2,6 +2,7 @@
 // 눈금 · 판정은 사이트 신호 규칙 그대로 (최근 90일 안의 위치 · SIG-01~05) · 신호가 없으면 "신호 없음"
 import { FadeUpGroup } from "@hav/ui/motion/fade-up";
 import { Eyebrow, SectionTitle } from "@hav/ui/text/heading";
+import { MORE_LINK } from "@hav/ui/text/more-link";
 import Link from "next/link";
 import type { DestinationRowData } from "../lib/destinations";
 import { MORE_CURRENCIES_HREF, moreCurrenciesText } from "../lib/more-currencies";
@@ -17,7 +18,7 @@ export function DestinationsSection({ rows, windowDays, moreCount }: { rows: Des
           가운데 선이 최근 {windowDays}일 중간입니다. 왼쪽일수록 지금 환전이 유리합니다. 예측이 아니며 투자 · 금융 조언이 아닙니다.
         </p>
         <DestinationTable rows={rows} windowDays={windowDays} />
-        <Link data-fu={4} href={MORE_CURRENCIES_HREF} data-testid="more-currencies" className="tap-44 mt-6 inline-block border-b-2 border-cheap pb-0.5 text-body font-bold text-cheap hover:text-fg">
+        <Link data-fu={4} href={MORE_CURRENCIES_HREF} data-testid="more-currencies" className={`${MORE_LINK} mt-6`}>
           {moreCurrenciesText(moreCount)}
         </Link>
       </FadeUpGroup>

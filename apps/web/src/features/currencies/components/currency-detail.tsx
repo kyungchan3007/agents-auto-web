@@ -1,5 +1,6 @@
 // 통화 상세 — 새 디자인(작업 0219 · 시안 A): 머리(국기 라벨 → "○○(코드) 환율" → 큰 오늘 값 카운트업 → 상태 점 + 글) + 1년 최저 · 최고 · 평균 비행 경로 카드 / 오른쪽 탑승권 "실제로 바꿀 때"(따라옴) → 아래 가로 전체 1년 흐름 → 물가 링크
 // 숫자는 빌드 때 받은 값만 (없으면 이유) · 판정은 사이트 신호 규칙(최근 90일 백분위) · 설명 문단 · 변화 표 · 공유는 화면에서 뺌 · 위쪽 검색 · 칩 · 맨 아래 목록은 둘러보기 틀(browse-layout)에 있음
+import { MORE_LINK } from "@hav/ui/text/more-link";
 import type { Fetched } from "@/shared/api";
 import { currencyName, pegText, rateText, toUnit } from "@hav/shared/currency";
 import type { FxHistory, FxRate } from "@hav/shared/fx";
@@ -86,13 +87,18 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
         {history.ok ? <PeriodChart rates={days} unit={rate.unit} unitText={t.unit} lastTone={s?.signal ?? null} /> : <p className="py-6 text-sm text-fg-2">1년 기록을 받지 못했습니다 ({history.reason})</p>}
       </SwitchFade>
 
-      {countriesOf(code).length > 0 && (
-        <p className="mt-8">
-          <a href={`/prices?currency=${code}`} className="text-body text-cheap hover:underline">
+      {/* 링크가 없는 통화도 안 보이는 같은 링크로 자리를 잡아 아래 구간 간격이 같음 (작업 0292) */}
+      <p className="mt-8">
+        {countriesOf(code).length > 0 ? (
+          <a href={`/prices?currency=${code}`} className={MORE_LINK}>
             이 통화 쓰는 나라 물가 보기 ›
           </a>
-        </p>
-      )}
+        ) : (
+          <span aria-hidden className={`${MORE_LINK} invisible`}>
+            이 통화 쓰는 나라 물가 보기 ›
+          </span>
+        )}
+      </p>
     </div>
   );
 }
