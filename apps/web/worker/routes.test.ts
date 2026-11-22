@@ -21,6 +21,7 @@ describe("Worker 먼저 지나는 경로 (작업 0189)", () => {
     expect(cfg.routes).toEqual([
       { pattern: "flapfx.com", custom_domain: true },
       { pattern: "www.flapfx.com", custom_domain: true },
+      { pattern: "admin.flapfx.com", custom_domain: true }, // 어드민 (작업 0302)
     ]);
     expect(cfg.main).toBe("worker/index.ts");
     expect(cfg.assets).toMatchObject({ directory: "out", binding: "ASSETS", not_found_handling: "404-page" });

@@ -38,7 +38,9 @@
   // 플랩 주소 — 설정이 원본 (대시보드에서 붙인 사용자 지정 도메인과 같게 · 작업 0190)
   "routes": [
     { "pattern": "flapfx.com", "custom_domain": true },
-    { "pattern": "www.flapfx.com", "custom_domain": true }
+    { "pattern": "www.flapfx.com", "custom_domain": true },
+    // 어드민(작업실 · GEO 측정) — 같은 Worker 가 주소로 나눔 (worker/host.ts · 작업 0302)
+    { "pattern": "admin.flapfx.com", "custom_domain": true }
   ],
   "workers_dev": true,
   "preview_urls": true,
