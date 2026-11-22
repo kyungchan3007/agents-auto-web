@@ -53,7 +53,7 @@ export function PeriodChart({ rates, unit = 1, unitText, lastTone }: { rates: { 
             x={[dayNumber(shown[0].date), dayNumber(last.date)]}
             y={{ min: axis.min, max: axis.max, ticks: axis.ticks }}
             xTicks={dateTicks(shown[0].date, last.date)}
-            series={[{ id: "rate", color: "var(--hav-pin-cheap)", points: shown.map((d) => ({ x: dayNumber(d.date), v: d.baseRate })), area: 0.22, width: 2.6, end: { label: "오늘", value: last.baseRate, digits: last.baseRate >= 100 ? 1 : 2, unit: rateText(rate).unit } }]}
+            series={[{ id: "rate", color: "var(--hav-pin-cheap)", points: shown.map((d) => ({ x: dayNumber(d.date), v: d.baseRate })), area: 0.22, width: 2.6, end: { label: "오늘", value: last.baseRate, digits: 2, unit: rateText(rate).unit } }]}
             marks={marks}
             refs={[{ v: stats.avg, text: `${period.label} 평균 ${cardRateText(stats.avg, rate)}`, short: `평균 ${cardRateText(stats.avg, rate)}`, tone: "navy" }]}
             height={380}
