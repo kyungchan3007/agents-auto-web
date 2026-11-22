@@ -161,7 +161,7 @@ test.describe("여행 물가 — 나라 단추로 고르는 물가 노선 (작�
       const band = e.kr ? "base" : e.value / 100 < 0.9 ? "cheap" : e.value / 100 > 1.1 ? "exp" : "mid";
       await expect(tid(page, "route-card-meta")).toHaveText(new RegExp(`^정거장 ${k + 1} / ${n} · ${BANDNAME[band]}( · \\d{4}년 자료)?$`));
       await expect.poll(async () => Number((await text(page, "route-card-value")).replace(/\s/g, "")), { message: "물가 숫자(숫자가 넘어가는 움직임이 끝난 값)" }).toBe(e.value);
-      await expect(tid(page, "route-card-pct")).toHaveText(e.value === 100 ? /^기준/ : e.value < 100 ? `${100 - e.value}% 쌉니다` : `${e.value - 100}% 비쌉니다`);
+      await expect(tid(page, "route-card-pct")).toHaveText(e.value === 100 ? /^기준/ : e.value < 100 ? `${100 - e.value}% 저렴합니다` : `${e.value - 100}% 비쌉니다`);
       await expect(tid(page, "route-card-budget")).toContainText(`약 ${(e.value * 1000).toLocaleString("ko-KR")}원`);
       const signal = e.kr ? "한국 100 기준" : e.pill && /^환율 .*·/.test(e.pill) ? e.pill : "환율 없음";
       await expect(tid(page, "route-card-signal")).toContainText(signal);

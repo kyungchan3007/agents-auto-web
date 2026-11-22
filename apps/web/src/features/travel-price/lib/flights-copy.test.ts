@@ -12,7 +12,7 @@
 //       value 최근 달 지수 소수 첫째 자리 (112.4) · 작년 같은 달 값이 있으면 yoy = (이번 / 작년 − 1) × 100
 //       signal = yoy ≥ +1 → "expensive" · yoy ≤ −1 → "cheap" · 그 사이 → "normal" (1% 경계는 가정 — lead 판단)
 //       pinText = `작년보다 ${부호 소수 첫째 자리}%` (예 "작년보다 +6.1%" · "작년보다 -2.3%") · 작년 값이 없으면 signal null · pinText "작년 값 없음"
-//   cheapMonthsCard(airCheap: number | null, tourCheap: number | null): { label: "가장 싼 달 (3년 평균)"; value: string; note: "같은 달 평균 기준" } | null
+//   cheapMonthsCard(airCheap: number | null, tourCheap: number | null): { label: "가장 저렴한 달 (3년 평균)"; value: string; note: "같은 달 평균 기준" } | null
 //     - value = 있는 달만 " · " 로 (`4월 · 11월` · 하나면 `4월`) · 둘 다 없으면 null (카드 숨김)
 import { describe, expect, it } from "vitest";
 import { cheapMonthsCard, flightsHeadline, yoyCard } from "./flights-copy";
@@ -57,11 +57,11 @@ describe("yoyCard — 작년 대비 카드", () => {
   });
 });
 
-describe("cheapMonthsCard — 가장 싼 달 (평균에 쓴 해 수는 받은 자료대로)", () => {
+describe("cheapMonthsCard — 가장 저렴한 달 (평균에 쓴 해 수는 받은 자료대로)", () => {
   it("'4월 · 11월' + 같은 달 평균 기준", () => {
-    expect(cheapMonthsCard(4, 11, 3)).toEqual({ label: "가장 싼 달 (최근 3년 평균)", value: "4월 · 11월", note: "같은 달 평균 기준" });
-    expect(cheapMonthsCard(4, 11, 2)?.label).toBe("가장 싼 달 (최근 2년 평균)"); // 24개월 자료 — 3년이라고 쓰지 않음
-    expect(cheapMonthsCard(4, 11)?.label).toBe("가장 싼 달 (같은 달 평균)"); // 몇 년인지 모르면 지어내지 않음
+    expect(cheapMonthsCard(4, 11, 3)).toEqual({ label: "가장 저렴한 달 (최근 3년 평균)", value: "4월 · 11월", note: "같은 달 평균 기준" });
+    expect(cheapMonthsCard(4, 11, 2)?.label).toBe("가장 저렴한 달 (최근 2년 평균)"); // 24개월 자료 — 3년이라고 쓰지 않음
+    expect(cheapMonthsCard(4, 11)?.label).toBe("가장 저렴한 달 (같은 달 평균)"); // 몇 년인지 모르면 지어내지 않음
   });
   it("하나만 있으면 그 달만 · 둘 다 없으면 null", () => {
     expect(cheapMonthsCard(4, null)?.value).toBe("4월");

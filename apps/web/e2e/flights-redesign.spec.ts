@@ -50,7 +50,7 @@ test.describe("새 /flights — 머리 (작업 0218)", () => {
     const board = tid(page, "hero-board").getByTestId("flap-board");
     await expect(board).toHaveAttribute("role", "img");
     const label = (await board.getAttribute("aria-label")) ?? "";
-    expect(label).toMatch(/^가장 싼 달은 .+입니다\. 국제항공료 지수 \d+\.\d/);
+    expect(label).toMatch(/^가장 저렴한 달은 .+입니다\. 국제항공료 지수 \d+\.\d/);
     const h1 = ((await page.getByRole("heading", { level: 1 }).innerText()) ?? "").replace(/\s+/g, " ");
     const months = [...h1.matchAll(/(\d+)월/g)].map((m) => `${m[1]}월`);
     for (const m of months) expect(label).toContain(m);
@@ -63,7 +63,7 @@ test.describe("새 /flights — 머리 (작업 0218)", () => {
     await page.waitForTimeout(2600);
     const rows = await board.locator('[data-testid="flap-row"]').evaluateAll((els) => els.map((e) => (e.textContent ?? "").replace(/\s+/g, "")));
     expect(rows.join("|")).toContain(String(air));
-    expect(rows[0]).toMatch(/^가장싼달/);
+    expect(rows[0]).toMatch(/^가장저렴한달/); // 작업 0277: '가장 싼 달' → '가장 저렴한 달'
   });
 });
 
@@ -81,7 +81,7 @@ test.describe("새 /flights — 탑승권 · 한 줄 띠 (작업 0218)", () => {
     expect(nums.x + nums.width).toBeLessThanOrEqual(card.x + card.width + 1);
     if (isPhone(page)) expect(nums.y).toBeGreaterThanOrEqual(graph.y + graph.height - 1); // 그래프 위 · 숫자 아래
     else expect(nums.x).toBeGreaterThan(graph.x + graph.width - 1); // 왼쪽 그래프 · 오른쪽 숫자
-    await expect(tid(page, "cheap-board").getByTestId("flap-board")).toHaveAttribute("aria-label", /^가장 싼 달 \d+월/);
+    await expect(tid(page, "cheap-board").getByTestId("flap-board")).toHaveAttribute("aria-label", /^가장 저렴한 달 \d+월/);
     await expect(tid(page, "yoy-cards")).toContainText("같은 달 평균 기준");
   });
 
