@@ -13,7 +13,7 @@ test.describe("어드민 틀 (ADD-01)", () => {
     ["/log", "작업실"],
     ["/geo", "GEO 측정"],
     ["/how", "만드는 방식"],
-    ["/marketing", "알리기"], // 작업 0304
+    ["/marketing", "알리기"], // 작업 0307
   ] as const) {
     test(`${path} — 어드민 메뉴 네 화면 · 지금 화면 표시 · 방문자 파란 머리띠 없음 · 가로 넘침 없음`, async ({ page }) => {
       await page.goto(path);
@@ -261,7 +261,7 @@ test.describe("만드는 방식 — 세 칸 · 검색 · 시행착오 (작업 03
     await expect(first.locator(".src a").first()).toHaveAttribute("href", /github\.com\/kyungchan3007\/agents-auto-web/);
     await expect(tr).not.toContainText("영어로 답함");
 
-test.describe("알리기 (작업 0304)", () => {
+test.describe("알리기 (작업 0307)", () => {
   test("소재 초안 카드(날짜 · 본문 · 복사 단추) · 소재 기준 · 광고 운영은 아직 연결 안 함", async ({ page }) => {
     await page.goto("/marketing");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Meta 광고로 이 사이트를 알립니다");

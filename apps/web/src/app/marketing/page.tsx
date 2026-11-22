@@ -5,7 +5,7 @@ import { MarketingPage } from "@/features/marketing/components/marketing-page";
 import { type Draft, draftDays, parseDraft } from "@/features/marketing/lib/drafts";
 import { ADMIN_URL, REPO_URL } from "@/shared/site";
 
-// 알리기 (작업 0304) — 어드민 · 검색에 막음 · 소재 초안은 빌드 때 저장소 docs/marketing 에서 읽음(없으면 빈 상태)
+// 알리기 (작업 0307) — 어드민 · 검색에 막음 · 소재 초안은 빌드 때 저장소 docs/marketing 에서 읽음(없으면 빈 상태)
 export const metadata: Metadata = {
   title: "알리기 · Flapfx",
   description: "Meta 광고 소재 초안 — 날짜별 이미지 · 문구 · 쓴 숫자",

@@ -1,4 +1,4 @@
-// 알리기 소재 초안 나누기 (작업 0304)
+// 알리기 소재 초안 나누기 (작업 0307)
 import { describe, expect, it } from "vitest";
 import { draftDays, parseDraft, sections } from "./drafts";
 
@@ -22,7 +22,7 @@ const MD = `# 알림 초안 2026-11-20
 https://flapfx.com/currencies/EUR
 `;
 
-describe("알리기 초안 (작업 0304)", () => {
+describe("알리기 초안 (작업 0307)", () => {
   it("절(## 제목)로 나눔", () => {
     expect(Object.keys(sections(MD))).toEqual(["본문", "해시태그", "이미지 대체 글", "쓴 숫자와 받은 날짜", "눌렀을 때 갈 주소"]);
   });

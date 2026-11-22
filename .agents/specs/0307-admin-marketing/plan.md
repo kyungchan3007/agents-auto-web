@@ -17,6 +17,6 @@
 - packages/ui/src/components/admin/icons.tsx · admin-shell.tsx (알리기 아이콘)
 - apps/web/worker/host.ts · routes.ts · host.test.ts · apps/web/wrangler.jsonc(보호 · run_worker_first 에 /marketing)
 - 테스트: features/marketing/lib/drafts.test.ts · apps/web/e2e/admin.spec.ts · .agents/e2e-map.json
-- .agents/specs/0304-admin-marketing/**
+- .agents/specs/0307-admin-marketing/**
 
 ## 계획 밖 변경 이유
