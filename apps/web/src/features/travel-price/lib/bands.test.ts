@@ -25,10 +25,10 @@ describe("물가 묶음 계산 (작업 0125)", () => {
 // 작업 0212 — 나라 줄 판정 알약에 "환율" 을 붙여 물가(구간 제목)와 구분
 import { rateBadgeText } from "./bands";
 
-describe("rateBadgeText — '환율 하위 3% · 쌈' (작업 0212)", () => {
-  it("90일 백분위 글 앞에 '환율' · 백분위가 없으면 '환율 쌈'", () => {
-    expect(rateBadgeText("cheap", 0.03)).toBe("환율 하위 3% · 쌈");
-    expect(rateBadgeText("expensive", 0.9)).toBe("환율 상위 10% · 비쌈");
+describe("rateBadgeText — '환율 하위 3% · 낮음' (작업 0212)", () => {
+  it("90일 백분위 글 앞에 '환율' · 백분위가 없으면 '환율 낮음'", () => {
+    expect(rateBadgeText("cheap", 0.03)).toBe("환율 하위 3% · 낮음");
+    expect(rateBadgeText("expensive", 0.9)).toBe("환율 상위 10% · 높음");
     expect(rateBadgeText("normal", null)).toBe("환율 보통");
   });
 });

@@ -3,7 +3,7 @@
 //   DOM 계약
 //     카드 [data-testid="dest-list"] 에 data-state="pill"(알약으로 접힘) | "expanding"(펼치는 중) | "final"(끝 · 지금 운영 카드와 같은 모양) — 서버 첫 그림 · 움직임 줄이기는 처음부터 "final" (속성이 없어도 됨 = final 로 봄)
 //     알약 [data-testid="dest-pill"] — 카드 안 · pill 일 때와 expanding 동안에만 있음 · final 이면 없음(DOM 에서 빠짐)
-//       국기 [data-testid="dest-pill-flag"] — 도착지(dest-row) 수만큼 · 글 [data-testid="dest-pill-text"] = "도착지 N곳 중 M곳이 최근 90일 중 싼 편" (N = dest-row 수 · M = 신호가 싼 편(하위 30% 이하 · 줄의 상태 글이 '… · 쌈')인 줄 수)
+//       국기 [data-testid="dest-pill-flag"] — 도착지(dest-row) 수만큼 · 글 [data-testid="dest-pill-text"] = "도착지 N곳 중 M곳이 최근 90일 중 싼 편" (N = dest-row 수 · M = 신호가 싼 편(하위 30% 이하 · 줄의 상태 글이 '… · 낮음'(작업 0276: '쌈' → '낮음'))인 줄 수)
 //     pill 일 때 카드: 높이 = 알약 높이(줄은 투명 · 가려짐) · 모서리 = 알약 반지름(높이의 절반) · expanding 동안 높이 → 끝 높이 · 모서리 → 24px
 //     줄 기존 testid 그대로: dest-row · dest-rate(data-final · 시작이 중간값이면 data-start = 90일 중간값 숫자) · dest-dot(data-position) · dest-status · dest-flag · dest-city · dest-scale
 //     시간(스크롤로 카드 윗부분이 들어온 때부터): 높이 약 0.46초 · 줄 0.07초 간격 · 점은 가운데 → 오늘 자리 0.62초 · 금액은 중간값 → 오늘 값 같은 시간 · 신호 글은 점이 도착한 뒤 · 전체 약 1초(끝은 1.9초 안)
@@ -82,11 +82,11 @@ const snapshot = (page: Page) =>
       }),
     };
   });
-/** 줄 안 '쌈' 상태 글의 수 = 알약의 M */
-const cheapRows = (page: Page) => tid(page, "dest-status").evaluateAll((els) => els.filter((e) => /· 쌈$/.test((e.textContent ?? "").trim())).length);
+/** 줄 안 '낮음' 상태 글의 수 = 알약의 M */
+const cheapRows = (page: Page) => tid(page, "dest-status").evaluateAll((els) => els.filter((e) => /· 낮음$/.test((e.textContent ?? "").trim())).length);
 
 test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 · 모션 13번)", () => {
-  test("카드가 화면 아래에 있으면 알약으로 접혀 있음 — 국기들 + '도착지 N곳 중 M곳이 최근 90일 중 싼 편' · M 은 줄의 '쌈' 수 · 줄은 안 보임 @design", async ({ page }) => {
+  test("카드가 화면 아래에 있으면 알약으로 접혀 있음 — 국기들 + '도착지 N곳 중 M곳이 최근 90일 중 싼 편' · M 은 줄의 '낮음' 수 · 줄은 안 보임 @design", async ({ page }) => {
     if (!isPhone(page)) await page.setViewportSize({ width: 1280, height: 720 });
     await openHome(page);
     test.skip(!(await hasRows(page)), "도착지 자료 없음");

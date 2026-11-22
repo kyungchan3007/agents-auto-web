@@ -63,7 +63,7 @@ test.describe("홈 첫 화면 디자인 (작업 0210 → 0217 새 디자인)", (
     await expect(page.locator("#board")).toHaveAttribute("aria-labelledby", "today-title");
   });
 
-  test("12달 막대 각주 · '가장 쌈 / 가장 비쌈' 라벨 글자 대비 4.5:1 이상", async ({ page }) => {
+  test("12달 막대 각주 · '가장 저렴한 달 / 가장 비싼 달' 라벨 글자 대비 4.5:1 이상 (작업 0276)", async ({ page }) => {
     await page.goto("/");
     await page.waitForTimeout(500);
     const note = page.getByText("지수는 값이 클수록 항공료가 비싸다는 뜻", { exact: false }).first();

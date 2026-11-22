@@ -94,7 +94,7 @@ test("도착지 줄 — 상태에 근거 숫자(하위 · 상위 N%) · 판정 �
   expect(n).toBeGreaterThan(0);
   for (let i = 0; i < n; i++) {
     const text = (await pins.nth(i).textContent())?.trim() ?? "";
-    expect(text, `${i + 1}번째 핀`).toMatch(/^((하위|상위) \d+% · )?(쌈|보통|비쌈)$/);
+    expect(text, `${i + 1}번째 핀`).toMatch(/^((하위|상위) \d+% · )?(낮음|보통|높음)$/);
   }
 });
 

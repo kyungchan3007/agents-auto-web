@@ -71,6 +71,8 @@ describe("numberTone — 비싼 쪽을 뜻하는 문장", () => {
     expect(numberTone("$180 물건, 세금 없이 받습니다")).toBe("neutral");
     expect(numberTone("4월에 떠나세요")).toBe("neutral");
     expect(numberTone("작년보다 -2.3% 내렸습니다")).toBe("neutral");
+    expect(numberTone("항공료는 11월이 가장 저렴합니다")).toBe("neutral"); // 작업 0276: '저렴'도 싼 쪽 낱말 — 강조 색이 사라지지 않음
+    expect(numberTone("가장 저렴한 달은 11월, 가장 비싼 달은 5월")).toBe("neutral");
   });
 
   it("높습니다 · 올랐습니다 · 세금이 붙습니다 → expensive (주홍)", () => {

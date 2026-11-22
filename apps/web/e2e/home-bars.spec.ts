@@ -2,7 +2,7 @@
 //   기준 캡처: .tmp/redesign-1118/F/shots/home-1280.png · home-390.png · home-mid.png · 시안 코드 F/home.html (barChart)
 //   DOM 계약(builder): svg[data-testid="year-bars"][role=img][data-state=idle|playing|done] 안
 //     year-bar[data-month=1~12][data-tone=high|low|mid|none][data-reveal]  막대(위 둥근 모서리 · 아래로 옅어지는 그라데이션 · 그림자) — 안에 fill 이 url(#…) 인 요소
-//     year-tag[data-kind=high|low][data-reveal]  '5월 가장 비쌈'(빨강) · '11월 가장 쌈'(노랑) 말풍선
+//     year-tag[data-kind=high|low][data-reveal]  '가장 비싼 달'(빨강) · '가장 저렴한 달'(노랑) 말풍선(작업 0276)
 //     chart-grid[data-reveal] · chart-axis[data-reveal](왼쪽 눈금 = 실제 지수 숫자 — 시안의 '비쌈 ↑ · 쌈 ↓' 글자는 쓰지 않음)
 //     year-month  달 이름 (넓은 화면 '1월'… · 휴대폰 '1'…)
 //   움직임(약 2.8초 · 한 번): 눈금 → 1월부터 차례로 자람 → 5월 · 11월이 튀며 색이 들어옴 → 말풍선 톡 · 움직임 줄이기는 처음부터 최종 모양
@@ -76,8 +76,8 @@ test.describe("홈 12달 막대 — 풍성한 2D (작업 0217 · 시안 F)", () 
     // 말풍선: 빨강(높음) · 노랑(낮음) — 글에 달 이름
     const tagHigh = chart.locator('[data-testid="year-tag"][data-kind="high"]');
     const tagLow = chart.locator('[data-testid="year-tag"][data-kind="low"]');
-    await expect(tagHigh).toHaveText(new RegExp(`^${hi.month}월 가장 비쌈$`));
-    await expect(tagLow).toHaveText(new RegExp(`^${lo.month}월 가장 쌈$`));
+    await expect(tagHigh).toHaveText("가장 비싼 달"); // 작업 0276: '5월 가장 비쌈' → '가장 비싼 달'(달 이름은 바로 아래 눈금에 있음)
+    await expect(tagLow).toHaveText("가장 저렴한 달"); // 작업 0276: '11월 가장 쌈' → '가장 저렴한 달'
     expect(await reveal(tagHigh)).toBe(1);
     expect(await reveal(tagLow)).toBe(1);
     // 달 이름: 넓은 화면은 '1월' · 휴대폰은 숫자
@@ -94,6 +94,8 @@ test.describe("홈 12달 막대 — 풍성한 2D (작업 0217 · 시안 F)", () 
     const axis = chart.locator('[data-testid="chart-axis"]');
     await expect(axis).not.toContainText("비쌈 ↑");
     await expect(axis).not.toContainText("쌈 ↓");
+    await expect(axis).not.toContainText("높음 ↑"); // 작업 0276: 새 낱말로도 글자 눈금을 쓰지 않음
+    await expect(axis).not.toContainText("낮음 ↓");
     const ticks = await axis.evaluate((g) =>
       [...g.querySelectorAll("text")].map((t) => ({ txt: (t.textContent ?? "").trim(), y: t.getBoundingClientRect().top })).filter((t) => /^\d{2,3}(\.\d)?$/.test(t.txt)),
     );

@@ -4,8 +4,8 @@
 // builder 가 할 것
 //   signal-pin.tsx: pinBasis(signal, percentile) 추가(signal-pin.test.ts) · SignalPin 이 percentile prop 을 받아 pinBasis 글을 보임
 //   destination-row.tsx
-//     - 데스크톱(sm 이상)은 한 줄 세 칸: ① 도시(큰 글자) + 통화(작은 글) ② 오늘 환율(오른쪽 정렬 · 굵은 숫자) ③ 쌈~비쌈 눈금 + 판정 핀 — 도시 아래에 눈금이 따로 한 줄 더 있던 옛 배치(mt-4 hidden sm:block) 없음
-//     - 끝 라벨(쌈 · 중간 · 비쌈)은 작게(text-xs 또는 text-[10~12px]) 눈금 바로 아래
+//     - 데스크톱(sm 이상)은 한 줄 세 칸: ① 도시(큰 글자) + 통화(작은 글) ② 오늘 환율(오른쪽 정렬 · 굵은 숫자) ③ 낮음~높음 눈금 + 판정 핀 — 도시 아래에 눈금이 따로 한 줄 더 있던 옛 배치(mt-4 hidden sm:block) 없음
+//     - 끝 라벨(낮음 · 중간 · 높음)은 작게(text-xs 또는 text-[10~12px]) 눈금 바로 아래
 //     - 모바일(sm 아래)은 눈금 숨김 + 핀을 오른쪽 · 왼쪽에 도시 + "통화 · 환율" 한 칸
 //     - props: pct 대신 percentile (0~1 · 없으면 핀 글자만) — position(눈금 위치)은 그대로
 //     - e2e 가 찾는 표시: data-testid="dest-row"(줄 전체) · "dest-city" · "dest-rate" · "dest-scale"(눈금 칸 · 모바일에선 숨김) · "dest-pin"(보이는 핀) · "dest-mobile-meta"(모바일 전용 "통화 · 환율")
@@ -46,10 +46,10 @@ describe("도착지 줄 배치", () => {
     expect(scale, "눈금 칸").toMatch(/sm:(flex|block)/); // 데스크톱에서 보임
   });
 
-  it("끝 라벨(쌈 · 중간 · 비쌈)은 작게 · 눈금 바로 아래 (눈금 칸 안에서 눈금 뒤)", () => {
+  it("끝 라벨(낮음 · 중간 · 높음)은 작게 · 눈금 바로 아래 (눈금 칸 안에서 눈금 뒤)", () => {
     const i = row.indexOf('data-testid="dest-scale"');
     const rest = row.slice(i);
-    const labels = rest.search(/>\s*쌈\s*</);
+    const labels = rest.search(/>\s*낮음\s*</);
     expect(labels, "끝 라벨").toBeGreaterThan(0);
     expect(row).toMatch(/text-xs|text-\[1[0-2]px\]/);
     expect(rest.indexOf("bg-line"), "눈금 선").toBeLessThan(labels);
