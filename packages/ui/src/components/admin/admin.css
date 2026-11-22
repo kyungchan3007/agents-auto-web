@@ -255,3 +255,16 @@
 .adm-story ul, ul.adm-note, .adm-note ul { list-style: disc; }
 .adm-story ul li::marker, ul.adm-note li::marker { color: var(--a-bar2); }
 .adm-stat .v a { font-family: var(--font-sans), sans-serif; }
+/* 알리기 소재 카드 (작업 0304) */
+.adm-drafts { padding: 16px 20px 20px; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); }
+.adm-draft-b { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 16px; padding: 16px 20px; }
+.adm-draft-b img, .adm-draft-noimg { width: 160px; height: auto; aspect-ratio: 4 / 5; border-radius: 8px; border: 1px solid var(--a-line); background: var(--a-sunk); object-fit: cover; }
+.adm-draft-noimg { display: grid; place-items: center; font-size: 12px; color: var(--a-mute); }
+.adm-draft-t { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.adm-draft-body { margin: 0; white-space: pre-line; color: var(--a-ink); }
+.adm-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+@media (max-width: 820px) {
+  .adm-drafts { padding: 12px 16px 16px; grid-template-columns: minmax(0, 1fr); }
+  .adm-draft-b { grid-template-columns: minmax(0, 1fr); padding: 16px; }
+  .adm-draft-b img, .adm-draft-noimg { width: 100%; max-width: 320px; }
+}

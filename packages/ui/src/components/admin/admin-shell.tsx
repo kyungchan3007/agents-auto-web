@@ -8,13 +8,13 @@
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { flashPanel } from "../../lib/admin-events";
 import { match, pieces } from "../../lib/match";
-import { IconGeo, IconHow, IconLog, IconOut, IconSearch } from "./icons";
+import { IconGeo, IconHow, IconLog, IconMegaphone, IconOut, IconSearch } from "./icons";
 import "./admin.css";
 
 /** 어드민 화면 하나 — key 는 단축키(숫자 한 글자) · icon 은 아래 ICONS 이름 */
 export type AdminNavPage = { id: string; href: string; label: string; short: string; key: string; icon: keyof typeof ICONS };
 
-const ICONS = { log: IconLog, geo: IconGeo, how: IconHow } satisfies Record<string, () => ReactNode>;
+const ICONS = { log: IconLog, geo: IconGeo, how: IconHow, marketing: IconMegaphone } satisfies Record<string, () => ReactNode>;
 
 type Item = { group: string; label: string; hint: string; run: () => void };
 
