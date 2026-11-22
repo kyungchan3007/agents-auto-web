@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PricePage } from "@/features/travel-price/components/price-page";
+import { PricePage } from "@/features/prices/price-page";
 import { api } from "@hav/shared/api";
 import { JsonLd } from "@/shared/json-ld";
 import { breadcrumbLd, pageMeta } from "@/shared/seo";

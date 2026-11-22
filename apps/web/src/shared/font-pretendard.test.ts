@@ -131,7 +131,7 @@ describe("큰 제목 · 큰 숫자 — 굵기 800 · 자간 -0.03em · 숫자는
   const tokens = stripCss(read(join(UI_SRC, "tokens.css")));
   /** font-display 가 들어간 className 문자열 (첫 따옴표 · 백틱 · ${ 전까지) */
   const classes = (f: string) => [...stripTs(read(f)).matchAll(/className=\{?[`"']([^`"'$]*font-display[^`"'$]*)/g)].map((m) => m[1]);
-  const FILES = [join(UI_SRC, "components/text/heading.tsx"), join(UI_SRC, "components/text/big-number.tsx"), join(UI_SRC, "components/layout/nav-bar.tsx"), join(UI_SRC, "components/data/flap-board.tsx"), join(WEB_SRC, "features/currencies/components/currency-detail.tsx"), join(WEB_SRC, "features/import-calc/components/calc-result.tsx")];
+  const FILES = [join(UI_SRC, "components/text/heading.tsx"), join(UI_SRC, "components/text/big-number.tsx"), join(UI_SRC, "components/layout/nav-bar.tsx"), join(UI_SRC, "components/data/flap-board.tsx"), join(WEB_SRC, "features/currencies/detail/currency-detail.tsx"), join(WEB_SRC, "features/import-calc/calculator/calc-result.tsx")];
 
   it("font-display 를 쓰는 모든 곳이 font-extrabold(800) · 자간 -0.03em · font-normal 아님 · tracking-tight 아님", () => {
     const all = FILES.flatMap((f) => classes(f).map((c) => [rel(f), c] as const));

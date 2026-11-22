@@ -4,7 +4,7 @@
 // builder 가 할 것 (prd F1~F5 · sdd)
 //   font-display 를 직접 쓰는 곳은 아래 허용 목록 6개 파일뿐 (주석 설명은 세지 않음):
 //     packages/ui components/text/heading.tsx (Title — 맨 위 큰 제목) · components/text/big-number.tsx (큰 숫자) · components/layout/nav-bar.tsx (로고 flapfx) ·
-//     apps/web features/home/components/today-band.tsx (바다 띠 큰 문장 · 노란 큰 숫자) · features/currencies/components/currency-detail.tsx (통화 큰 환율) · features/import-calc/components/calc-result.tsx (직구 결과 금액)
+//     apps/web features/home/components/today-band.tsx (바다 띠 큰 문장 · 노란 큰 숫자) · features/currencies/detail/currency-detail.tsx (통화 큰 환율) · features/import-calc/calculator/calc-result.tsx (직구 결과 금액)
 //     (홈 여행 타이밍 큰 문장 · 직구 큰 문장 · 각 화면 맨 위 제목은 Title 부품을 통해 Gasoek — 직접 쓰지 않음)
 //   heading.tsx: 새 부품 SectionTitle(구간 제목 · 카드 제목) — font-sans + font-bold (font-display 아님) · Title 은 font-display 유지
 //   구간 제목 · 카드 제목 · 단계 제목 · 역할 이름 · 도시 이름은 font-display 대신 SectionTitle 이나 font-bold 를 씀 (아래 목록 파일) — 도착지 줄의 도시 이름(dest-city)은 font-bold
@@ -33,18 +33,18 @@ const ALL = [...sources(WEB_SRC), ...sources(UI_SRC)];
 const ALLOWED = [
   "packages/ui/src/components/text/heading.tsx",
   "packages/ui/src/components/text/big-number.tsx",
-  "apps/web/src/features/import-calc/components/customs-board.tsx", // 작업 0221 과세환율 작은 글자판 칸 글자 (FlapBoard 와 같은 Pretendard 800)
+  "apps/web/src/features/import-calc/customs/customs-board.tsx", // 작업 0221 과세환율 작은 글자판 칸 글자 (FlapBoard 와 같은 Pretendard 800)
   "packages/ui/src/components/layout/nav-bar.tsx",
-  "apps/web/src/features/travel-price/components/prices-header.tsx", // 작업 0220 새 /prices 파랑 첫 면 큰 제목 (Pretendard 800 · 시안 B)
-  "apps/web/src/features/intro/components/window-transition.tsx", // 작업 0223 인트로 끝 장면의 로고(홈 메뉴 로고와 같은 Pretendard 800)
+  "apps/web/src/features/prices/prices-header.tsx", // 작업 0220 새 /prices 파랑 첫 면 큰 제목 (Pretendard 800 · 시안 B)
+  "apps/web/src/features/intro/scene/window-transition.tsx", // 작업 0223 인트로 끝 장면의 로고(홈 메뉴 로고와 같은 Pretendard 800)
   "packages/ui/src/components/data/flap-board.tsx", // 작업 0177 출발 안내판 칸 글자 (옛 today-band 자리)
   "packages/ui/src/components/data/line-chart.tsx", // 작업 0216 그래프 2D 끝 말풍선 큰 숫자
-  "apps/web/src/features/home/components/hero-section.tsx", // 작업 0217 새 홈 첫 면 큰 제목 "N월에 떠나세요" (Pretendard 800 · 시안 B)
+  "apps/web/src/features/home/timing/hero-section.tsx", // 작업 0217 새 홈 첫 면 큰 제목 "N월에 떠나세요" (Pretendard 800 · 시안 B)
   "packages/ui/src/components/data/ruler-chart.tsx", // 작업 0220 그래프 2D 여행 물가 자의 큰 숫자
-  "apps/web/src/features/currencies/components/currency-detail.tsx",
-  "apps/web/src/features/currencies/components/result-board.tsx", // 작업 0219 지적: 계산 결과 글자판 칸 글자 (FlapBoard 와 같은 Pretendard 800)
-  "apps/web/src/features/import-calc/components/calc-result.tsx",
-  "apps/web/src/features/travel-price/components/mini-board.tsx", // 작업 0218 리뷰: 탑승권 오른쪽 작은 글자판 칸 글자 (FlapBoard 와 같은 Pretendard 800)
+  "apps/web/src/features/currencies/detail/currency-detail.tsx",
+  "apps/web/src/features/currencies/converter/result-board.tsx", // 작업 0219 지적: 계산 결과 글자판 칸 글자 (FlapBoard 와 같은 Pretendard 800)
+  "apps/web/src/features/import-calc/calculator/calc-result.tsx",
+  "apps/web/src/features/flights/mini-board.tsx", // 작업 0218 리뷰: 탑승권 오른쪽 작은 글자판 칸 글자 (FlapBoard 와 같은 Pretendard 800)
 ];
 
 describe("font-display(Gasoek One)는 허용 목록 파일에서만 (F1)", () => {
@@ -86,7 +86,7 @@ describe("구간 제목 · 카드 제목 부품 — IBM Plex 굵게 (F2 · F3)",
   });
 
   it("홈 '도착지별 환전 타이밍' 구간 제목은 SectionTitle (Title 아님)", () => {
-    const f = read(join(WEB_SRC, "features/home/components/destinations-section.tsx"));
+    const f = read(join(WEB_SRC, "features/home/destinations/destinations-section.tsx"));
     expect(f).toMatch(/\bSectionTitle\b/);
     expect(f).not.toMatch(/<Title\b/);
   });
@@ -94,13 +94,13 @@ describe("구간 제목 · 카드 제목 부품 — IBM Plex 굵게 (F2 · F3)",
 
 describe("구간 · 카드 · 단계 제목 · 역할 이름 · 도시 이름은 굵은 IBM Plex (font-display 아님)", () => {
   const FILES = [
-    "apps/web/src/features/currencies/components/converter.tsx", // 실제로 바꿀 때
-    "apps/web/src/features/import-calc/components/customs-section.tsx", // 이번 주 과세환율
-    "apps/web/src/features/import-calc/components/import-price-section.tsx", // 수입물가와 환율
-    "apps/web/src/features/travel-price/components/budget-planner.tsx", // 여행 하루 예산
-    "apps/web/src/features/travel-price/components/price-bands.tsx", // 물가 구간 제목
+    "apps/web/src/features/currencies/converter/converter.tsx", // 실제로 바꿀 때
+    "apps/web/src/features/import-calc/customs/customs-section.tsx", // 이번 주 과세환율
+    "apps/web/src/features/import-calc/import-price/import-price-section.tsx", // 수입물가와 환율
+    "apps/web/src/features/prices/budget/budget-planner.tsx", // 여행 하루 예산
+    "apps/web/src/features/prices/bands/price-bands.tsx", // 물가 구간 제목
     // 작업실(story-section · team-desks)은 어드민으로 옮겨 어드민 글자 체계(@hav/ui/admin · 고정폭 이름)를 씀 — 목록에서 뺌 (작업 0303)
-    "apps/web/src/features/about/components/about-page.tsx", // 기준 카드 제목
+    "apps/web/src/features/about/about-page.tsx", // 기준 카드 제목
   ];
   const present = FILES.filter((f) => existsSync(join(ROOT, f)));
 

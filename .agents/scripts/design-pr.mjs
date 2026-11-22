@@ -11,12 +11,12 @@ const LABEL = "design";
 
 /** 화면 쪽 = 허용 목록 (정규식 · 저장소 루트 기준 · 앞뒤를 모두 고정해 비슷한 폴더 이름에 속지 않음) */
 const SCREEN = [
-  /^apps\/web\/src\/features\/[^/]+\/components\/.+/, // 화면 부품
-  /^apps\/web\/src\/app\/(?:(?!api\/).)+\.(?:tsx|css|svg)$/, // app 폴더의 화면 코드(page · layout · 부품) · 스타일 · 아이콘 (api 폴더 · route · robots · sitemap 같은 .ts 는 밖)
+  /^apps\/(?:web|admin)\/src\/(?:features|shared)\/.+\.tsx$/, // 화면 부품 — 하위 도메인 폴더의 .tsx (작업 0312 · 계산 .ts · 훅 use-*.ts 는 밖)
+  /^apps\/(?:web|admin)\/src\/app\/(?:(?!api\/).)+\.(?:tsx|css|svg)$/, // app 폴더의 화면 코드(page · layout · 부품) · 스타일 · 아이콘 (api 폴더 · route · robots · sitemap 같은 .ts 는 밖)
   /^packages\/ui\/src\/components\/.+/, // 공용 화면 부품
-  /^(?:apps\/web\/src|packages\/ui\/src)\/.+\.css$/, // 스타일 (tokens.css 포함)
-  /^(?:apps\/web|packages\/ui)\/src\/.+\.test\.tsx?$/, // 소스 옆 테스트
-  /^apps\/web\/e2e(?:-responsive)?\/.+/, // e2e
+  /^(?:apps\/(?:web|admin)\/src|packages\/ui\/src)\/.+\.css$/, // 스타일 (tokens.css 포함)
+  /^(?:apps\/(?:web|admin)|packages\/ui)\/src\/.+\.test\.tsx?$/, // 소스 옆 테스트
+  /^apps\/(?:web|admin)\/e2e(?:-responsive)?\/.+/, // e2e
   /^\.agents\/specs\/.+/, // 작업 기록
   /^docs\/.+/, // 문서
   /^(?!AGENTS\.md$|CLAUDE\.md$).+\.md$/, // 마크다운 (보호 파일 AGENTS.md · CLAUDE.md 는 밖)

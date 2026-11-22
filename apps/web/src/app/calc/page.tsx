@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { CalcPage } from "@/features/import-calc/components/calc-page";
-import type { CustomsRate } from "@/features/import-calc/lib/customs-rate";
+import { CalcPage } from "@/features/import-calc/calc-page";
+import type { CustomsRate } from "@/features/import-calc/common/customs-rate";
 import { api } from "@hav/shared/api";
 import { JsonLd } from "@/shared/json-ld";
 import { breadcrumbLd, pageMeta } from "@/shared/seo";

@@ -81,12 +81,8 @@ describe("코드 역할 분담 (작업 0125)", () => {
     expect(here).toEqual([...allowed].sort());
   });
 
-  it("기능 폴더 안은 성격별로 — 화면은 components · 훅은 hooks · 계산은 lib (작업 0137)", () => {
-    const bad = files(FEATURES)
-      .map((f) => relative(FEATURES, f).split("/").slice(1).join("/"))
-      .filter((f) => !/^(components\/[^/]+\.tsx|hooks\/use-[^/]+\.ts|lib\/[^/]+\.ts)$/.test(f));
-    expect(bad).toEqual([]);
-  });
+  // 작업 0137 의 "기능 폴더 안은 성격별로(components · hooks · lib)" 규칙은 작업 0312 사용자 결정으로 뒤집힘 —
+  //   하위 도메인 폴더에 화면 · 훅 · 로직을 함께 두고, 종류별 폴더는 금지 (src/role-boundary.test.ts)
 
   it("패키지 파일은 묶음 폴더 안에 — 바로 아래에 두지 않음 (작업 0137)", () => {
     const PKG = resolve(SRC, "../../../packages");

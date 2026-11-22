@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { CurrencyDetail } from "@/features/currencies/components/currency-detail";
-import { loadDetail } from "@/features/currencies/lib/load";
-import { DEFAULT_CODE } from "@/features/currencies/lib/route";
+import { CurrencyDetail } from "@/features/currencies/detail/currency-detail";
+import { loadDetail } from "@/features/currencies/page-data/load";
+import { DEFAULT_CODE } from "@/features/currencies/browse/route";
 import { JsonLd } from "@/shared/json-ld";
 import { breadcrumbLd, pageMeta } from "@/shared/seo";
 

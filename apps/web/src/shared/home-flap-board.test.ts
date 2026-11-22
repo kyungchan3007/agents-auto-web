@@ -2,12 +2,12 @@
 // 사용자 "출발 안내판 C안 사진에 걸치기로 가자" — 울트라마린 전체 띠(today-band) 삭제 → 판에만 울트라마린 · 사진에 반쯤 걸침 · 지구는 하늘 종이 위(배경 없이)
 //
 // builder 가 할 것 (prd B1~B9 · sdd)
-//   features/home/components/today-board.tsx — export function TodayBoard({ rates, signals, windowDays, problem }) (today-band.tsx 는 지움)
+//   features/home/today/today-board.tsx — export function TodayBoard({ rates, signals, windowDays, problem }) (today-band.tsx 는 지움)
 //     <section id="board" aria-labelledby="today-title"> (data-surface · bg-surface 없음) 안에: 작은 제목(h2 id="today-title" · BOARD_TITLE) · <FlapBoard rows cols label/> · 판정 한 줄(evidence) · <GlobeLazy …지금과 같은 props/>
 //     자료는 lib/today-board.ts 의 todayBoard({ found: cheapestDestination(…), hasRates, windowDays, problem }) 가 만든 값 그대로 (today-board.test.ts)
 //     (옛 설명 — 사진에 걸치기 · 사진 아래 끝 막은 작업 0217 · 0222 에서 사진 머리와 함께 없어짐)
 //     지구: 판 오른쪽(lg 이상 두 칸 격자 · 판이 먼저) · 모바일은 판 아래 작게(≤ 280px) · 지구 뒤에 배경 · 띠 · data-surface 없음
-//   features/home/components/home.tsx — TodayBand 대신 TodayBoard
+//   features/home/home.tsx — TodayBand 대신 TodayBoard
 //   packages/ui three/objects/*.tsx · three/scene/*.tsx — 건드리지 않음 (지구 · 비행기 생김새 그대로)
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -25,16 +25,16 @@ function sources(dir: string): string[] {
     return /\.tsx?$/.test(d.name) && !/\.test\.tsx?$/.test(d.name) ? [p] : [];
   });
 }
-const HOME_COMPONENTS = sources(join(WEB_SRC, "features/home/components"));
+const HOME_COMPONENTS = sources(join(WEB_SRC, "features/home"));
 // 작업 0217: 서버 계산(today-board.tsx) + 탑승권 카드(ticket.tsx · 판 · 제목 · 판정 한 줄)
-const board = () => ["today-board.tsx", "ticket.tsx"].map((f) => read(join(WEB_SRC, "features/home/components", f))).join("\n");
+const board = () => ["today-board.tsx", "ticket.tsx"].map((f) => read(join(WEB_SRC, "features/home/today", f))).join("\n");
 const sectionTag = (s: string) => /<section\b[^>]*id="board"[^>]*>|<section\b[^>]*>(?=[^<]*)/.exec(s.match(/<section\b[^>]*id="board"[^>]*>/)?.[0] ?? "")?.[0] ?? "";
 
 describe("울트라마린 전체 띠 없음 (B1)", () => {
   it("today-band.tsx 가 없고 홈이 TodayBoard 를 씀 (TodayBand 이름이 홈 코드에 없음)", () => {
     expect(existsSync(join(WEB_SRC, "features/home/components/today-band.tsx"))).toBe(false);
-    expect(existsSync(join(WEB_SRC, "features/home/components/today-board.tsx"))).toBe(true);
-    const home = read(join(WEB_SRC, "features/home/components/home.tsx"));
+    expect(existsSync(join(WEB_SRC, "features/home/today/today-board.tsx"))).toBe(true);
+    const home = read(join(WEB_SRC, "features/home/home.tsx"));
     expect(home).toMatch(/\bTodayBoard\b/);
     for (const f of HOME_COMPONENTS) expect(read(f), f).not.toMatch(/\bTodayBand\b|today-band/);
   });
@@ -77,7 +77,7 @@ describe("구성 — 작은 제목 · 판 · 판정 한 줄 · 지구 (B3 · B4 
   });
 
   it("글 · 숫자를 코드에 박지 않음 — 예시 숫자(912 · 833 · 1,234.56) · '예측이 아닙니다' · FreshnessNote 없음", () => {
-    const s = [board(), read(join(WEB_SRC, "features/home/lib/today-board.ts"))].join("\n");
+    const s = [board(), read(join(WEB_SRC, "features/home/today/today-view.ts"))].join("\n");
     expect(s).not.toMatch(/\b912\b|\b833\b|1,234\.56|1,486|1,382/);
     expect(s).not.toMatch(/예측이 아닙니다|평일 12시|\bFreshnessNote\b/);
   });
@@ -114,7 +114,7 @@ describe("3D 지구 제거 · 비행기는 그대로 (작업 0177 수정)", () =
 
   it("홈에 3D 지구 · 둘레 원 · 지구 그림 파일이 없음 — GlobeLazy · SEOUL · EARTH_TEXTURE 를 쓰지 않음", () => {
     for (const f of HOME_COMPONENTS) expect(read(f), f).not.toMatch(/\bGlobeLazy\b|\bSEOUL\b|EARTH_TEXTURE/); // 작업 0217: 상태 점 · 막대 끝은 rounded-full 을 씀 (지구 둘레 원이 아님)
-    expect(read(join(WEB_SRC, "features/home/lib/places.ts"))).not.toMatch(/SEOUL|EARTH_TEXTURE|earth-2048/);
+    expect(read(join(WEB_SRC, "features/home/common/places.ts"))).not.toMatch(/SEOUL|EARTH_TEXTURE|earth-2048/);
   });
 
   it("쓰지 않는 지구 부품 · 계산 · 그림 파일을 남기지 않음 (globe.tsx · lib/geo.ts · textures/earth-2048.jpg · lazy 의 GlobeLazy)", () => {

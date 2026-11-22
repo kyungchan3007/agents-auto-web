@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { currencyName } from "@hav/shared/currency";
-import { CurrencyDetail } from "@/features/currencies/components/currency-detail";
-import { describeCurrency } from "@/features/currencies/lib/describe";
-import { loadDetail } from "@/features/currencies/lib/load";
-import { DEFAULT_CODE } from "@/features/currencies/lib/route";
+import { CurrencyDetail } from "@/features/currencies/detail/currency-detail";
+import { describeCurrency } from "@/features/currencies/page-data/describe";
+import { loadDetail } from "@/features/currencies/page-data/load";
+import { DEFAULT_CODE } from "@/features/currencies/browse/route";
 import { api, mustHave } from "@hav/shared/api";
 import { JsonLd } from "@/shared/json-ld";
 import { breadcrumbLd, pageMeta, rateDatasetLd } from "@/shared/seo";

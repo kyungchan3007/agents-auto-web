@@ -23,12 +23,12 @@ function sources(dir: string): string[] {
   });
 }
 const text = (files: string[]) => files.map((f) => codeOf(read(join(WEB_SRC, f)))).join("\n");
-const comps = (feature: string, skip: RegExp | null = null) => sources(`features/${feature}/components`).filter((f) => !skip || !skip.test(f));
+const comps = (feature: string, skip: RegExp | null = null) => sources(`features/${feature}`).filter((f) => f.endsWith(".tsx") && (!skip || !skip.test(f)));
 
 const SCREENS = {
   currencies: [...comps("currencies"), ...sources("app/currencies")],
-  flights: [...sources("app/flights"), ...comps("travel-price", /price-page|price-bands|budget-planner|travel-index-section/)],
-  prices: ["app/prices/page.tsx", "features/travel-price/components/price-page.tsx", "features/travel-price/components/price-bands.tsx", "features/travel-price/components/budget-planner.tsx"],
+  flights: [...sources("app/flights"), ...comps("flights")],
+  prices: ["app/prices/page.tsx", "features/prices/price-page.tsx", "features/prices/bands/price-bands.tsx", "features/prices/budget/budget-planner.tsx"],
   calc: [...comps("import-calc"), "app/calc/page.tsx"],
   about: [...comps("about"), "app/about/page.tsx"],
 } as const;
@@ -38,7 +38,7 @@ describe("울트라마린 전면 화면 없음 (P10) — 이 화면들에는 바
   it("통화 · 여행 타이밍 · 여행 물가 · 직구 · 작업실 · 소개 · GEO · 404", () => {
     const files = [...Object.values(SCREENS).flat(), "app/not-found.tsx"].filter((f) => existsSync(join(WEB_SRC, f)));
     // 작업 0219: 통화 상세 계산 탑승권(converter.tsx)의 짙은 남색 칸 · 작업 0220: 새 /prices 파랑 첫 면 큰 제목(prices-header.tsx) · 작업 0221 사용자 결정: 새 /calc 파랑 첫 면 머리(calc-page.tsx)만 예외
-    const bad = files.filter((f) => !f.endsWith("currencies/components/converter.tsx") && !f.endsWith("travel-price/components/prices-header.tsx") && !f.endsWith("import-calc/components/calc-page.tsx") && /data-surface="(dark|elevated)"/.test(codeOf(read(join(WEB_SRC, f)))));
+    const bad = files.filter((f) => !f.endsWith("currencies/converter/converter.tsx") && !f.endsWith("travel-price/../prices/prices-header.tsx") && !f.endsWith("import-calc/calc-page.tsx") && /data-surface="(dark|elevated)"/.test(codeOf(read(join(WEB_SRC, f)))));
     expect(bad).toEqual([]);
   });
 });

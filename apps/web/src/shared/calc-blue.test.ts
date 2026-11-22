@@ -6,8 +6,8 @@ import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const WEB_SRC = resolve(__dirname, "..");
-const page = readFileSync(join(WEB_SRC, "features/import-calc/components/calc-page.tsx"), "utf8");
-const form = readFileSync(join(WEB_SRC, "features/import-calc/components/calc-form.tsx"), "utf8");
+const page = readFileSync(join(WEB_SRC, "features/import-calc/calc-page.tsx"), "utf8");
+const form = readFileSync(join(WEB_SRC, "features/import-calc/calculator/calc-form.tsx"), "utf8");
 const code = (s: string) => s.replace(/\{\/\*[\s\S]*?\*\/\}/g, "").replace(/^\s*\/\/.*$/gm, "");
 
 describe("직구 계산 — 파랑 첫 면", () => {
@@ -47,7 +47,7 @@ describe("직구 계산 — 파랑 첫 면", () => {
 
   it("흰 카드(입력 · 결과)는 파랑 면 위에서 그림자 토큰으로 구분 · 휴대폰 요약 줄은 파랑 면 위에서도 보이게 가장자리 선(ring) @design", () => {
     expect(form).toMatch(/data-testid="calc-input"[^>]*shadow-(ticket|panel|pass)/);
-    expect(readFileSync(join(WEB_SRC, "features/import-calc/components/calc-result.tsx"), "utf8")).toMatch(/data-testid="calc-result"[^>]*shadow-(ticket|panel|pass)/);
+    expect(readFileSync(join(WEB_SRC, "features/import-calc/calculator/calc-result.tsx"), "utf8")).toMatch(/data-testid="calc-result"[^>]*shadow-(ticket|panel|pass)/);
     expect(/<p[^>]*data-testid="calc-summary"[^>]*>/.exec(form)?.[0] ?? "").toMatch(/\bring-1\b/);
   });
 

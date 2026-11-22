@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { BrowseLayout } from "@/features/currencies/components/browse-layout";
-import { RECENT_KEY } from "@/features/currencies/lib/recent-chips";
+import { BrowseLayout } from "@/features/currencies/browse/browse-layout";
+import { RECENT_KEY } from "@/features/currencies/chips/recent-chips";
 import { api } from "@hav/shared/api";
 
 export const metadata: Metadata = {

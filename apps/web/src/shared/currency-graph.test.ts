@@ -4,7 +4,7 @@
 // builder 가 할 것
 //   packages/ui/src/lib/extreme-labels.ts: placeExtremeLabels (extreme-labels.test.ts)
 //   packages/ui/src/components/data/year-chart.tsx: 최고 · 최저 점 + 라벨(시안 모양 compact 에서도 · 예전엔 compact 가 뺐음) — placeExtremeLabels 로 위치 · data-testid="extreme-max"(비쌈 색) · "extreme-min"(쌈 색) · 오늘 점(판정 색) · 평균 점선 · aria-label 의 최저 · 최고 글은 유지 · 라벨 글은 props 로 받음(extremeText: { max: string; min: string })
-//   apps/web/src/features/currencies/components/period-chart.tsx: 고른 기간(shown)의 extremeDays · extremeLabelText 로 글을 만들어 YearChart 에 넘김 — 카드(yearStats)와 같은 값
+//   apps/web/src/features/currencies/period-chart/period-chart.tsx: 고른 기간(shown)의 extremeDays · extremeLabelText 로 글을 만들어 YearChart 에 넘김 — 카드(yearStats)와 같은 값
 //   e2e: pages.spec.ts "그래프 최고 · 최저 금액" (실행은 lead)
 import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -15,7 +15,7 @@ const UI_SRC = resolve(WEB_SRC, "../../../packages/ui/src");
 const codeOf = (src: string) => src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
 const read = (p: string) => codeOf(readFileSync(p, "utf8"));
 const chart = () => read(join(UI_SRC, "components/data/year-chart.tsx"));
-const period = () => read(join(WEB_SRC, "features/currencies/components/period-chart.tsx"));
+const period = () => read(join(WEB_SRC, "features/currencies/period-chart/period-chart.tsx"));
 
 describe("YearChart — 최고 · 최저 점과 금액 라벨", () => {
   it("라벨 위치는 placeExtremeLabels 로 (겹치면 비킴 · 화면 안)", () => {
@@ -67,6 +67,6 @@ describe("PeriodChart — 고른 기간의 최고 · 최저 (C2 · C4)", () => {
   });
 
   it("카드와 같은 계산 — 같은 yearStats 계열 함수를 씀(detail-view)", () => {
-    expect(period()).toMatch(/from\s*"\.\.\/lib\/detail-view"/);
+    expect(period()).toMatch(/from\s*"\.\.\/detail\/detail-view"/);
   });
 });

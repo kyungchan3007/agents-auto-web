@@ -137,7 +137,7 @@ export function cdOf(command, base) {
 
 const topOf = (cwd) => git(["rev-parse", "--show-toplevel"], cwd) || cwd;
 
-const OWN_SPEC = /^apps\/web\/e2e\/[^/]+\.spec\.ts$/;
+const OWN_SPEC = /^apps\/(?:web|admin)\/e2e\/[^/]+\.spec\.ts$/; // 운영 · 어드민 두 앱 (작업 0312)
 
 /** 바뀐 파일 목록 → 로컬로 돌릴 수 있는 spec(바꾼 spec 파일 이름 · 이름순) */
 export function changedSpecs(files) {

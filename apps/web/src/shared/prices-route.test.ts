@@ -5,15 +5,15 @@ import { describe, expect, it } from "vitest";
 
 const read = (p: string) => readFileSync(new URL(p, import.meta.url), "utf8");
 const code = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
-const page = () => code(read("../features/travel-price/components/price-page.tsx"));
-const route = () => code(read("../features/travel-price/components/price-route.tsx"));
-const view = () => code(read("../features/travel-price/components/price-view.tsx"));
-const hook = () => code(read("../features/travel-price/hooks/use-price-route.ts"));
+const page = () => code(read("../features/prices/price-page.tsx"));
+const route = () => code(read("../features/prices/route/price-route.tsx"));
+const view = () => code(read("../features/prices/price-view.tsx"));
+const hook = () => code(read("../features/prices/route/use-price-route.ts"));
 
 describe("price-page · price-view — 정적 자 자리에 노선", () => {
   it("노선 부품을 가져와 쓰고 · 정적 자(PriceRuler)는 더 쓰지 않음", () => {
     const s = page() + view();
-    expect(s).toMatch(/from "\.\/price-route"/);
+    expect(s).toMatch(/from "\.\/route\/price-route"/);
     expect(s).toMatch(/<PriceRoute\b/);
     expect(s).not.toMatch(/<PriceRuler\b/);
   });
@@ -26,7 +26,7 @@ describe("price-page · price-view — 정적 자 자리에 노선", () => {
 describe("price-route — 부품", () => {
   it("export · 정거장은 lib/price-route 에서 · 핀(rulerPins)과 같은 나라", () => {
     expect(route()).toMatch(/export function PriceRoute\(/);
-    expect(route()).toMatch(/from "\.\.\/lib\/price-route"/);
+    expect(route()).toMatch(/from "\.\/price-route-view"/);
     for (const f of ["routeStops", "routeCardText"]) expect(route(), f).toMatch(new RegExp(`\\b${f}\\b`));
   });
   it("DOM 계약 testid", () => {
@@ -47,7 +47,7 @@ describe("price-route — 부품", () => {
     expect(route()).toMatch(/<PriceRouteList\b/);
     expect(route()).toMatch(/route-stops[^\n]*max-\[760px\]:hidden|max-\[760px\]:hidden[^\n]*route-stops/); // 단추 줄은 휴대폰에서 숨김
     expect(route()).toMatch(/hidden max-\[760px\]:block/); // 세로 노선은 휴대폰에서만 보임
-    const list = code(read("../features/travel-price/components/price-route-list.tsx"));
+    const list = code(read("../features/prices/route/price-route-list.tsx"));
     for (const id of ["route-list", "route-row", "route-row-item", "route-row-plane"]) expect(list, id).toContain(id);
     expect(list).toMatch(/aria-expanded=\{/);
     expect(list).toMatch(/aria-controls=/);

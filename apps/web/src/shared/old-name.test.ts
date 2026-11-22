@@ -25,6 +25,8 @@ const SKIP_FILES: Record<string, string> = {
   "apps/admin/src/features/geo/common/geo-view.test.ts": "위 판 표시 · 지난 측정 기록 예시",
   "apps/admin/src/features/geo/common/geo-detail.test.ts": "위 판 표시 테스트",
   "apps/admin/src/features/geo/rename/rename-compare.tsx": "이름 바꾼 날 전후 비교 화면 — 'Tripfx → Flapfx' · 'Tripfx 시기' · 옛 속성 주소를 그대로 적는 글 (작업 0205)",
+  "apps/admin/src/features/geo/rename/rename-questions.tsx": "같은 비교의 일반 질문 판 — 'Tripfx 시기(1 · 2판)' 를 그대로 적는 글 (작업 0205 · 0312 에 rename-compare.tsx 에서 나눔)",
+  "apps/admin/src/features/geo/rename/rename-text.test.ts": "위 비교 문구 테스트 — Tripfx 시기 예시 (작업 0312)",
   "apps/admin/src/features/geo/rename/rename-model.ts": "이름 바꾼 날 전후 비교 계산 — Tripfx 시기 · Flapfx 시기 필드 이름과 설명 (작업 0205)",
   "apps/admin/src/features/geo/rename/rename-model.test.ts": "위 계산 테스트 — Tripfx 시기 브랜드 질문 예시",
   "packages/shared/src/contracts/geo.ts": "이름 바꾼 날 기준 상수 설명 주석 — Tripfx(tripfx.pages.dev) → Flapfx (작업 0205)",

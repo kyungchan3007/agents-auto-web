@@ -5,13 +5,13 @@ import { describe, expect, it } from "vitest";
 
 const read = (p: string) => readFileSync(new URL(p, import.meta.url), "utf8");
 const code = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
-const page = () => code(read("../features/travel-price/components/flights-page.tsx"));
-const comp = () => code(read("../features/travel-price/components/window-months.tsx"));
+const page = () => code(read("../features/flights/flights-page.tsx"));
+const comp = () => code(read("../features/flights/window/window-months.tsx"));
 
 describe("flights-page — hero 바로 아래에 새 구역", () => {
   it("부품을 가져와 쓰고 · 순서는 hero → 창밖 12달 → 표 뒤 구간", () => {
     const s = page();
-    expect(s).toMatch(/from "\.\/window-months"/);
+    expect(s).toMatch(/from "\.\/window\/window-months"/);
     const hero = s.indexOf('data-testid="flights-hero"');
     const win = s.search(/<WindowMonths\b/);
     const back = s.indexOf('data-testid="flights-back"');
@@ -28,8 +28,8 @@ describe("flights-page — hero 바로 아래에 새 구역", () => {
 describe("window-months — 부품", () => {
   it("export · 계산은 lib/window-months 에서 · 홈 12달과 같은 계산(monthlyAverages)을 씀", () => {
     expect(comp()).toMatch(/export function WindowMonths\(/);
-    expect(comp()).toMatch(/from "\.\.\/lib\/window-months"/);
-    expect(comp() + code(read("../features/travel-price/lib/window-months.ts"))).toMatch(/monthlyAverages|travelTiming/);
+    expect(comp()).toMatch(/from "\.\/window-months-view"/);
+    expect(comp() + code(read("../features/flights/window/window-months-view.ts"))).toMatch(/monthlyAverages|travelTiming/);
   });
   it("DOM 계약 testid", () => {
     for (const id of ["window-section", "window-view", "window-shade", "window-flap", "window-season", "window-tag", "window-value", "window-cmp", "window-band", "window-month", "window-replay", "window-note"]) expect(comp(), id).toContain(id);

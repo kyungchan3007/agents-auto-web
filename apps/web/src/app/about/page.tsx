@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { AboutPage } from "@/features/about/components/about-page";
-import { DUTY_FREE_USD, RULES_SOURCE } from "@/features/import-calc/lib/rules";
+import { AboutPage } from "@/features/about/about-page";
+import { DUTY_FREE_USD, RULES_SOURCE } from "@/features/import-calc/calculator/rules";
 import { api } from "@hav/shared/api";
 import { JsonLd } from "@/shared/json-ld";
 import { breadcrumbLd, pageMeta } from "@/shared/seo";

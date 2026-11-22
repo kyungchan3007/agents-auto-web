@@ -2,7 +2,7 @@
 //
 // builder 가 할 것 (prd H1~H10 · sdd)
 //   app/page.tsx — api.indicator("kosis-cpi:air-fare", 60) 를 받음 · 새 홈이 안 쓰는 priceLevels · 1년 USD 기록 · changes 는 받지 않음 (빌드 때 D1 읽기도 줄어듦)
-//   features/home/lib/travel-timing.ts(travelTiming · travelTimingCopy) · destinations.ts(cheapestDestination · destinationRows · cheapestCopy · NO_RATE_COPY) — 각 *.test.ts 머리 주석
+//   features/home/timing/travel-timing.ts(travelTiming · travelTimingCopy) · destinations.ts(cheapestDestination · destinationRows · cheapestCopy · NO_RATE_COPY) — 각 *.test.ts 머리 주석
 //   features/home/components/** 위 → 아래: 여행 타이밍(선 그래프 + 비행기) → 오늘 환율 바다 띠(id="today" · data-surface="dark" · 3D 지구 + 이번 주 가장 싼 곳) → 도착지별 환전 타이밍(도착지 줄 4개 · 줄 전체가 /currencies/{통화} 링크) → 바닥 띠(자료 출처 · 비행기 모델 출처)
 //   e2e 가 찾는 표시: data-testid="travel-graph"(선 그래프) · data-testid="plane-route"(비행기 자리) — 지수가 없으면 둘 다 그리지 않음 · id="today" · id="destinations"(도착지별 환전 타이밍)
 //   쓰지 않는 기존 장면(hero-section · trips-section · trip-scenes · calc-section · year-section · currencies-section 중)은 지움 — 이 파일의 "죽은 코드" 검사
@@ -23,9 +23,9 @@ function sources(dir: string): string[] {
   });
 }
 
-const COMPONENTS = sources("features/home/components");
+const COMPONENTS = sources("features/home");
 const HOME_UI = [...COMPONENTS, "app/page.tsx"].map((f) => codeOf(read(f))).join("\n");
-const HOME_ALL = [...COMPONENTS, ...sources("features/home/lib"), "app/page.tsx"].map((f) => codeOf(read(f))).join("\n");
+const HOME_ALL = [...COMPONENTS, ...sources("features/home"), "app/page.tsx"].map((f) => codeOf(read(f))).join("\n");
 
 describe("홈 자료 — app/page.tsx", () => {
   const page = codeOf(read("app/page.tsx"));
@@ -114,7 +114,7 @@ describe("바닥 띠 — 자료 출처 · 비행기 모델 출처 (H9)", () => {
 describe("죽은 코드를 남기지 않음 (H10)", () => {
   it("features/home/components · hooks 의 모든 파일을 다른 코드가 가져다 씀", () => {
     const all = sources(".");
-    const owned = [...sources("features/home/components"), ...sources("features/home/hooks")];
+    const owned = [...sources("features/home"), ...sources("features/home")];
     const unused = owned.filter((f) => {
       const stem = f.replace(/\.tsx?$/, "");
       const base = stem.split("/").pop() as string;
@@ -126,7 +126,7 @@ describe("죽은 코드를 남기지 않음 (H10)", () => {
 
 // 작업 0217 사용자 지적 — 표 가장자리 홈은 파인 홈 (시안 B/home.html .perf: 표 overflow hidden 이 홈을 카드 안쪽으로 자름 · 홈 색 = 뒤 바탕 파랑 · 파랑 면 끝 = 홈 아래 끝)
 describe("탑승권 홈 — 파인 홈", () => {
-  const code = codeOf(read("features/home/components/ticket.tsx"));
+  const code = codeOf(read("features/home/today/ticket.tsx"));
 
   it("홈은 가짜 요소(before · after)가 아니라 진짜 요소 둘(data-testid=ticket-hole) · 틀(ticket-hole-clip)이 overflow-hidden 으로 카드 안쪽에서 자름 · 절취선 표시(ticket-perf)", () => {
     expect(code).toMatch(/data-testid="ticket-hole-clip"[^>]*overflow-hidden|overflow-hidden[^>]*data-testid="ticket-hole-clip"/);

@@ -53,13 +53,13 @@ describe("/flights — 새 페이지", () => {
   });
 
   it("/flights 쪽 화면이 SiteNav page=\"flights\" 를 씀 (여행 품목 영역 구성은 0170 의 pages-redesign.test.ts 가 검사)", () => {
-    const files = [...tsx("app/flights"), ...tsx("features/travel-price/components")].filter((f) => !f.endsWith("price-page.tsx"));
+    const files = [...tsx("app/flights"), ...tsx("features/flights")];
     expect(files.map(read).join("\n")).toMatch(/page="flights"/);
   });
 });
 
 describe("/prices — 여행 품목 영역을 뺌", () => {
-  const prices = () => [read("app/prices/page.tsx"), read("features/travel-price/components/price-page.tsx")].join("\n");
+  const prices = () => [read("app/prices/page.tsx"), read("features/prices/price-page.tsx")].join("\n");
 
   it("TravelIndexSection · 여행 품목 지수 호출(kosis-cpi · fxMonthlyAverage)이 /prices 에 없음", () => {
     const text = prices();

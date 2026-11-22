@@ -1,8 +1,8 @@
 // 작업 0181 — /flights 의 가장 싼 달이 홈 맨 위(여행 타이밍)와 같은 말을 함 (사이트 안에서 엇갈리지 않음)
 import { describe, expect, it } from "vitest";
-import { flightsHeadline } from "../features/travel-price/lib/flights-copy";
-import { cheapMonth } from "../features/travel-price/lib/travel-index";
-import { travelTiming } from "../features/home/lib/travel-timing";
+import { flightsHeadline } from "../features/flights/flights-copy";
+import { cheapMonth } from "../features/flights/travel-index";
+import { travelTiming } from "../features/home/timing/travel-timing";
 
 /** 2024-11 ~ 2026-10 (24개월) · 4월이 가장 싼 모양 */
 const SHAPE = [101, 100, 98, 93, 96, 99, 104, 108, 103, 100, 102, 105];

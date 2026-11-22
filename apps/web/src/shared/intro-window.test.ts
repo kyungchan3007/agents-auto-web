@@ -10,7 +10,7 @@ const code = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/
 const read = (p: string) => code(readFileSync(join(INTRO, p), "utf8"));
 
 describe("끝 장면 순서 (use-intro)", () => {
-  const hook = read("hooks/use-intro.ts");
+  const hook = read("state/use-intro.ts");
   const end = hook.slice(hook.indexOf("const endFade"), hook.indexOf("const begin4")); // 끝 장면 함수만
 
   it("파랑 면(1) → 3D 멈춤 · 층 숨김 → 로고 이동(2) → 층이 사라짐(3) → 닫힘 순서", () => {
@@ -40,7 +40,7 @@ describe("끝 장면 순서 (use-intro)", () => {
   });
 
   it("창문 · 창밖 사진 · 홈 사진 자리를 더는 쓰지 않음", () => {
-    for (const f of ["hooks/use-intro.ts", "components/intro.tsx", "components/window-transition.tsx"]) {
+    for (const f of ["state/use-intro.ts", "intro.tsx", "scene/window-transition.tsx"]) {
       const s = read(f);
       expect(s, f).not.toMatch(/shadow-window|shadow-glass|windowTransition|zoomIn/);
     }
@@ -48,8 +48,8 @@ describe("끝 장면 순서 (use-intro)", () => {
 });
 
 describe("그리기 (intro.tsx · window-transition.tsx)", () => {
-  const ui = read("components/intro.tsx");
-  const wt = read("components/window-transition.tsx");
+  const ui = read("intro.tsx");
+  const wt = read("scene/window-transition.tsx");
 
   it("3D 층은 숨김이 되면 visibility hidden", () => {
     expect(ui).toMatch(/visibility:\s*s\.stageOff\s*\?\s*"hidden"/);

@@ -34,18 +34,18 @@ const rel = (f: string) => f.replace(`${WEB}/`, "");
 
 describe("파일 구성", () => {
   const MUST = [
-    "lib/flow.ts", "lib/flight.ts", "lib/scene.ts",
-    "hooks/use-intro.ts", "hooks/use-intro-scene.ts", "hooks/use-intro-enabled.ts",
-    "components/intro-gate.tsx", "components/intro.tsx", "components/boarding-pass.tsx", "components/window-transition.tsx",
+    "state/flow.ts", "scene/flight.ts", "scene/scene.ts",
+    "state/use-intro.ts", "scene/use-intro-scene.ts", "state/use-intro-enabled.ts",
+    "intro-gate.tsx", "intro.tsx", "pass/boarding-pass.tsx", "scene/window-transition.tsx",
   ];
   for (const f of MUST) it(`features/intro/${f} 가 있음`, () => expect(existsSync(join(INTRO, f)), f).toBe(true));
 
-  it("말풍선 화면(components/bubble-*.tsx)이 1개 이상", () => {
-    expect(walk(join(INTRO, "components"), (f) => /bubble-[\w-]+\.tsx$/.test(f)).length).toBeGreaterThan(0);
+  it("말풍선 화면(bubbles/bubble-*.tsx)이 1개 이상", () => {
+    expect(walk(join(INTRO, "bubbles"), (f) => /bubble-[\w-]+\.tsx$/.test(f)).length).toBeGreaterThan(0);
   });
 
   it("홈 쪽 파일 — ticket(작업 0217 · 예전 picked-board) · use-picked-destination · picked.ts", () => {
-    for (const f of ["features/home/components/ticket.tsx", "features/home/hooks/use-picked-destination.ts", "features/home/lib/picked.ts"]) expect(existsSync(join(WEB_SRC, f)), f).toBe(true);
+    for (const f of ["features/home/today/ticket.tsx", "features/home/today/use-picked-destination.ts", "features/home/today/picked.ts"]) expect(existsSync(join(WEB_SRC, f)), f).toBe(true);
   });
 });
 
@@ -54,17 +54,17 @@ describe("three 는 인트로가 열릴 때만 — 홈 첫 로딩 무게 그대�
     const users = [...SRC(INTRO), ...SRC(join(WEB_SRC, "app")), ...SRC(join(WEB_SRC, "shared")), ...SRC(join(WEB_SRC, "features/home"))]
       .filter((f) => /from\s*"three(\/[^"]*)?"|import\("three/.test(read(f)))
       .map((f) => f.replace(`${WEB_SRC}/`, ""));
-    expect(users).toEqual(["features/intro/lib/scene.ts"]);
+    expect(users).toEqual(["features/intro/scene/scene.ts"]);
   });
 
-  it("scene.ts 는 어디서도 정적으로 가져오지 않음 — use-intro-scene.ts 의 import(\"../lib/scene\") 하나뿐", () => {
-    const static_ = SRC(WEB_SRC).filter((f) => /from\s*"[^"]*lib\/scene"/.test(read(f))).map((f) => f.replace(`${WEB_SRC}/`, ""));
+  it("scene.ts 는 어디서도 정적으로 가져오지 않음 — use-intro-scene.ts 의 import(\"./scene\") 하나뿐 (작업 0312 에 같은 scene/ 폴더로)", () => {
+    const static_ = SRC(WEB_SRC).filter((f) => /from\s*"[^"]*\/scene"/.test(read(f))).map((f) => f.replace(`${WEB_SRC}/`, ""));
     expect(static_).toEqual([]);
-    expect(read(join(INTRO, "hooks/use-intro-scene.ts"))).toMatch(/import\(\s*"\.\.\/lib\/scene"\s*\)/);
+    expect(read(join(INTRO, "scene/use-intro-scene.ts"))).toMatch(/import\(\s*"\.\/scene"\s*\)/);
   });
 
   it("scene.ts — mountIntroScene 이 정리 함수를 돌려주고(dispose) · react 를 가져오지 않음 · data: 우회 없음 · 모델은 /models/intro/", () => {
-    const s = read(join(INTRO, "lib/scene.ts"));
+    const s = read(join(INTRO, "scene/scene.ts"));
     expect(s).toMatch(/export\s+(async\s+)?function\s+mountIntroScene|export\s+const\s+mountIntroScene/);
     expect(s).toMatch(/\.dispose\(/);
     expect(s).not.toMatch(/from\s*"react/);
@@ -73,26 +73,26 @@ describe("three 는 인트로가 열릴 때만 — 홈 첫 로딩 무게 그대�
   });
 
   it("비행기 · 카메라 경로와 LIFT 는 lib/flight.ts 한 곳 — scene.ts 가 따로 정의하지 않고 가져다 씀 (flight.test.ts 가 값을 고정)", () => {
-    const s = read(join(INTRO, "lib/scene.ts"));
+    const s = read(join(INTRO, "scene/scene.ts"));
     expect(s).toMatch(/from\s*"\.\/flight"/);
     expect(s).not.toMatch(/\b(const|let)\s+(PLANE_KEYS|CAMERA_KEYS|LIFT|FLIGHT_START)\b/);
     expect(s).not.toMatch(/\bfunction\s+(planeAt|cameraAt)\b/);
   });
 
   it("use-intro-scene — 장면이 안 떠도(WebGL 없음 · 모델 못 받음) 흐름은 계속: try/catch", () => {
-    const h = read(join(INTRO, "hooks/use-intro-scene.ts"));
+    const h = read(join(INTRO, "scene/use-intro-scene.ts"));
     expect(h).toMatch(/catch/);
     expect(h).toMatch(/\bmountIntroScene\b/);
   });
 
   it("순수 lib(flow · flight)는 react · three 를 가져오지 않음", () => {
-    for (const f of ["lib/flow.ts", "lib/flight.ts"]) expect(read(join(INTRO, f)), f).not.toMatch(/from\s*"(react|three|next)[^"]*"/);
+    for (const f of ["state/flow.ts", "scene/flight.ts"]) expect(read(join(INTRO, f)), f).not.toMatch(/from\s*"(react|three|next)[^"]*"/);
   });
 });
 
 describe("서버 HTML 에는 인트로 없음 · 폭 700 초과에서만 · 끄기 스위치", () => {
   it("use-intro-enabled — 처음 false · 마운트 뒤(useEffect)에 폭 700 초과 · INTRO_OFF_KEY 를 읽음", () => {
-    const h = read(join(INTRO, "hooks/use-intro-enabled.ts"));
+    const h = read(join(INTRO, "state/use-intro-enabled.ts"));
     expect(h).toMatch(/useState(<boolean>)?\(\s*false\s*\)/);
     expect(h).toMatch(/useEffect\(/);
     expect(h).toMatch(/\(min-width:\s*701px\)|innerWidth\s*>\s*700/);
@@ -101,8 +101,8 @@ describe("서버 HTML 에는 인트로 없음 · 폭 700 초과에서만 · 끄�
   });
 
   it("intro-gate — 'use client' · useIntroEnabled 가 거짓이면 null · 훅은 hooks/ 에서만", () => {
-    const g = read(join(INTRO, "components/intro-gate.tsx"));
-    expect(readFileSync(join(INTRO, "components/intro-gate.tsx"), "utf8")).toMatch(/^\s*(\/\/[^\n]*\n|\/\*[\s\S]*?\*\/\s*)*["']use client["']/);
+    const g = read(join(INTRO, "intro-gate.tsx"));
+    expect(readFileSync(join(INTRO, "intro-gate.tsx"), "utf8")).toMatch(/^\s*(\/\/[^\n]*\n|\/\*[\s\S]*?\*\/\s*)*["']use client["']/);
     expect(g).toMatch(/useIntroEnabled\(/);
     expect(g).toMatch(/return\s+null|\?\s*<Intro\b[\s\S]*:\s*null|&&\s*<Intro\b/);
     expect(g).not.toMatch(/data-testid="intro"/); // 덮개 표시는 Intro 안 — 게이트 자체는 아무것도 그리지 않음
@@ -110,7 +110,7 @@ describe("서버 HTML 에는 인트로 없음 · 폭 700 초과에서만 · 끄�
 
   it("app/page.tsx — <Home/> 뒤에 <IntroGate/> · 물가 수준(priceLevels)도 받아 넘김 · 인트로 때문에 홈 본문을 바꾸지 않음", () => {
     const p = read(join(WEB_SRC, "app/page.tsx"));
-    expect(p).toMatch(/features\/intro\/components\/intro-gate/);
+    expect(p).toMatch(/features\/intro\/intro-gate/);
     expect(p.indexOf("<Home")).toBeGreaterThan(-1);
     expect(p.indexOf("<IntroGate")).toBeGreaterThan(p.indexOf("<Home"));
     expect(p).toMatch(/api\.priceLevels\(/);
@@ -123,7 +123,7 @@ describe("서버 HTML 에는 인트로 없음 · 폭 700 초과에서만 · 끄�
 });
 
 describe("건너뛰기 · 이전 · 움직임", () => {
-  const ui = () => SRC(join(INTRO, "components")).map(read).join("\n");
+  const ui = () => SRC(INTRO).filter((f) => f.endsWith(".tsx")).map(read).join("\n");
 
   it("건너뛰기 버튼 — 늘 있음 (글 '건너뛰기' · data-testid=intro-skip) · 덮개 data-testid=intro · role=dialog", () => {
     expect(ui()).toMatch(/건너뛰기/);
@@ -138,7 +138,7 @@ describe("건너뛰기 · 이전 · 움직임", () => {
   });
 
   it("use-intro — 휠은 passive:false · 정리에서 removeEventListener · 움직임 줄이기(prefers-reduced-motion) · 저장(writePicked) · 이벤트(PICK_EVENT)", () => {
-    const h = read(join(INTRO, "hooks/use-intro.ts"));
+    const h = read(join(INTRO, "state/use-intro.ts"));
     expect(h).toMatch(/addEventListener\(\s*"wheel"[\s\S]*passive:\s*false/);
     expect(h).toMatch(/removeEventListener\(/);
     expect(h).toMatch(/prefers-reduced-motion/);
@@ -165,7 +165,7 @@ describe("기능 폴더 규칙 — 홈 · 인트로가 서로 가져오지 않�
   });
 
   it("홈은 고른 값을 @hav/shared/travel 로만 읽음 (use-picked-destination — readPicked · PICK_EVENT · 정리)", () => {
-    const h = read(join(WEB_SRC, "features/home/hooks/use-picked-destination.ts"));
+    const h = read(join(WEB_SRC, "features/home/today/use-picked-destination.ts"));
     expect(h).toMatch(/@hav\/shared\/travel/);
     expect(h).toMatch(/\breadPicked\(/);
     expect(h).toMatch(/\bPICK_EVENT\b/);
@@ -174,7 +174,7 @@ describe("기능 폴더 규칙 — 홈 · 인트로가 서로 가져오지 않�
   });
 
   it("홈 ticket — 같은 FlapBoard 로 pickedBoard() 를 그림 · key 로 다시 넘어가게 · 탑승권 보기 버튼 (작업 0217)", () => {
-    const b = read(join(WEB_SRC, "features/home/components/ticket.tsx"));
+    const b = read(join(WEB_SRC, "features/home/today/ticket.tsx"));
     expect(b).toMatch(/from\s*"@hav\/ui\/data\/flap-board"/);
     expect(b).toMatch(/\bpickedBoard\(|\bpickedChip\(/);
     expect(b).toMatch(/\bkey=/);
@@ -183,9 +183,9 @@ describe("기능 폴더 규칙 — 홈 · 인트로가 서로 가져오지 않�
   });
 
   it("홈 안내판(today-board → Ticket)이 고른 나라 판을 씀 — 안 한 사람에게는 지금 그대로", () => {
-    const home = ["today-board.tsx", "home.tsx"].map((f) => read(join(WEB_SRC, "features/home/components", f))).join("\n");
+    const home = ["today/today-board.tsx", "home.tsx"].map((f) => read(join(WEB_SRC, "features/home", f))).join("\n");
     expect(home).toMatch(/\bTicket\b/);
-    expect(read(join(WEB_SRC, "features/home/components/ticket.tsx"))).toMatch(/\bpickedBoard\(/);
+    expect(read(join(WEB_SRC, "features/home/today/ticket.tsx"))).toMatch(/\bpickedBoard\(/);
     expect(home).toMatch(/\btodayBoard\(/); // 서버에서 그리는 지금 안내판은 그대로
   });
 });
@@ -199,7 +199,7 @@ describe("출처 표시 · 홈 문구", () => {
   });
 
   it("홈 바닥 띠 출처에 Kenney(CC0) 추가 — 기존 출처는 그대로", () => {
-    const f = readFileSync(join(WEB_SRC, "features/home/components/home-footer.tsx"), "utf8");
+    const f = readFileSync(join(WEB_SRC, "features/home/home-footer.tsx"), "utf8");
     expect(f).toMatch(/Kenney/);
     expect(f).toMatch(/CC0/);
     expect(f, "환율 출처는 공용 상수(RATE_SOURCE_LABEL · 작업 0299: 한국수출입은행 · Frankfurter)에서").toMatch(/RATE_SOURCE_LABEL|한국수출입은행/);
@@ -207,7 +207,7 @@ describe("출처 표시 · 홈 문구", () => {
   });
 
   it("홈 첫 화면 설명(travel-timing.ts)에 '같은 달 평균으로 비교했습니다' 가 없음", () => {
-    expect(read(join(WEB_SRC, "features/home/lib/travel-timing.ts"))).not.toMatch(/같은 달 평균으로 비교했습니다/);
+    expect(read(join(WEB_SRC, "features/home/timing/travel-timing.ts"))).not.toMatch(/같은 달 평균으로 비교했습니다/);
     expect(walk(join(WEB_SRC, "features/home"), (f) => /\.tsx?$/.test(f) && !/\.test\./.test(f)).map(read).join("\n")).not.toMatch(/같은 달 평균으로 비교했습니다/);
   });
 });

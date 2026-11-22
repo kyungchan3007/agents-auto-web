@@ -7,8 +7,8 @@ const WEB_SRC = resolve(__dirname, "..");
 
 // 작업 0218 사용자 지적 "시안처럼 해줘 표디자인처럼" — 표 뒤 구간 옅은 면 · 홈 색 = 뒤 구간 색(파인 홈) · 가장 싼 달 글자판은 작은 칸 셋만 단독으로
 describe("표 모양 — 홈 없음 · 작은 글자판 (작업 0218 지적)", () => {
-  const page = readFileSync(join(WEB_SRC, "features/travel-price/components/flights-page.tsx"), "utf8");
-  const mini = readFileSync(join(WEB_SRC, "features/travel-price/components/mini-board.tsx"), "utf8");
+  const page = readFileSync(join(WEB_SRC, "features/flights/flights-page.tsx"), "utf8");
+  const mini = readFileSync(join(WEB_SRC, "features/flights/mini-board.tsx"), "utf8");
 
   it("표 뒤 구간(flights-back)은 옅은 면(bg-surface-2) · 절취선 끝 동그라미(홈)는 없음 — NOTCH · flights-ticket-hole 없음 (작업 0218 사용자 지적) @design", () => {
     expect(/<div[^>]*data-testid="flights-back"[^>]*>/.exec(page)?.[0] ?? "").toMatch(/bg-surface-2/);

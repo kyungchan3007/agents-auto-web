@@ -56,14 +56,14 @@ describe("사진 파일 · 부품 · 스크립트가 없음", () => {
 
 describe("인트로 — 안 쓰는 창문 카메라 코드 정리 (작업 0223 이 남긴 것)", () => {
   it("3D 장면 상태에 zoomIn 이 없고 장면 · 훅도 쓰지 않음", () => {
-    for (const f of ["features/intro/lib/scene-types.ts", "features/intro/lib/scene.ts", "features/intro/hooks/use-intro.ts"]) {
+    for (const f of ["features/intro/scene/scene-types.ts", "features/intro/scene/scene.ts", "features/intro/state/use-intro.ts"]) {
       expect(readFileSync(join(WEB_SRC, f), "utf8"), f).not.toMatch(/zoomIn|zoomT0|zoomFrom/);
     }
   });
 });
 
 describe("/about — 사진 없는 머리", () => {
-  const about = readFileSync(join(WEB_SRC, "features/about/components/about-page.tsx"), "utf8");
+  const about = readFileSync(join(WEB_SRC, "features/about/about-page.tsx"), "utf8");
 
   it("사진 부품 없이 큰 제목(h1)이 그대로 있음 · 제목 위 라벨(소개)은 작업 0265 에서 지움", () => {
     expect(about).not.toMatch(/PhotoHeader|photo-header/);

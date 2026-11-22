@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 
 const read = (p: string) => readFileSync(new URL(p, import.meta.url), "utf8");
 const code = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
-const result = () => read("../features/import-calc/components/calc-result.tsx");
+const result = () => read("../features/import-calc/calculator/calc-result.tsx");
 
 describe("calc-result — 굴러가는 숫자", () => {
   it("공용 부품 RollingNumber 를 가져옴(packages/ui)", () => {

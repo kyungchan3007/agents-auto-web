@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Home } from "@/features/home/components/home";
-import { IntroGate } from "@/features/intro/components/intro-gate";
-import { introDataOf } from "@/features/intro/lib/intro-data";
+import { Home } from "@/features/home/home";
+import { IntroGate } from "@/features/intro/intro-gate";
+import { introDataOf } from "@/features/intro/state/intro-data";
 import { api, mustHave } from "@hav/shared/api";
 import { JsonLd } from "@/shared/json-ld";
 import { HOME_DESCRIPTION, pageMeta, siteLd } from "@/shared/seo";
