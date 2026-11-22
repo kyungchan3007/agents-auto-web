@@ -6,6 +6,7 @@
   - TASKS.md 에 작업 · 담당 · 잡은 파일을 적어 배정한다
   - 작업을 나눌 때 builder(구현)와 test(테스트)로 나눠 큐에 넣고 순서를 조율한다 (테스트 먼저 → 구현 → 확인). 단계별 커밋은 그대로 — 테스트 커밋은 test, 구현 커밋은 builder
   - 담당에게는 request.md 경로를 넘긴다 (요약해서 넘기지 않는다)
+  - builder 지시에 확인 일(빌드 · 단위 테스트 · e2e · 화면 비교)을 넣지 않는다 — builder 가 하는 확인은 푸시 전 타입 검사와 바꾼 파일의 lint 뿐이고, 나머지는 test 의 일이다 (2026-11-22 재발 방지)
   - test 의 보고(로컬에서 무엇을 돌렸는지)를 확인하고 PR 을 연다. PR 뒤에는 최신 커밋의 CI `gate` 결과를 [verdict.md "게이트 판정 규칙"](verdict.md) 대로 확인한 뒤에만 "확인 끝" · "통과"라고 쓴다 (미리보기 빌드 통과만 보고 통과라고 쓰지 않는다)
   - 브랜치 흐름(작업 0244): main(운영) · develop(모으는 곳) · task/NNNN(develop 에서 땀). 작업 폴더와 브랜치는 origin/develop 에서 만들고, PR 의 base 는 develop 이다(급한 버그 같은 예외만 main). e2e 는 PR 의 대상에 따라 CI 가 고른다: develop 은 연결표(.agents/e2e-map.json)로 고른 spec 만(넓은 화면), main 은 전체(넓은 화면 + 휴대폰).
   - lead 가 여는 PR 이 둘 더 있다: 하루 마무리 PR(develop → main · fast-forward · 전체 e2e)과 data · geo 반영 PR(그날 자료 커밋만 cherry-pick → main). 머지는 사람이 "머지해" 한 뒤에만 한다.
@@ -18,7 +19,9 @@
 ## builder (구현)
 - 하는 일: lead가 배정한 plan 대로 기능을 만든다 (화면 · API · 수집 · 공용 로직)
   - 구현만 한다. 테스트 실행(단위 · e2e · 게이트 · 미리보기 확인 캡처)은 하지 않는다 — 모두 test 의 일
-  - 구현을 마치면 커밋 · 푸시하고 lead 에게 보고한다 (확인은 test 가 이어받음)
+  - 단, 푸시 전에 타입 검사(바꾼 패키지에서 `npm run typecheck` · apps/web 은 `next typegen && tsc --noEmit`)와 이번에 바꾼 파일의 lint 는 builder 가 직접 돌린다. 바뀐 파일 목록만 eslint 에 넘기고 `--fix` 도 그 파일에만 쓴다 (2026-11-22 사용자 결정). 통과하면 커밋 · 푸시하고, 실패하면 고친 뒤 푸시한다
+  - 테스트 파일(*.test.ts · *.test.tsx · apps/web/e2e/** · apps/web/e2e-responsive/**)의 lint 는 test 가 한다 — builder 는 테스트 파일 lint 결과를 test 에게 넘기지 않는다
+  - 구현을 마치면 커밋 · 푸시하고 lead 에게 보고한다. 보고에 "타입 검사 · lint(바꾼 파일) 통과" 한 줄을 적는다 (그 밖의 확인은 test 가 이어받음)
   - 작업 폴더(worktree)와 브랜치는 origin/develop 에서 만든다 (작업 0244)
   - 디자인 PR 이어도 구현만 한다(작업 0246). 모양을 맞추려고 팀 안에서 왕복하지 않는다. 동작(lib · hooks · API)을 함께 바꾸게 되면 lead 에게 알려 `design` 라벨을 달지 않게 한다.
   - 같은 공용 파일 끝에 덧붙이지 않는다. 화면 스타일은 기능 폴더 안 파일이나 tokens.css 에 둔다. globals.css 끝에 이어 쓰지 않는다.
@@ -34,6 +37,7 @@
 
 ## test (테스트)
 - 하는 일: 테스트에 관한 일은 전부 맡는다
+  - 전체 빌드 · 단위 · e2e · 하네스 · gate · 미리보기 확인 · 테스트 작성 · 테스트 파일 lint 는 모두 test 의 일이다 (builder 는 푸시 전 타입 검사와 바꾼 파일의 lint 만 한다)
   - 구현보다 먼저 테스트 작성(FAIL 확인) — "테스트 먼저" 커밋은 test 가 한다
   - request.md 원문의 요구마다 테스트를 하나 이상 만든다
   - 구현이 끝나면 로컬에서는 바뀐 곳 · 실패한 곳만 돌려 확인한다 — 판정은 [verdict.md "게이트 판정 규칙"](verdict.md) 대로 (최신 커밋의 CI gate)
