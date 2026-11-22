@@ -923,7 +923,7 @@ test("게이트: 로컬(CI 아님)은 라벨이 있어도 지금 그대로 — @
 });
 
 // ── e2e 범위 훅 (작업 0294) ──
-import { cdOf, decideE2e, e2eRuns, playwrightArgs, words as e2eWords } from "./e2e-guard.mjs";
+import { cdOf, changedSpecs, decideE2e, e2eRuns, playwrightArgs, words as e2eWords } from "./e2e-guard.mjs";
 
 const e2eEvent = (command, cwd = "/repo") => ({ tool_name: "Bash", tool_input: { command }, cwd });
 const pick = (specs, mode = "selected") => () => ({ mode, specs, projects: ["넓은 화면"] });
@@ -958,16 +958,16 @@ test("e2e 훅: spec 없는 로컬 e2e 는 전체 실행이라 막음 (npx · npm
   }
 });
 
-test("e2e 훅: 고른 목록 안 spec 은 통과 · 밖 spec 은 막고 이름을 알려 줌", () => {
+test("e2e 훅: 이 작업에서 바꾼 spec 은 통과 · 바꾸지 않은 spec 은 막고 이름을 알려 줌 (작업 0295)", () => {
   const deps = { allowed: pick(["a.spec.ts", "b.spec.ts"]), loop: quick };
   assert.equal(decideE2e(e2eEvent("cd apps/web && npx playwright test e2e/a.spec.ts e2e/b.spec.ts:38"), "/repo", deps), null);
   assert.equal(decideE2e(e2eEvent('npm run -s test:e2e -- -- --project="넓은 화면" e2e/a.spec.ts'), "/repo", deps), null);
   assert.equal(decideE2e(e2eEvent("cd apps/web && AIRFARE_FIXTURE=1 npx playwright test -c e2e/airfare.config.ts e2e/a.spec.ts"), "/repo", deps), null, "-c 값은 걸러내기 인자가 아님");
   const r = decideE2e(e2eEvent("npx playwright test e2e/a.spec.ts e2e/tap-44.spec.ts e2e/home.spec.ts"), "/repo", deps);
-  assert.match(r ?? "", /목록 밖 spec 입니다: tap-44\.spec\.ts, home\.spec\.ts/);
+  assert.match(r ?? "", /바꾸지 않은 spec 입니다: tap-44\.spec\.ts, home\.spec\.ts/);
 });
 
-test("e2e 훅: 목록이 비면(화면 변경 없음) spec 실행도 막고 '대상이 없다'고 알려 줌", () => {
+test("e2e 훅: 바꾼 spec 이 없으면 spec 실행도 막고 '대상이 없다'고 알려 줌", () => {
   const r = decideE2e(e2eEvent("npx playwright test e2e/a.spec.ts"), "/repo", { allowed: pick([], "none"), loop: quick });
   assert.match(r ?? "", /로컬 e2e 대상이 없습니다/);
 });
@@ -1004,4 +1004,26 @@ test("e2e 훅: 실행 위치는 첫 cd 를 따름 · heredoc 본문은 명령이
   assert.deepEqual(e2eWords(`--project="넓은 화면" e2e/a.spec.ts`), ["--project=넓은 화면", "e2e/a.spec.ts"]);
   assert.deepEqual(playwrightArgs(["--project", "휴대폰", "e2e/a.spec.ts:12:3", "-g", "제목"]).specs, ["a.spec.ts"]);
   assert.deepEqual(playwrightArgs(["--project", "휴대폰", "-g", "제목"]).filters, []);
+});
+
+test("e2e 훅: 로컬로 돌릴 수 있는 spec = 이 작업에서 바꾼 apps/web/e2e/*.spec.ts 만 (화면 파일 · 도우미 · e2e-responsive 는 아님) (작업 0295)", () => {
+  assert.deepEqual(changedSpecs([
+    "apps/web/src/features/travel-price/lib/airfare-view.ts",
+    "apps/web/e2e/flights-axis.spec.ts",
+    "apps/web/e2e/airfare-calendar.spec.ts",
+    "apps/web/e2e/helpers.ts",
+    "apps/web/e2e-responsive/prod.spec.ts",
+    ".agents/e2e-map.json",
+  ]), ["airfare-calendar.spec.ts", "flights-axis.spec.ts"]);
+  assert.deepEqual(changedSpecs(["apps/web/src/a.tsx"]), []);
+});
+
+test("게이트: CI(PR) 대상 develop 은 build 만 · test:e2e 없음 — 대상 main 은 그대로 전체 (작업 0295)", () => {
+  const dev = gate(["apps/web/src/features/home/components/ticket.tsx", "apps/web/src/features/home/lib/rank.ts"], { labels: [], target: "develop" });
+  assert.equal(dev.status, 0, dev.out);
+  assert.deepEqual(dev.npm, ["typecheck", "lint", "test", "build"], "develop: e2e 없음");
+  assert.match(dev.out, /test:e2e 건너뜀 — 대상 develop 은 build 만/);
+  const main = gate(["apps/web/src/features/home/components/ticket.tsx", "apps/web/src/features/home/lib/rank.ts"], { labels: [], target: "main" });
+  assert.equal(main.status, 0, main.out);
+  assert.ok(main.npm.includes("test:e2e"), `main: 전체 e2e 를 돎 ${main.npm}`);
 });
