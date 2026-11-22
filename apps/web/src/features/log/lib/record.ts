@@ -14,3 +14,9 @@ export function recordLine(d: DoneTask): string {
   const title = d.name.replace(/^작업\s*\d+\s*:\s*/, "").replace(/\s*\(#\d+\)\s*$/, "").trim();
   return `${kstStamp(d.mergedAt)}  ${d.task ? `작업 ${d.task}` : `PR #${d.number}`} 머지 · ${title}`;
 }
+
+/** 실시간 기록 한 줄을 시각 · 글로 나눔 (작업 0303 · 어드민 줄 목록) */
+export function recordParts(d: DoneTask): { time: string; text: string; at: string } {
+  const [time, ...rest] = recordLine(d).split("  ");
+  return { time: time ?? "", text: rest.join("  "), at: d.mergedAt };
+}
