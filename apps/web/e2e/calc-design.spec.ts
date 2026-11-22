@@ -80,7 +80,8 @@ test.describe("직구 계산 디자인 (작업 0208)", () => {
     const customs = tid(page, "customs-section");
     const hasGraph = (await customs.getByRole("img").count()) > 0;
     if (!hasGraph) {
-      await expect(tid(page, "customs-short-note")).toContainText("2주 미만");
+      // 작업 0282: 기록이 2주 미만이면 "기록이 2주 미만이라 …" 안내 줄을 두지 않음(주별 그래프만 없음) · 지운 자리에 빈 틈이 남지 않음
+      await expect(tid(page, "customs-short-note")).toHaveCount(0);
       expect((await box(customs)).height).toBeLessThanOrEqual(isPhone(page) ? 240 : 180);
     }
   });

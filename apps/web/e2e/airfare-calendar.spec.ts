@@ -5,7 +5,7 @@
 //
 //   DOM 계약 (※ 이름은 시안의 구조를 testid 로 옮긴 이 테스트의 가정 — 다르게 하면 lead 에게 알려 테스트를 맞춤)
 //     구역 [data-testid="airfare-section"] aria-labelledby="airfare-title" — window-section 바로 다음 형제 (R1)
-//       라벨 "항공권 출발일 달력" · h2 #airfare-title "언제 떠나면 쌀까 — 인천 출발 1주 왕복" · 설명 [data-testid="airfare-lede"] 한 줄 (R2)
+//       라벨 "항공권 출발일 달력" · h2 #airfare-title "언제 떠나면 쌀까"(작업 0282: 줄표 뒤를 설명으로) · 설명 [data-testid="airfare-lede"] 한 줄 (R2)
 //       도시 칩 [data-testid="airfare-chip"] 버튼 · data-airport="NRT" · aria-pressed · 안에 국기 [data-testid="airfare-chip-flag"] + 도시 이름 (R2)
 //       자료가 없으면(빌드 때 못 받음) 구역은 있되 [data-testid="airfare-empty"] "아직 받지 못했습니다" · 칩 · 날짜 띠 · 숫자 없음 (R10)
 //     탑승권 [data-testid="airfare-pass"]: 꼬리표 airfare-tag("가장 싼 출발"|"고른 출발") · 도착 airfare-to(공항 코드 포함) · 출발 airfare-dep · 돌아옴 airfare-ret ("12.29(화)" 모양)
@@ -136,7 +136,8 @@ for (const size of SIZES) {
       await openFlights(page);
       const section = tid(page, "airfare-section");
       await expect(section).toContainText("항공권 출발일 달력");
-      await expect(page.locator("#airfare-title")).toHaveText("언제 떠나면 쌀까 — 인천 출발 1주 왕복");
+      await expect(page.locator("#airfare-title")).toHaveText("언제 떠나면 쌀까"); // 작업 0282: 줄표 뒤 "인천 출발 1주 왕복"을 설명으로 옮김
+      await expect(tid(page, "airfare-lede")).toContainText("인천 출발 기준으로, 출발일마다 그날 떠나 1주 뒤 돌아오는 왕복 최저가입니다.");
       await expect(section).toHaveAttribute("aria-labelledby", "airfare-title");
       const label = await section.evaluate((el) => {
         const t = el.querySelector("#airfare-title")!.getBoundingClientRect().top;

@@ -35,7 +35,7 @@ test.describe("/about 사진 없는 머리", () => {
     const head = page.getByTestId("about-head");
     await expect(head).toBeVisible();
     await expect(head.getByText("소개", { exact: true }), "제목 위 라벨 없음(메뉴 이름을 다시 적은 라벨 삭제 · 작업 0265)").toHaveCount(0);
-    const h1 = head.getByRole("heading", { level: 1, name: /어떤 자료를, ?어떤 기준으로 보여 주나요/ });
+    const h1 = head.getByRole("heading", { level: 1, name: /어떤 자료를, ?어떤 기준으로 보여 주나요\?/ });
     await expect(h1).toBeVisible();
     const box = await h1.boundingBox();
     const width = page.viewportSize()?.width ?? 0;
