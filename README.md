@@ -157,7 +157,7 @@
 </details>
 
 <details>
-<summary><b>⚙️ 자동으로 도는 일</b> — GitHub Actions 워크플로 10개의 역할과 실행 시점</summary>
+<summary><b>⚙️ 자동으로 도는 일</b> — GitHub Actions 워크플로 11개의 역할과 실행 시점</summary>
 
 <br>
 
@@ -171,6 +171,7 @@
 **배포**
 - `deploy-api.yml` API 배포 — main 검사가 통과하고 API가 바뀐 경우에만 배포합니다.
 - `rebuild-site.yml` 사이트 다시 만들기 — 평일 12:30, 환율 수집 30분 뒤에 사이트를 새 데이터로 다시 만듭니다.
+- `release-web.yml` 운영 릴리스 만들기 — 운영 사이트 버전이 main 에 올라가면 `web-v<버전>` 태그와 GitHub 릴리스를 만듭니다. 버전과 변경 기록은 Changesets 로 정합니다.
 
 **수집 · 알림 · 기록**
 - `ensure-fx.yml` 오늘 환율 빠짐 보충 — 평일 12:10~17:40에 30분마다 오늘 환율이 있는지 보고, 없으면 수집을 다시 요청합니다.

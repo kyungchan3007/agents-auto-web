@@ -10,6 +10,7 @@
   - test 의 보고(로컬에서 무엇을 돌렸는지)를 확인하고 PR 을 연다. PR 뒤에는 최신 커밋의 CI `gate` 결과를 [verdict.md "게이트 판정 규칙"](verdict.md) 대로 확인한 뒤에만 "확인 끝" · "통과"라고 쓴다 (미리보기 빌드 통과만 보고 통과라고 쓰지 않는다)
   - 브랜치 흐름(작업 0244): main(운영) · develop(모으는 곳) · task/NNNN(develop 에서 땀). 작업 폴더와 브랜치는 origin/develop 에서 만들고, PR 의 base 는 develop 이다(급한 버그 같은 예외만 main). e2e 는 PR 의 대상에 따라 다르다: develop 은 CI e2e 없음(build 까지 · 로컬은 바꾼 spec 만 · 작업 0295), main 은 전체(넓은 화면 + 휴대폰).
   - lead 가 여는 PR 이 둘 더 있다: 하루 마무리 PR(develop → main · fast-forward · 전체 e2e)과 data · geo 반영 PR(그날 자료 커밋만 cherry-pick → main). 머지는 사람이 "머지해" 한 뒤에만 한다.
+  - 운영 버전(작업 0313 · `.changeset/README.md`): 하루 마무리 PR 을 열기 전에 develop 에 변경 기록(`.changeset/*.md`)이 쌓여 있으면 develop 에서 `npm run release:version` 을 돌려 "운영 v<버전>" 커밋을 올린다. main 에 fast-forward 되면 `release-web.yml` 이 `web-v<버전>` 태그 · GitHub 릴리스를 만든다. 쌓인 변경 기록이 없으면 버전을 올리지 않는다(자료 · 어드민만 바뀐 날).
   - 디자인 PR(작업 0246 · [verdict.md "디자인 PR 판정"](verdict.md)): 화면만 바꾸는 작업이면 PR 을 **열 때** `design` 라벨을 단다(`gh pr create --label design` · 나중에 달면 다음 푸시부터 반영). 동작을 바꾸는 변경에는 달지 않는다. PR 본문에 "디자인 테스트 실패 N개"를 한 줄로 적고, 미리보기 주소와 볼 경로를 사용자에게 준다. 팀 안에서 모양을 맞추는 왕복은 하지 않는다 — 모양은 사용자가 미리보기에서 보고, 고칠 곳을 말하면 그때 고친다.
   - 하루 마무리 PR 의 `design` 라벨은 그날 머지된 PR 이 모두 design 일 때만 단다. 본문에는 그날 바뀐 화면 목록(페이지 · 무엇이 바뀌었는지 한 줄씩) · 미리보기 주소 · "미뤄 둔 디자인 테스트 N개" 한 줄(기한 알림은 두지 않음)을 적는다.
   - 새 자료를 받는 작업(수집 · 새 API)은 PR 본문과 사용자 회신 맨 위에 쓴다: "운영에 자료가 생기기 전까지 미리보기 · 운영에 빈 상태로 보입니다. 첫 수집: 언제" + 고정 자료로 본 비교 캡처 경로. data 의 "첫 수집 미리 알림"과 같은 내용을 lead 회신에도 넣는다.
@@ -21,6 +22,7 @@
   - 구현만 한다. 테스트 실행(단위 · e2e · 게이트 · 미리보기 확인 캡처)은 하지 않는다 — 모두 test 의 일
   - 단, 푸시 전에 타입 검사(바꾼 패키지에서 `npm run typecheck` · apps/web 은 `next typegen && tsc --noEmit`)와 이번에 바꾼 파일의 lint 는 builder 가 직접 돌린다. 바뀐 파일 목록만 eslint 에 넘기고 `--fix` 도 그 파일에만 쓴다 (2026-11-22 사용자 결정). 통과하면 커밋 · 푸시하고, 실패하면 고친 뒤 푸시한다
   - 테스트 파일(*.test.ts · *.test.tsx · apps/web/e2e/** · apps/web/e2e-responsive/**)의 lint 는 test 가 한다 — builder 는 테스트 파일 lint 결과를 test 에게 넘기지 않는다
+  - 운영 화면의 기능 · 디자인이 바뀌는 작업이면 변경 기록 파일 하나(`.changeset/*.md` · `"@hav/web": minor | patch` + 방문자가 읽을 한 줄)를 같은 PR 에 넣는다. 자료 · 어드민 · 문서 · 테스트만 바뀌면 쓰지 않는다 (작업 0313 · 게이트가 빠지면 경고)
   - 구현을 마치면 커밋 · 푸시하고 lead 에게 보고한다. 보고에 "타입 검사 · lint(바꾼 파일) 통과" 한 줄을 적는다 (그 밖의 확인은 test 가 이어받음)
   - 작업 폴더(worktree)와 브랜치는 origin/develop 에서 만든다 (작업 0244)
   - 디자인 PR 이어도 구현만 한다(작업 0246). 모양을 맞추려고 팀 안에서 왕복하지 않는다. 동작(lib · hooks · API)을 함께 바꾸게 되면 lead 에게 알려 `design` 라벨을 달지 않게 한다.
