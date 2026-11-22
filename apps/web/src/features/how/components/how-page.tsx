@@ -6,6 +6,9 @@
 import { useFaq } from "../hooks/use-faq";
 import { useFlowPlay } from "../hooks/use-flow-play";
 import { useRules } from "../hooks/use-rules";
+import { HowFocus } from "./how-focus";
+import { HowSearch } from "./how-search";
+import { HowTrials } from "./how-trials";
 import { HOW_FAQ, HOW_NODES, HOW_PANES, HOW_RULES, HOW_STEPS, HOW_TOOLS, type NodeId, REPO_BLOB, RULE_CAT, type RuleCat } from "../lib/how";
 import { AdminNav } from "@/shared/admin-nav";
 import { Flap } from "@hav/ui/admin/flap";
@@ -272,6 +275,8 @@ export function HowPage({ counts }: { counts: HowCounts }) {
           ))}
         </dl>
       </section>
+      <HowFocus />
+      <HowSearch />
       <Flow />
       <div className="adm-tools3">
         {HOW_TOOLS.map((t) => (
@@ -310,6 +315,7 @@ export function HowPage({ counts }: { counts: HowCounts }) {
       </Panel>
       <Rules />
       <Faq />
+      <HowTrials />
     </AdminNav>
   );
 }
