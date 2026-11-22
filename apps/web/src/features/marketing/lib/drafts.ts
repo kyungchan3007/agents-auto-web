@@ -8,6 +8,8 @@ export type Draft = {
   numbers: string[];
   link: string | null;
   image: string | null;
+  /** 처음 주소(R2)가 안 열릴 때 바꿔 보는 주소(저장소 raw) — 없으면 null */
+  imageFallback: string | null;
 };
 
 export function sections(md: string): Record<string, string> {
@@ -27,7 +29,7 @@ export function sections(md: string): Record<string, string> {
 }
 
 /** 문구.md 한 편 → 초안 · 빠진 절은 빈 글(지어내지 않음) */
-export function parseDraft(day: string, md: string, image: string | null): Draft {
+export function parseDraft(day: string, md: string, image: string | null, imageFallback: string | null = null): Draft {
   const s = sections(md);
   const link = (s["눌렀을 때 갈 주소"] ?? "").split("\n").map((l) => l.trim()).find((l) => /^https?:\/\//.test(l)) ?? null;
   return {
@@ -38,8 +40,20 @@ export function parseDraft(day: string, md: string, image: string | null): Draft
     numbers: (s["쓴 숫자와 받은 날짜"] ?? "").split("\n").map((l) => l.replace(/^[-*]\s*/, "").trim()).filter(Boolean),
     link,
     image,
+    imageFallback,
   };
 }
 
 /** 폴더 이름이 날짜(YYYY-MM-DD)인 것만 · 최근 날부터 */
 export const draftDays = (names: string[]) => names.filter((n) => /^\d{4}-\d{2}-\d{2}$/.test(n)).sort().reverse();
+
+/** 그림 주소 고르기 (작업 0310) — 먼저 R2 공개 주소({날짜}.jpg) · 저장소에 원본 파일이 있는 날은 raw 주소를 되돌림 주소로 · 끝 슬래시 유무와 상관없이 같은 주소 */
+export function imageSources(day: string, r2Base: string, rawBase: string, hasRaw: boolean): { image: string; imageFallback: string | null } {
+  const slash = (b: string) => (b.endsWith("/") ? b : `${b}/`);
+  return { image: `${slash(r2Base)}${day}.jpg`, imageFallback: hasRaw ? `${slash(rawBase)}${day}/image.png` : null };
+}
+
+/** 그림이 안 열렸을 때 다음에 보일 주소 — 지금 주소가 되돌림 주소가 아니고 되돌림 주소가 있으면 그것 · 아니면 null(그림 없음) */
+export function nextImage(current: string | null, d: Pick<Draft, "imageFallback">): string | null {
+  return d.imageFallback && current !== d.imageFallback ? d.imageFallback : null;
+}
