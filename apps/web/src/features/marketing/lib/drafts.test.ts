@@ -1,6 +1,6 @@
 // 알리기 소재 초안 나누기 (작업 0307)
 import { describe, expect, it } from "vitest";
-import { draftDays, parseDraft, sections } from "./drafts";
+import { draftDays, imageSources, nextImage, parseDraft, sections } from "./drafts";
 
 const MD = `# 알림 초안 2026-11-20
 
@@ -44,5 +44,37 @@ describe("알리기 초안 (작업 0307)", () => {
 
   it("날짜 폴더만 · 최근 날부터", () => {
     expect(draftDays(["2026-11-20", "README.md", "2026-11-22", "links"])).toEqual(["2026-11-22", "2026-11-20"]);
+  });
+});
+
+// 그림 주소 고르기 (작업 0310) — R2 먼저 · 저장소 원본이 있는 날만 raw 로 되돌림 · 둘 다 없으면 그림 없음
+describe("알리기 그림 주소 (작업 0310)", () => {
+  const R2 = "https://pub-test.r2.dev/";
+  const RAW = "https://raw.githubusercontent.com/o/r/main/docs/marketing/";
+
+  it("처음 주소는 R2 의 {날짜}.jpg — 끝 슬래시가 있든 없든 같은 주소", () => {
+    expect(imageSources("2026-11-20", R2, RAW, false).image).toBe("https://pub-test.r2.dev/2026-11-20.jpg");
+    expect(imageSources("2026-11-20", R2.replace(/\/$/, ""), RAW, false).image).toBe("https://pub-test.r2.dev/2026-11-20.jpg");
+  });
+
+  it("되돌림 주소는 저장소에 image.png 가 있는 날만 — 없으면 null", () => {
+    expect(imageSources("2026-11-20", R2, RAW, true).imageFallback).toBe(`${RAW}2026-11-20/image.png`);
+    expect(imageSources("2026-11-20", R2, RAW.replace(/\/$/, ""), true).imageFallback).toBe(`${RAW}2026-11-20/image.png`);
+    expect(imageSources("2026-11-20", R2, RAW, false).imageFallback).toBeNull();
+  });
+
+  it("그림이 안 열리면 R2 → raw → 그림 없음(null) 순서 — 같은 주소로 되돌아가지 않음", () => {
+    const { image, imageFallback } = imageSources("2026-11-20", R2, RAW, true);
+    const a = nextImage(image, { imageFallback });
+    expect(a).toBe(imageFallback);
+    expect(nextImage(a, { imageFallback })).toBeNull();
+    expect(nextImage(image, { imageFallback: null }), "되돌림 주소 없는 날은 바로 그림 없음").toBeNull();
+  });
+
+  it("초안에 두 주소가 함께 실림 — 되돌림 주소를 안 주면 null", () => {
+    const md = "## 본문\n글\n";
+    const { image, imageFallback } = imageSources("2026-11-20", R2, RAW, true);
+    expect(parseDraft("2026-11-20", md, image, imageFallback)).toMatchObject({ image, imageFallback });
+    expect(parseDraft("2026-11-20", md, null).imageFallback).toBeNull();
   });
 });
