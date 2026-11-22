@@ -189,7 +189,7 @@ export function LineChart({ aria, x: xr, y, y2, xTicks, series, marks = [], refs
                   </text>
                 )}
                 {tk.s && (
-                  <text x={L - 10} y={Y(tk.v) + 12.5} textAnchor="end" fontSize={12} fill={MUTE} opacity={0.7} className="font-sans">
+                  <text x={L - 10} y={Y(tk.v) + 12.5} textAnchor="end" fontSize={12} fill={MUTE} className="font-sans">
                     {tk.s}
                   </text>
                 )}
