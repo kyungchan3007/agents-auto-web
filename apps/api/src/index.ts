@@ -18,6 +18,7 @@ import { d1IndicatorStore, recentPoints } from "./features/indicators/store";
 import { collectPriceLevels } from "./features/prices/collect";
 import { priceRoutes } from "./features/prices/routes";
 import { d1PriceStore } from "./features/prices/store";
+import { ga4Routes } from "./features/ga4/routes";
 import { geoRoutes } from "./features/geo/routes";
 import { igRoutes } from "./features/ig/routes";
 import { signalRoutes } from "./features/signal/routes";
@@ -39,6 +40,7 @@ export const app = new Hono<{ Bindings: Env }>()
   .route("/tasks", taskRoutes)
   .route("/geo", geoRoutes)
   .route("/ig", igRoutes)
+  .route("/ga4", ga4Routes)
   // 사이트 상태 — 오늘 환율 예약 회차 (작업 0105) · 회차는 아래 CRON 에서
   .route("/status", statusRoutes([
     { cron: "0 3 * * MON-FRI", kind: "collect" },
