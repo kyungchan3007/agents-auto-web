@@ -6,7 +6,7 @@
 //     data-testid="traffic-pages"     많이 본 페이지 표 — 줄 "traffic-page-row" · 칸 data-col="path" · "views"
 //     data-testid="traffic-empty"     날짜별 · 유입 경로 · 페이지가 모두 없을 때 — '아직 받은 유입 값이 없습니다'
 //     data-testid="traffic-error"     /bff/ga4 가 실패했을 때 — '유입 값을 받지 못했습니다' · 화면의 나머지(제목 · 어드민 메뉴)는 그대로
-//   어드민 메뉴: "유입"(/traffic · 단축키 5) — 메뉴가 일곱이 되는 것은 인스타 성과(/instagram · 6)와 함께(ig-insights.spec.ts) · 기존 메뉴 개수 검사(admin.spec.ts)는 구현 뒤 맞춤
+//   어드민 메뉴: "유입"(/traffic · 단축키 5) — 메뉴가 일곱이 되는 것은 인스타 유입(/instagram · 6)와 함께(ig-insights.spec.ts) · 기존 메뉴 개수 검사(admin.spec.ts)는 구현 뒤 맞춤
 import { type Page, expect, test } from "@playwright/test";
 import { hydrated } from "./helpers";
 
@@ -42,7 +42,7 @@ test.describe("어드민 유입 화면 — GA4 (작업 0324)", () => {
   test("메뉴에 '유입'(/traffic) — 지금 화면 표시 · h1 하나 · 섹션 제목(h2)", async ({ page }) => {
     await open(page, REPORT);
     const nav = page.getByRole("navigation", { name: "어드민 메뉴" }).filter({ visible: true });
-    await expect(nav.getByRole("link", { name: "유입" })).toHaveAttribute("href", "/traffic");
+    await expect(nav.getByRole("link", { name: /^유입/ })).toHaveAttribute("href", "/traffic");
     await expect(nav.locator('a[aria-current="page"]')).toContainText("유입");
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
     expect(await page.getByRole("heading", { level: 2 }).count(), "섹션 제목").toBeGreaterThanOrEqual(3);
@@ -112,14 +112,14 @@ test.describe("어드민 유입 화면 — GA4 (작업 0324)", () => {
     await open(page, { error: "boom" }, 500);
     await expect(tid(page, "traffic-error")).toContainText("유입 값을 받지 못했습니다");
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
-    await expect(page.getByRole("navigation", { name: "어드민 메뉴" }).filter({ visible: true }).getByRole("link", { name: "유입" })).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("navigation", { name: "어드민 메뉴" }).filter({ visible: true }).getByRole("link", { name: /^유입/ })).toHaveAttribute("aria-current", "page");
     for (const row of ["traffic-daily-row", "traffic-source-row", "traffic-page-row"]) await expect(tid(page, row)).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
   });
 
   test("알 수 없는 모양의 응답(오류 본문 · 빈 객체)도 깨지지 않음 · 숫자를 지어내지 않음", async ({ page }) => {
     await open(page, { unexpected: true });
-    await expect(page.getByRole("navigation", { name: "어드민 메뉴" }).filter({ visible: true }).getByRole("link", { name: "유입" })).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("navigation", { name: "어드민 메뉴" }).filter({ visible: true }).getByRole("link", { name: /^유입/ })).toHaveAttribute("aria-current", "page");
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
     for (const row of ["traffic-daily-row", "traffic-source-row", "traffic-page-row"]) await expect(tid(page, row)).toHaveCount(0);
   });
