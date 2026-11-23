@@ -28,6 +28,7 @@ describe("코드 자리 (작업 0126 · 0137 · 0312)", () => {
       "seo/og-fonts.server.ts",
       "seo/seo.ts",
       "seo/sitemap-entries.ts",
+      "seo/verification.ts",
       "rate/currency-flag.tsx",
       "rate/freshness-note.tsx",
       "rate/use-freshness.ts",
