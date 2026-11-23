@@ -15,8 +15,8 @@ export const requireAdminKey: MiddlewareHandler<{ Bindings: Env }> = async (c, n
   await next();
 };
 
-/** 어드민 전용 경로 — 운영 BFF 가 쓰지 않는 읽기 경로 + 접속 기록(읽기 · 쓰기 모두) */
-const READ_ONLY_PATHS = /^\/(activity|tasks|geo|ga4|ig|status)(\/|$)/;
+/** 어드민 전용 경로 — 운영 BFF 가 쓰지 않는 읽기 경로 + 접속 기록(읽기 · 쓰기 모두) · /tasks 는 공개 저장소 PR 제목 자료라 뺌 */
+const READ_ONLY_PATHS = /^\/(activity|geo|ga4|ig|status)(\/|$)/;
 const VISITS_PATH = /^\/admin-visits(\/|$)/;
 
 /** 모든 경로 앞에 한 번 — 어드민 전용 경로만 열쇠를 요구 (POST /activity 는 ACTIVITY_TOKEN 그대로) */
