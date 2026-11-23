@@ -1,0 +1,15 @@
+/* 어드민 첫 진입 안내 창 (작업 0326 · 시안 .tmp/mock-admin-gate) */
+.adm-welcome-scrim { position: fixed; inset: 0; z-index: 80; background: rgba(22, 27, 38, 0.28); display: grid; place-items: center; padding: 20px; }
+.adm-welcome { width: 100%; max-width: 400px; max-height: calc(100vh - 40px); overflow: auto; background: var(--a-panel); border-radius: 14px; padding: 24px; box-shadow: 0 16px 40px rgba(22, 27, 38, 0.22); }
+.adm-welcome .eyebrow { font-size: 12px; font-weight: 600; color: var(--a-good); margin: 0 0 4px; display: flex; gap: 6px; align-items: center; }
+.adm-welcome .eyebrow i { width: 6px; height: 6px; border-radius: 50%; background: var(--a-good); }
+.adm-welcome h2 { font-size: 18px; font-weight: 600; margin: 0 0 8px; }
+.adm-welcome .lede { color: var(--a-sub); margin: 0 0 14px; }
+.adm-welcome ul { list-style: none; margin: 0; padding: 0; border: 1px solid var(--a-line); border-radius: 10px; }
+.adm-welcome li { padding: 10px 12px; font-size: 13px; color: var(--a-sub); }
+.adm-welcome li + li { border-top: 1px solid var(--a-line); }
+.adm-welcome li b { color: var(--a-ink); font-weight: 600; }
+.adm-welcome .tok { font-family: var(--a-mono); font-size: 12px; background: var(--a-sunk); border-radius: 4px; padding: 1px 6px; color: var(--a-ink); overflow-wrap: anywhere; }
+.adm-welcome .row { display: flex; gap: 8px; margin-top: 16px; }
+.adm-welcome .go { all: unset; cursor: pointer; flex: 1; height: 42px; border-radius: 8px; background: var(--a-blue); color: #fff; font-weight: 600; display: grid; place-items: center; }
+.adm-welcome .out { flex: 0 0 auto; padding: 0 14px; height: 42px; border-radius: 8px; border: 1px solid var(--a-line2); color: var(--a-sub); display: grid; place-items: center; text-decoration: none; }
