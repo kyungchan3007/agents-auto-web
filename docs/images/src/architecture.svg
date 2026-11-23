@@ -17,7 +17,7 @@
     <text x="140" y="319">세계은행 API</text>
   </g>
 
-  <rect x="290" y="104" width="630" height="370" rx="16" fill="#FFF7F0" stroke="#F38020" stroke-width="1.5"/>
+  <rect x="290" y="104" width="860" height="392" rx="16" fill="#FFF7F0" stroke="#F38020" stroke-width="1.5"/>
   <text x="312" y="132" font-size="15" font-weight="700" fill="#C2410C">Cloudflare</text>
 
   <g text-anchor="middle">
@@ -31,16 +31,25 @@
     <text x="440" y="412" font-size="13" fill="#57606A">환율 · 물가 · 작업 기록 · 측정 결과</text>
 
     <rect x="660" y="150" width="230" height="110" rx="12" fill="#FFFFFF" stroke="#F38020"/>
-    <text x="775" y="190" font-size="17" font-weight="700" fill="#1F2328">Pages 정적 사이트</text>
-    <text x="775" y="214" font-size="13" fill="#57606A">Next.js 정적 내보내기</text>
+    <text x="775" y="190" font-size="17" font-weight="700" fill="#1F2328">사이트 Worker</text>
+    <text x="775" y="214" font-size="13" fill="#57606A">Next.js 정적 자산</text>
     <text x="775" y="234" font-size="13" fill="#57606A">빌드 시 API 데이터 반영</text>
 
     <rect x="660" y="350" width="230" height="94" rx="12" fill="#FFFFFF" stroke="#F38020"/>
     <text x="775" y="388" font-size="17" font-weight="700" fill="#1F2328">BFF</text>
-    <text x="775" y="412" font-size="13" fill="#57606A">사이트 Worker · 실시간 조회</text>
+    <text x="775" y="412" font-size="13" fill="#57606A">사이트 /bff · 실시간 조회</text>
 
-    <rect x="1010" y="150" width="150" height="56" rx="28" fill="#F6F8FA" stroke="#D0D7DE"/>
-    <text x="1085" y="184" font-size="15" fill="#1F2328">방문자</text>
+    <rect x="1170" y="150" width="130" height="56" rx="28" fill="#F6F8FA" stroke="#D0D7DE"/>
+    <text x="1235" y="184" font-size="15" fill="#1F2328">방문자</text>
+  </g>
+
+  <g text-anchor="middle">
+    <rect x="930" y="350" width="200" height="94" rx="12" fill="#FFFFFF" stroke="#F38020"/>
+    <text x="1030" y="380" font-size="17" font-weight="700" fill="#1F2328">어드민 Worker</text>
+    <text x="1030" y="404" font-size="13" fill="#57606A">토큰 입구 · 서명 쿠키</text>
+    <text x="1030" y="424" font-size="13" fill="#57606A">작업실 · 측정 화면 · /bff</text>
+    <rect x="1170" y="370" width="130" height="56" rx="28" fill="#F6F8FA" stroke="#D0D7DE"/>
+    <text x="1235" y="404" font-size="15" fill="#1F2328">리뷰어</text>
   </g>
 
   <rect x="290" y="520" width="990" height="170" rx="16" fill="#F6F8FA" stroke="#8C959F" stroke-width="1.5"/>
@@ -65,7 +74,7 @@
   <text x="1105" y="590" text-anchor="middle" font-size="15" font-weight="700" fill="#1F2328">GitHub Actions</text>
   <g font-size="12.5" fill="#57606A">
     <text x="968" y="613">· 보안 점검 → 이슈</text>
-    <text x="968" y="631">· Search Console 자료 · 작업 기록 → D1</text>
+    <text x="968" y="631">· 검색 · GA4 · 인스타 · 작업 기록 → D1</text>
     <text x="968" y="649">· 바뀐 페이지 색인 요청 (IndexNow)</text>
     <text x="968" y="664" dy="0">· 세션 측정 결과 저장 · 수집 예비</text>
   </g>
@@ -77,22 +86,26 @@
     <path d="M440 262 L440 348" marker-start="url(#a)"/>
     <path d="M562 205 L658 205"/>
     <path d="M658 372 L564 256"/>
-    <path d="M1008 178 L892 190"/>
-    <path d="M1040 208 L892 372"/>
+    <path d="M1168 178 L892 190"/>
+    <path d="M1180 208 L892 366"/>
     <path d="M460 615 L482 615"/>
     <path d="M624 615 L646 615"/>
     <path d="M788 615 L810 615"/>
-    <path d="M867 578 L867 476"/>
-    <path d="M1010 564 L924 446"/>
+    <path d="M867 578 L867 498"/>
+    <path d="M1105 564 L1105 498"/>
+    <path d="M1168 398 L1134 398"/>
+    <path d="M1030 446 L1030 466 L600 466 L600 240 L564 240"/>
   </g>
   <g font-size="12" fill="#57606A">
     <text x="258" y="160">수집</text>
     <text x="450" y="310">저장 · 조회</text>
     <text x="610" y="196" text-anchor="middle">빌드 데이터</text>
     <text x="610" y="224" text-anchor="middle">배포 훅</text>
-    <text x="620" y="300">서비스</text>
-    <text x="620" y="316">바인딩</text>
-    <text x="858" y="504" text-anchor="end">사이트 · API 배포</text>
-    <text x="978" y="500">기록 · 측정 결과 → D1</text>
+    <text x="632" y="300">서비스</text>
+    <text x="632" y="316">바인딩</text>
+    <text x="858" y="514" text-anchor="end">사이트 · API 배포</text>
+    <text x="1115" y="514">기록 · 측정 결과 → D1</text>
+    <text x="817" y="486" text-anchor="middle">서비스 바인딩 · 어드민 전용 경로는 x-admin-key</text>
+    <text x="1235" y="446" text-anchor="middle">지원 링크(토큰)</text>
   </g>
 </svg>

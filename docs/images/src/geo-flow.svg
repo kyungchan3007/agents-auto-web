@@ -22,7 +22,7 @@
     <text x="62" y="226" fill="#57606A">· sitemap.xml</text>
     <text x="62" y="248" fill="#57606A">· IndexNow 키 파일</text>
     <text x="62" y="298" font-weight="700">소유 확인</text>
-    <text x="62" y="322" fill="#57606A">· 구글 · Bing 확인 메타 태그</text>
+    <text x="62" y="322" fill="#57606A">· 구글 · Bing · 네이버 확인 메타 태그</text>
     <text x="62" y="372" font-weight="700">인용용 콘텐츠</text>
     <text x="62" y="396" fill="#57606A">· 자료 출처 · 판단 기준 소개</text>
     <text x="62" y="418" fill="#57606A">· 통화별 요약 문장 · 기간별 표</text>
@@ -41,7 +41,7 @@
     <rect x="350" y="290" width="290" height="96" rx="12" fill="#FFFFFF" stroke="#00809D"/>
     <text x="372" y="322" font-size="16" font-weight="700">Bing Webmaster Tools</text>
     <text x="372" y="348" fill="#57606A">· 소유 확인 · 사이트맵 제출</text>
-    <text x="372" y="370" fill="#57606A">· Bing 색인은 여러 AI 검색이 활용</text>
+    <text x="372" y="370" fill="#57606A">· 네이버 서치어드바이저도 같은 방식</text>
 
     <rect x="350" y="416" width="290" height="96" rx="12" fill="#FFFFFF" stroke="#8C959F"/>
     <text x="372" y="448" font-size="16" font-weight="700">IndexNow</text>
@@ -79,8 +79,8 @@
     <text x="1170" y="284" font-size="16" font-weight="700" fill="#1F2328">D1</text>
     <text x="1170" y="308" font-size="13" fill="#57606A">날짜별 측정 결과 보관</text>
     <rect x="1060" y="390" width="220" height="80" rx="12" fill="#FFFFFF" stroke="#1F2328"/>
-    <text x="1170" y="424" font-size="16" font-weight="700" fill="#1F2328">GEO 측정 페이지</text>
-    <text x="1170" y="448" font-size="13" fill="#57606A">/geo 에 공개</text>
+    <text x="1170" y="424" font-size="16" font-weight="700" fill="#1F2328">어드민 GEO 측정</text>
+    <text x="1170" y="448" font-size="13" fill="#57606A">지원 링크로 열람</text>
   </g>
 
   <g stroke="#57606A" stroke-width="1.6" fill="none" marker-end="url(#a)">
@@ -94,6 +94,6 @@
   </g>
   <g font-size="12" fill="#57606A">
     <text x="660" y="222">자료 조회</text>
-    <text x="1280" y="616" text-anchor="end">집계 방식: Pages 미들웨어(봇 방문 · AI 서비스 유입) · GitHub Actions(검색 노출 · AI 답변 인용)</text>
+    <text x="1280" y="616" text-anchor="end">집계 방식: 사이트 Worker(봇 방문 · AI 서비스 유입) · GitHub Actions(검색 노출 · AI 답변 인용)</text>
   </g>
 </svg>
