@@ -41,7 +41,8 @@ test.describe("알리기 — 인스타 성과 (작업 0323)", () => {
     await open(page, REPORT);
     await expect(metric(page, "profileViews")).toBeVisible();
     await expect(metric(page, "profileViews")).toHaveText(/(^|\D)0(\D|$)/); // 받은 0
-    await expect(metric(page, "websiteClicks")).toBeVisible();
+    // 값이 없으면 칸 글이 비어 크기가 0 일 수 있음 — 보임이 아니라 칸이 있는지(한 개)를 봄
+    await expect(metric(page, "websiteClicks")).toHaveCount(1);
     const clicks = ((await metric(page, "websiteClicks").innerText()) ?? "").replace(/\s+/g, "");
     expect(clicks, "받지 못한 값 칸에 숫자 · 대시가 없음").not.toMatch(/\d|[-–—]/);
   });
