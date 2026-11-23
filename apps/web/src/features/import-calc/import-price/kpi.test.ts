@@ -4,7 +4,7 @@
 //   kpiDigits(value: number, max = 2): number   // 카운트업 소수 자리 — 값이 보이는 만큼(끝 0 제외 · 최대 max) · 정수면 0 · formatCount(value, digits) 가 numberText(value, { maximumFractionDigits: max }) 와 같음
 //   deltaTone(delta: number | null): "up" | "down" | "flat" | null   // 전달보다: 오름 up(주홍 점) · 내림 down(파랑 점) · 0 flat(회색 점) · 없으면 null
 import { numberText } from "@hav/shared/format";
-import { formatCount } from "@hav/ui/hooks/motion/use-count-up";
+import { formatCount } from "@hav/ui/hooks/count/use-count-up";
 import { describe, expect, it } from "vitest";
 import { deltaTone, kpiDigits } from "./import-price";
 
