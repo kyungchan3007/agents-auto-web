@@ -80,7 +80,7 @@
     <text x="1170" y="308" font-size="13" fill="#57606A">날짜별 측정 결과 보관</text>
     <rect x="1060" y="390" width="220" height="80" rx="12" fill="#FFFFFF" stroke="#1F2328"/>
     <text x="1170" y="424" font-size="16" font-weight="700" fill="#1F2328">어드민 GEO 측정</text>
-    <text x="1170" y="448" font-size="13" fill="#57606A">지원 링크로 열람</text>
+    <text x="1170" y="448" font-size="13" fill="#57606A">전용 링크로 열람</text>
   </g>
 
   <g stroke="#57606A" stroke-width="1.6" fill="none" marker-end="url(#a)">
