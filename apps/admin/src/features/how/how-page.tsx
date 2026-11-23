@@ -16,6 +16,7 @@ import { HowSearch } from "./search/how-search";
 import { howStats } from "./stats/how-stats";
 import { HowTools } from "./tools/how-tools";
 import { HowTrials } from "./trials/how-trials";
+import { HowVisits } from "./visits/how-visits";
 import "./how.css";
 
 export function HowPage({ counts }: { counts: HowCounts }) {
@@ -52,6 +53,7 @@ export function HowPage({ counts }: { counts: HowCounts }) {
       <HowRules />
       <HowFaq />
       <HowTrials />
+      <HowVisits />
     </AdminNav>
   );
 }

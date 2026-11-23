@@ -138,3 +138,12 @@
   .adm-trial-b { padding: 0 16px 16px; }
   .adm-trial-b > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
 }
+
+/* 접속 기록 표 (작업 0326) */
+.adm-visits { padding: 0 0 6px; }
+.adm-visits .h, .adm-visits .r { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr); gap: 12px; padding: 8px 20px; font-size: 13px; }
+.adm-visits .h { font-size: 11px; font-weight: 600; color: var(--a-mute); }
+.adm-visits .r { border-top: 1px solid var(--a-line); }
+.adm-visits .r span { overflow-wrap: anywhere; }
+.adm-visits .r span:nth-child(n + 2) { font: 400 12px var(--a-mono); color: var(--a-sub); }
+@media (max-width: 640px) { .adm-visits .h, .adm-visits .r { padding-left: 16px; padding-right: 16px; gap: 8px; } }
