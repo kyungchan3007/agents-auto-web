@@ -1,0 +1,53 @@
+name: "수집 · 유입 기록 (GA4)"
+# GA4 방문 · 유입 경로 · 페이지를 D1 에 저장 → 어드민 유입 화면 (작업 0324)
+#   Search Console 과 같은 서비스 계정 키(GSC_SERVICE_ACCOUNT_JSON · 사람이 등록한 비밀값)를 씀 · 없으면 건너뜀 · 키 · 토큰은 출력하지 않음
+on:
+  schedule:
+    - cron: "50 19 * * *" # 한국 04:50
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ga4-sync
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      HAS_KEY: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON != '' }}
+    steps:
+      - name: 비밀값 확인
+        id: secrets
+        run: |
+          if [ "$HAS_KEY" != "true" ] || [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "비밀값이 없어 건너뜁니다" >> "$GITHUB_STEP_SUMMARY"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.secrets.outputs.ok == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.secrets.outputs.ok == 'true'
+        with:
+          node-version: 22
+      - if: steps.secrets.outputs.ok == 'true'
+        run: npm ci
+      - name: GA4 → SQL
+        if: steps.secrets.outputs.ok == 'true'
+        env:
+          GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+        run: |
+          mkdir -p .tmp
+          node --experimental-strip-types apps/api/scripts/ga4-sync.ts > .tmp/ga4.sql 2>> "$GITHUB_STEP_SUMMARY"
+      - name: D1 에 저장
+        if: steps.secrets.outputs.ok == 'true'
+        working-directory: apps/api
+        run: npx wrangler d1 execute hav-db --remote --file ../../.tmp/ga4.sql --yes
+        env:
+          CI: "1"
