@@ -24,6 +24,7 @@
     "./geo": "./src/contracts/geo.ts",
     "./ig": "./src/contracts/ig.ts",
     "./ga4": "./src/contracts/ga4.ts",
+    "./admin-visits": "./src/contracts/admin-visits.ts",
     "./geo-visit": "./src/domain/geo-visit.ts",
     "./airfare": "./src/contracts/airfare.ts",
     "./airfare-domain": "./src/domain/airfare.ts",

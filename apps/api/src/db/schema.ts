@@ -225,3 +225,10 @@ export const ga4Pages = sqliteTable(
   },
   (t) => [primaryKey({ columns: [t.day, t.path] })],
 );
+
+/** 어드민 접속 기록 (작업 0326) — 지원 토큰 이름별 처음 · 마지막 접속 시각만 · IP · 기기 · 경로는 저장하지 않음 */
+export const adminVisits = sqliteTable("admin_visits", {
+  name: text("name").primaryKey(),
+  firstAt: text("first_at").notNull(),
+  lastAt: text("last_at").notNull(),
+});

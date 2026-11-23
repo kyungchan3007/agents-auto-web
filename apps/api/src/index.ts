@@ -5,6 +5,8 @@ import { Hono } from "hono";
 import { dbAlive } from "./db/health";
 import type { Env } from "./env";
 import { activityRoutes } from "./features/activity/routes";
+import { adminOnlyGuard } from "./features/admin/key";
+import { adminVisitRoutes } from "./features/admin/routes";
 import { collectAirfare } from "./features/airfare/collect";
 import { airfareRoutes } from "./features/airfare/routes";
 import { d1AirfareStore } from "./features/airfare/store";
@@ -27,6 +29,8 @@ import { taskRoutes } from "./features/tasks/routes";
 import { logError, logEvent } from "./log";
 
 export const app = new Hono<{ Bindings: Env }>()
+  // 어드민 전용 경로는 어드민 Worker 의 열쇠(x-admin-key)가 있어야 답함 — 운영 사이트 경로 · POST /activity 는 그대로 (작업 0326)
+  .use("*", adminOnlyGuard)
   .get("/health", async (c) => {
     const db = await dbAlive(c.env.DB);
     return c.json({ ok: db, service: "tripfx-api", db }, db ? 200 : 503);
@@ -41,6 +45,7 @@ export const app = new Hono<{ Bindings: Env }>()
   .route("/geo", geoRoutes)
   .route("/ig", igRoutes)
   .route("/ga4", ga4Routes)
+  .route("/admin-visits", adminVisitRoutes)
   // 사이트 상태 — 오늘 환율 예약 회차 (작업 0105) · 회차는 아래 CRON 에서
   .route("/status", statusRoutes([
     { cron: "0 3 * * MON-FRI", kind: "collect" },

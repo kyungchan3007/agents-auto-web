@@ -14,6 +14,8 @@ export type Env = Pick<Cloudflare.Env, "DB"> &
     SERPAPI_KEY?: string;
     /** 관리용 수집 API(POST /fx/collect) 토큰 — 없으면 그 경로는 꺼짐 */
     ADMIN_TOKEN?: string;
+    /** 어드민 전용 경로(GET /activity · /tasks · /geo · /ga4 · /ig · /status · /admin-visits)용 열쇠 — 어드민 Worker 와 같은 값 · 없으면 그 경로는 닫힘 (작업 0326 · 위 ADMIN_TOKEN 과 다른 용도) */
+    ADMIN_API_KEY?: string;
     /** 실시간 작업 기록(POST /activity) 토큰 — 에이전트 훅만 씀 · 없으면 그 경로는 꺼짐 */
     ACTIVITY_TOKEN?: string;
     /** Cloudflare Pages 배포 훅 주소 — 새 환율을 저장하면 사이트를 바로 다시 빌드 (비밀값 · deploy-api 가 GitHub Secrets 에서 넣음 · 작업 0094) · 없으면 안 함 */
