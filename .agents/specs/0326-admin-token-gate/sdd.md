@@ -17,6 +17,11 @@
 - 이미 등록된 비밀값(11-23 사용자 · 이름만 확인): flapfx-admin = ADMIN_SESSION_SECRET · ADMIN_API_KEY / tripfx-api = ADMIN_API_KEY(같은 값). init 은 `wrangler secret list` 로 이름만 보고 **없는 것만** 만든다(있는 값은 덮어쓰지 않음). ADMIN_TOKENS 는 아직 없음 → init/add 가 처음 만듦
 - tripfx-api 에 예전부터 있는 ADMIN_TOKEN(단수)은 다른 용도(관리 쓰기 경로) — 이름 · 코드에서 섞지 않음 · 건드리지 않음
 
+- /tasks 는 어드민 전용에서 뺌(lead 결정 · 11-23): 지난 작업 목록은 공개 저장소 PR 제목에서 만든 자료 · sync-tasks.yml(보호 파일)의 확인 단계가 키 없이 GET /tasks 를 부름 → 열어 두면 워크플로 변경 없음
+- 어드민 빌드가 빌드 때 api.status() · api.geo() 를 직접 부르는 값은 401 → '받지 못함'으로 빌드되고 브라우저가 /bff 로 다시 받음(빌드는 멈추지 않음 · lead 결정: 빌드 환경 키 추가 없음)
+- 로그아웃 링크는 넓은 화면 왼쪽 메뉴에만(휴대폰 위 탭 줄에는 두지 않음 · lead 결정)
+- 머지 순서: 0327 이 develop · main 에 먼저 나간 뒤 0326 을 develop 에 머지 · 0326 의 main 은 `admin:token init` 으로 ADMIN_TOKENS 를 만든 뒤
+
 ## 대안 · 트레이드오프
 - Cloudflare Access: 리뷰어가 이메일 로그인을 해야 함 · "아무것도 입력하지 않음" 요구와 어긋남
 - 토큰 원문을 비밀값에: 관리 명령이 목록을 다시 읽을 수 없어 add/remove 때 다른 토큰을 잃음
