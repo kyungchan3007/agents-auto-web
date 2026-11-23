@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans_KR } from "next/font/google";
 import { NAVER_SITE_VERIFICATION, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/shared/site";
+import { AnalyticsScript } from "@/shared/seo/analytics-script";
 import { verificationOther } from "@/shared/seo/verification";
 import { outageActive } from "@/shared/outage/outage";
 import { OutageNotice } from "@/shared/outage/outage-notice";
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* 장애 안내 — 모든 페이지 맨 위 (빌드 때 끝난 시각이면 안 넣음) */}
         <OutageNotice show={outageActive()} />
         {children}
+        <AnalyticsScript />
       </body>
     </html>
   );
