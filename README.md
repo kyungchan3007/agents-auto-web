@@ -33,7 +33,7 @@
   </tr>
   <tr>
     <td><img src="docs/images/screens/calc.png" alt="직구 계산 — 면세 한도 · 관세 · 부가세 예상"></td>
-    <td><img src="docs/images/screens/admin.png" alt="어드민 — 사람 한 명과 에이전트 다섯이 사이트를 만드는 방식"></td>
+    <td><img src="docs/images/screens/flights.png" alt="여행 타이밍 — 항공료 · 단체여행 지수로 보는 가장 저렴한 달"></td>
   </tr>
 </table>
 
