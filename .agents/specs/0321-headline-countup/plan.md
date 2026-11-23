@@ -23,7 +23,7 @@
 - 없음 (해석은 사용자 승인)
 
 ## 파일 계획
-- packages/ui/src/components/text/emph.tsx · packages/ui/src/lib/text/emphasis.ts · packages/ui/src/components/motion/count-up.tsx · packages/ui/src/hooks/motion/** (builder)
+- packages/ui/src/components/text/emph.tsx · packages/ui/src/lib/text/emphasis.ts · packages/ui/src/components/motion/count-up.tsx · packages/ui/src/hooks/{motion,count}/** · 옮긴 훅을 가져오는 packages/ui 파일 (builder)
 - apps/web/src/features/import-calc/** · apps/web/src/features/prices/** (builder)
 - .changeset/*.md (builder)
 - 위 옆 *.test.ts(x) · apps/web/e2e/** · .agents/e2e-map.json (test)
@@ -31,6 +31,7 @@
 - .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- packages/ui/src/hooks/count/ — 새 훅 use-tracked-count 로 hooks/motion 이 5개가 되어 코드 자리 규칙(한 폴더 훅 4개까지 · role-boundary.test.ts)에 걸림. 숫자 세기 훅 두 개(use-count-up · use-tracked-count)를 hooks/count/ 로 묶음
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋의 CI gate)
