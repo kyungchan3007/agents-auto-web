@@ -5,7 +5,7 @@ import { api } from "@hav/shared/api";
 import { JsonLd } from "@/shared/seo/json-ld";
 import { breadcrumbLd, pageMeta } from "@/shared/seo/seo";
 
-export const metadata: Metadata = pageMeta({ path: "/calc", title: "직구 계산기 · Flapfx", description: "해외 직구 물건 값을 원화로 · 면세 한도 안인지 · 넘으면 관세 · 부가세 예상" });
+export const metadata: Metadata = pageMeta({ path: "/calc", title: "직구 계산기 · 면세 한도 · 관세 · 부가세 예상 · Flapfx", description: "해외 직구 물건 값을 원화로 · 면세 한도 안인지 · 넘으면 관세 · 부가세 예상" });
 
 // 환율은 빌드 때 우리 API 에서 · 입력 · 계산은 브라우저 안에서만 (IMP-01)
 export default async function Page() {
