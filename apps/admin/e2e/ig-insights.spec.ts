@@ -85,14 +85,14 @@ test.describe("알리기 — 인스타 성과 (작업 0323)", () => {
     await open(page, { error: "boom" }, 500);
     await expect(tid(page, "ig-error")).toContainText("성과 값을 받지 못했습니다");
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
-    await expect(page.getByRole("navigation", { name: "어드민 메뉴" }).filter({ visible: true }).getByRole("link", { name: "인스타 성과" })).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("navigation", { name: "어드민 메뉴" }).filter({ visible: true }).getByRole("link", { name: /^인스타/ })).toHaveAttribute("aria-current", "page");
     await expect(tid(page, "ig-media").locator('[data-testid="ig-media-row"]')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
   });
 
   test("알 수 없는 모양의 응답(오류 본문 · 빈 객체)도 깨지지 않음 · 숫자를 지어내지 않음", async ({ page }) => {
     await open(page, { unexpected: true });
-    await expect(page.getByRole("navigation", { name: "어드민 메뉴" }).filter({ visible: true }).getByRole("link", { name: "인스타 성과" })).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("navigation", { name: "어드민 메뉴" }).filter({ visible: true }).getByRole("link", { name: /^인스타/ })).toHaveAttribute("aria-current", "page");
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
     await expect(tid(page, "ig-media").locator('[data-testid="ig-media-row"]')).toHaveCount(0);
   });
@@ -101,8 +101,8 @@ test.describe("알리기 — 인스타 성과 (작업 0323)", () => {
     await open(page, REPORT);
     const nav = page.getByRole("navigation", { name: "어드민 메뉴" }).filter({ visible: true });
     await expect(nav.getByRole("link")).toHaveCount(6);
-    await expect(nav.getByRole("link", { name: "인스타 성과" })).toHaveAttribute("href", "/instagram");
-    await expect(nav.locator('a[aria-current="page"]')).toContainText("인스타 성과");
+    await expect(nav.getByRole("link", { name: /^인스타/ })).toHaveAttribute("href", "/instagram");
+    await expect(nav.locator('a[aria-current="page"]')).toContainText(/^인스타/); // 휴대폰 위 탭은 짧은 이름 "인스타"
   });
 
   test("숫자 단축키 6 으로 /instagram 에 감 (넓은 화면)", async ({ page }) => {
