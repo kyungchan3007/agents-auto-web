@@ -132,6 +132,7 @@
 | 0319 | 하위 페이지 제목 30 ~ 60자 · /currencies 설명 늘리기 (Bing "Title too short" · Quick · 작업 종류 ① · 변경 기록 patch) | builder → test | 머지됨 (#376) | task/0319-seo-titles | apps/web/src/app/{prices,calc,about,currencies}/** · .changeset |
 | 0320 | 네이버 소유 확인 값 넣기 (Quick · 작업 종류 ① · 화면 변화 없음) | builder | 머지됨 (#377) | task/0320-naver-value | apps/web/src/shared/site.ts |
 | 0321 | 큰 제목 숫자 카운트업(직구 금액 · 여행 물가 %) · 여행 물가 밑줄 다시 그리기 (Quick · 평소 PR · 작업 종류 ③ · develop 까지) | test → builder | 머지됨 (#378) | task/0321-headline-countup | packages/ui text · motion · features/{import-calc,prices}/** |
-| 0322 | GA4 태그 — 운영 hostname 에서만 · next/script · 측정 ID 상수 (Quick · 작업 종류 ③ · develop 까지 · main 은 사용자 확인 뒤) | test → builder | 진행 중 | task/0322-ga4 | apps/web/src/shared/{site.ts,seo/**} · app/layout.tsx |
-| (후보) | 인스타 성과 수집(geo · 사용자가 instagram_business_manage_insights 권한 · 토큰 다시 만든 뒤) · Meta 광고 성과(광고 계정 · ads_read 뒤) | geo | 권한 대기 | — | — |
+| 0322 | GA4 태그 — 운영 hostname 에서만 · next/script · 측정 ID 상수 (Quick · 작업 종류 ③ · develop 까지 · main 은 사용자 확인 뒤) | test → builder | 머지됨 (#379) | task/0322-ga4 | apps/web/src/shared/{site.ts,seo/**} · app/layout.tsx |
+| 0323 | 인스타 성과 측정 — 예약 워크플로 → D1 → GET /ig → 어드민 알리기 탭 표 (Full · 보호 파일 schema.ts · ig-insights.yml 사용자 승인 · Secrets 는 사용자) | test → builder (geo 자문) | 진행 중 | task/0323-ig-insights | apps/api/{src/db/schema.ts,drizzle/migrations,scripts/ig-insights.ts,src/features/ig} · packages/shared contracts · apps/admin/src/features/marketing · .github/workflows/ig-insights.yml |
+| (후보) | Meta 광고 성과(광고 계정 생긴 뒤 · ads_read) | geo | 계정 대기 | — | — |
 | (후보) | 흔들리는 e2e 다음 묶음(11-23 test 확인) — currency-chips:248~251 · geo-bot-pages:55/66/96(재시도까지 실패) · home:101 · flights-window:199 · currency-chart:163 · admin:28 · home-bars:181 · axis-clear:29 · rename-compare:40 | test | 다음 작업 후보 | — | apps/web/e2e/** · apps/admin/e2e/** |

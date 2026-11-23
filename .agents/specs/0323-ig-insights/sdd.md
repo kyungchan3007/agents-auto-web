@@ -13,13 +13,23 @@
 - B) 워커 예약 실행(cron trigger): 서버 쪽에 토큰을 둬야 하고 wrangler 설정 변경 필요.
 - C) (고름) GitHub 예약 워크플로: gsc-sync 와 같은 구조 · 토큰은 Secrets · 없으면 건너뜀.
 
-## 파일 계획
-- apps/api/scripts/ig-insights.ts (새로 · geo 범위 밖이라 lead 승인)
-- apps/api/src/features/ig/** (새로 · 읽기 API · geo 범위 밖)
-- D1 스키마 파일(기존 위치) — 보호 파일 해당 여부 확인 필요
-- .github/workflows/ig-insights.yml — **보호 파일(사람 승인)**
-- 어드민 표시 파일 — lead 와 정함(apps/admin/src/features/marketing/**)
-- docs/geo-measurement.md 에 인스타 성과 절 추가
+## 파일 계획 (lead 확정 · 2026-11-23)
+- 보호 파일 — 사용자 승인("시작하면될거 같아" · PR 에 harness-approved 라벨은 사용자가 닮)
+  - apps/api/src/db/schema.ts (ig_media · ig_media_insights · ig_account_insights 표 추가 · 기존 표 변경 없음) (builder)
+  - .github/workflows/ig-insights.yml (새로 · gsc-sync.yml 과 같은 모양 · IG_ACCESS_TOKEN 없으면 건너뜀) (builder)
+- apps/api/drizzle/migrations/0012_*.sql 새 마이그레이션 (builder · 기존 파일 수정 없음)
+- apps/api/scripts/ig-insights.ts + 순수 함수는 apps/api/src/features/ig/** (응답 → 행 · SQL · 토큰 지우기) (builder)
+- apps/api/src/features/ig/** (GET /ig · 캐시 1시간) · apps/api/src/index.ts 에 라우트 한 줄 (builder)
+- packages/shared/src/contracts/** 의 응답 타입 (builder)
+- apps/admin/src/features/marketing/** (알리기 탭에 성과 표) (builder)
+- 위 옆 *.test.ts · apps/admin/e2e/** · .agents/e2e-map.json (test)
+- docs/geo-measurement.md 인스타 성과 절 (builder)
+- 운영 사이트(apps/web)는 바꾸지 않음 — 어드민에만 (사용자 원문)
+
+## 어드민 표시 (lead 결정)
+- 알리기 탭 위쪽: 계정 지표 최근 하루 값(도달 · 조회 · 프로필 방문 · 웹사이트 클릭 · 반응한 계정)과 받은 날짜
+- 그 아래 표: 게시물 한 줄씩(게시 날짜 · 게시물 링크 · 도달 · 좋아요 · 저장 · 공유 · 조회 · 받은 날짜)
+- 받지 못한 값은 빈 칸(0 으로 채우지 않음) · 그래프는 자료가 쌓인 뒤 따로
 
 ## 계획 밖 변경 이유
 - (구현 때 채움)
