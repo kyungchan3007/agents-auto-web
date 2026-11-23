@@ -22,7 +22,7 @@
 - apps/web/src/shared/site.ts (builder · 상수 NAVER_SITE_VERIFICATION)
 - apps/web/src/shared/** 안 순수 함수 파일 1개 (builder)
 - apps/web/src/app/layout.tsx (builder)
-- 위 순수 함수 옆 *.test.ts (test)
+- 위 순수 함수 옆 *.test.ts · apps/web/src/checks/role-boundary.test.ts 의 앱 공통 목록에 seo/verification.ts 한 줄 (test)
 - .agents/specs/0317-naver-verify/**
 - .agents/orchestration/TASKS.md
 
@@ -35,3 +35,4 @@
 
 ## 허점
 - 작업서가 이미 있는 IndexNow 를 새로 만들라고 적었다 — 작업 전 저장소에서 같은 기능을 찾아본다
+- lead 가 함수 자리를 shared 바로 아래로 정해 넘겨 코드 자리 규칙(role-boundary.test.ts)에 걸림 — 자리를 정할 때 그 규칙의 목록을 먼저 본다
