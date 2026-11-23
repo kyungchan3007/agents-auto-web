@@ -1,22 +1,43 @@
-// 어드민 Worker 진입점 (작업 0312) — Cloudflare Workers(flapfx-admin · admin.flapfx.com)
-//   모든 요청이 여기를 지남(wrangler.jsonc run_worker_first: true) — 모든 응답에 검색 막음 머리글 · 방문 기록은 하지 않음
-//   주소 나누기 host.ts · /bff/* → API Worker 프록시 (@hav/edge/bff · 경로표 bff-routes.ts · 서비스 바인딩 API)
+// 어드민 Worker 진입점 (작업 0312 · 0326) — Cloudflare Workers(flapfx-admin · admin.flapfx.com)
+//   모든 요청이 여기를 지남(wrangler.jsonc run_worker_first: true)
+//   0326: robots.txt 말고는 입구 판정(gate/gate.ts · 토큰 쿠키)이 먼저 — 통과하면 주소 나누기 host.ts · /bff/* → API Worker (@hav/edge/bff · 어드민 열쇠 붙임)
+//   모든 응답에 검색 막음 머리글 · 접속 기록은 토큰 이름의 처음 · 마지막 시각만(owner 제외)
 import { type ApiBinding, handleBff, isBff } from "@hav/edge/bff";
 import { robotsDisallowAll, withNoindex } from "@hav/edge/noindex";
 import { ADMIN_BFF_ROUTES } from "./bff-routes";
-import { hostRoute } from "./host";
+import { type GateEnv, runGate } from "./gate/gate";
+import { OWNER_NAME } from "./gate/session";
+import { hostRoute, isAsset } from "./host";
 
 export type AssetsBinding = { fetch(request: Request): Promise<Response> };
 
-export type Env = { ASSETS: AssetsBinding; API: ApiBinding };
+export type Env = { ASSETS: AssetsBinding; API: ApiBinding } & GateEnv;
+export type Ctx = { waitUntil(promise: Promise<unknown>): void };
+
+/** 접속 기록 — 이름만 보냄(IP · 기기 · 경로 · 쿠키 없음) · 실패해도 화면은 그대로 */
+function recordVisit(env: Env, ctx: Ctx | undefined, name: string): void {
+  const key = env.ADMIN_API_KEY;
+  if (name === OWNER_NAME || !key) return;
+  const task = Promise.resolve()
+    .then(() => env.API.fetch(new Request("https://api/admin-visits", { method: "POST", headers: { "content-type": "application/json", "x-admin-key": key }, body: JSON.stringify({ name }) })))
+    .catch(() => undefined);
+  ctx?.waitUntil(task);
+}
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx?: Ctx): Promise<Response> {
     const url = new URL(request.url);
+    if (url.pathname === "/robots.txt") return robotsDisallowAll();
+
+    const gate = await runGate(request, url, env, (name) => recordVisit(env, ctx, name));
+    if (gate.response) return withNoindex(gate.response);
+
     const route = hostRoute(url);
     if (route.kind === "robots") return robotsDisallowAll();
     if (route.kind === "redirect") return withNoindex(Response.redirect(route.location, route.status));
-    const res = isBff(url.pathname) ? await handleBff(request, env.API, ADMIN_BFF_ROUTES) : await env.ASSETS.fetch(request);
+    if (isBff(url.pathname)) return withNoindex(await handleBff(request, env.API, ADMIN_BFF_ROUTES, { apiKey: env.ADMIN_API_KEY }));
+    const res = await env.ASSETS.fetch(request);
+    if (res.status === 200 && !isAsset(url.pathname)) recordVisit(env, ctx, gate.name);
     return withNoindex(res);
   },
 };
