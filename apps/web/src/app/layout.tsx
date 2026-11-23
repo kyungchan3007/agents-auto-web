@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans_KR } from "next/font/google";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/shared/site";
+import { NAVER_SITE_VERIFICATION, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/shared/site";
+import { verificationOther } from "@/shared/verification";
 import { outageActive } from "@/shared/outage/outage";
 import { OutageNotice } from "@/shared/outage/outage-notice";
 import "./globals.css";
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
   // 홈 화면에 추가했을 때 iOS 위 막대 · 이름 (작업 0091 · 아이콘은 app/apple-icon.png)
   appleWebApp: { capable: true, title: SITE_NAME, statusBarStyle: "default" },
   // Google Search Console · Bing Webmaster Tools 소유권 확인 — 공개 값 · 지우면 확인이 풀림 (작업 0116 · 0117)
-  verification: { google: "R0iWKilXNc-qRD85sm-ZvPjOdQOBP_GYUn-0hBPZAsY", other: { "msvalidate.01": "80D88D51D528F03400697BF62BD604BF" } },
+  verification: { google: "R0iWKilXNc-qRD85sm-ZvPjOdQOBP_GYUn-0hBPZAsY", other: verificationOther(NAVER_SITE_VERIFICATION) },
 };
 
 // 휴대폰 주소창 색 — 사이트 바탕(하늘 종이) 한 값 · 밝은 화면 하나만 (작업 0173)
