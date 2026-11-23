@@ -32,6 +32,8 @@
 
 ## 계획 밖 변경 이유
 - packages/ui/src/hooks/count/ — 새 훅 use-tracked-count 로 hooks/motion 이 5개가 되어 코드 자리 규칙(한 폴더 훅 4개까지 · role-boundary.test.ts)에 걸림. 숫자 세기 훅 두 개(use-count-up · use-tracked-count)를 hooks/count/ 로 묶음
+- apps/web/src/features/home/destinations/destination-table.tsx · apps/web/src/features/currencies/detail/range/use-range-motion.ts — 옮긴 훅(use-count-up)을 가져오는 곳이라 import 경로만 고침
+- 옛 경로를 가져오는 테스트 4개(motion.test.ts · new-home.test.ts · redesign.test.ts · kpi.test.ts) — import 경로만 (test)
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋의 CI gate)
