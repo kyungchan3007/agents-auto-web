@@ -11,5 +11,5 @@ export const REPO_URL = "https://github.com/kyungchan3007/agents-auto-web";
 export const PUBLIC_HOSTS = ["flapfx.com", "www.flapfx.com"] as const;
 export const ADMIN_HOST = "admin.flapfx.com";
 /** 어드민 화면 경로 — 어드민 메뉴(apps/admin) · 어드민 Worker 경로 나누기 · 운영 Worker 의 옛 주소 301(apps/web) 이 모두 이 목록을 봄 (작업 0302 · 0312) */
-export const ADMIN_PATHS = ["/log", "/geo", "/how", "/marketing"] as const;
+export const ADMIN_PATHS = ["/log", "/geo", "/how", "/marketing", "/traffic", "/instagram"] as const;
 export type AdminPath = (typeof ADMIN_PATHS)[number];

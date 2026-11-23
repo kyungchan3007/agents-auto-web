@@ -25,6 +25,18 @@ export const IconMegaphone = () => (
     <path d="M17.5 9a4 4 0 0 1 0 6" />
   </svg>
 );
+export const IconChart = () => (
+  <svg {...P}>
+    <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+  </svg>
+);
+export const IconCamera = () => (
+  <svg {...P}>
+    <rect x="3" y="6" width="18" height="14" rx="3" />
+    <circle cx="12" cy="13" r="3.5" />
+    <path d="M8.5 6l1-2h5l1 2" />
+  </svg>
+);
 export const IconOut = () => (
   <svg {...P}>
     <path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6" />

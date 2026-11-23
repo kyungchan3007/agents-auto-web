@@ -1,11 +1,8 @@
-// 인스타 성과 화면 글 (작업 0323) — 순수 함수 · 받지 못한 값(null)은 빈 칸 (0 · 대시로 채우지 않음)
+// 인스타 성과 화면 글 (작업 0323 · 0324 에 알리기 탭에서 인스타 성과 화면으로) — 쉼표 숫자는 shared/format/count-text — 순수 함수 · 받지 못한 값(null)은 빈 칸 (0 · 대시로 채우지 않음)
 import type { IgReport } from "@hav/shared/ig";
 
 type Account = IgReport["account"][number];
 type Media = IgReport["media"][number];
-
-/** 쉼표 숫자 · null 은 빈 글 */
-export const countText = (v: number | null): string => (v === null ? "" : v.toLocaleString("ko-KR"));
 
 /** 게시 시각 → 게시 날짜(YYYY-MM-DD) — API 가 준 글의 앞 열 글자 */
 export const postedDay = (postedAt: string): string => postedAt.slice(0, 10);
