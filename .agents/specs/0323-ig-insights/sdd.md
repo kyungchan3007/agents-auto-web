@@ -33,6 +33,9 @@
 - 받지 못한 값은 빈 칸(0 으로 채우지 않음) · 그래프는 자료가 쌓인 뒤 따로
 
 ## 계획 밖 변경 이유
+- apps/api/drizzle/migrations/0012_ig_insights.sql · meta/0012_snapshot.json · meta/_journal.json — 보호 목록(apps/api/drizzle/migrations/**) 패턴. 새 파일 추가와 drizzle-kit 이 고치는 meta 만 · 기존 마이그레이션 수정 없음. 사용자가 승인한 스키마 변경("시작하면될거 같아")에 딸린 것으로 봄 · PR 라벨 때 함께 알림
+- packages/shared/package.json(exports ./ig) · packages/shared/src/client/api.ts(api.ig) — 계약을 앱에 노출하고 브라우저가 받는 함수 한 줄
+- apps/admin/worker/bff-routes.ts — 어드민 BFF 경로표에 /ig 한 줄(geo 와 같은 300초) · 없으면 /bff/ig 가 막힘
 - (구현 때 채움)
 
 ## 위험
