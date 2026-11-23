@@ -126,5 +126,6 @@
 | 0313 | 운영 버전 관리 — Changesets(운영 @hav/web 만 · 변경 기록이 있을 때만) + main 반영 때 GitHub 릴리스(web-v<버전>) · 게이트 경고 (Quick · 보호 파일) | claude-desktop | 머지됨 (#369) | task/0313-changesets | .changeset/** · apps/web/{package.json,CHANGELOG.md} · scripts/** · .github/workflows/release-web.yml · .agents/scripts/** |
 | 0314 | 11-23(월) 수집 점검 기록 — 환율 12:00 회차 · 과세환율 · 항공권 첫 예약 수집 (Quick · 자료 · #370) | data | 머지됨 (#371) | task/0314-data-health-1123 | docs/data-health.md |
 | 0315 | 11-23 GEO 측정 — AI 답변 24개(found 0 · cited 0) · #157 조사 댓글 (Quick · 자료 · #370) | geo | 머지됨 (#372) | task/0315-geo-measure-1123 | apps/api/data/geo-answers/2026-11-23.json |
-| 0316 | 11-23 유로 게시물 묶음을 알리기 탭 11-24 칸에 (Quick · 자료 · 어드민 · 사용자 "11-24 칸에" · 머지 뒤 바로 main ff) | lead | PR 대기 | task/0316-marketing-same-day | docs/marketing/2026-11-24 |
+| 0316 | 11-23 유로 게시물 묶음을 알리기 탭 11-24 칸에 (Quick · 자료 · 어드민 · 사용자 "11-24 칸에" · 머지 뒤 바로 main ff) | lead | 머지됨 (#373) | task/0316-marketing-same-day | docs/marketing/2026-11-24 |
+| 0317 | 네이버 소유 확인 태그 자리(값은 상수 한 곳 · 비면 안 냄) · IndexNow 는 이미 있음 확인 · robots 확인 (Quick · 작업 종류 ③ · 화면 변화 없음) | test → builder | 진행 중 | task/0317-naver-verify | apps/web/src/shared/** · apps/web/src/app/layout.tsx |
 | (후보) | 흔들리는 e2e 다음 묶음(11-23 test 확인) — currency-chips:248~251 · geo-bot-pages:55/66/96(재시도까지 실패) · home:101 · flights-window:199 · currency-chart:163 · admin:28 · home-bars:181 · axis-clear:29 · rename-compare:40 | test | 다음 작업 후보 | — | apps/web/e2e/** · apps/admin/e2e/** |
