@@ -30,6 +30,9 @@
 - 운영 사이트(apps/web)는 바꾸지 않음
 
 ## 계획 밖 변경 이유
+- packages/shared/src/site/site.ts ADMIN_PATHS 에 /traffic · /instagram — 어드민 worker 가 이 목록으로 화면 경로를 내주고 운영 worker 가 옛 주소 301 에 씀 · 없으면 새 화면 404
+- apps/admin/src/shared/ui/shell/{palette-items.ts,admin-shell.tsx} · shared/ui/icons/icons.tsx — 메뉴 아이콘 이름 두 개 · 아이콘 두 개
+- apps/admin/src/shared/format/count-text.ts · shared/live/use-live-only.ts — 두 화면이 함께 쓰는 쉼표 글 · 브라우저 한 번 받기(2곳 이상은 공통)
 
 ## 위험
 - 서비스 계정에 GA4 뷰어 권한이 없거나 Data API 가 꺼져 있으면 403 → 첫 실행 HTTP 코드로 확인 · claude-desktop 에 알림
