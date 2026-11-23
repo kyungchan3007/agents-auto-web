@@ -170,7 +170,7 @@ test.describe("직구 큰 제목 — 이어 감 · 숫자 없는 문장 · 서�
     const t0 = await mark(page);
     await setPrice(page, "1500");
     const final = await settle(page, CALC_H1);
-    const frames = (await stopRec(page)).filter((f) => f.t >= t0 - 100 && f.emph.length > 0);
+    const frames = (await stopRec(page)).filter((f) => f.t >= t0 && f.emph.length > 0);
     const vals = frames.map((f) => num(f.emph[0] ?? ""));
     expect(num(final.split("|")[0] ?? ""), "끝은 새 값").toBe(mapC);
     const limit = (mapB - mapA) * 0.25;
