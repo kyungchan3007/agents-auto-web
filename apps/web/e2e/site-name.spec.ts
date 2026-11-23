@@ -4,10 +4,10 @@ import { expect, test } from "@playwright/test";
 
 const TITLES: [string, string][] = [
   ["/", "Flapfx — 환전 타이밍 · 오늘 환율 · 여행 물가 · 직구 세금 계산"],
-  ["/prices", "여행 물가 · Flapfx"],
-  ["/calc", "직구 계산기 · Flapfx"],
-  ["/currencies", "통화 둘러보기 · Flapfx"],
-  ["/about", "소개 · 판단 기준 · Flapfx"],
+  ["/prices", "여행지 물가 비교 · 한국보다 싼 나라 · 비싼 나라 · Flapfx"],
+  ["/calc", "직구 계산기 · 면세 한도 · 관세 · 부가세 예상 · Flapfx"],
+  ["/currencies", "통화 둘러보기 · 오늘 환율 · 90일 신호 · 1년 흐름 · Flapfx"],
+  ["/about", "소개 · 환율 · 여행 물가 · 직구 계산 자료와 판단 기준 · Flapfx"],
   // 어드민(/geo · /log) 탭 제목은 apps/admin/e2e/basics.spec.ts (작업 0312)
 ];
 
