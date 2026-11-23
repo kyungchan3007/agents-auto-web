@@ -85,6 +85,13 @@
       "when": 1795152657543,
       "tag": "0011_airfare_calendar",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1795411863440,
+      "tag": "0012_ig_insights",
+      "breakpoints": true
     }
   ]
 }

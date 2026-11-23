@@ -161,3 +161,34 @@ export const airfareCalendar = sqliteTable(
   },
   (t) => [primaryKey({ columns: [t.airport, t.fetchedOn, t.depart] })],
 );
+
+/** 인스타 게시물 정보 (작업 0323) — 가져올 때마다 같은 media_id 는 덮어씀 · GitHub Actions(ig-insights.yml)가 넣음 */
+export const igMedia = sqliteTable("ig_media", {
+  mediaId: text("media_id").primaryKey(),
+  postedAt: text("posted_at").notNull(), // 게시 시각 (API 가 준 글 그대로)
+  permalink: text("permalink").notNull(),
+  kind: text("kind").notNull(), // IMAGE · CAROUSEL_ALBUM · VIDEO …
+});
+
+/** 인스타 게시물 성과 — 날짜별로 쌓음(게시 뒤 시간이 지나며 늘어남) · 같은 (day, media_id, metric) 은 덮어씀 · 받지 못한 지표는 행을 만들지 않음 (AGENTS.md 7) */
+export const igMediaInsights = sqliteTable(
+  "ig_media_insights",
+  {
+    day: text("day").notNull(), // 받은 날 YYYY-MM-DD
+    mediaId: text("media_id").notNull(),
+    metric: text("metric").notNull(), // reach · likes · saved · shares · views
+    value: integer("value").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.day, t.mediaId, t.metric] })],
+);
+
+/** 인스타 계정 성과 — 하루 한 행 · 같은 (day, metric) 은 덮어씀 · 받지 못한 지표는 행을 만들지 않음 */
+export const igAccountInsights = sqliteTable(
+  "ig_account_insights",
+  {
+    day: text("day").notNull(),
+    metric: text("metric").notNull(), // reach · views · profile_views · website_clicks · accounts_engaged …
+    value: integer("value").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.day, t.metric] })],
+);
