@@ -56,7 +56,7 @@ export function MarketingPage({ drafts }: { drafts: Draft[] }) {
         ) : (
           <div className="adm-cards adm-drafts">
             {drafts.map((d) => (
-              <DraftCard key={d.day} d={d} />
+              <DraftCard key={d.key} d={d} />
             ))}
           </div>
         )}
