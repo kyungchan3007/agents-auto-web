@@ -43,6 +43,7 @@ describe("README.md — 기존 형식 유지 (다른 저장소와 같은 구성)
   it("사이트 주소 · 어드민 주소는 싣지 않음 (전용 링크로만 열람 · 작업 0333)", () => {
     expect(readme).toContain("https://flapfx.com");
     expect(readme).not.toMatch(/admin\.flapfx\.com/);
+    expect(readme).not.toMatch(/—/); // 긴 줄표 쓰지 않음 (작업 0336)
     expect(readme).not.toMatch(/tripfx\.pages\.dev/); // 옛 주소 (2026-11-17 삭제 · 작업 0190)
   });
 
