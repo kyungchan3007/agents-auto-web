@@ -1,14 +1,15 @@
 "use client";
 
-// 인스타 성과 (작업 0323) — 계정 지표 가장 최근 날 값 · 게시물 표 · 받지 못한 값은 빈 칸 · 그래프는 자료가 쌓인 뒤 따로
+// 인스타 성과 (작업 0323 · 0324 에 알리기 탭에서 인스타 성과 화면으로) — 계정 지표 가장 최근 날 값 · 게시물 표 · 받지 못한 값은 빈 칸 · 그래프는 자료가 쌓인 뒤 따로
+import { countText } from "@/shared/format/count-text";
 import { Panel, Stamp } from "@/shared/ui/panel/panel";
-import { ACCOUNT_CELLS, type IgAccountDay, type IgMediaLine, MEDIA_COLS, countText, isEmptyReport, latestAccount, postedDay } from "./ig-view";
+import { ACCOUNT_CELLS, type IgAccountDay, type IgMediaLine, MEDIA_COLS, isEmptyReport, latestAccount, postedDay } from "./ig-view";
 import { useIgReport } from "./use-ig-report";
 
 export function IgSection() {
   const report = useIgReport();
   return (
-    <Panel id="marketing-ig" testId="marketing-ig" title="인스타 성과" meta={<Stamp>매일 한 번 받은 값 · 받지 못한 값은 빈 칸</Stamp>}>
+    <Panel id="instagram-ig" testId="instagram-ig" title="인스타 성과" meta={<Stamp>매일 한 번 받은 값 · 받지 못한 값은 빈 칸</Stamp>}>
       {report === null ? (
         <p className="adm-empty">성과 값을 받는 중입니다</p>
       ) : !report.ok ? (
