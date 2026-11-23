@@ -13,7 +13,7 @@
 //     export const secretPayload: (list: TokenList) => string                          wrangler secret put ADMIN_TOKENS 로 올릴 JSON — Worker 의 parseTokens 가 그대로 읽음
 //   원칙: 토큰 원문은 새 링크로 한 번 출력할 뿐 — 로컬 목록(.tmp/admin-tokens.json)에도 비밀값 목록에도 해시만
 import { describe, expect, it } from "vitest";
-import { OWNER, addEntry, hashToken, hasVersionsFlag, linkFor, listRows, newToken, notDeployedHelp, removeEntry, secretPayload, secretPutArgs, secretPutFailure, versionsPutNotice, wranglerFailureText } from "../../../../scripts/admin-token-lib";
+import { OWNER, addEntry, expFor, hashToken, hasVersionsFlag, linkFor, listRows, newToken, notDeployedHelp, removeEntry, secretPayload, secretPutArgs, secretPutFailure, versionsPutNotice, wranglerFailureText } from "../../../../scripts/admin-token-lib";
 import { matchToken, parseTokens, sha256Hex } from "./token";
 
 const H = (c: string) => c.repeat(64);
@@ -285,5 +285,17 @@ describe("secretPutArgs · versionsPutNotice · hasVersionsFlag (작업 0329)", 
     expect(hasVersionsFlag(["init", "--versionsx"])).toBe(false);
     expect(hasVersionsFlag(["init", "--version"])).toBe(false);
     expect(hasVersionsFlag([])).toBe(false);
+  });
+});
+
+describe("add 기본 기한 (작업 0330)", () => {
+  it("--exp 가 없으면 발급일 + 7일 · 달 · 해 넘김", () => {
+    expect(expFor("apply-acme-1124", undefined, "2026-11-23")).toBe("2026-11-30");
+    expect(expFor("apply-acme-1124", undefined, "2026-11-28")).toBe("2026-12-05");
+    expect(expFor("apply-acme-1124", undefined, "2026-12-29")).toBe("2027-01-05");
+  });
+  it("--exp 를 주면 그대로 · owner 는 기한 없음", () => {
+    expect(expFor("apply-acme-1124", "2026-12-31", "2026-11-23")).toBe("2026-12-31");
+    expect(expFor(OWNER, undefined, "2026-11-23")).toBeUndefined();
   });
 });
