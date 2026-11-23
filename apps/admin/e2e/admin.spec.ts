@@ -14,12 +14,14 @@ test.describe("어드민 틀 (ADD-01)", () => {
     ["/geo", "GEO 측정"],
     ["/how", "만드는 방식"],
     ["/marketing", "알리기"], // 작업 0307
+    ["/traffic", "유입"], // 작업 0324
+    ["/instagram", "인스타 성과"], // 작업 0324
   ] as const) {
-    test(`${path} — 어드민 메뉴 네 화면 · 지금 화면 표시 · 방문자 파란 머리띠 없음 · 가로 넘침 없음`, async ({ page }) => {
+    test(`${path} — 어드민 메뉴 여섯 화면 · 지금 화면 표시 · 방문자 파란 머리띠 없음 · 가로 넘침 없음`, async ({ page }) => {
       await page.goto(path);
       const nav = visibleNav(page);
-      await expect(nav.getByRole("link")).toHaveCount(4);
-      await expect(nav.locator('a[aria-current="page"]')).toContainText(isPhone(page) && label === "GEO 측정" ? "GEO" : label);
+      await expect(nav.getByRole("link")).toHaveCount(6);
+      await expect(nav.locator('a[aria-current="page"]')).toContainText(isPhone(page) && label === "GEO 측정" ? "GEO" : isPhone(page) && label === "인스타 성과" ? "인스타" : label);
       await expect(page.locator("header.sticky")).toHaveCount(0); // 방문자 NavBar 없음
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
     });
