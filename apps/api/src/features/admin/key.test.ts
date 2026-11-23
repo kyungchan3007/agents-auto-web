@@ -3,7 +3,7 @@
 //     apps/api/src/env.ts — Env 에 `ADMIN_API_KEY?: string` (비밀값 · 두 Worker 가 같은 값 · 없으면 어드민용 경로는 닫힘)
 //     apps/api/src/features/admin/key.ts — export const requireAdminKey: MiddlewareHandler<{ Bindings: Env }>
 //        x-admin-key 머리글이 ADMIN_API_KEY 와 같을 때만 다음으로 · 그 밖(머리글 없음 · 틀림 · ADMIN_API_KEY 없음 · 빈 값)은 401 JSON {error} · 길이 일정 비교(apps/api/src/admin.ts 의 sameToken 처럼)
-//     apps/api/src/index.ts — 어드민 전용 경로에 requireAdminKey: GET /activity · /tasks · /geo · /ga4 · /ig · /status · /admin-visits(GET · POST) — 운영 BFF 가 쓰지 않는 것
+//     apps/api/src/index.ts — 어드민 전용 경로에 requireAdminKey: GET /activity · /geo · /ga4 · /ig · /status · /admin-visits(GET · POST) — 운영 BFF 가 쓰지 않는 것 (/tasks 는 공개 유지 — 공개 저장소 PR 제목 자료 · sync-tasks.yml 이 부름 · sdd 결정)
 //        운영 사이트 경로(/fx · /signal · /prices · /indicators · /airfare · /health)는 키 없이 그대로 · POST /activity 는 지금처럼 ACTIVITY_TOKEN(에이전트 훅) — x-admin-key 가 필요 없음
 import { Hono } from "hono";
 import { describe, expect, it } from "vitest";
@@ -50,7 +50,7 @@ describe("requireAdminKey — 미들웨어 (작업 0326)", () => {
 });
 
 describe("어드민 전용 경로 — 키 없이는 닫힘 (작업 0326)", () => {
-  const ADMIN_ONLY = ["/activity", "/tasks", "/geo", "/ga4", "/ig", "/status", "/admin-visits"];
+  const ADMIN_ONLY = ["/activity", "/geo", "/ga4", "/ig", "/status", "/admin-visits"];
 
   for (const path of ADMIN_ONLY) {
     it(`GET ${path}: 키 없음 · 틀림 · 키 미등록 → 401(핸들러에 닿지 않음) · 맞는 키 → 통과(401 아님)`, async () => {
@@ -68,7 +68,7 @@ describe("어드민 전용 경로 — 키 없이는 닫힘 (작업 0326)", () =>
 });
 
 describe("운영 사이트 경로는 그대로 — 키 없이 (작업 0326)", () => {
-  for (const path of ["/health", "/fx/latest", "/signal", "/prices/levels", "/indicators/ecos:import", "/airfare/calendar"]) {
+  for (const path of ["/health", "/tasks", "/fx/latest", "/signal", "/prices/levels", "/indicators/ecos:import", "/airfare/calendar"]) {
     it(`GET ${path}: x-admin-key 없이 401 이 아님 (운영 BFF 가 그대로 부름)`, async () => {
       expect((await get(path)).status).not.toBe(401);
     });
