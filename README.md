@@ -6,7 +6,7 @@
 
 개인 프로젝트 · 기획 · 설계 · 검증 담당 (구현 · 운영은 AI 에이전트) · 2026.10 ~
 
-[🌐 flapfx.com](https://flapfx.com)
+[🌐 flapfx.com](https://flapfx.com) · [🎨 Figma 디자인](https://www.figma.com/design/ssKUqcVolukUjz3paXjxg2)
 
 <br>
 
