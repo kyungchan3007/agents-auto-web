@@ -35,6 +35,7 @@
 - wrangler 설정 · 워크플로 · 운영 사이트는 바꾸지 않음
 
 ## 계획 밖 변경 이유
+- scripts/admin-token.mjs · scripts/admin-token-lib.ts · package.json(scripts 한 줄) · docs/architecture.md — team.md builder 범위 목록 밖이지만 관리 명령 · 구조 문서라 lead 가 builder 에게 맡김
 
 ## 위험
 - 비밀값 없이 main 에 나가면 사용자도 잠김 → main 은 등록 확인 뒤 · 등록 순서를 PR 본문 · 회신에
