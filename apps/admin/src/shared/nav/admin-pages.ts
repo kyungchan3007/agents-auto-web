@@ -9,5 +9,5 @@ export const ADMIN_NAV: (AdminNavPage & { id: AdminPage })[] = [
   { id: "how", href: "/how", label: "만드는 방식", short: "만드는 방식", key: "3", icon: "how" },
   { id: "marketing", href: "/marketing", label: "알리기", short: "알리기", key: "4", icon: "marketing" },
   { id: "traffic", href: "/traffic", label: "유입", short: "유입", key: "5", icon: "traffic" },
-  { id: "instagram", href: "/instagram", label: "인스타 성과", short: "인스타", key: "6", icon: "instagram" },
+  { id: "instagram", href: "/instagram", label: "인스타 유입", short: "인스타", key: "6", icon: "instagram" },
 ];

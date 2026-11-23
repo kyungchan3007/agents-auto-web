@@ -9,7 +9,7 @@ import { useIgReport } from "./use-ig-report";
 export function IgSection() {
   const report = useIgReport();
   return (
-    <Panel id="instagram-ig" testId="instagram-ig" title="인스타 성과" meta={<Stamp>매일 한 번 받은 값 · 받지 못한 값은 빈 칸</Stamp>}>
+    <Panel id="instagram-ig" testId="instagram-ig" title="인스타 유입" meta={<Stamp>매일 한 번 받은 값 · 받지 못한 값은 빈 칸</Stamp>}>
       {report === null ? (
         <p className="adm-empty">성과 값을 받는 중입니다</p>
       ) : !report.ok ? (

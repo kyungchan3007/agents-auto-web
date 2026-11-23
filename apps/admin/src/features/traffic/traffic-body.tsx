@@ -27,7 +27,7 @@ export function TrafficBody() {
     return (
       <Panel id="traffic-none" title="유입">
         <p data-testid="traffic-empty" className="adm-empty">
-          아직 받은 유입 값이 없습니다
+          아직 받은 유입 값이 없습니다. GA4 는 보통 하루 뒤에 숫자가 들어옵니다 · 다음 수집 매일 04:50
         </p>
       </Panel>
     );
