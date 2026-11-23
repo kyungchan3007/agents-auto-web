@@ -27,8 +27,10 @@ describe("POST /activity (훅만)", () => {
 
 describe("GET /activity 입력 검사", () => {
   it("limit 범위 밖 → 400", async () => {
-    expect((await app.request("/activity?limit=0", {}, env())).status).toBe(400);
-    expect((await app.request("/activity?limit=201", {}, env())).status).toBe(400);
+    // 작업 0326: GET /activity 는 어드민 전용 — x-admin-key 가 맞아야 입력 검사까지 감
+    const init = { headers: { "x-admin-key": "k" } };
+    expect((await app.request("/activity?limit=0", init, env({ ADMIN_API_KEY: "k" }))).status).toBe(400);
+    expect((await app.request("/activity?limit=201", init, env({ ADMIN_API_KEY: "k" }))).status).toBe(400);
   });
 });
 
