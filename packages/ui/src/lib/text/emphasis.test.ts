@@ -10,7 +10,7 @@
 //   export function numberTone(sentence: string): "neutral" | "expensive"
 //     - 비싼 쪽을 뜻하는 문장이면 "expensive" (높습니다 · 비쌉니다 · 비싼 · 올랐습니다 · 붙습니다) · 싼 쪽 · 중립 말(낮습니다 · 싼 · 싸 · 내렸습니다 · 없이)이 함께 있으면 "neutral" · 그 밖은 "neutral"
 import { describe, expect, it } from "vitest";
-import { numberTone, splitNumbers } from "./emphasis";
+import { numberTone, parseCount, splitNumbers } from "./emphasis";
 
 const t = (s: string) => splitNumbers(s).map((p) => [p.text, p.num]);
 
@@ -87,5 +87,46 @@ describe("numberTone — 비싼 쪽을 뜻하는 문장", () => {
 
   it("글이 없어도 오류 없이 neutral", () => {
     expect(numberTone("")).toBe("neutral");
+  });
+});
+
+// 작업 0321 — 큰 제목 숫자 카운트업에 쓸 값 읽기 (순수 함수)
+describe("parseCount — 숫자 조각 → 카운트업 값 · 앞뒤 글 · 소수 자리 (작업 0321)", () => {
+  it("직구 금액 '64,426원' → 값 64426 · 단위 원 · 소수 없음", () => {
+    expect(parseCount("64,426원")).toEqual({ prefix: "", value: 64426, digits: 0, suffix: "원" });
+  });
+
+  it("여행 물가 '27%' → 값 27 · 단위 %", () => {
+    expect(parseCount("27%")).toEqual({ prefix: "", value: 27, digits: 0, suffix: "%" });
+  });
+
+  it("통화 기호 · 소수 자리 — '$1,200.5' → 앞 $ · 값 1200.5 · 자리 1", () => {
+    expect(parseCount("$1,200.5")).toEqual({ prefix: "$", value: 1200.5, digits: 1, suffix: "" });
+    expect(parseCount("¥120,000")).toEqual({ prefix: "¥", value: 120000, digits: 0, suffix: "" });
+  });
+
+  it("부호는 앞 글로 — '+3%' · '-12%'", () => {
+    expect(parseCount("+3%")).toEqual({ prefix: "+", value: 3, digits: 0, suffix: "%" });
+    expect(parseCount("-12%")).toEqual({ prefix: "-", value: 12, digits: 0, suffix: "%" });
+  });
+
+  it("앞뒤 글을 다시 이으면 원래 조각 — 쉼표 · 단위가 그대로(카운트 끝 글 = 서버 글)", () => {
+    for (const t of ["64,426원", "27%", "$1,200", "3,000,000원", "9%", "100달러"]) {
+      const p = parseCount(t);
+      expect(p, t).not.toBeNull();
+      const { prefix, value, digits, suffix } = p!;
+      expect(`${prefix}${value.toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits })}${suffix}`, t).toBe(t);
+    }
+  });
+
+  it("쉼표 없는 1000 이상(연도 · 번호)은 형식이 달라지므로 null — 카운트하지 않음", () => {
+    expect(parseCount("2026년")).toBeNull();
+    expect(parseCount("1000원")).toBeNull();
+  });
+
+  it("숫자가 아닌 조각 · 빈 글은 null", () => {
+    expect(parseCount("")).toBeNull();
+    expect(parseCount("원")).toBeNull();
+    expect(parseCount("약")).toBeNull();
   });
 });
