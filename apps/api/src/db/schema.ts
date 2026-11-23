@@ -192,3 +192,36 @@ export const igAccountInsights = sqliteTable(
   },
   (t) => [primaryKey({ columns: [t.day, t.metric] })],
 );
+
+/** GA4 날짜별 (작업 0324) — GitHub Actions(ga4-sync.yml)가 최근 28일을 매일 다시 읽어 덮어씀 · 같은 day 는 덮어씀 · 받지 못한 날은 행을 만들지 않음 (AGENTS.md 7) */
+export const ga4Daily = sqliteTable("ga4_daily", {
+  day: text("day").primaryKey(), // YYYY-MM-DD
+  users: integer("users").notNull(),
+  sessions: integer("sessions").notNull(),
+  pageViews: integer("page_views").notNull(),
+});
+
+/** GA4 유입 경로별 — source · medium · campaign 은 받은 그대로(utm 값 · (direct) · (not set) 포함) */
+export const ga4Sources = sqliteTable(
+  "ga4_sources",
+  {
+    day: text("day").notNull(),
+    source: text("source").notNull(),
+    medium: text("medium").notNull(),
+    campaign: text("campaign").notNull(),
+    sessions: integer("sessions").notNull(),
+    users: integer("users").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.day, t.source, t.medium, t.campaign] })],
+);
+
+/** GA4 페이지별 페이지뷰 — 경로는 받은 그대로 */
+export const ga4Pages = sqliteTable(
+  "ga4_pages",
+  {
+    day: text("day").notNull(),
+    path: text("path").notNull(),
+    views: integer("views").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.day, t.path] })],
+);
