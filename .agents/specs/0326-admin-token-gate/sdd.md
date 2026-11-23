@@ -14,6 +14,9 @@
   - 운영 사이트 빌드 · 다른 워크플로 · 에이전트 훅이 위 경로(특히 POST /activity · GET /tasks)를 부르는지 builder 가 확인(부르면 lead 에게)
 - 관리 명령 scripts/admin-token.mjs + package.json "admin:token": add <이름> [--exp] · remove <이름> · list · init — 무작위 토큰(32바이트) 생성 → 해시를 로컬 목록에 → `wrangler secret put ADMIN_TOKENS --config apps/admin/wrangler.jsonc` 로 올림 → 새 링크를 한 번만 출력. init 은 ADMIN_SESSION_SECRET · ADMIN_API_KEY(두 Worker) · owner 를 만들어 올림(열쇠 값은 출력하지 않음 · owner 링크만 출력)
 
+- 이미 등록된 비밀값(11-23 사용자 · 이름만 확인): flapfx-admin = ADMIN_SESSION_SECRET · ADMIN_API_KEY / tripfx-api = ADMIN_API_KEY(같은 값). init 은 `wrangler secret list` 로 이름만 보고 **없는 것만** 만든다(있는 값은 덮어쓰지 않음). ADMIN_TOKENS 는 아직 없음 → init/add 가 처음 만듦
+- tripfx-api 에 예전부터 있는 ADMIN_TOKEN(단수)은 다른 용도(관리 쓰기 경로) — 이름 · 코드에서 섞지 않음 · 건드리지 않음
+
 ## 대안 · 트레이드오프
 - Cloudflare Access: 리뷰어가 이메일 로그인을 해야 함 · "아무것도 입력하지 않음" 요구와 어긋남
 - 토큰 원문을 비밀값에: 관리 명령이 목록을 다시 읽을 수 없어 add/remove 때 다른 토큰을 잃음
