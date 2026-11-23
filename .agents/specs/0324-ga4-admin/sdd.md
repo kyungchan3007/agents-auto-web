@@ -9,7 +9,8 @@
 - 읽는 범위: 최근 28일(매일 다시 읽어 덮어씀 · GA4 는 며칠 뒤 값이 바뀜) · 403 이면 권한 문제로 요약에 남기고 실패(지어내지 않음)
 - 표: ga4_daily(day, users, sessions, page_views) · ga4_sources(day, source, medium, campaign, sessions, users) · ga4_pages(day, path, views) — 키 (day, …) · upsert
 - API: GET /ga4 (1시간 캐시) → 날짜별 · 경로별(기간 합) · 페이지별(기간 합)
-- 어드민: 새 탭 "유입"(/traffic · 단축키 5) — 위 날짜별 표, 아래 유입 경로 표(인스타 UTM 이 보이게) · 많이 본 페이지 표 · 빈 값은 빈 칸 · 그래프는 자료가 쌓인 뒤 따로
+- 어드민 화면 두 개(사용자 결정): "유입"(/traffic · 단축키 5 · GA4) · "인스타 성과"(/instagram · 단축키 6 · 0323 의 IgSection 을 알리기 탭에서 옮김 · 알리기 탭에서는 빠짐)
+- 유입 화면 — 위 날짜별 표, 아래 유입 경로 표(인스타 UTM 이 보이게) · 많이 본 페이지 표 · 빈 값은 빈 칸 · 그래프는 자료가 쌓인 뒤 따로
 
 ## 대안 · 트레이드오프
 - 알리기 탭 아래에 넣기: 인스타 성과와 함께 보이지만 탭이 길어짐 · GA4 는 검색 · 직접 방문도 포함이라 알리기만의 자료가 아님 → 새 탭
@@ -23,9 +24,9 @@
 - apps/api/src/features/geo/gsc.ts (scope 인자) · apps/api/src/features/ga4/** (응답 → 행 · SQL · summary · store · routes) · apps/api/src/index.ts 라우트 한 줄 (builder)
 - apps/api/scripts/ga4-sync.ts (builder)
 - packages/shared/src/contracts/ga4.ts · packages/shared/package.json exports · packages/shared/src/client/api.ts (builder)
-- apps/admin/src/app/traffic/page.tsx · apps/admin/src/features/traffic/** · apps/admin/src/shared/nav/admin-pages.ts(탭 한 줄) · apps/admin/worker/bff-routes.ts(/ga4 한 줄) (builder)
+- apps/admin/src/app/traffic/page.tsx · apps/admin/src/features/traffic/** · apps/admin/src/app/instagram/page.tsx · apps/admin/src/features/instagram/**(apps/admin/src/features/marketing/ig/** 를 옮김) · apps/admin/src/features/marketing/marketing-page.tsx(IgSection 줄 뺌) · apps/admin/src/shared/nav/admin-pages.ts(탭 한 줄) · apps/admin/worker/bff-routes.ts(/ga4 한 줄) (builder)
 - README.md 자동으로 도는 일 한 줄 · docs/geo-measurement.md GA4 절 (builder)
-- 위 옆 *.test.ts · apps/admin/e2e/** · admin-pages.test 등 탭 목록 테스트 · .agents/e2e-map.json (test)
+- 위 옆 *.test.ts · apps/admin/e2e/**(ig-insights.spec 은 /instagram 으로 · 알리기 탭에 인스타 성과가 없음 확인) · admin-pages.test 등 탭 목록 테스트 · .agents/e2e-map.json (test)
 - 운영 사이트(apps/web)는 바꾸지 않음
 
 ## 계획 밖 변경 이유
