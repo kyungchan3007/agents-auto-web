@@ -6,6 +6,7 @@ import { IndicatorSeries } from "../contracts/indicators";
 import { PriceLevels } from "../contracts/prices";
 import { CurrencySignal, SignalList } from "../contracts/signal";
 import { GeoReport } from "../contracts/geo";
+import { Ga4Report } from "../contracts/ga4";
 import { IgReport } from "../contracts/ig";
 import { SiteStatus } from "../contracts/status";
 import { TasksSummary } from "../contracts/tasks";
@@ -54,4 +55,5 @@ export const api = {
   status: (o?: ApiOptions) => getJson("/status", SiteStatus, o),
   geo: (o?: ApiOptions) => getJson("/geo", GeoReport, o),
   ig: (o?: ApiOptions) => getJson("/ig", IgReport, o),
+  ga4: (o?: ApiOptions) => getJson("/ga4", Ga4Report, o),
 };

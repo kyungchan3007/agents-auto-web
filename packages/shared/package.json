@@ -23,6 +23,7 @@
     "./kst": "./src/utils/kst.ts",
     "./geo": "./src/contracts/geo.ts",
     "./ig": "./src/contracts/ig.ts",
+    "./ga4": "./src/contracts/ga4.ts",
     "./geo-visit": "./src/domain/geo-visit.ts",
     "./airfare": "./src/contracts/airfare.ts",
     "./airfare-domain": "./src/domain/airfare.ts",
