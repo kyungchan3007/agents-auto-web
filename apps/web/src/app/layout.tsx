@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans_KR } from "next/font/google";
 import { NAVER_SITE_VERIFICATION, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/shared/site";
-import { verificationOther } from "@/shared/verification";
+import { verificationOther } from "@/shared/seo/verification";
 import { outageActive } from "@/shared/outage/outage";
 import { OutageNotice } from "@/shared/outage/outage-notice";
 import "./globals.css";
