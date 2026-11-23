@@ -2,7 +2,7 @@
 
 // 1년 최저 · 최고 · 평균 카드의 움직임 — 통화를 바꿀 때 비행기가 직전 자리에서 새 자리로(왼쪽으로 가면 기수를 돌림) · 평균 눈금 · 평균 글이 직전 값에서 새 값으로 (작업 0231 · 모션 7)
 //   직전 값이 없으면(처음 들어옴 · 새로 고침) 움직임 없이 최종 · 지금 값은 전환 기억에 적어 둠 · 움직임 줄이기는 바로(CSS transition-none · 카운트는 훅이 확인)
-import { useCountUp } from "@hav/ui/hooks/motion/use-count-up";
+import { useCountUp } from "@hav/ui/hooks/count/use-count-up";
 import { useEffect, useState } from "react";
 import { routePosition } from "./redesign";
 import { planeHeading } from "../../switch/switch-motion";

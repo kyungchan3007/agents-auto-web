@@ -3,7 +3,7 @@
 //   바다 띠(울트라마린) 위: 해 노랑 글자
 //   이 부품만 그라데이션을 씀 (장식이 아니라 형광펜 띠)
 import type { ReactNode } from "react";
-import { useTrackedCount } from "../../hooks/motion/use-tracked-count";
+import { useTrackedCount } from "../../hooks/count/use-tracked-count";
 import { formatCount } from "../../lib/motion/count-up";
 import { numberTone, parseCount, splitNumbers } from "../../lib/text/emphasis";
 
