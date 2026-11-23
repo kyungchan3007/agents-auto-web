@@ -64,7 +64,7 @@
 | 0241 | 패치(버그) — 항공권 달력 e2e 가 운영 자료로 돌아 실패 → 값 의존 테스트는 고정 자료 빌드에서만 (Full) | test | 머지됨 (#289) | task/0241-airfare-e2e-fixture-only | apps/web/e2e/airfare-calendar.spec.ts |
 | 0242 | 흔들리는 e2e 고치기 — 고정 대기 대신 움직임 끝 기다리기 (Full) | test | 머지됨 (#290) | task/0242-flaky-e2e | apps/web/e2e/{currency-chart,detail-design,prices-route,pages}.spec.ts |
 | 0243 | 게이트 — Quick PR 도 CI e2e(문서 · 측정만이면 건너뜀) · 작업 기록 검사 먼저 · 라벨 이벤트는 harness-approved 만 (Quick · 보호 파일 3곳) | test → builder | 머지됨 (#291) | task/0243-gate-quick-e2e | .agents/checks.sh · .agents/scripts/** · .github/workflows/checks.yml |
-| (후보) | 흔들리는 e2e 다음 묶음 — calc-design.spec.ts:70(휴대폰) · prices-route.spec.ts:229 (0242 · 0238 CI 에서 흔들림) | test | 다음 작업 후보 | — | apps/web/e2e/{calc-design,prices-route}.spec.ts |
+| (후보) | 흔들리는 e2e 다음 묶음 — calc-design.spec.ts:70(휴대폰) · prices-route.spec.ts:229 (0242 · 0238 CI 에서 흔들림) | test | 닫음 — 11-23 확인 결과 흔들리지 않음(main PR 전체 e2e 각 14회 · 11회 중 실패 0 · 재시도 통과 0) | — | apps/web/e2e/{calc-design,prices-route}.spec.ts |
 | 0244 | develop 브랜치 흐름 + e2e 줄이기 — 대상 develop 은 연결표 e2e(넓은 화면) · 대상 main 은 전체 · rigs/ 조용한 파일 (Quick · 보호 파일) | test → builder | 진행 중 | task/0244-develop-flow | .agents/checks.sh · .agents/scripts/** · .agents/e2e-map.json · team.md · rig 템플릿 |
 | 0245 | AI 티 걷어 내기 1차 선택 3건 — 홈 두 단(1024↑) · 직구 휴대폰 머리 빈 면 · 작은 글자판 이음선 뒤로 (Quick · 화면만) | builder → test | 머지됨 (#294) · 홈만 0247 로 되돌림 | task/0245-unslop-three | apps/web/src/features/{home,import-calc,currencies,travel-price}/** · packages/ui 글자판 · 깨지는 e2e |
 | 0246 | 게이트 — 디자인 PR 경로(design 라벨 + 화면 파일) · 테스트 두 종류(@design) · 규칙 문서 (Full · 보호 파일) | test → builder | 머지됨 (#296) | task/0246-gate-design-path | .agents/checks.sh · .agents/scripts/** · AGENTS.md · verdict.md · team.md · rig 템플릿 · docs/design-tests-pending.md · @design 표시 테스트 |
@@ -124,4 +124,6 @@
 | 0311 | 알리기 탭에 사용자가 올린 인스타 게시물 2개(자료만 · 어드민 · 머지 뒤 바로 main ff) | geo | 머지됨 (#366) | task/0311-marketing-posts | docs/marketing/2026-11-22 · 2026-11-23 |
 | 0312 | 어드민을 apps/admin 으로 분리 · 코드 역할 분담(tsx 는 그리기만 · 커스텀 훅 · 하위 도메인 폴더 · 공통은 패키지 · 앱 도메인 공통) · 디자인 시스템 범용 / 도메인 나누기 (Full · 보호 파일 · 사용자 "팀에게 넘기지말고 니가 직접해") | claude-desktop | 머지됨 (#367) | task/0312-admin-split | apps/** · packages/** · .agents/e2e-map.json · .agents/scripts/** · .github/workflows/rebuild-site.yml · docs/architecture.md |
 | 0313 | 운영 버전 관리 — Changesets(운영 @hav/web 만 · 변경 기록이 있을 때만) + main 반영 때 GitHub 릴리스(web-v<버전>) · 게이트 경고 (Quick · 보호 파일) | claude-desktop | 머지됨 (#369) | task/0313-changesets | .changeset/** · apps/web/{package.json,CHANGELOG.md} · scripts/** · .github/workflows/release-web.yml · .agents/scripts/** |
-| 0314 | 11-23(월) 수집 점검 기록 — 환율 12:00 회차 · 과세환율 · 항공권 첫 예약 수집 (Quick · 자료 · #370) | data | PR 대기 | task/0314-data-health-1123 | docs/data-health.md |
+| 0314 | 11-23(월) 수집 점검 기록 — 환율 12:00 회차 · 과세환율 · 항공권 첫 예약 수집 (Quick · 자료 · #370) | data | 머지됨 (#371) | task/0314-data-health-1123 | docs/data-health.md |
+| 0315 | 11-23 GEO 측정 — AI 답변 24개(found 0 · cited 0) · #157 조사 댓글 (Quick · 자료 · #370) | geo | PR 대기 | task/0315-geo-measure-1123 | apps/api/data/geo-answers/2026-11-23.json |
+| (후보) | 흔들리는 e2e 다음 묶음(11-23 test 확인) — currency-chips:248~251 · geo-bot-pages:55/66/96(재시도까지 실패) · home:101 · flights-window:199 · currency-chart:163 · admin:28 · home-bars:181 · axis-clear:29 · rename-compare:40 | test | 다음 작업 후보 | — | apps/web/e2e/** · apps/admin/e2e/** |
