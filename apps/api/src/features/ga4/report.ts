@@ -1,6 +1,6 @@
 // GA4 가져오기: Data API runReport 응답 → 행 · upsert SQL (순수 함수 · 작업 0324) — GitHub Actions 가 scripts/ga4-sync.ts 로 부름
+//   설치 없이 node 로 바로 도는 스크립트가 가져오는 파일이라 패키지 이름(@hav/*) 가져오기가 없음 — 날짜 모양 검사도 이 파일 안에 둠 (작업 0325)
 //   받은 값만 · 못 받은 값은 지어내지 않고 행을 버림 · 열 위치가 아니라 헤더 이름으로 찾음 · 응답의 글(경로 · utm 값)은 외부 데이터 — SQL 이스케이프 · 제어 문자 제거 · 길이 제한
-import { isIsoDate } from "@hav/shared/date";
 
 export type Ga4DailyRow = { day: string; users: number; sessions: number; pageViews: number };
 export type Ga4SourceRow = { day: string; source: string; medium: string; campaign: string; sessions: number; users: number };
@@ -40,7 +40,8 @@ function cellsOf(apiJson: unknown, dims: string[], mets: string[]): Cells[] {
 const dayOf = (v: string | null | undefined): string | null => {
   if (!v || !/^\d{8}$/.test(v)) return null;
   const d = `${v.slice(0, 4)}-${v.slice(4, 6)}-${v.slice(6)}`;
-  return isIsoDate(d) ? d : null;
+  const t = new Date(`${d}T00:00:00Z`);
+  return !Number.isNaN(t.getTime()) && t.toISOString().slice(0, 10) === d ? d : null;
 };
 /** 0 이상 정수 글만 숫자로 */
 const countOf = (v: string | null | undefined): number | null => (v && /^\d+$/.test(v) && Number.isSafeInteger(Number(v)) ? Number(v) : null);
