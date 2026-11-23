@@ -3,6 +3,7 @@
 //   npm run admin:token -- remove <이름>                    링크 지우기 (그 토큰의 쿠키도 바로 무효)
 //   npm run admin:token -- list                             이름 · 기한 · 상태 (토큰 · 해시는 안 보임)
 //   npm run admin:token -- init                             처음 한 번 — 없는 비밀값만 만들고 owner 링크 출력
+//   (선택) --versions  최신 버전이 운영에 배포되지 않아 비밀값 넣기가 실패할 때 — 새 버전에 넣고(배포는 안 함) 그 버전을 따로 배포 (작업 0329)
 // 규칙: 목록은 해시만(.tmp/admin-tokens.json · git 무시) · 토큰 원문 · 열쇠 값은 파일 · 로그에 남기지 않음 · 이미 있는 비밀값은 덮어쓰지 않음
 // 어드민 Worker 비밀값: ADMIN_TOKENS · ADMIN_SESSION_SECRET · ADMIN_API_KEY / API Worker: ADMIN_API_KEY (같은 값)
 // tripfx-api 의 ADMIN_TOKEN(단수) · ACTIVITY_TOKEN 은 다른 용도 — 건드리지 않음
@@ -10,7 +11,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { OWNER, addEntry, hashToken, linkFor, listRows, newToken, removeEntry, secretPayload } from "./admin-token-lib.ts";
+import { OWNER, addEntry, hasVersionsFlag, hashToken, linkFor, listRows, newToken, removeEntry, secretPayload, secretPutArgs, versionsPutNotice, wranglerFailureText } from "./admin-token-lib.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ADMIN_CONFIG = "apps/admin/wrangler.jsonc";
@@ -24,7 +25,7 @@ const fail = (message) => {
 
 function wrangler(args, input) {
   const r = spawnSync("npx", ["wrangler", ...args], { cwd: ROOT, input, encoding: "utf8" });
-  if (r.status !== 0) fail(`wrangler ${args.slice(0, 3).join(" ")} 실패 — ${(r.stderr || r.stdout || "").trim().split("\n").slice(-3).join(" ")}`);
+  if (r.status !== 0) fail(wranglerFailureText(args, `${r.stderr ?? ""}\n${r.stdout ?? ""}`, args[args.indexOf("--config") + 1] ?? ""));
   return r.stdout;
 }
 
@@ -38,7 +39,14 @@ function secretNames(config) {
   }
 }
 
-const putSecret = (config, name, value) => wrangler(["secret", "put", name, "--config", config], value);
+const argv = process.argv.slice(2);
+const VERSIONS = hasVersionsFlag(argv);
+const versionConfigs = new Set();
+
+function putSecret(config, name, value) {
+  if (VERSIONS) versionConfigs.add(config);
+  return wrangler(secretPutArgs(name, config, { versions: VERSIONS }), value);
+}
 
 function readLocal() {
   if (!existsSync(LOCAL)) return null;
@@ -73,7 +81,7 @@ const flag = (args, name) => {
   return i >= 0 ? args[i + 1] : undefined;
 };
 
-const [cmd, ...rest] = process.argv.slice(2);
+const [cmd, ...rest] = argv.filter((a) => a !== "--versions");
 const today = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
 
 if (cmd === "add") {
@@ -133,3 +141,6 @@ if (cmd === "add") {
 } else {
   fail("사용법: add <이름> [--exp YYYY-MM-DD] | remove <이름> | list | init");
 }
+
+// --versions 로 넣었으면 배포 안내 (비밀값 글은 출력하지 않음)
+for (const config of versionConfigs) console.log(versionsPutNotice(config));

@@ -63,3 +63,42 @@ export const linkFor = (token: string, base = "https://admin.flapfx.com"): strin
 
 /** wrangler secret put ADMIN_TOKENS 로 올릴 JSON */
 export const secretPayload = (list: TokenList): string => JSON.stringify(list);
+
+// ── 비밀값 넣기 실패 안내 (작업 0329) — Workers Builds 가 새 버전을 올리기만 해서 최신 버전이 운영에 배포되지 않으면 wrangler secret put 이 실패함
+export type SecretFailure = "not-deployed" | "other";
+
+/** wrangler 오류 글 → 종류 · 배포 문구 여러 표현을 넓게 봄(대소문자 무시) · wrangler 업데이트 안내의 "latest version" 만으로는 아님 */
+export function secretPutFailure(output: string): SecretFailure {
+  const text = output.toLowerCase();
+  if (/code:\s*10215|\b10215\b/.test(text) || /gradual deployment/.test(text) || /(isn'?t|is not|not)\s+(currently\s+|fully\s+)?deployed/.test(text)) return "not-deployed";
+  return "other";
+}
+
+/** 한국어 안내 — 이유 + 해결 두 가지 · 버전을 모르면 <버전> 자리표시 */
+export function notDeployedHelp(opts: { config: string; versionId?: string }): string {
+  const deploy = `wrangler versions deploy ${opts.versionId ?? "<버전>"} --config ${opts.config}`;
+  return [
+    "이유: 이 Worker 의 최신 버전이 운영에 배포되지 않은 상태(미리보기로만 올라감)라서 비밀값을 넣지 못했습니다.",
+    "해결 (둘 중 하나):",
+    `  1. 최신 버전을 운영에 배포한 뒤 이 명령을 다시 실행합니다. 배포: Cloudflare 대시보드의 Workers > 배포 에서, 또는 \`${deploy}\``,
+    "  2. 명령에 --versions 를 붙이면 새 버전에 비밀값을 넣습니다(배포는 하지 않음). 그 뒤 위 방법으로 그 버전을 배포해야 적용됩니다.",
+  ].join("\n");
+}
+
+/** 실패 한 줄 — 다른 오류는 출력 끝 세 줄 · 배포되지 않음은 한국어 안내(출력 글은 되비치지 않음) */
+export function wranglerFailureText(args: string[], output: string, config: string): string {
+  const head = `wrangler ${args.slice(0, 3).join(" ")} 실패`;
+  if (secretPutFailure(output) === "not-deployed") return `${head} — 최신 버전이 배포되지 않았습니다\n${notDeployedHelp({ config })}`;
+  return `${head} — ${output.trim().split("\n").slice(-3).join(" ")}`;
+}
+
+/** 기본은 secret put · versions 면 versions secret put (새 버전만 만들고 배포하지 않음) */
+export const secretPutArgs = (name: string, config: string, opts: { versions: boolean }): string[] =>
+  opts.versions ? ["versions", "secret", "put", name, "--config", config] : ["secret", "put", name, "--config", config];
+
+/** --versions 로 넣은 뒤 안내 */
+export const versionsPutNotice = (config: string): string =>
+  `새 버전에 비밀값을 넣었습니다. 아직 배포하지 않았으니 적용하려면 그 버전을 배포하세요: wrangler versions deploy <버전> --config ${config} (또는 Cloudflare 대시보드의 Workers > 배포)`;
+
+/** 명령 인자에 정확히 --versions 가 있으면 true */
+export const hasVersionsFlag = (argv: string[]): boolean => argv.includes("--versions");
