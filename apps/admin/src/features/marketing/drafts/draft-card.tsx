@@ -10,11 +10,16 @@ const copy = (text: string, what: string) => void copyText(text, `${what}을 복
 export function DraftCard({ d }: { d: Draft }) {
   const { check, onError } = useImageFallback(d);
   return (
-    <article data-testid="marketing-draft" className="adm-panel adm-draft" data-cmd="소재 초안" data-cmd-label={`${d.day} 초안`}>
+    <article data-testid="marketing-draft" className="adm-panel adm-draft" data-cmd="소재 초안" data-cmd-label={d.sub ? `${d.day} ${d.sub} 초안` : `${d.day} 초안`}>
       <div className="adm-ph">
         <h3 className="mono" style={{ margin: 0, fontSize: 13, fontWeight: 500 }}>
           {d.day}
         </h3>
+        {d.sub && (
+          <span className="adm-note mono" data-testid="marketing-draft-sub">
+            {d.sub}
+          </span>
+        )}
         {d.link && (
           <a className="adm-link" href={d.link} target="_blank" rel="noreferrer">
             {linkText(d.link)} ↗
