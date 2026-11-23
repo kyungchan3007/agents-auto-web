@@ -1,6 +1,6 @@
-// 작업 0323 · 0324 — 어드민 "인스타 성과" 화면(/instagram) (0324 에 알리기 탭에서 새 화면으로 옮김 · 화면 약속은 그대로)
+// 작업 0323 · 0324 — 어드민 "인스타 유입" 화면(/instagram) (0324 에 알리기 탭에서 새 화면으로 옮김 · 화면 약속은 그대로)
 //   브라우저가 받는 /bff/ig 를 가짜 응답으로 바꿔 숫자를 정함 (geo-bot-pages.spec.ts 와 같은 방식) · 응답 모양은 apps/api/src/features/ig/summary.test.ts 의 IgReport
-//   화면 약속 — /instagram 화면 안에서 (알리기 탭 /marketing 에는 인스타 성과가 없음):
+//   화면 약속 — /instagram 화면 안에서 (알리기 탭 /marketing 에는 인스타 유입가 없음):
 //     data-testid="ig-account"            계정 칸 — 가장 최근 날 값
 //       "ig-account-day"                    받은 날짜 글(YYYY-MM-DD)
 //       "ig-account-metric"[data-metric=reach|views|profileViews|websiteClicks|accountsEngaged]  지표마다 · 글 = 쉼표 숫자 · 받지 못한 값(null)은 글이 빈 칸(0 도 '-' 도 아님)
@@ -26,7 +26,7 @@ async function open(page: Page, body: object, status = 200) {
 const metric = (page: Page, m: string) => tid(page, "ig-account").locator(`[data-testid="ig-account-metric"][data-metric="${m}"]`);
 const cell = (page: Page, mediaId: string, col: string) => tid(page, "ig-media").locator(`[data-testid="ig-media-row"][data-media-id="${mediaId}"] [data-col="${col}"]`);
 
-test.describe("알리기 — 인스타 성과 (작업 0323)", () => {
+test.describe("알리기 — 인스타 유입 (작업 0323)", () => {
   test("계정 칸 — 가장 최근 날 값(쉼표) · 받은 날짜 · 옛 날 값은 안 보임", async ({ page }) => {
     await open(page, REPORT);
     await expect(tid(page, "ig-account")).toBeVisible();
@@ -97,7 +97,7 @@ test.describe("알리기 — 인스타 성과 (작업 0323)", () => {
     await expect(tid(page, "ig-media").locator('[data-testid="ig-media-row"]')).toHaveCount(0);
   });
 
-  test("메뉴에 '인스타 성과'(단축키 6) — /instagram 으로 가고 지금 화면 표시", async ({ page }) => {
+  test("메뉴에 '인스타 유입'(단축키 6) — /instagram 으로 가고 지금 화면 표시", async ({ page }) => {
     await open(page, REPORT);
     const nav = page.getByRole("navigation", { name: "어드민 메뉴" }).filter({ visible: true });
     await expect(nav.getByRole("link")).toHaveCount(6);
@@ -114,7 +114,7 @@ test.describe("알리기 — 인스타 성과 (작업 0323)", () => {
     await expect(page).toHaveURL(/\/instagram\/?$/);
   });
 
-  test("알리기 탭에는 인스타 성과가 없음 — 성과 칸 · 표 · 안내 글이 없고 /bff/ig 를 부르지도 않음 · 소재 초안 · 광고 운영은 그대로", async ({ page }) => {
+  test("알리기 탭에는 인스타 유입가 없음 — 성과 칸 · 표 · 안내 글이 없고 /bff/ig 를 부르지도 않음 · 소재 초안 · 광고 운영은 그대로", async ({ page }) => {
     let called = 0;
     await page.route("**/bff/ig*", (route) => {
       called++;
