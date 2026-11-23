@@ -6,7 +6,7 @@
 
 개인 프로젝트 · 기획 · 설계 · 검증 담당 (구현 · 운영은 AI 에이전트) · 2026.10 ~
 
-[🌐 flapfx.com](https://flapfx.com) · [🛠️ 작업실](https://flapfx.com/log) · [📡 GEO 측정](https://flapfx.com/geo)
+[🌐 flapfx.com](https://flapfx.com) · 🛠️ 어드민(작업실 · 측정) admin.flapfx.com — 지원 시 전달한 링크로 열람
 
 <br>
 
@@ -21,19 +21,19 @@
 
 한국수출입은행 · 관세청 · 통계청 · 한국은행 · 세계은행 공개 데이터를 바탕으로 환율, 여행 타이밍(항공료 지수), 국가별 물가 수준, 직구 예상 세액을 제공하는 대시보드입니다.<br>
 개발자는 기획 · 설계 · 검증을 담당하고, 구현 · 테스트 · 배포 · 운영 점검은 AI 코딩 에이전트(Claude Code · Codex)가 수행합니다.<br>
-에이전트 팀(lead · builder · test · geo)은 <b>OpenRig</b>로 한 팀으로 띄우고, <b>Herdr</b>로 네 터미널을 한 화면에 나란히 띄워 진행을 지켜봅니다.<br>
-에이전트의 작업 과정, 오류, 장애 대응 기록은 작업실 페이지에 공개합니다.
+에이전트 팀(lead · builder · test · geo · data)은 <b>OpenRig</b>로 한 팀으로 띄우고, <b>Herdr</b>로 다섯 터미널을 한 화면에 나란히 띄워 진행을 지켜봅니다.<br>
+에이전트의 작업 과정, 오류, 장애 대응 기록과 검색 · 유입 측정 결과는 어드민(작업실 · GEO 측정 · 유입 · 인스타 유입)에서 확인할 수 있습니다. 어드민은 지원한 회사에 전달한 전용 링크로만 열립니다.
 
 <br>
 
 <table>
   <tr>
-    <td><img src="docs/images/screens/home.png" alt="홈 — 이번 주 가장 싸게 갈 수 있는 곳과 지구본"></td>
-    <td><img src="docs/images/screens/currency.png" alt="통화 — 통화별 환율 · 신호 · 환산"></td>
+    <td><img src="docs/images/screens/home.png" alt="홈 — 공항 터미널에서 목적지를 입력하는 첫 화면"></td>
+    <td><img src="docs/images/screens/currency.png" alt="통화 — 통화별 환율 · 1년 최저 · 최고 · 실제로 바꿀 때 환산"></td>
   </tr>
   <tr>
     <td><img src="docs/images/screens/calc.png" alt="직구 계산 — 면세 한도 · 관세 · 부가세 예상"></td>
-    <td><img src="docs/images/screens/workroom.png" alt="작업실 — 이 사이트를 어떻게 만들었나"></td>
+    <td><img src="docs/images/screens/admin.png" alt="어드민 — 사람 한 명과 에이전트 다섯이 사이트를 만드는 방식"></td>
   </tr>
 </table>
 
@@ -70,7 +70,7 @@
 - 타입 검사 · 린트 · 테스트 · 보호 파일 · 작업 범위를 확인하는 게이트를 적용하고, 게이트 통과를 완료 조건으로 정의했습니다.
 - 규칙 · 배포 설정 · 데이터 계약을 보호 파일로 지정하고, 개발자 승인 없이는 CI를 통과하지 않도록 했습니다.
 - 응답 언어 규칙 위반과 작업 범위 밖 파일 쓰기는 훅으로 검사하도록 했습니다.
-- 계획 · 통합(lead), 구현(builder), 테스트 먼저 작성(test), 검색 노출 측정(geo) 네 역할을 OpenRig로 한 팀으로 운영하고, 역할마다 고칠 수 있는 파일 범위를 나눴습니다. 진행은 Herdr로 네 터미널을 한 화면에 띄워 확인했습니다.
+- 계획 · 통합(lead), 구현(builder), 테스트 먼저 작성(test), 검색 노출 측정 · 알리기(geo), 수집 상태 · 이상 값 점검(data) 다섯 역할을 OpenRig로 한 팀으로 운영하고, 역할마다 고칠 수 있는 파일 범위를 나눴습니다. 진행은 Herdr로 다섯 터미널을 한 화면에 띄워 확인했습니다.
 - 테스트는 통과했지만 실행 환경에서 동작하지 않은 스크립트 사례를 계기로, 스크립트가 타입 검사 대상에 포함되도록 했습니다.
 
 **학습 내용**
@@ -144,10 +144,11 @@
 **배경** — 검색 엔진에 등록한 뒤에도 검색 결과와 AI 답변에 사이트가 노출되지 않았습니다.
 
 **과정**
-- 봇 방문, 검색 노출, AI 답변 인용, AI 서비스 유입의 단계로 나눠 측정하고, 측정 결과를 페이지로 공개했습니다.
+- 봇 방문, 검색 노출, AI 답변 인용, AI 서비스 유입의 단계로 나눠 측정하고, 측정 결과를 어드민 화면에 모았습니다.
 - 자료 출처와 판단 기준을 명시하고 요약 문장과 기간별 표를 추가했습니다. 변경된 페이지의 색인 요청도 자동화했습니다.
 - 요약 문장과 표는 통화의 절반에만 적용해, 적용 여부에 따른 차이를 비교할 수 있도록 했습니다.
 - AI 검색 API 측정이 비용 문제로 중단된 뒤, 에이전트 세션이 직접 검색하고 결과를 PR로 기록하는 방식으로 변경했습니다.
+- Google · Bing에 이어 네이버 서치어드바이저에도 사이트를 등록했고, 2026-11-23부터 GA4 유입과 인스타그램 유입을 함께 측정하고 있습니다.
 
 **학습 내용**
 - 등록, 색인, 노출, 인용은 단계별로 구분하여 측정해야 했습니다.
@@ -157,7 +158,7 @@
 </details>
 
 <details>
-<summary><b>⚙️ 자동으로 도는 일</b> — GitHub Actions 워크플로 11개의 역할과 실행 시점</summary>
+<summary><b>⚙️ 자동으로 도는 일</b> — GitHub Actions 워크플로 13개의 역할과 실행 시점</summary>
 
 <br>
 
@@ -176,11 +177,11 @@
 **수집 · 알림 · 기록**
 - `ensure-fx.yml` 오늘 환율 빠짐 보충 — 평일 12:10~17:40에 30분마다 오늘 환율이 있는지 보고, 없으면 수집을 다시 요청합니다.
 - `gsc-sync.yml` 검색 노출 기록 — 매일 04:20에 Search Console 노출 · 클릭 기록을 저장합니다.
-- `ig-insights.yml` 인스타 성과 기록 — 매일 04:40에 인스타 게시물 · 계정 성과(도달 · 좋아요 · 저장 · 공유 · 조회 등)를 저장합니다.
+- `ig-insights.yml` 인스타 유입 기록 — 매일 04:40에 인스타 게시물 · 계정 성과(도달 · 좋아요 · 저장 · 공유 · 조회 등)를 저장합니다.
 - `ga4-sync.yml` 유입 기록 — 매일 04:50에 GA4 방문 · 유입 경로 · 많이 본 페이지(최근 28일)를 저장합니다.
 - `geo-ask.yml` AI 답변 인용 측정 기록 — 측정 결과 파일이 머지되면 저장합니다.
 - `indexnow.yml` 바뀐 주소 알림 — 평일 16:00에 그날 바뀐 페이지를 검색 엔진에 알립니다.
-- `sync-tasks.yml` 이슈 · PR 목록 동기화 — 머지와 이슈 변경을 사이트의 작업실 화면에 반영합니다.
+- `sync-tasks.yml` 이슈 · PR 목록 동기화 — 머지와 이슈 변경을 어드민의 작업실 화면에 반영합니다.
 
 시각은 모두 한국 시간입니다. PR 검사에서 실패한 기록은 테스트를 먼저 작성하고 실패를 확인하는 작업 방식에 따른 것입니다.
 
@@ -192,7 +193,8 @@
 
 - **API (Cloudflare Workers)** — 환율 · 물가 데이터의 예약 수집과 D1 저장을 담당하며 조회 API를 제공합니다.
 - **사이트 (Cloudflare Workers)** — 빌드 시 API 데이터로 정적 페이지를 생성해 Worker 정적 자산으로 올리며, 새 환율이 저장되면 다시 빌드됩니다.
-- **BFF (사이트 Worker)** — 작업실의 실시간 조회 요청을 같은 주소의 `/bff` 경로에서 받아 서비스 바인딩으로 API를 호출합니다.
+- **BFF (사이트 Worker)** — 화면의 실시간 조회 요청을 같은 주소의 `/bff` 경로에서 받아 서비스 바인딩으로 API를 호출합니다.
+- **어드민 (Cloudflare Workers)** — 작업실과 측정 화면(GEO · 유입 · 인스타 유입)을 `admin.flapfx.com`에서 제공합니다. 전용 링크의 토큰을 확인한 뒤 서명 쿠키를 발급하고, API의 어드민 전용 경로는 별도 키가 있는 요청에만 응답합니다.
 - **GitHub** — 에이전트의 변경 사항은 PR에서 게이트와 개발자 검증을 거쳐 병합됩니다. Actions는 보안 점검 · 검색 자료 수집 · 색인 요청을 수행합니다.
 
 <img src="docs/images/architecture.png" width="100%" alt="Flapfx 아키텍처: 외부 데이터 · API Worker · D1 · 정적 사이트 · BFF · GitHub(에이전트 · PR · 게이트 · 개발자 검증 · Actions)" />
@@ -201,10 +203,10 @@
 
 ## 📡 GEO 측정 흐름
 
-- **사이트 준비** — robots.txt · sitemap.xml · IndexNow 키 파일, 구글 · Bing 소유 확인 태그, 인용용 콘텐츠(통화 절반만 적용한 비교군 포함)
-- **검색 엔진 등록 · 알림** — Google Search Console · Bing Webmaster Tools에 등록하고, 평일마다 바뀐 페이지를 IndexNow로 전송
+- **사이트 준비** — robots.txt · sitemap.xml · IndexNow 키 파일, 구글 · Bing · 네이버 소유 확인 태그, 인용용 콘텐츠(통화 절반만 적용한 비교군 포함)
+- **검색 엔진 등록 · 알림** — Google Search Console · Bing Webmaster Tools · 네이버 서치어드바이저에 등록하고, 평일마다 바뀐 페이지를 IndexNow로 전송
 - **단계별 측정** — 봇 방문, 검색 노출, AI 답변 인용, AI 서비스 유입을 나눠 측정
-- **저장 · 공개** — 측정 결과를 D1에 날짜별로 보관하고 [GEO 측정 페이지](https://flapfx.com/geo)에 공개
+- **저장 · 공개** — 측정 결과를 D1에 날짜별로 보관하고 어드민의 GEO 측정 화면에서 확인
 
 <img src="docs/images/geo-flow.png" width="100%" alt="GEO 측정 흐름: 사이트 준비 → 검색 엔진 등록 · 알림 → 단계별 측정 → 저장 · 공개" />
 
@@ -220,9 +222,10 @@
 | 환율 수집 실행 | GitHub Actions 예약 vs Worker Cron | Worker Cron · Actions는 예비 |
 | 작업 기록 수집 | Pages 빌드 중 GitHub API 호출 vs Actions가 D1에 저장 | Actions → D1 |
 | AI 답변 측정 | AI 검색 API 자동 측정 vs 에이전트 세션 직접 검색 | 세션 측정 |
-| 주소 | 개인 도메인 vs Cloudflare 무료 주소 | 무료 주소 |
+| 어드민 접근 | 로그인 계정 vs 전용 링크(토큰) + 서명 쿠키 | 전용 링크 (회사별 발급 · 7일 기한) |
+| 주소 | 개인 도메인 vs Cloudflare 무료 주소 | 무료 주소로 시작 → 개인 도메인 flapfx.com (2026-11-17) |
 
-> **렌더링 · 주소** — 데이터가 하루 한 번 바뀌는 서비스여서 정적 생성으로 충분했습니다. SSR로 전환하면 Workers로 옮겨 주소가 바뀌기 때문에, 무료 주소와 정적 화면을 유지하고 실시간 조회가 필요한 작업실만 BFF로 처리했습니다. 도메인은 구입 후 연결만 변경하면 되도록 했습니다.
+> **렌더링 · 주소** — 데이터가 하루 한 번 바뀌는 서비스여서 정적 생성으로 충분했습니다. SSR로 전환하면 Workers로 옮겨 주소가 바뀌기 때문에, 무료 주소와 정적 화면을 유지하고 실시간 조회가 필요한 작업실만 BFF로 처리했습니다. 도메인은 구입 후 연결만 변경하면 되도록 했고, 2026-11-17에 flapfx.com으로 옮겼습니다. 작업실과 측정 화면은 2026-11-22에 어드민(admin.flapfx.com)으로 분리했습니다.
 
 > **D1 읽기 한도** — 무료 요금제의 하루 읽기 한도를 반복된 사이트 빌드로 초과하여 API가 오류를 반환한 사례가 있었습니다. 기본 키 순서(날짜, 통화) 때문에 한 통화를 조회해도 전체를 읽는 구조였고, (통화, 날짜) 색인을 추가했습니다. 이후 API 응답 캐시를 적용하고 빌드 횟수를 관리했습니다.
 
@@ -237,6 +240,8 @@
 | 사이트 | Next.js 16 (정적 내보내기) · React · TypeScript · Tailwind CSS · three.js |
 | API | Hono · Cloudflare Workers · Zod |
 | 데이터 | Cloudflare D1 · Drizzle ORM |
+| 어드민 | Next.js 16 (정적 내보내기) · Cloudflare Workers(토큰 입구 · BFF) |
+| 측정 | Google Search Console · Bing Webmaster Tools · 네이버 서치어드바이저 · GA4 · Instagram 인사이트 · IndexNow |
 | 배포 · 자동화 | Cloudflare Workers(정적 자산 + Worker) · Workers Builds · GitHub Actions · Turborepo |
 | 검증 | Vitest · Playwright |
 | 국기 그림 | country-flag-icons (MIT License) — 서버에서 SVG 로 그려 HTML 에 넣음 |
@@ -248,6 +253,7 @@
 
 ```text
 apps/web        사이트 (Next.js 정적 내보내기)
+apps/admin      어드민 (작업실 · 측정 화면 · 토큰 입구 Worker)
 apps/api        API (Hono · Workers · D1 · Drizzle)
 packages/ui     디자인 시스템 · 3D
 packages/shared 공용 타입 · zod 스키마
