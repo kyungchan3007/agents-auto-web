@@ -95,3 +95,59 @@ describe("과세환율 시계열 경로 (작업 0163)", () => {
     expect(seen).toHaveLength(0);
   });
 });
+
+// 작업 0326 — 어드민 BFF 는 API 에 어드민 열쇠(x-admin-key)를 붙임 (테스트 먼저 · 구현 전에는 FAIL 이 정상)
+//   handleBff(request, api, routes, options?: { apiKey?: string }) — 4번째 인자는 선택 · 주면 API 요청에 x-admin-key 머리글 · 안 주면(운영 사이트 Worker) 머리글 없음 · 지금 동작 그대로
+describe("BFF 어드민 열쇠 (작업 0326)", () => {
+  const KEY = "test-admin-api-key-0326";
+  const headersText = (h: Headers) => {
+    const out: string[] = [];
+    h.forEach((v, k) => out.push(`${k}: ${v}`));
+    return out.join("\n");
+  };
+
+  it("apiKey 를 주면 API 요청에 x-admin-key 가 붙음 · 경로 · 쿼리 · accept 는 그대로 · 쿠키는 넘기지 않음", async () => {
+    const { api, seen } = fakeApi();
+    const res = await handleBff(get("/bff/activity?after=3", { headers: { cookie: "__Host-admin=v.1.sig" } }), api, ROUTES, { apiKey: KEY });
+    expect(res.status).toBe(200);
+    const sent = seen[0]!;
+    expect(sent.headers.get("x-admin-key")).toBe(KEY);
+    expect(sent.headers.get("accept")).toBe("application/json");
+    expect(sent.headers.get("cookie")).toBeNull();
+    expect(new URL(sent.url).pathname + new URL(sent.url).search).toBe("/activity?after=3");
+  });
+
+  it("apiKey 를 안 주면(운영 사이트) 머리글이 없음 · 브라우저가 보낸 x-admin-key 도 넘기지 않음", async () => {
+    const { api, seen } = fakeApi();
+    await bff(get("/bff/activity", { headers: { "x-admin-key": "browser-guess" } }), api);
+    expect(seen[0]!.headers.get("x-admin-key")).toBeNull();
+    const again = fakeApi();
+    await handleBff(get("/bff/activity", { headers: { "x-admin-key": "browser-guess" } }), again.api, ROUTES, {});
+    expect(again.seen[0]!.headers.get("x-admin-key")).toBeNull();
+  });
+
+  it("apiKey 가 빈 글 · undefined 이면 머리글을 붙이지 않음 — 빈 값을 보내지 않음", async () => {
+    for (const apiKey of [undefined, ""]) {
+      const { api, seen } = fakeApi();
+      await handleBff(get("/bff/activity"), api, ROUTES, { apiKey });
+      expect(seen[0]!.headers.get("x-admin-key")).toBeNull();
+    }
+  });
+
+  it("브라우저가 다른 x-admin-key 를 보내도 Worker 의 값만 씀", async () => {
+    const { api, seen } = fakeApi();
+    await handleBff(get("/bff/activity", { headers: { "x-admin-key": "browser-guess" } }), api, ROUTES, { apiKey: KEY });
+    expect(seen[0]!.headers.get("x-admin-key")).toBe(KEY);
+  });
+
+  it("열쇠를 주어도 허용 경로 · 읽기 규칙은 그대로 — 쓰기 405 · 없는 경로 404 · API 를 부르지 않음 · 응답에 열쇠가 없음", async () => {
+    const { api, seen } = fakeApi();
+    expect((await handleBff(get("/bff/activity", { method: "POST" }), api, ROUTES, { apiKey: KEY })).status).toBe(405);
+    const res = await handleBff(get("/bff/secret-path"), api, ROUTES, { apiKey: KEY });
+    expect(res.status).toBe(404);
+    expect(seen).toHaveLength(0);
+    expect(headersText(res.headers) + (await res.text())).not.toContain(KEY);
+    const ok = await handleBff(get("/bff/geo"), fakeApi().api, ROUTES, { apiKey: KEY });
+    expect(headersText(ok.headers)).not.toContain(KEY);
+  });
+});
