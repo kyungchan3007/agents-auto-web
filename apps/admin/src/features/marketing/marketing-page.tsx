@@ -7,6 +7,7 @@ import { Panel, Stamp } from "@/shared/ui/panel/panel";
 import { AdminNav } from "@/shared/nav/admin-nav";
 import { type Draft, latestDay, shortDay } from "./drafts/drafts";
 import { DraftCard } from "./drafts/draft-card";
+import { IgSection } from "./ig/ig-section";
 import { MARKETING_RULES } from "./rules/marketing-rules";
 
 export function MarketingPage({ drafts }: { drafts: Draft[] }) {
@@ -50,6 +51,7 @@ export function MarketingPage({ drafts }: { drafts: Draft[] }) {
           </div>
         </dl>
       </section>
+      <IgSection />
       <Panel id="marketing-drafts" testId="marketing-drafts" title="소재 초안" meta={<Stamp>최근 날부터</Stamp>}>
         {drafts.length === 0 ? (
           <p className="adm-empty">아직 초안이 없습니다. geo 가 docs/marketing/날짜/ 에 초안을 쌓으면 여기에 붙습니다</p>
