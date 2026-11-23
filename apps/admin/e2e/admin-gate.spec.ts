@@ -5,7 +5,7 @@
 //     안내 창 — 어드민 앱 쪽 부품. 브라우저가 GET /session 을 불러 {name} 을 받음 · 이름이 owner 가 아니고 · 이 브라우저에서 "둘러보기"로 닫은 적이 없으면 띄움(localStorage)
 //       role="dialog" · data-testid="gate-welcome" · 이름에 "전용 링크" 가 들어감
 //       머리 "전용 링크로 들어오셨습니다" · 이름이 apply-<회사>-<날짜 숫자> 모양이면 "<회사> 회사 님, 반갑습니다" 한 줄(아니면 머리만) · 토큰 이름(원문 그대로) 표시
-//       글(작업 0330 에서 "지원한 회사마다…" 줄 뺌): "7일 동안 다시 넣지 않도록 브라우저에 로그인 쿠키를 저장합니다." · "이 토큰으로 처음 · 마지막에 접속한 시각만 기록합니다. 이름 · 이메일 등 개인 정보는 받지 않습니다." · "검색 엔진에는 막아 두었습니다."
+//       글: "열람 권한이 부여된 분께만 제공되는 전용 링크입니다. 유효 기간은 발급일로부터 7일입니다."(작업 0330) · "7일 동안 다시 넣지 않도록 브라우저에 로그인 쿠키를 저장합니다." · "이 토큰으로 처음 · 마지막에 접속한 시각만 기록합니다. 이름 · 이메일 등 개인 정보는 받지 않습니다." · "검색 엔진에는 막아 두었습니다."
 //       금지: "추적하지 않" · "아무것도 저장하지 않" 같은 문구(실제로 쿠키 · 접속 시각을 남기므로)
 //       단추 "둘러보기"(닫음 · 같은 브라우저에서 다시 안 뜸) · 링크 "나가기"(https://flapfx.com)
 //     접속 기록 표 — "만드는 방식"(/how) 아래 작은 표: data-testid="admin-visits" · 줄 "admin-visit-row"[data-name] · 칸 data-col="name" · "firstAt" · "lastAt"(한국 시간 'YYYY-MM-DD HH:mm')
@@ -27,7 +27,10 @@ test.describe("첫 진입 안내 창 (작업 0326)", () => {
     await expect(welcome(page)).toContainText("전용 링크로 들어오셨습니다");
     await expect(welcome(page)).toContainText("acme 회사 님, 반갑습니다");
     await expect(welcome(page)).toContainText("apply-acme-1124");
+    await expect(welcome(page)).toContainText("열람 권한이 부여된 분께만 제공되는 전용 링크입니다");
+    await expect(welcome(page)).toContainText("유효 기간은 발급일로부터 7일입니다");
     await expect(welcome(page)).not.toContainText("지원한 회사마다");
+    await expect(welcome(page)).not.toContainText("전형이 끝나면 지웁니다");
     await expect(welcome(page)).toContainText("7일 동안 다시 넣지 않도록");
     await expect(welcome(page)).toContainText("로그인 쿠키");
     await expect(welcome(page)).toContainText("처음 · 마지막에 접속한 시각만");
