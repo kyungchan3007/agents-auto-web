@@ -92,6 +92,13 @@
       "when": 1795411863440,
       "tag": "0012_ig_insights",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1795414407798,
+      "tag": "0013_ga4",
+      "breakpoints": true
     }
   ]
 }
