@@ -2,7 +2,7 @@
 //   node --experimental-strip-types apps/web/scripts/indexnow.ts [--all]
 //   응답은 상태 코드만 출력 · 바뀐 주소가 없으면 보내지 않음
 import { INDEXNOW_ENDPOINT, changedUrls, indexNowBody, parseSitemap, sinceDate } from "./indexnow-lib.ts";
-import { SITE_URL } from "../src/shared/site.ts";
+import { SITE_URL } from "../../../packages/shared/src/site/site.ts";
 
 const all = process.argv.includes("--all");
 const since = sinceDate(new Date());
