@@ -37,3 +37,14 @@ export function numberTone(sentence: string): "neutral" | "expensive" {
   const rest = sentence.replace(/비싼|비싸|비쌉니다/g, "");
   return CHEAP.test(rest) || /(?:^|[^비])[싼싸]/.test(rest) ? "neutral" : "expensive";
 }
+
+export type CountParts = { prefix: string; value: number; digits: number; suffix: string };
+
+/** 숫자 조각("64,426원" · "27%" · "$1,200.5") → 카운트업에 쓸 값 · 앞뒤 글 · 소수 자리 (작업 0321) — 쉼표 없이 1,000 이상(연도 등)이면 형식이 달라지므로 null */
+export function parseCount(text: string): CountParts | null {
+  const m = /^([+-]?[$¥€£฿₫]?)(\d[\d,]*)(?:\.(\d+))?(.*)$/.exec(text);
+  if (!m) return null;
+  const value = Number(`${(m[2] ?? "").replace(/,/g, "")}${m[3] ? `.${m[3]}` : ""}`);
+  if (!Number.isFinite(value) || (value >= 1000 && !text.includes(","))) return null;
+  return { prefix: m[1] ?? "", value, digits: m[3]?.length ?? 0, suffix: m[4] ?? "" };
+}
