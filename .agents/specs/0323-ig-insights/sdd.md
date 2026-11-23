@@ -17,6 +17,7 @@
 - 보호 파일 — 사용자 승인("시작하면될거 같아" · PR 에 harness-approved 라벨은 사용자가 닮)
   - apps/api/src/db/schema.ts (ig_media · ig_media_insights · ig_account_insights 표 추가 · 기존 표 변경 없음) (builder)
   - .github/workflows/ig-insights.yml (새로 · gsc-sync.yml 과 같은 모양 · IG_ACCESS_TOKEN 없으면 건너뜀) (builder)
+  - GitHub Secrets 등록 끝(11-23 사용자): IG_USER_ID · IG_ACCESS_TOKEN 두 개만 씀 (IG_APP_SECRET 은 성과 읽기에 필요 없음 · 쓰지 않음)
 - apps/api/drizzle/migrations/0012_*.sql 새 마이그레이션 (builder · 기존 파일 수정 없음)
 - apps/api/scripts/ig-insights.ts + 순수 함수는 apps/api/src/features/ig/** (응답 → 행 · SQL · 토큰 지우기) (builder)
 - apps/api/src/features/ig/** (GET /ig · 캐시 1시간) · apps/api/src/index.ts 에 라우트 한 줄 (builder)
