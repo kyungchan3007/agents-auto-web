@@ -81,7 +81,7 @@ describe("수집 스크립트 실제로 시작 — node 로 비밀값 없이 (�
   for (const { name, missingEnv } of SCRIPTS) {
     it(`${name}: 모듈 오류 없이 시작해 비밀값이 없다는 스크립트 자신의 오류에서 멈춤`, () => {
       // 비밀값 · 토큰은 환경에서 비움 — PATH 만 남김 (네트워크 요청 · 비밀값 사용 없음)
-      const r = spawnSync(process.execPath, ["--experimental-strip-types", resolve(ROOT, `apps/api/scripts/${name}.ts`)], { cwd: ROOT, env: { PATH: process.env.PATH ?? "" } as NodeJS.ProcessEnv, encoding: "utf8", timeout: 20_000 });
+      const r = spawnSync(process.execPath, ["--experimental-strip-types", resolve(ROOT, `apps/api/scripts/${name}.ts`)], { cwd: ROOT, env: { PATH: process.env.PATH ?? "" } as unknown as NodeJS.ProcessEnv, encoding: "utf8", timeout: 20_000 });
       const err = r.stderr ?? "";
       expect(err, "모듈을 못 찾는 오류").not.toMatch(/ERR_MODULE_NOT_FOUND|ERR_UNSUPPORTED|ERR_UNKNOWN_FILE_EXTENSION|Cannot find (module|package)/);
       expect(err, "문법 오류").not.toMatch(/SyntaxError/);
