@@ -7,7 +7,7 @@ export const GSC_SITE = "sc-domain:flapfx.com";
 /** 페이지 주소를 경로로 줄일 때 받는 주소 — 도메인 속성이라 www 도 섞여 옴 · 그 밖의 주소는 버림 */
 const SITE_ORIGINS = ["https://flapfx.com/", "https://www.flapfx.com/"];
 const TOKEN_URL = "https://oauth2.googleapis.com/token"; // 키 파일의 주소를 믿지 않고 고정
-const SCOPE = "https://www.googleapis.com/auth/webmasters.readonly";
+const SCOPE = "https://www.googleapis.com/auth/webmasters.readonly"; // 인자를 안 주면 이 scope (Search Console) · GA4 는 analytics.readonly 를 넘김 (작업 0324)
 const MIN_IMPRESSIONS = 2;
 const MAX_TEXT = 200;
 export const TOP_LIMIT = 20;
@@ -15,19 +15,19 @@ export const TOP_LIMIT = 20;
 const b64url = (s: string | Buffer) => Buffer.from(s).toString("base64url");
 
 /** 서비스 계정 RS256 JWT */
-export function serviceJwt(account: { client_email: string; private_key: string }, nowSec: number): string {
+export function serviceJwt(account: { client_email: string; private_key: string }, nowSec: number, scope: string = SCOPE): string {
   const head = b64url(JSON.stringify({ alg: "RS256", typ: "JWT" }));
-  const claim = b64url(JSON.stringify({ iss: account.client_email, scope: SCOPE, aud: TOKEN_URL, iat: nowSec, exp: nowSec + 3600 }));
+  const claim = b64url(JSON.stringify({ iss: account.client_email, scope, aud: TOKEN_URL, iat: nowSec, exp: nowSec + 3600 }));
   const sign = createSign("RSA-SHA256");
   sign.update(`${head}.${claim}`);
   return `${head}.${claim}.${b64url(sign.sign(account.private_key))}`;
 }
 
-export async function accessToken(account: { client_email: string; private_key: string }, fetcher: typeof fetch = fetch, nowSec = Math.floor(Date.now() / 1000)): Promise<string> {
+export async function accessToken(account: { client_email: string; private_key: string }, fetcher: typeof fetch = fetch, nowSec = Math.floor(Date.now() / 1000), scope: string = SCOPE): Promise<string> {
   const res = await fetcher(TOKEN_URL, {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: serviceJwt(account, nowSec) }),
+    body: new URLSearchParams({ grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: serviceJwt(account, nowSec, scope) }),
   });
   if (!res.ok) throw new Error(`토큰 발급 실패: HTTP ${res.status}`);
   const body = (await res.json()) as { access_token?: string };
