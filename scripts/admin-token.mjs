@@ -1,5 +1,5 @@
 // 어드민 토큰 관리 명령 (작업 0326) — 사용자가 자기 맥에서 돌림
-//   npm run admin:token -- add <이름> [--exp YYYY-MM-DD]   지원 링크 만들기 (새 링크는 한 번만 출력)
+//   npm run admin:token -- add <이름> [--exp YYYY-MM-DD]   지원 링크 만들기 (새 링크는 한 번만 출력 · --exp 없으면 발급일 + 7일 · 작업 0330)
 //   npm run admin:token -- remove <이름>                    링크 지우기 (그 토큰의 쿠키도 바로 무효)
 //   npm run admin:token -- list                             이름 · 기한 · 상태 (토큰 · 해시는 안 보임)
 //   npm run admin:token -- init                             처음 한 번 — 없는 비밀값만 만들고 owner 링크 출력
@@ -11,7 +11,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { OWNER, addEntry, hasVersionsFlag, hashToken, linkFor, listRows, newToken, removeEntry, secretPayload, secretPutArgs, versionsPutNotice, wranglerFailureText } from "./admin-token-lib.ts";
+import { OWNER, addEntry, expFor, hasVersionsFlag, hashToken, linkFor, listRows, newToken, removeEntry, secretPayload, secretPutArgs, versionsPutNotice, wranglerFailureText } from "./admin-token-lib.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ADMIN_CONFIG = "apps/admin/wrangler.jsonc";
@@ -87,7 +87,7 @@ const today = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
 if (cmd === "add") {
   const name = rest[0];
   if (!name) fail("사용법: add <이름> [--exp YYYY-MM-DD]");
-  const exp = flag(rest, "--exp");
+  const exp = expFor(name, flag(rest, "--exp"), today);
   const token = newToken();
   let list;
   try {

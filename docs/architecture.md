@@ -76,7 +76,7 @@
 - 토큰 목록(`ADMIN_TOKENS` 비밀값)은 원문이 아니라 SHA-256 해시와 기한뿐이다. 쿠키 서명 열쇠는 `ADMIN_SESSION_SECRET`. 쿠키 값은 `이름.만료.서명`(HMAC-SHA256 · 이름 · 만료 · 그 토큰의 해시에 묶임)이라 목록에서 지우거나 owner 를 다시 만들면 쿠키도 바로 무효. 비밀값이 하나라도 없으면 아무도 못 들어온다(닫힌 쪽).
 - API 의 어드민 전용 경로(GET `/activity` · `/geo` · `/ga4` · `/ig` · `/status` · `/admin-visits` — `/tasks` 는 공개 저장소 PR 제목 자료라 제외)는 `x-admin-key` 가 `ADMIN_API_KEY` 와 같을 때만 답한다 (`apps/api/src/features/admin/key.ts`) — 어드민 Worker 의 BFF(`@hav/edge/bff` 의 `apiKey` 옵션)만 이 머리글을 붙인다. 키가 없으면 닫힘. 운영 사이트 경로 · 에이전트 훅의 `POST /activity`(`ACTIVITY_TOKEN`) · 관리 쓰기(`ADMIN_TOKEN` 단수)는 그대로이고 서로 다른 값이다.
 - 접속 기록: 토큰을 받아 쿠키를 심을 때와 로그인한 페이지 요청 때 Worker 가 API 에 `POST /admin-visits {name}` 을 보낸다(owner 제외 · 이름만 · 실패해도 화면 그대로). D1 `admin_visits(name, first_at, last_at)` 한 문장 upsert · IP · 기기 · 경로는 받지도 저장하지도 않는다. 어드민 "만드는 방식" 아래 표로 본다.
-- 관리: `npm run admin:token -- add|remove|list|init` (`scripts/admin-token.mjs` · 순수 부분 `scripts/admin-token-lib.ts`). 목록은 로컬 `.tmp/admin-tokens.json`(해시만 · git 무시)에 두고 `wrangler secret put` 으로 올린다 · 새 링크는 한 번만 출력 · `init` 은 이미 있는 비밀값을 덮어쓰지 않는다.
+- 관리: `npm run admin:token -- add|remove|list|init` (`scripts/admin-token.mjs` · 순수 부분 `scripts/admin-token-lib.ts`). 목록은 로컬 `.tmp/admin-tokens.json`(해시만 · git 무시)에 두고 `wrangler secret put` 으로 올린다 · 새 링크는 한 번만 출력 · `init` 은 이미 있는 비밀값을 덮어쓰지 않는다. · `add` 는 `--exp` 가 없으면 발급일 + 7일을 기한으로 넣는다(owner 는 기한 없음 · 작업 0330).
 
 ## 저장소 구조
 ```text

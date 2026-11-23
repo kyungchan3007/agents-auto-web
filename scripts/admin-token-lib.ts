@@ -30,6 +30,17 @@ function realDate(text: string): boolean {
   return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === text;
 }
 
+/** 리뷰어 링크 기본 기한(작업 0330) — 발급일 + 7일 (안내 창 "유효 기간은 발급일로부터 7일입니다" 와 맞춤) */
+export const DEFAULT_EXP_DAYS = 7;
+
+/** add 에 넣을 기한 — --exp 를 주면 그대로 · 안 주면 today + 7일 · owner 는 기한 없음 */
+export function expFor(name: string, exp: string | undefined, today: string): string | undefined {
+  if (exp !== undefined || name === OWNER) return exp;
+  const d = new Date(`${today}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + DEFAULT_EXP_DAYS);
+  return d.toISOString().slice(0, 10);
+}
+
 /** 새 목록 — 이미 있는 리뷰어 이름은 던짐(다른 토큰을 조용히 무효로 만들지 않음) · owner 는 다시 만들 수 있음(해시가 바뀌어 예전 링크 · 쿠키 무효) · owner 에 기한은 못 줌 */
 export function addEntry(list: TokenList, name: string, hash: string, exp?: string): TokenList {
   if (!NAME.test(name)) throw new Error("이름은 영문 소문자 · 숫자 · 하이픈 63자 이하여야 합니다 (하이픈으로 시작 불가)");
