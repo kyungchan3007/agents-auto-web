@@ -16,7 +16,7 @@ export function PricesHeader({ rows, title }: { rows: HeaderRow[]; /** 안 골�
   return (
     <div data-surface="dark" className="text-fg">
       <h1 className="font-display text-[clamp(2.25rem,6.2vw,4.5rem)] leading-[1.08] font-extrabold tracking-display text-fg tabular-nums lg:max-w-[7.4em]">
-        <EmphText text={mine ? mine.title : title} bg="sea" underline />
+        <EmphText text={mine ? mine.title : title} bg="sea" underline countUp />
       </h1>
       <p className="mt-6 max-w-[36em] text-body text-fg-2 sm:text-[1.125rem]">세계은행 나라별 물가 수준(한국 = 100)과 오늘 그 나라 통화 신호를 함께 봅니다.</p>
       {picked && <PickTrip label="다른 나라 보기" testId="pick-trip-other" className="mt-6" />}
