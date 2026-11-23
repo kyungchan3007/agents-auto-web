@@ -17,7 +17,10 @@ const error = (status: number, message: string) => {
   return Response.json(body, { status, headers: { "cache-control": "no-store" } });
 };
 
-export async function handleBff(request: Request, api: ApiBinding, routes: readonly BffRoute[]): Promise<Response> {
+/** 어드민 BFF 만 apiKey 를 줌 — API 가 어드민 전용 경로에 x-admin-key 를 요구함 (작업 0326 · 운영 사이트 Worker 는 안 줌) */
+export type BffOptions = { apiKey?: string };
+
+export async function handleBff(request: Request, api: ApiBinding, routes: readonly BffRoute[], options: BffOptions = {}): Promise<Response> {
   if (request.method !== "GET" && request.method !== "HEAD") return error(405, "읽기만 됩니다");
   const url = new URL(request.url);
   const path = url.pathname.startsWith(BFF_PREFIX) ? url.pathname.slice(BFF_PREFIX.length) : url.pathname;
@@ -26,8 +29,10 @@ export async function handleBff(request: Request, api: ApiBinding, routes: reado
 
   let res: Response;
   try {
-    // 쿠키 · 인증 머리글은 넘기지 않음 — 공개 읽기만
-    res = await api.fetch(new Request(`https://api${path}${url.search}`, { method: request.method, headers: { accept: "application/json" } }));
+    // 브라우저의 쿠키 · 머리글은 넘기지 않음 — 어드민 열쇠는 Worker 가 가진 값만(빈 값은 붙이지 않음)
+    const headers: Record<string, string> = { accept: "application/json" };
+    if (options.apiKey) headers["x-admin-key"] = options.apiKey;
+    res = await api.fetch(new Request(`https://api${path}${url.search}`, { method: request.method, headers }));
   } catch {
     return error(502, "API 에 닿지 못했습니다");
   }

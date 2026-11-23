@@ -13,7 +13,7 @@ const under = (pathname: string, base: string) => pathname === base || pathname.
 const isAdminPage = (pathname: string) => ADMIN_PATHS.some((p) => under(pathname, p));
 /** 정적 내보내기가 만든 자산(스크립트 · 글꼴 · 아이콘) — 어드민 화면이 불러야 하므로 운영 주소로 넘기지 않음 */
 const ASSET_FILES = ["/favicon.ico", "/icon.svg", "/404.html"];
-const isAsset = (pathname: string) => pathname.startsWith("/_next/") || ASSET_FILES.includes(pathname);
+export const isAsset =(pathname: string) => pathname.startsWith("/_next/") || ASSET_FILES.includes(pathname);
 
 export function hostRoute(url: URL): HostRoute {
   if (url.pathname === "/robots.txt") return { kind: "robots" };
