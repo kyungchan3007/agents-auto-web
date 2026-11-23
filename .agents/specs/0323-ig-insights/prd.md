@@ -11,7 +11,7 @@
 - 숫자는 받은 값만 남긴다. 받지 못한 지표는 0 이 아니라 빈 값으로 남긴다.
 
 ## 비목표
-- 광고 성과(광고 계정이 0개 · 생기면 별도 작업).
+- 광고 집행 · 예산(사용자만 정함). 광고 성과 읽기는 "나중에 포함"에 적음.
 - 팔로워 증감 분석 · 게시물 성과 예측 · 자동 문구 수정.
 - 토큰을 코드 · 로그 · 일지 · 응답에 쓰는 것.
 
@@ -20,6 +20,10 @@
 - 계정 지표 `metric_type=total_value` 로 200: reach · views · profile_views · website_clicks · accounts_engaged · total_interactions · likes · comments · saves · shares · profile_links_taps · follows_and_unfollows(값 구조가 달라 확인 필요).
 - 계정 reach · follower_count 는 `period=day` 로 날짜별 값이 옴. 나머지는 `total_value` 만 받음(기간 합계).
 - 계정: followers_count 0 · 게시물 3개. 광고 계정 0개.
+
+## 나중에 포함 (사용자 요청 11-23 05:26)
+- 광고 성과: 광고 계정 `act_1616603710511130`(Flapfx · KRW · Asia/Seoul)이 토큰에 연결됨. 읽기 확인(11-23): 계정 정보 · `/insights` · `/campaigns` 모두 200 · 광고 · 캠페인 0개(결제 수단 미등록)라 값 없음.
+- 읽을 후보: 노출 · 도달 · 클릭 · 지출(받은 값만 · 없으면 빈 값). 광고 집행 · 예산 변경은 사용자만 하며 이 작업은 읽기만 한다.
 
 ## 애매한 곳
 - 계정 지표는 기간 합계라 "하루치"를 얻으려면 since/until 을 하루로 좁혀 부르는 방식이 맞는지 (가정: 어제 하루로 좁혀 부름, 구현 때 확인).
