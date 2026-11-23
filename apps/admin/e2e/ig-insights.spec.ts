@@ -1,14 +1,15 @@
-// 작업 0323 — 어드민 알리기 탭의 인스타 성과 (테스트 먼저 · 구현 전에는 FAIL 이 정상)
+// 작업 0323 · 0324 — 어드민 "인스타 성과" 화면(/instagram) (0324 에 알리기 탭에서 새 화면으로 옮김 · 화면 약속은 그대로)
 //   브라우저가 받는 /bff/ig 를 가짜 응답으로 바꿔 숫자를 정함 (geo-bot-pages.spec.ts 와 같은 방식) · 응답 모양은 apps/api/src/features/ig/summary.test.ts 의 IgReport
-//   화면 약속(builder 가 이 이름으로 만듦) — 알리기 탭(/marketing) 안에서:
+//   화면 약속 — /instagram 화면 안에서 (알리기 탭 /marketing 에는 인스타 성과가 없음):
 //     data-testid="ig-account"            계정 칸 — 가장 최근 날 값
 //       "ig-account-day"                    받은 날짜 글(YYYY-MM-DD)
 //       "ig-account-metric"[data-metric=reach|views|profileViews|websiteClicks|accountsEngaged]  지표마다 · 글 = 쉼표 숫자 · 받지 못한 값(null)은 글이 빈 칸(0 도 '-' 도 아님)
 //     data-testid="ig-media"              게시물 표 — 줄 data-testid="ig-media-row"[data-media-id]
 //       칸 data-col="postedAt"(게시 날짜 YYYY-MM-DD) · "link"(a[href=게시물 링크]) · "reach" · "likes" · "saved" · "shares" · "views"(쉼표 숫자 · null 은 빈 칸) · "day"(받은 날짜 · null 은 빈 칸)
 //     data-testid="ig-empty"              계정 · 게시물 모두 없을 때 — '아직 받은 성과 값이 없습니다'
-//     data-testid="ig-error"              /bff/ig 가 실패했을 때 — '성과 값을 받지 못했습니다' · 탭의 나머지(소재 초안 · 광고 운영)는 그대로
+//     data-testid="ig-error"              /bff/ig 가 실패했을 때 — '성과 값을 받지 못했습니다' · 화면의 나머지(제목 · 어드민 메뉴)는 그대로
 import { type Page, expect, test } from "@playwright/test";
+import { hydrated } from "./helpers";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 
@@ -20,7 +21,7 @@ const REPORT = { account: [ACCOUNT_NEW, ACCOUNT_OLD], media: [M1, M2] };
 
 async function open(page: Page, body: object, status = 200) {
   await page.route("**/bff/ig*", (route) => route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) }));
-  await page.goto("/marketing");
+  await page.goto("/instagram");
 }
 const metric = (page: Page, m: string) => tid(page, "ig-account").locator(`[data-testid="ig-account-metric"][data-metric="${m}"]`);
 const cell = (page: Page, mediaId: string, col: string) => tid(page, "ig-media").locator(`[data-testid="ig-media-row"][data-media-id="${mediaId}"] [data-col="${col}"]`);
@@ -80,21 +81,52 @@ test.describe("알리기 — 인스타 성과 (작업 0323)", () => {
     await expect(tid(page, "ig-account-day")).toHaveCount(0);
   });
 
-  test("API 가 실패(500)해도 탭이 깨지지 않음 — 알림 글 · 소재 초안 · 광고 운영 그대로 · 가로 넘침 0", async ({ page }) => {
+  test("API 가 실패(500)해도 화면이 깨지지 않음 — 알림 글 · 제목 · 어드민 메뉴 그대로 · 가로 넘침 0", async ({ page }) => {
     await open(page, { error: "boom" }, 500);
     await expect(tid(page, "ig-error")).toContainText("성과 값을 받지 못했습니다");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Meta 광고로 이 사이트를 알립니다");
-    await expect(tid(page, "marketing-drafts")).toBeVisible();
-    await expect(tid(page, "marketing-ads")).toContainText("아직 연결하지 않았습니다");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    await expect(page.getByRole("navigation", { name: "어드민 메뉴" }).filter({ visible: true }).getByRole("link", { name: "인스타 성과" })).toHaveAttribute("aria-current", "page");
     await expect(tid(page, "ig-media").locator('[data-testid="ig-media-row"]')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
   });
 
   test("알 수 없는 모양의 응답(오류 본문 · 빈 객체)도 깨지지 않음 · 숫자를 지어내지 않음", async ({ page }) => {
     await open(page, { unexpected: true });
+    await expect(page.getByRole("navigation", { name: "어드민 메뉴" }).filter({ visible: true }).getByRole("link", { name: "인스타 성과" })).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    await expect(tid(page, "ig-media").locator('[data-testid="ig-media-row"]')).toHaveCount(0);
+  });
+
+  test("메뉴에 '인스타 성과'(단축키 6) — /instagram 으로 가고 지금 화면 표시", async ({ page }) => {
+    await open(page, REPORT);
+    const nav = page.getByRole("navigation", { name: "어드민 메뉴" }).filter({ visible: true });
+    await expect(nav.getByRole("link")).toHaveCount(6);
+    await expect(nav.getByRole("link", { name: "인스타 성과" })).toHaveAttribute("href", "/instagram");
+    await expect(nav.locator('a[aria-current="page"]')).toContainText("인스타 성과");
+  });
+
+  test("숫자 단축키 6 으로 /instagram 에 감 (넓은 화면)", async ({ page }) => {
+    test.skip((page.viewportSize()?.width ?? 0) < 820, "글쇠 단축키는 넓은 화면");
+    await page.route("**/bff/ig*", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(REPORT) }));
+    await page.goto("/log");
+    await hydrated(page.locator(".adm-find"));
+    await page.keyboard.press("6");
+    await expect(page).toHaveURL(/\/instagram\/?$/);
+  });
+
+  test("알리기 탭에는 인스타 성과가 없음 — 성과 칸 · 표 · 안내 글이 없고 /bff/ig 를 부르지도 않음 · 소재 초안 · 광고 운영은 그대로", async ({ page }) => {
+    let called = 0;
+    await page.route("**/bff/ig*", (route) => {
+      called++;
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(REPORT) });
+    });
+    await page.goto("/marketing");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Meta 광고로 이 사이트를 알립니다");
     await expect(tid(page, "marketing-drafts")).toBeVisible();
-    await expect(tid(page, "ig-media").locator('[data-testid="ig-media-row"]')).toHaveCount(0);
+    await expect(tid(page, "marketing-ads")).toContainText("아직 연결하지 않았습니다");
+    for (const id of ["ig-account", "ig-media", "ig-empty", "ig-error"]) await expect(tid(page, id), id).toHaveCount(0);
+    await page.evaluate(() => new Promise((r) => setTimeout(r, 800)));
+    expect(called, "알리기 탭이 /bff/ig 를 부른 횟수").toBe(0);
   });
 
   test("표가 많아도 화면 폭을 넘지 않음 — 게시물 10줄 · 긴 링크 · 큰 숫자", async ({ page }) => {
