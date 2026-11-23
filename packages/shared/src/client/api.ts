@@ -6,6 +6,7 @@ import { IndicatorSeries } from "../contracts/indicators";
 import { PriceLevels } from "../contracts/prices";
 import { CurrencySignal, SignalList } from "../contracts/signal";
 import { GeoReport } from "../contracts/geo";
+import { IgReport } from "../contracts/ig";
 import { SiteStatus } from "../contracts/status";
 import { TasksSummary } from "../contracts/tasks";
 import type { z } from "zod";
@@ -52,4 +53,5 @@ export const api = {
   tasks: (o?: ApiOptions) => getJson("/tasks", TasksSummary, o),
   status: (o?: ApiOptions) => getJson("/status", SiteStatus, o),
   geo: (o?: ApiOptions) => getJson("/geo", GeoReport, o),
+  ig: (o?: ApiOptions) => getJson("/ig", IgReport, o),
 };
