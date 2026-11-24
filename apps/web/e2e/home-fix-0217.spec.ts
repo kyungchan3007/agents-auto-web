@@ -19,7 +19,7 @@ test.describe("홈 여백 — 설명 문장 ↔ 탑승권 카드 (시안 B 실�
     [1280, 1300], // 높이 규칙(2)이 걸리지 않을 만큼 큰 높이(구현의 가장 큰 구간 1180px 위) — 순수 폭 기준 값
     [390, 844],
   ] as const) {
-    test(`${width}px — 설명 문장 아래 끝 ~ 카드 위 끝 = ${SAMPLE_GAP[width]}px (±4)`, async ({ page }) => {
+    test(`${width}px — 마지막 줄(작은 줄) 아래 끝 ~ 카드 위 끝 = 8 ~ 54px (작업 0347 · 예전 시안 B ${SAMPLE_GAP[width]}px)`, async ({ page }) => {
       test.skip(isPhoneProject(page), "뷰포트를 직접 정하므로 넓은 화면 프로젝트에서만");
       await page.setViewportSize({ width, height });
       await page.goto("/");
@@ -28,7 +28,9 @@ test.describe("홈 여백 — 설명 문장 ↔ 탑승권 카드 (시안 B 실�
       const card = await tid(page, "ticket").boundingBox();
       if (!lede || !card) throw new Error("설명 문장 또는 카드가 화면에 없음");
       const gap = card.y - (lede.y + lede.height);
-      expect(Math.abs(gap - SAMPLE_GAP[width]), `간격 ${gap.toFixed(1)}px (시안 ${SAMPLE_GAP[width]}px)`).toBeLessThanOrEqual(4);
+      // 작업 0347: 설명 문장 아래에 안내 문장 · 작은 줄이 끼어 마지막 p 는 작은 줄(가입 없이 무료) — 시안 B 의 50px · 40px 대신 8 ~ 54px (시안 9-C 는 작은 줄 바로 아래 카드)
+      expect(gap, `작은 줄 ↔ 카드 간격 ${gap.toFixed(1)}px (시안 B ${SAMPLE_GAP[width]}px 였음)`).toBeGreaterThanOrEqual(8);
+      expect(gap, `작은 줄 ↔ 카드 간격 ${gap.toFixed(1)}px`).toBeLessThanOrEqual(54);
     });
   }
 });

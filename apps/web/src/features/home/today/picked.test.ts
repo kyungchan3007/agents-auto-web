@@ -14,7 +14,7 @@ import { currencyName } from "@hav/shared/currency";
 import type { PickedTrip } from "@hav/shared/travel";
 import { describe, expect, it } from "vitest";
 import type { SignalRow } from "../common/destinations";
-import { PICKED_TITLE, pickedBoard, pickedChip } from "./picked";
+import { PICKED_TITLE, pickedBoard, pickedChip, pickedPageLink } from "./picked";
 
 const RATES = [
   { currency: "JPY", unit: 100, baseRate: 834.37 },
@@ -72,5 +72,35 @@ describe("pickedBoard — 홈 안내판 (내가 고른 여행지)", () => {
 describe("pickedChip — 홈 왼쪽 아래 '탑승권 보기'", () => {
   it("✈ ICN → 파리 · 탑승권 보기", () => {
     expect(pickedChip(trip("FRA", "파리"))).toBe("✈ ICN → 파리 · 탑승권 보기");
+  });
+});
+
+// 작업 0347 — 고른 나라의 나라 페이지(/prices/XXX · 작업 0344) 링크 (테스트 먼저 · 구현 전에는 FAIL 이 정상)
+//   builder 가 만들 것 — apps/web/src/features/home/today/picked.ts
+//   export function pickedPageLink(picked: PickedTrip | null, pageCodes: readonly string[]): { href: string; text: string } | null
+//     - pageCodes = 나라 페이지가 만들어지는 나라 코드(작업 0344 의 countryTargets 결과 · 물가 자료가 있는 나라)
+//     - 고르지 않았거나 · 모르는 나라이거나 · 그 나라 페이지가 없으면 null (링크를 내지 않음) · 있으면 { href: "/prices/JPN", text: 나라 이름이 든 글 }
+describe("pickedPageLink — 카드의 나라 페이지 링크 (작업 0347)", () => {
+  const PAGES = ["JPN", "VNM", "FRA"];
+
+  it("나라 페이지가 있는 나라 — /prices/XXX · 글에 나라 이름", () => {
+    const l = pickedPageLink(trip("VNM", "다낭"), PAGES);
+    expect(l?.href).toBe("/prices/VNM");
+    expect(l?.text).toContain("베트남");
+    expect(pickedPageLink(trip("JPN", "도쿄"), PAGES)?.href).toBe("/prices/JPN");
+  });
+
+  it("나라 페이지가 없는 나라(물가 자료 없음)는 링크 없음 — 지어내지 않음", () => {
+    expect(pickedPageLink(trip("TWN", "타이베이"), PAGES)).toBeNull();
+  });
+
+  it("고르지 않았거나 모르는 나라 · 페이지 목록이 비면 null", () => {
+    expect(pickedPageLink(null, PAGES)).toBeNull();
+    expect(pickedPageLink(trip("XXX", "어딘가"), PAGES)).toBeNull();
+    expect(pickedPageLink(trip("JPN", "도쿄"), [])).toBeNull();
+  });
+
+  it("목록에 있어도 여행지 표에 없는 코드는 링크 없음 (모르는 나라)", () => {
+    expect(pickedPageLink(trip("KEN", "나이로비"), ["KEN"])).toBeNull();
   });
 });
