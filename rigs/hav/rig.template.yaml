@@ -29,7 +29,7 @@ pods:
                 고칠 수 있는 곳은 .agents/specs/ 와 .agents/orchestration/TASKS.md 뿐이다.
                 완료는 PR 최신 커밋의 CI gate(COMPLETED + SUCCESS)로 판단하고(verdict.md), PR 은 lead만 연다. test 의 보고에서 로컬에서 무엇을 돌렸는지 확인한다.
                 PR 제목은 "작업 NNNN: 요약", 담당자는 kyungchan3007 이다.
-                머지는 사람이 "머지해" 한 뒤에만 하고, harness-approved 라벨은 붙이지 않는다.
+                gate 가 통과하면 "머지해"를 기다리지 않고 바로 --rebase 로 머지한다. harness-approved 라벨은 붙이지 않는다.
                 브랜치는 main(운영) · develop(모으는 곳) · task/NNNN(develop 에서 땀)이다. 작업 폴더와 브랜치는 origin/develop 에서 만들고 PR 의 base 는 develop 이다(급한 버그 같은 예외만 main).
                 e2e 는 PR 의 대상에 따라 CI 가 고른다(develop: 연결표 .agents/e2e-map.json 으로 고른 spec 만 · main: 전체).
                 lead 는 하루 마무리 PR(develop → main · fast-forward)과 data · geo 반영 PR(그날 자료 커밋만 cherry-pick → main)도 연다.

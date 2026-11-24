@@ -9,7 +9,7 @@
   - builder 지시에 확인 일(빌드 · 단위 테스트 · e2e · 화면 비교)을 넣지 않는다 — builder 가 하는 확인은 푸시 전 타입 검사와 바꾼 파일의 lint 뿐이고, 나머지는 test 의 일이다 (2026-11-22 재발 방지)
   - test 의 보고(로컬에서 무엇을 돌렸는지)를 확인하고 PR 을 연다. PR 뒤에는 최신 커밋의 CI `gate` 결과를 [verdict.md "게이트 판정 규칙"](verdict.md) 대로 확인한 뒤에만 "확인 끝" · "통과"라고 쓴다 (미리보기 빌드 통과만 보고 통과라고 쓰지 않는다)
   - 브랜치 흐름(작업 0244): main(운영) · develop(모으는 곳) · task/NNNN(develop 에서 땀). 작업 폴더와 브랜치는 origin/develop 에서 만들고, PR 의 base 는 develop 이다(급한 버그 같은 예외만 main). e2e 는 PR 의 대상에 따라 다르다: develop 은 CI e2e 없음(build 까지 · 로컬은 바꾼 spec 만 · 작업 0295), main 은 전체(넓은 화면 + 휴대폰).
-  - lead 가 여는 PR 이 둘 더 있다: 하루 마무리 PR(develop → main · fast-forward · 전체 e2e)과 data · geo 반영 PR(그날 자료 커밋만 cherry-pick → main). 머지는 사람이 "머지해" 한 뒤에만 한다.
+  - lead 가 여는 PR 이 둘 더 있다: 하루 마무리 PR(develop → main · fast-forward · 전체 e2e)과 data · geo 반영 PR(그날 자료 커밋만 cherry-pick → main). 머지도 다른 PR 과 같이 gate 통과 즉시 lead 가 한다(아래 공통의 머지 줄).
   - 운영 버전(작업 0313 · `.changeset/README.md`): 하루 마무리 PR 을 열기 전에 develop 에 변경 기록(`.changeset/*.md`)이 쌓여 있으면 develop 에서 `npm run release:version` 을 돌려 "운영 v<버전>" 커밋을 올린다. main 에 fast-forward 되면 `release-web.yml` 이 `web-v<버전>` 태그 · GitHub 릴리스를 만든다. 쌓인 변경 기록이 없으면 버전을 올리지 않는다(자료 · 어드민만 바뀐 날).
   - 디자인 PR(작업 0246 · [verdict.md "디자인 PR 판정"](verdict.md)): 화면만 바꾸는 작업이면 PR 을 **열 때** `design` 라벨을 단다(`gh pr create --label design` · 나중에 달면 다음 푸시부터 반영). 동작을 바꾸는 변경에는 달지 않는다. PR 본문에 "디자인 테스트 실패 N개"를 한 줄로 적고, 미리보기 주소와 볼 경로를 사용자에게 준다. 팀 안에서 모양을 맞추는 왕복은 하지 않는다 — 모양은 사용자가 미리보기에서 보고, 고칠 곳을 말하면 그때 고친다.
   - 하루 마무리 PR 의 `design` 라벨은 그날 머지된 PR 이 모두 design 일 때만 단다. 본문에는 그날 바뀐 화면 목록(페이지 · 무엇이 바뀌었는지 한 줄씩) · 미리보기 주소 · "미뤄 둔 디자인 테스트 N개" 한 줄(기한 알림은 두지 않음)을 적는다.
@@ -120,7 +120,8 @@
   - 1작업 = 1브랜치 (task/NNNN-이름). 브랜치 · 작업 폴더는 origin/develop 에서 만들고, 각자 자기 범위 파일만 그 브랜치에 커밋한다 (작업 0244)
   - PR 은 lead만 연다. base 는 develop 이다(급한 버그 같은 예외만 main). 제목은 "작업 NNNN: 요약", 버그 · 보안 수정은 "작업 NNNN: 패치(버그|보안) — 요약"
   - 담당자는 kyungchan3007 로 지정한다
-  - 머지는 사람이 "머지해" 한 뒤에만 한다. harness-approved 라벨은 붙이지 않는다
+  - 머지: PR 최신 커밋의 CI gate 가 통과하면 lead 가 바로 `gh pr merge --rebase` 로 머지한다. 사람의 "머지해"를 기다리지 않는다(2026-11-24 사용자 결정 · 작업 0343). 보호 파일이 바뀐 PR 은 harness-approved 라벨이 붙은 뒤 새로 돈 gate 가 통과해야 머지한다. harness-approved 라벨은 lead 가 붙이지 않는다(사용자 · claude-desktop 이 붙임)
+  - main 반영: develop → main 은 fast-forward(`git push origin origin/develop:main`). 보내기 전에 `git log origin/main..origin/develop` 을 확인하고, 사용자 확인을 기다리는 작업이 섞여 있으면 보내지 말고 claude-desktop 에 먼저 알린다. 어드민 작업은 develop 머지 뒤 바로 main 에 반영한다
   - 완료는 PR 최신 커밋의 CI gate 가 COMPLETED + SUCCESS 일 때만 말한다. "통과"의 기준은 [verdict.md "게이트 판정 규칙"](verdict.md) 하나다. 로컬 전체 게이트 PASS 는 PR 전 조건이 아니고, 로컬에서 돌린 것(바뀐 spec · 실패한 spec 등)은 보고에 무엇을 돌렸는지 적는다. 비밀값은 코드 · 로그 · 커밋에 쓰지 않는다
 - PR · 이슈 본문 · 댓글에는 팀 내부 절차 문장을 쓰지 않는다 (게이트 결과 한 줄만) — 11-20 사용자 지적
 - 남의 범위를 바꿔야 하면: 직접 고치지 말고 lead에게 요청
