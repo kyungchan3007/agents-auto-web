@@ -44,6 +44,9 @@ const ALLOWED = [
   "apps/web/src/features/currencies/converter/result-board.tsx", // 작업 0219 지적: 계산 결과 글자판 칸 글자 (FlapBoard 와 같은 Pretendard 800)
   "apps/web/src/features/import-calc/calculator/calc-result.tsx",
   "apps/web/src/features/flights/mini-board.tsx", // 작업 0218 리뷰: 탑승권 오른쪽 작은 글자판 칸 글자 (FlapBoard 와 같은 Pretendard 800)
+  "apps/web/src/features/prices/country/country-header.tsx", // 작업 0344 나라 페이지 첫 면 큰 제목 (Pretendard 800 · 시안 1-new · /prices 첫 면과 같음)
+  "apps/web/src/features/prices/country/next-cards.tsx", // 작업 0344 "○○ 여행, 다음으로 볼 것" 구간 제목 (시안 2-new · 큰 제목과 같은 글꼴)
+  "apps/web/src/features/prices/country/country-faq.tsx", // 작업 0344 "○○, 자주 묻는 질문" 구간 제목 (시안 6-new)
 ];
 
 describe("font-display(Gasoek One)는 허용 목록 파일에서만 (F1)", () => {
