@@ -28,6 +28,10 @@
 - .agents/specs/0341-log-today-gate/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- apps/api/drizzle/migrations/meta/_journal.json: 새 마이그레이션 0015 를 등록하는 한 항목 추가(drizzle-kit 이 만듦 · 0012 ~ 0014 와 같은 방식). 기존 마이그레이션 SQL 은 그대로. 승인 문구 '새 파일 하나' 밖이라 PR 에 따로 적음.
+- apps/api/drizzle/migrations/meta/0015_snapshot.json: 위와 같이 drizzle-kit 이 만드는 새 파일.
+- .agents/e2e-map.json: 새 spec log-today-gate.spec.ts 연결 한 줄(test).
+- apps/admin/src/features/log/records/{record.ts,use-record-lines.ts,use-now.ts} 삭제: 실시간 기록 줄을 없애 쓰는 곳이 없어짐.
 
 ## 위험
 - 보호 파일 셋(schema.ts · 새 마이그레이션 · sync-tasks.yml): 사용자 승인 뒤에만.
