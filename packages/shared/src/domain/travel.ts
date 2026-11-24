@@ -135,6 +135,16 @@ export function travelBands(levels: PriceLevels): { bands: { id: Band; label: st
   return { bands: BANDS.map((b) => ({ ...b, rows: rows.filter((r) => r.band === b.id) })).filter((b) => b.rows.length > 0), missing, years };
 }
 
+/** 나라별 여행 물가 페이지 주소 — alpha-3 대문자 (통화 상세 /currencies/USD 와 같은 모양 · 작업 0344 · 통화 상세 질문도 같이 씀) */
+export const countryPath = (code: string) => `/prices/${code}`;
+
+/** 물가 한 문장 — "세계은행 2025년 자료로 일본의 물가는 한국보다 12% 높습니다." (BAND_EDGE 기준 · 나라 페이지와 통화 상세 질문이 같이 씀 · 작업 0345) */
+export function priceGapSentence(name: string, relative: number, year: number): string {
+  const pct = Math.round(Math.abs(relative - 1) * 100);
+  const level = relative > BAND_EDGE.pricey ? `한국보다 ${pct}% 높습니다` : relative < BAND_EDGE.cheap ? `한국보다 ${pct}% 낮습니다` : "한국과 비슷한 수준입니다";
+  return `세계은행 ${year}년 자료로 ${name}의 물가는 ${level}.`;
+}
+
 /** 통화 → 그 통화를 쓰는 여행지 나라들 (통화 상세에서 물가 링크) */
 export const countriesOf = (currency: string) => Object.entries(TRAVEL_COUNTRIES).filter(([, c]) => c.currency === currency).map(([code]) => code);
 
