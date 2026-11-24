@@ -88,7 +88,7 @@
   .adm-rb { padding-left: 20px; }
   .adm-rule summary { padding: 12px 16px; }
 }
-/* 세 칸 · 검색 · 시행착오 (작업 0306) */
+/* 세 칸 · 검색 (작업 0306 · 시행착오는 0340 에 지움) */
 .adm-fc-lead { margin: 0; font-weight: 500; color: var(--a-ink); }
 .adm-fc { margin: 0; padding-left: 16px; color: var(--a-sub); list-style: disc; display: grid; gap: 4px; }
 .adm-fc li::marker { color: var(--a-bar2); }
@@ -114,29 +114,11 @@
 .adm-srch-list .rk { margin-left: auto; font-size: 11px; color: var(--a-mute); white-space: nowrap; }
 .adm-srch-empty { position: absolute; inset-inline: 0; top: 100%; margin: 4px 0 0; padding: 10px 12px; background: var(--a-panel); border: 1px solid var(--a-line2); border-radius: 10px; font-size: 13px; color: var(--a-sub); z-index: 3; }
 .adm-srch-picked { min-height: 18px; margin-top: auto; }
-.adm-trials { list-style: none; margin: 0; padding: 0 0 6px; }
-.adm-trials > li { border-top: 1px solid var(--a-line); }
-.adm-trial-h { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; display: grid; grid-template-columns: 96px minmax(0, 1fr) 16px; gap: 12px; align-items: center; padding: 12px 20px; }
-.adm-trial-h:hover { background: #fafbfc; }
-.adm-trial-h .d { font: 400 12px var(--a-mono); color: var(--a-mute); }
-.adm-trial-h .tt { font-weight: 500; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.adm-trial-h .ct { font-size: 11px; font-weight: 500; color: var(--a-sub); background: var(--a-sunk); border-radius: 4px; padding: 1px 6px; }
-.adm-trial-h .open { font-size: 11px; font-weight: 500; color: var(--a-bad); background: #fbedec; border-radius: 4px; padding: 1px 6px; }
-.adm-trial-b { margin: 0; padding: 0 20px 16px 128px; display: grid; gap: 8px; animation: adm-fade 0.2s ease both; }
-.adm-trial-b > div { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 12px; }
-.adm-trial-b dt { font-size: 12px; color: var(--a-mute); padding-top: 2px; }
-.adm-trial-b dd { margin: 0; color: var(--a-sub); line-height: 1.65; }
-.adm-trial-b dd.src a { color: var(--a-blue); text-decoration: none; }
-.adm-trial-b dd.src a:hover { text-decoration: underline; }
 @media (max-width: 820px) {
   .adm-srch { grid-template-columns: minmax(0, 1fr); }
   .adm-srch-r { border-left: 0; border-top: 1px solid var(--a-line); border-radius: 0 0 14px 14px; }
   .adm-rank li { grid-template-columns: 20px minmax(0, 1fr); }
   .adm-rank span { grid-column: 2; }
-  .adm-trial-h { grid-template-columns: minmax(0, 1fr) 16px; }
-  .adm-trial-h .d { grid-column: 1 / -1; margin-bottom: -6px; }
-  .adm-trial-b { padding: 0 16px 16px; }
-  .adm-trial-b > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
 }
 
 /* 접속 기록 표 (작업 0326) */
