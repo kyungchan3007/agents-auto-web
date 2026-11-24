@@ -120,10 +120,10 @@ test.describe("여행 물가 예산 카드 — 환율을 못 받은 나라 (작�
     await expect(tid(page, "budget").locator('[data-testid="data-empty"]')).toHaveCount(0);
   });
 
-  test("/prices/JPN 의 환전 카드 한 줄은 그대로 — '자료 없음' + 통화 둘러보기 링크", async ({ page }) => {
+  test("/prices/JPN 의 환전 카드 한 줄은 그대로 — '자료 없음' + 통화 상세 링크", async ({ page }) => {
     await page.goto("/prices/JPN");
     const cards = tid(page, "next-card");
     await expect(cards.first()).toContainText("자료 없음");
-    await expect(cards.first().getByRole("link")).toHaveAttribute("href", "/currencies");
+    await expect(cards.first().getByRole("link")).toHaveAttribute("href", "/currencies/JPY"); // 통화가 있는 나라는 그 통화 상세로(next-cards.tsx)
   });
 });
