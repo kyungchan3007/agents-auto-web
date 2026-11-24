@@ -20,6 +20,7 @@
     "./destination-search": "./src/domain/destination-search.ts",
     "./status": "./src/contracts/status.ts",
     "./freshness": "./src/domain/freshness.ts",
+    "./fx-schedule": "./src/domain/fx-schedule.ts",
     "./kst": "./src/utils/kst.ts",
     "./geo": "./src/contracts/geo.ts",
     "./ig": "./src/contracts/ig.ts",
