@@ -45,6 +45,7 @@ describe("코드 자리 (작업 0126 · 0137 · 0312)", () => {
       "signal/signal-tone.ts",
       "trip/destination-row.tsx",
       "trip/pick-trip.tsx",
+      "trip/trip-copy.ts",
       "trip/trip-switcher.tsx",
       "trip/use-pick-trip.ts",
       "trip/use-picked-trip.ts",
