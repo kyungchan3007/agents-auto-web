@@ -3,7 +3,7 @@ import type { AirfareCalendar } from "@hav/shared/airfare";
 import { currencyName, percentileText } from "@hav/shared/currency";
 import type { FxRate } from "@hav/shared/fx";
 import type { PriceLevels } from "@hav/shared/prices";
-import { type MonthPoint, TRAVEL_COUNTRIES, monthlyAverages, travelBands } from "@hav/shared/travel";
+import { type MonthPoint, TRAVEL_COUNTRIES, monthTiming, travelBands } from "@hav/shared/travel";
 import { budgetOf, wonText } from "../budget/budget";
 import { pickedHeadline } from "../prices-copy";
 import { type CompareItem, type FaqItem, type FlightCard, compareCountries, countryFaq, eunNeun, flightCard, oneLineAnswer } from "./country-view";
@@ -21,16 +21,6 @@ export type CountryInput = {
 
 const DAILY = 100_000;
 const DAYS = 4;
-
-/** 국제항공료 지수의 떠나기 싼 달 — 값이 있는 달이 2개 미만이면 null (홈 "여행 타이밍" 과 같은 계산 · 같은 값이면 앞선 달) */
-export function cheapestMonth(points: MonthPoint[] | null): { cheapest: number; complete: boolean } | null {
-  const months = Object.entries(monthlyAverages(points ?? []))
-    .map(([m, v]) => ({ month: Number(m), avg: v.avg }))
-    .sort((a, b) => a.month - b.month);
-  if (months.length < 2) return null;
-  const low = months.reduce((a, b) => (b.avg < a.avg ? b : a));
-  return { cheapest: low.month, complete: months.length === 12 };
-}
 
 /** 단위 이름 — "100엔" · "1달러" (통화 이름의 마지막 낱말) */
 const unitLabel = (currency: string, unit: number) => `${unit}${currencyName(currency).split(" ").at(-1)}`;
@@ -66,7 +56,7 @@ export function countryView(i: CountryInput): CountryView | null {
   const sig = i.signal && i.signal.signal !== null ? percentileText(i.signal.signal, i.signal.percentile, i.signal.windowDays) : null;
   const sigSentence = sig && meta.currency ? `${currencyName(meta.currency)} 환율은 ${sig}입니다` : null;
 
-  const flight = flightCard({ code: i.code, calendar: i.calendar, timing: cheapestMonth(i.airPoints) });
+  const flight = flightCard({ code: i.code, calendar: i.calendar, timing: monthTiming(i.airPoints) });
   const b = budgetOf(DAILY, DAYS, row.relative, per !== null && i.rate ? per / i.rate.unit : null);
   const budget = { dailyWon: b.dailyWon, days: DAYS, totalWon: b.totalWon, text: `${wonText(b.totalWon)}` };
   const exchange = one && i.rate && meta.currency ? { unit: label, value: `${per!.toLocaleString("ko-KR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}원`, note: sig ?? "신호를 받지 못했습니다" } : null;
