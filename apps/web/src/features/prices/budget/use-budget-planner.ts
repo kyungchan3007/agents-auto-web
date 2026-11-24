@@ -6,11 +6,12 @@ import type { TravelRow } from "@hav/shared/travel";
 import { useState } from "react";
 import { usePickedTrip } from "@/shared/trip/use-picked-trip";
 import { useQueryParam } from "@hav/ui/hooks/browser/use-query-param";
+import { emptyProps } from "@hav/shared/fx-schedule";
 import { budgetCountry, budgetOf, parseDaily, parseDays } from "./budget";
 
 export type Latest = SignalList["signals"][number]["latest"];
 
-export function useBudgetPlanner(rows: TravelRow[], latestOf: Record<string, Latest>, initial: string | null = null) {
+export function useBudgetPlanner(rows: TravelRow[], latestOf: Record<string, Latest>, initial: string | null = null, builtAt: string | null = null) {
   const sorted = [...rows].sort((a, b) => a.name.localeCompare(b.name, "ko"));
   // /prices?country=THA#budget (홈 여행지 · 통화 상세에서 옴 · 작업 0100)
   const fromUrl = useQueryParam("country");
@@ -36,6 +37,8 @@ export function useBudgetPlanner(rows: TravelRow[], latestOf: Record<string, Lat
     d,
     n,
     latest,
+    /** 환율을 못 받은 나라(통화가 있는데 오늘 환율이 없음)면 금액 대신 빈 상태 (작업 0346) · 통화가 원래 없는 나라는 null */
+    empty: row?.currency && !latest ? emptyProps({ screen: "prices", name: row.name, at: builtAt }) : null,
     budget: row && d != null && n != null ? budgetOf(d, n, row.relative, latest?.value ?? null) : null,
   };
 }
