@@ -26,7 +26,7 @@ export function HeroSection({ timing }: { timing: TravelTiming }) {
             </h1>
             <p className="mx-auto mt-7 max-w-[38em] text-body text-fg-2 sm:text-[1.125rem] lg:[@media(max-height:880px)]:mt-2 lg:[@media(min-height:881px)_and_(max-height:1000px)]:mt-3 lg:[@media(min-height:1001px)_and_(max-height:1180px)]:mt-4">{copy.message}</p>
             {/* 안내 문장 + 작은 줄 (작업 0347 · 시안 9-C) — 구간별로 위 여백만 줄임 · 서버 첫 그림에 들어감 */}
-            <p data-testid="hero-guide" className="mx-auto mt-4 max-w-[40em] text-[1rem] font-bold text-fg sm:text-[1.0625rem] lg:[@media(max-height:880px)]:mt-1.5 lg:[@media(min-height:881px)_and_(max-height:1000px)]:mt-2">
+            <p data-testid="hero-guide" className="mx-auto mt-4 max-w-[40em] text-balance text-[1rem] font-bold text-fg sm:text-[1.0625rem] lg:max-w-none lg:text-pretty lg:[@media(max-height:880px)]:mt-1.5 lg:[@media(min-height:881px)_and_(max-height:1000px)]:mt-2">
               {HERO_GUIDE.lead}
             </p>
             <p data-testid="hero-free" className="mt-1 text-[0.8125rem] text-fg-2">
