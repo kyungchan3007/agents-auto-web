@@ -3,10 +3,9 @@
 import type { AirfareCalendar } from "@hav/shared/airfare";
 import { numberText } from "@hav/shared/format";
 import type { PriceLevels } from "@hav/shared/prices";
-import { BAND_EDGE, TRAVEL_CITIES, TRAVEL_COUNTRIES } from "@hav/shared/travel";
+import { TRAVEL_CITIES, TRAVEL_COUNTRIES, countryPath, priceGapSentence } from "@hav/shared/travel";
 
-/** 주소 — alpha-3 대문자 (통화 상세 /currencies/USD 와 같은 모양) */
-export const countryPath = (code: string) => `/prices/${code}`;
+export { countryPath };
 
 const DEFAULT_COUNTRY = "JPN";
 
@@ -83,9 +82,7 @@ const won = (v: number) => `${numberText(v)}원`;
 
 /** 자주 묻는 질문 — 답은 페이지에 있는 값으로만 · 값이 없는 문항은 통째로 뺌 · 처음 두 개 펼침 */
 export function countryFaq(p: { name: string; relative: number; year: number; budget: { dailyWon: number; days: number; totalWon: number } | null; exchange: { text: string } | null; flight: FlightCard }): FaqItem[] {
-  const pct = Math.round(Math.abs(p.relative - 1) * 100);
-  const level = p.relative > BAND_EDGE.pricey ? `한국보다 ${pct}% 높습니다` : p.relative < BAND_EDGE.cheap ? `한국보다 ${pct}% 낮습니다` : "한국과 비슷한 수준입니다";
-  const items: { q: string; a: string }[] = [{ q: `${p.name} 물가는 한국보다 비싼가요?`, a: `세계은행 ${p.year}년 자료로 ${p.name}의 물가는 ${level}.` }];
+  const items: { q: string; a: string }[] = [{ q: `${p.name} 물가는 한국보다 비싼가요?`, a: priceGapSentence(p.name, p.relative, p.year) }];
   if (p.budget) items.push({ q: `${p.name} 여행 하루 예산은 얼마인가요?`, a: `한국에서 쓰던 만큼 ${p.name}에서 쓰려면 물가 차이를 반영해 하루 약 ${won(p.budget.dailyWon)}, ${p.budget.days}일이면 약 ${won(p.budget.totalWon)}입니다.` });
   if (p.exchange) items.push({ q: "환전은 지금 해도 되나요?", a: p.exchange.text });
   if (p.flight.kind === "fare") items.push({ q: "언제 떠나면 항공권이 싼가요?", a: `${p.flight.city} 1주 왕복 최저가는 ${p.flight.big}입니다 (${p.flight.say}).` });

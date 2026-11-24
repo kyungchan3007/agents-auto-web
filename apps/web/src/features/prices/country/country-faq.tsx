@@ -1,4 +1,5 @@
 // 자주 묻는 질문 (작업 0344 · 시안 6-new) — <details> · 처음 두 개 펼침 · 같은 문항이 구조화 자료(FAQPage)에도 들어감
+import { FaqList } from "@/shared/ui/faq/faq-list";
 import type { FaqItem } from "./country-view";
 
 export function CountryFaq({ name, year, items }: { name: string; year: number; items: FaqItem[] }) {
@@ -9,18 +10,7 @@ export function CountryFaq({ name, year, items }: { name: string; year: number; 
         {name} 여행 물가, 자주 묻는 질문
       </h2>
       <p className="mt-2 text-small text-fg-2">숫자는 세계은행 {year}년 물가 자료와 오늘 받은 환율 · 항공권 자료 기준입니다.</p>
-      <div className="mt-4 border-t border-line">
-        {items.map((it) => (
-          <details key={it.q} data-testid="faq-item" open={it.open} className="group border-b border-line py-4">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[1.0625rem] font-bold text-fg [&::-webkit-details-marker]:hidden">
-              {it.q}
-              <span aria-hidden className="text-fg-2 group-open:hidden">+</span>
-              <span aria-hidden className="hidden text-fg-2 group-open:inline">−</span>
-            </summary>
-            <p className="mt-2 text-small text-fg-2">{it.a}</p>
-          </details>
-        ))}
-      </div>
+      <FaqList items={items} />
     </section>
   );
 }
