@@ -36,8 +36,8 @@
   "apps/api/src/features/airfare/": ["airfare-calendar.spec.ts", "flights-window.spec.ts"],
   "apps/admin/src/shared/": ["admin.spec.ts", "basics.spec.ts", "traffic.spec.ts", "ig-insights.spec.ts", "admin-gate.spec.ts"],
   "apps/admin/src/app/": ["admin.spec.ts", "basics.spec.ts", "traffic.spec.ts", "ig-insights.spec.ts", "admin-gate.spec.ts"],
-  "apps/admin/src/features/traffic/": ["traffic.spec.ts"],
-  "apps/admin/src/app/traffic/": ["traffic.spec.ts"],
+  "apps/admin/src/features/traffic/": ["traffic.spec.ts", "traffic-engagement.spec.ts"],
+  "apps/admin/src/app/traffic/": ["traffic.spec.ts", "traffic-engagement.spec.ts"],
   "apps/admin/src/features/instagram/": ["ig-insights.spec.ts"],
   "apps/admin/src/app/instagram/": ["ig-insights.spec.ts"],
   "apps/admin/worker/": ["admin.spec.ts", "traffic.spec.ts", "ig-insights.spec.ts", "admin-gate.spec.ts"]
