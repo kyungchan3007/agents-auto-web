@@ -16,7 +16,7 @@ const values = (v: unknown): (string | null)[] => (Array.isArray(v) ? v.map((x) 
 type Cells = Record<string, string | null>;
 
 /** 응답의 행마다 차원 · 지표를 헤더 이름으로 묶음 — 모양이 다르면 빈 배열 */
-function cellsOf(apiJson: unknown, dims: string[], mets: string[]): Cells[] {
+export function cellsOf(apiJson: unknown, dims: string[], mets: string[]): Cells[] {
   if (!isRecord(apiJson) || !Array.isArray(apiJson.rows)) return [];
   const dh = names(apiJson.dimensionHeaders);
   const mh = names(apiJson.metricHeaders);
@@ -37,16 +37,16 @@ function cellsOf(apiJson: unknown, dims: string[], mets: string[]): Cells[] {
 }
 
 /** "20261123" → "2026-11-23" · 달력에 없는 날 · 다른 모양은 null */
-const dayOf = (v: string | null | undefined): string | null => {
+export const dayOf = (v: string | null | undefined): string | null => {
   if (!v || !/^\d{8}$/.test(v)) return null;
   const d = `${v.slice(0, 4)}-${v.slice(4, 6)}-${v.slice(6)}`;
   const t = new Date(`${d}T00:00:00Z`);
   return !Number.isNaN(t.getTime()) && t.toISOString().slice(0, 10) === d ? d : null;
 };
 /** 0 이상 정수 글만 숫자로 */
-const countOf = (v: string | null | undefined): number | null => (v && /^\d+$/.test(v) && Number.isSafeInteger(Number(v)) ? Number(v) : null);
+export const countOf = (v: string | null | undefined): number | null => (v && /^\d+$/.test(v) && Number.isSafeInteger(Number(v)) ? Number(v) : null);
 /** 제어 문자는 공백으로 · 200자까지 · 빈 글은 빈 글 */
-const textOf = (v: string | null | undefined): string | null => (v === null || v === undefined ? null : v.replace(/[\u0000-\u001f\u007f]/g, " ").slice(0, MAX_TEXT));
+export const textOf = (v: string | null | undefined): string | null => (v === null || v === undefined ? null : v.replace(/[\u0000-\u001f\u007f]/g, " ").slice(0, MAX_TEXT));
 
 export function dailyRows(apiJson: unknown): Ga4DailyRow[] {
   return cellsOf(apiJson, ["date"], ["activeUsers", "sessions", "screenPageViews"]).flatMap((c) => {
