@@ -1,0 +1,128 @@
+{
+  "day": "2026-11-24",
+  "engine": "claude",
+  "edition": 3,
+  "method": "Claude Code 세션 웹 검색 (WebSearch standard) · found = 검색 결과에 flapfx.com 주소 · cited = 답의 출처로 씀",
+  "results": [
+    {
+      "question": "b14",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "b15",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "b16",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "b17",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "b18",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "b19",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "b20",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "b21",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "g1",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "g2",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "g7",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "g17",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "g18",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "g19",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "g20",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "g21",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "g22",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "g23",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "g24",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "g25",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "g26",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "g27",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "g28",
+      "found": false,
+      "cited": false
+    },
+    {
+      "question": "g29",
+      "found": false,
+      "cited": false
+    }
+  ]
+}
