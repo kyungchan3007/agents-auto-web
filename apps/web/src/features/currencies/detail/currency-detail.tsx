@@ -4,6 +4,7 @@ import { MORE_LINK } from "@hav/ui/text/more-link";
 import type { Fetched } from "@hav/shared/api";
 import { currencyName, pegText, rateText, toUnit } from "@hav/shared/currency";
 import type { FxHistory, FxRate } from "@hav/shared/fx";
+import type { PriceLevels } from "@hav/shared/prices";
 import type { CurrencySignal } from "@hav/shared/signal";
 import { countriesOf } from "@hav/shared/travel";
 import { pinBasis } from "@/shared/signal/signal-pin-text";
@@ -15,14 +16,16 @@ import { CurrencyKicker } from "./header/currency-kicker";
 import { PeriodChart } from "../period-chart/period-chart";
 import { RangeCard } from "./range/range-card";
 import { SwitchFade } from "../switch/switch-fade";
+import { FaqList } from "@/shared/ui/faq/faq-list";
+import { detailFaq } from "./detail-faq";
 import { currencyListName, yearStats } from "./detail-view";
 import { bigRate } from "./range/redesign";
 
 const DOT = { cheap: "bg-pin-cheap", normal: "bg-pin-line", expensive: "bg-pin-expensive" } as const;
 
-export type DetailData = { code: string; rate: FxRate | null; signal: Fetched<CurrencySignal>; history: Fetched<FxHistory>; problem: string | null };
+export type DetailData = { code: string; rate: FxRate | null; signal: Fetched<CurrencySignal>; history: Fetched<FxHistory>; /** 물가 자료 — 쓰는 나라 물가 질문 (못 받았으면 null · 작업 0345) */ levels?: PriceLevels | null; problem: string | null };
 
-export function CurrencyDetail({ code, rate, signal, history, problem }: DetailData) {
+export function CurrencyDetail({ code, rate, signal, history, levels = null, problem }: DetailData) {
   const name = currencyName(code);
   if (!rate) {
     return <EmptyState>{problem ?? `${name}(${code}) 환율이 아직 수집되지 않았습니다`}</EmptyState>;
@@ -33,6 +36,7 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
   const days = history.ok ? toUnit(history.data.rates, rate.unit) : [];
   const stats = yearStats(days);
   const peg = pegText(code);
+  const faq = detailFaq({ code, rate, signal, history, levels });
 
   return (
     <div className="min-w-0">
@@ -71,6 +75,13 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
             </p>
           )}
           <FreshnessNote date={rate.date} className="mt-2" />
+          {/* 한 줄 답 (작업 0345 · 시안 5-new) — 페이지에 이미 있는 값(오늘 값 · 1년 평균 · 1년 최저)으로만 */}
+          {faq.answer && (
+            <div data-testid="currency-answer" className="mt-5 border-l-4 border-sun pl-4">
+              <p className="text-small text-fg-2">{faq.answer.label}</p>
+              <p className="mt-1 text-[1.0625rem] font-bold text-fg sm:text-[1.125rem]">{faq.answer.text}</p>
+            </div>
+          )}
 
           <div className="mt-8">
             <RangeCard code={code} stats={stats} rate={rate} unitText={t.unit} />
@@ -97,6 +108,17 @@ export function CurrencyDetail({ code, rate, signal, history, problem }: DetailD
           </span>
         )}
       </p>
+
+      {/* 자주 묻는 질문 (작업 0345 · 시안 6-new) — 처음 두 개 펼침 · 같은 문항이 FAQPage 구조화 자료에도 들어감 */}
+      {faq.items.length > 0 && (
+        <section data-testid="currency-faq" aria-labelledby="currency-faq-t" className="mx-auto mt-16 max-w-[44rem]">
+          <h2 id="currency-faq-t" className="font-display text-[1.75rem] leading-tight font-extrabold tracking-display text-fg sm:text-[2.25rem]">
+            {name}, 자주 묻는 질문
+          </h2>
+          <p className="mt-2 text-small text-fg-2">숫자는 {rate.date} 매매기준율(한국수출입은행) 기준입니다.</p>
+          <FaqList items={faq.items} linkText="나라 물가 자세히 보기" />
+        </section>
+      )}
     </div>
   );
 }
