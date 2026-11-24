@@ -18,6 +18,10 @@ export function useTodayGate(buildTasks: Fetched<TasksSummary>) {
       issue: { label: `#${today.number}`, href: today.url },
       items: today.items.map((i, n) => ({ key: n, done: i.done, mark: i.done ? "끝남" : "남음", head: i.head })),
     },
-    gate: gate && gateLines(gate),
+    // 실패 줄의 키는 실행 주소 — 같은 PR 의 실패 실행이 둘이면 PR 주소가 겹쳐 옛 줄이 남았음 (작업 0352 · gateLines 의 모양은 그대로)
+    gate: gate && (() => {
+      const lines = gateLines(gate);
+      return { ...lines, failed: lines.failed.map((f, i) => ({ ...f, key: gate.failed[i].runUrl })) };
+    })(),
   };
 }

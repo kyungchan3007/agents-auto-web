@@ -49,7 +49,7 @@ export function RecordCard({ buildTasks }: { buildTasks: Fetched<TasksSummary> }
                 <span>{r.gate.time}</span>
               </li>
               {r.gate.failed.map((f) => (
-                <li key={f.href} data-testid="gate-fail">
+                <li key={f.key} data-testid="gate-fail">
                   <span className="t">실패</span>
                   <a className="adm-link" href={f.href} target="_blank" rel="noopener noreferrer">
                     {f.label}
