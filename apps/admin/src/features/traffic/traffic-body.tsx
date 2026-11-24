@@ -3,6 +3,7 @@
 // 유입 화면 내용 — 받는 중 · 실패 · 빈 상태 · 표 세 개 (작업 0324)
 import { Panel, Stamp } from "@/shared/ui/panel/panel";
 import { countText } from "@/shared/format/count-text";
+import { EngagementTable } from "./engagement-table";
 import { isEmptyTraffic } from "./traffic-view";
 import { useGa4Report } from "./use-ga4-report";
 
@@ -125,6 +126,7 @@ export function TrafficBody() {
           </table>
         </div>
       </Panel>
+      <EngagementTable report={r} />
     </>
   );
 }
