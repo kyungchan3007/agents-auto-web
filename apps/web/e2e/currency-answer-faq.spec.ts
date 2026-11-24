@@ -7,6 +7,7 @@
 //       faq-link        질문 셋(물가)의 /prices/XXX 링크
 //   메타: JSON-LD FAQPage 문항 네 개 (작업 0344 의 faqLd)
 import { type Page, expect, test } from "@playwright/test";
+import { hydrated } from "./helpers";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const html = async (page: Page, path: string) => {
@@ -41,6 +42,9 @@ test.describe("통화 상세 정적 HTML — 서버 첫 그림 (작업 0345)", (
 test.describe("통화 상세 화면 (작업 0345 · 시안 5-new · 6-new)", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/currencies/JPY");
+    // 작업 0354: 하이드레이션이 끝나기 전에 질문(summary)을 누르면 열림 · 닫힘이 되돌려져(open 속성이 다시 붙음) CI 에서 흔들렸음 — 하이드레이션이 끝난 뒤에 상호작용
+    await page.waitForLoadState("networkidle");
+    await hydrated(tid(page, "faq-item"));
   });
 
   test("한 줄 답 — 날짜 라벨 · 문장 · 1년 최저 카드보다 위", async ({ page }) => {
