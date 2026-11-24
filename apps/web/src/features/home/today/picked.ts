@@ -1,7 +1,7 @@
 // 홈 안내판이 인트로에서 고른 나라를 보여 주는 글 — 순수 함수 (React 없음 · 인트로 폴더를 가져오지 않음: 고른 값 모양은 @hav/shared/travel 의 PickedTrip · 작업 0185 · 테스트 picked.test.ts)
 // 고르지 않았거나 모르는 나라면 null — 홈은 지금 안내판 그대로 (지어내지 않음)
 import { currencyName } from "@hav/shared/currency";
-import { type PickedTrip, TRAVEL_COUNTRIES } from "@hav/shared/travel";
+import { type PickedTrip, TRAVEL_COUNTRIES, countryPath } from "@hav/shared/travel";
 import { type RateRow, type SignalRow, shortName } from "../common/destinations";
 import { wonText } from "@hav/shared/format";
 import { SIGNAL_LEVEL_TEXT as SIGNAL_TEXT } from "@/shared/signal/signal-tone";
@@ -30,6 +30,12 @@ export function pickedBoard(a: { picked: PickedTrip | null; rates: RateRow[]; si
     evidence,
     percentile: currency && rate ? (a.signals.find((s) => s.currency === currency)?.percentile ?? null) : null,
   };
+}
+
+/** 고른 나라의 나라 페이지(/prices/XXX · 작업 0344) 링크 — 고르지 않았거나 · 모르는 나라이거나 · 그 나라 페이지가 없으면 null (링크를 내지 않음 · 작업 0347) */
+export function pickedPageLink(picked: PickedTrip | null, pageCodes: readonly string[]): { href: string; text: string } | null {
+  if (!picked || !Object.hasOwn(TRAVEL_COUNTRIES, picked.country) || !pageCodes.includes(picked.country)) return null;
+  return { href: countryPath(picked.country), text: `${TRAVEL_COUNTRIES[picked.country].name} 물가 · 환율 자세히 보기 ›` };
 }
 
 /** 홈 왼쪽 아래 "탑승권 보기" 칩 글 */
