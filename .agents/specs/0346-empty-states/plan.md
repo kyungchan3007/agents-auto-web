@@ -21,6 +21,8 @@
 - .agents/specs/0346-empty-states/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- packages/shared/package.json: exports 에 ./fx-schedule 한 줄(새 공용 파일 내보내기).
+- 예산 카드 안 빈 상태는 카드 속 카드로 조금 무거움(test 관찰). 기능 문제가 아니라 그대로 둠.
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋의 CI gate)
