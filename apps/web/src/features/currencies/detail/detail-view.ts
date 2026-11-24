@@ -1,12 +1,9 @@
 // 통화 화면 순수 함수 (작업 0170 · Figma 02) — 목록 이름 · 1년 최저/최고/평균 · 오늘 환율 옆 한 줄
 // 판정은 사이트 신호 규칙 그대로(최근 90일 백분위) — 1년 평균은 숫자 카드 · 그래프 점선으로만 씀
-import { SOURCE_NAME, currencyName, percentileText, rateText } from "@hav/shared/currency";
+import { SOURCE_NAME, currencyListName, percentileText, rateText } from "@hav/shared/currency";
 import type { Signal } from "@hav/shared/signal";
 
-/** Figma 목록 이름 — 표에 없는 통화는 기존 이름(코드도 없으면 코드) */
-const LIST_NAME: Record<string, string> = { USD: "미국 달러", JPY: "일본 엔", EUR: "유로", THB: "태국 바트", VND: "베트남 동", CNY: "중국 위안", CNH: "중국 위안" };
-
-export const currencyListName = (code: string): string => LIST_NAME[code] ?? currencyName(code);
+export { currencyListName };
 
 /** 목록 이름 + 고시 단위가 1 보다 크면 단위 ("일본 엔 100") */
 export const currencyListLabel = (code: string, unit: number): string => (unit > 1 ? `${currencyListName(code)} ${unit}` : currencyListName(code));

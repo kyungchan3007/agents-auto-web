@@ -1,6 +1,6 @@
 // 나라 페이지가 그릴 값 한 묶음 (작업 0344) — 빌드 때 받은 자료 → 화면 값 · 순수 함수 · 받지 못한 값은 null (지어내지 않음)
 import type { AirfareCalendar } from "@hav/shared/airfare";
-import { currencyName, percentileText } from "@hav/shared/currency";
+import { currencyListName, currencyName, percentileText } from "@hav/shared/currency";
 import type { FxRate } from "@hav/shared/fx";
 import type { PriceLevels } from "@hav/shared/prices";
 import { type MonthPoint, TRAVEL_COUNTRIES, monthTiming, travelBands } from "@hav/shared/travel";
@@ -22,8 +22,8 @@ export type CountryInput = {
 const DAILY = 100_000;
 const DAYS = 4;
 
-/** 단위 이름 — "100엔" · "1달러" (통화 이름의 마지막 낱말) */
-const unitLabel = (currency: string, unit: number) => `${unit}${currencyName(currency).split(" ").at(-1)}`;
+/** 단위 이름 — "100엔" · "1달러" (통화 목록 이름의 마지막 낱말 · 통화 상세와 같은 이름 표) */
+const unitLabel = (currency: string, unit: number) => `${unit}${currencyListName(currency).split(" ").at(-1)}`;
 
 export type CountryView = {
   code: string;
