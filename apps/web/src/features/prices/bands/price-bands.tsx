@@ -35,7 +35,7 @@ function CountryRow({ r, signalOf, percentileOf, latestYear }: { r: Row; signalO
       <span className="flex min-w-0 items-center gap-3">
         <Flag country={TRAVEL_COUNTRIES[r.country]?.flag ?? null} label={`${r.name} 국기`} className="h-4 w-6 shrink-0" />
         <span className="min-w-0">
-          <Link data-testid="price-band-link" href={countryPath(r.country)} className="block text-[1.125rem] font-semibold text-fg hover:underline">
+          <Link data-testid="price-band-link" href={countryPath(r.country)} className="tap-44 block text-[1.125rem] font-semibold text-fg hover:underline">
             {r.name}
           </Link>
           <span className="block text-small text-fg-2">
