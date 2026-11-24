@@ -18,7 +18,7 @@ import { CountryHeader } from "./country-header";
 import type { CountryView } from "./country-model";
 import { NextCards } from "./next-cards";
 
-export function CountryPage({ view, levels, signals }: { view: CountryView; levels: PriceLevels; signals: Fetched<SignalList> }) {
+export function CountryPage({ view, levels, signals, builtAt = null }: { view: CountryView; levels: PriceLevels; signals: Fetched<SignalList>; /** 빌드 시각 — 예산 카드 빈 상태 이름표 (작업 0346) */ builtAt?: string | null }) {
   const rows = allRows(travelBands(levels).bands);
   const { latestOf } = signalMaps(signals);
   return (
@@ -31,7 +31,7 @@ export function CountryPage({ view, levels, signals }: { view: CountryView; leve
             <CountryHeader v={view} />
           </div>
           <div className="relative z-10 col-start-2 row-start-2 -mt-24 pb-2 lg:row-start-1 lg:mt-[3.25rem] lg:mb-10 lg:ml-auto lg:w-[28.25rem] lg:self-start lg:pb-0">
-            <BudgetPlanner rows={rows} latestOf={latestOf} initial={view.code} />
+            <BudgetPlanner rows={rows} latestOf={latestOf} initial={view.code} builtAt={builtAt} />
           </div>
         </div>
         <div className="px-4 pt-14 pb-16 sm:px-8 lg:pt-12">

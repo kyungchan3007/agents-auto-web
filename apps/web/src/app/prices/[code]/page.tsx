@@ -1,3 +1,4 @@
+import { buildTimeIso } from "@hav/shared/fx-schedule";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { CountryPage } from "@/features/prices/country/country-page";
@@ -31,7 +32,7 @@ export default async function Page({ params }: PageProps<"/prices/[code]">) {
     <>
       <JsonLd data={breadcrumbLd([{ name: "여행 물가", path: "/prices" }, { name: view.name, path: countryPath(code) }])} />
       {faq && <JsonLd data={faq} />}
-      <CountryPage view={view} levels={levels} signals={signals} />
+      <CountryPage view={view} levels={levels} signals={signals} builtAt={buildTimeIso()} />
     </>
   );
 }
