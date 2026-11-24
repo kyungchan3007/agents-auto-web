@@ -15,6 +15,8 @@ createServer(async (req, res) => {
     res.end(CAL);
     return;
   }
+  // 작업 0346 — 환율을 못 받는 빌드: FIXTURE_NO_FX=1 이면 /fx/* · /signal* 을 503 으로 (빈 상태 e2e · empty-states.spec.ts)
+  if (process.env.FIXTURE_NO_FX === "1" && (path.startsWith("/fx/") || path === "/fx" || path.startsWith("/signal"))) { res.writeHead(503, { "content-type": "application/json" }); res.end(JSON.stringify({ error: "fixture: 환율 없음" })); return; }
   if (req.method !== "GET") { res.writeHead(405).end(); return; }
   try {
     const r = await fetch(UPSTREAM + req.url, { signal: AbortSignal.timeout(20_000) });
