@@ -28,6 +28,7 @@ test.describe("제목 구조 · 본문 바로가기 (작업 0213)", () => {
         await quietSession(page);
       }
       await page.goto(path);
+      if (path === "/geo") await expect(tid(page, "geo-cards")).toBeVisible(); // 작업 0353: 섹션 제목(h2)은 /bff/geo 를 받은 뒤에 생김 — 자료가 그려진 뒤에 제목을 읽음
       await page.waitForTimeout(300);
       const hs = await page.evaluate(() => [...document.querySelectorAll("h1,h2,h3,h4,h5,h6")].map((h) => ({ level: Number(h.tagName[1]), text: (h.textContent ?? "").trim().slice(0, 24) })));
       expect(hs.filter((h) => h.level === 1), "h1 개수").toHaveLength(1);

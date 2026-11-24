@@ -45,6 +45,8 @@ test.describe("어드민 유입 화면 — GA4 (작업 0324)", () => {
     await expect(nav.getByRole("link", { name: /^유입/ })).toHaveAttribute("href", "/traffic");
     await expect(nav.locator('a[aria-current="page"]')).toContainText("유입");
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    // 작업 0353: 표 제목(h2)은 브라우저가 /bff/ga4 를 받은 뒤에 생김(빌드 때는 열쇠가 없어 401 · 작업 0326) — goto 직후엔 '받는 중' 판 하나뿐이라 자료가 그려진 뒤에 셈
+    await expect(tid(page, "traffic-daily")).toBeVisible();
     expect(await page.getByRole("heading", { level: 2 }).count(), "섹션 제목").toBeGreaterThanOrEqual(3);
   });
 
