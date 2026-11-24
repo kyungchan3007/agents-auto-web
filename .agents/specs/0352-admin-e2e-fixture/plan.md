@@ -15,6 +15,8 @@
 - .agents/specs/0352-admin-e2e-fixture/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- 실패는 처음 본 여섯이 아니라 열 가지(로그가 잘려 있었음): 추가 ⑦ 가로 막대 숫자 · ⑧ 움직임 줄이기 · ⑨ basics /geo 큰 제목 · 카드 · 읽는 법(같은 원인 · 테스트로 고침), ⑩ log-today-gate:47(코드 원인).
+- apps/admin/src/features/log/records/record-card.tsx: 실패 줄 키가 PR 주소라 같은 PR 실패 둘이면 겹쳐 옛 줄이 남음(0341 버그) → 키를 실행 주소로(builder).
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋의 CI gate)
