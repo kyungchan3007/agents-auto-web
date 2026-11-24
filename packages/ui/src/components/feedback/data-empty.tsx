@@ -4,7 +4,7 @@ type Props = { checked: string; title: string; reason: string; links: { label: s
 
 export function DataEmpty({ checked, title, reason, links, linksTitle = "그동안 볼 수 있는 것" }: Props) {
   return (
-    <section data-testid="data-empty" data-surface="light" className="rounded-[1.5rem] border border-line bg-card p-5 text-fg shadow-ticket sm:p-7">
+    <section data-testid="data-empty" data-surface="light" className="rounded-[1.5rem] border border-line bg-card p-5 text-fg sm:p-7">
       <p className="inline-block rounded-pill bg-surface-2 px-3 py-1 text-small font-bold text-fg-2">{checked}</p>
       <h2 className="mt-3 text-[1.25rem] leading-snug font-bold text-fg sm:text-[1.5rem]">{title}</h2>
       <p className="mt-2 text-body text-fg-2">{reason}</p>
