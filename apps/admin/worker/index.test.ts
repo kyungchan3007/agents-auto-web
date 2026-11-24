@@ -2,6 +2,7 @@
 //   작업 0326: 입구(토큰 쿠키)가 모든 요청 앞에 있어 아래 시험은 로그인한 쿠키로 요청함 — 입구 시험은 gate/gate.test.ts
 import { describe, expect, it, vi } from "vitest";
 import { REVIEWER_NAME, cookieFor, gateEnv } from "./gate/test-kit";
+import { OWNER_NAME } from "./gate/session";
 import worker, { type Env } from "./index";
 
 const GOOGLEBOT = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
@@ -39,6 +40,22 @@ describe("어드민 Worker", () => {
     const res = await s.call("https://admin.flapfx.com/bff/fx/latest");
     expect(res.status).toBe(404);
     expect(s.api).not.toHaveBeenCalled();
+  });
+
+  it("접속 기록(/bff/admin-visits)은 리뷰어 토큰이면 404 · API 를 부르지 않음 (작업 0339)", async () => {
+    const s = await setup();
+    const res = await s.call("https://admin.flapfx.com/bff/admin-visits");
+    expect(res.status).toBe(404);
+    expect(s.api).not.toHaveBeenCalled();
+  });
+
+  it("접속 기록은 owner 토큰이면 API 로 (작업 0339)", async () => {
+    const s = await setup();
+    const cookie = await cookieFor(OWNER_NAME);
+    const res = await worker.fetch(new Request("https://admin.flapfx.com/bff/admin-visits", { headers: { cookie } }), s.env);
+    expect(res.status).toBe(200);
+    expect(s.api).toHaveBeenCalledTimes(1);
+    expect(new URL(s.api.mock.calls[0]![0].url).pathname).toBe("/admin-visits");
   });
 
   it("쓰기 요청은 405", async () => {
