@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Home } from "@/features/home/home";
+import { countryTargets } from "@/features/prices/country/country-view";
 import { IntroGate } from "@/features/intro/intro-gate";
 import { introDataOf } from "@/features/intro/state/intro-data";
 import { api, mustHave } from "@hav/shared/api";
@@ -16,7 +17,7 @@ export default async function Page() {
   return (
     <>
       <JsonLd data={siteLd()} />
-      <Home latest={mustHave(latest, "오늘 환율")} signals={signals} airFare={airFare} />
+      <Home latest={mustHave(latest, "오늘 환율")} signals={signals} airFare={airFare} pageCodes={countryTargets(levels.ok ? levels.data : null)} />
       <IntroGate data={introDataOf({ latest, signals, airFare, levels })} />
     </>
   );

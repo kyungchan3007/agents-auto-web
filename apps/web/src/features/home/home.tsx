@@ -15,9 +15,9 @@ import { moreCurrenciesCount } from "./destinations/more-currencies";
 import { DESTINATIONS } from "./common/places";
 import { travelTiming } from "./timing/travel-timing";
 
-export type HomeData = { latest: Fetched<FxLatest>; signals: Fetched<SignalList>; airFare: Fetched<IndicatorSeries> };
+export type HomeData = { latest: Fetched<FxLatest>; signals: Fetched<SignalList>; airFare: Fetched<IndicatorSeries>; /** 나라 페이지가 만들어지는 나라 코드 (작업 0344 countryTargets · 0347) */ pageCodes?: readonly string[] };
 
-export function Home({ latest, signals, airFare }: HomeData) {
+export function Home({ latest, signals, airFare, pageCodes = [] }: HomeData) {
   const rates = latest.ok ? latest.data.rates : [];
   const signalRows = signals.ok ? signals.data.signals : [];
   const windowDays = signals.ok ? signals.data.rule.windowDays : 90;
@@ -27,7 +27,7 @@ export function Home({ latest, signals, airFare }: HomeData) {
       <SiteNav page="home" />
       <main id="main" tabIndex={-1}>
       <HeroSection timing={timing} />
-      <TodayBoard rates={rates} signals={signalRows} windowDays={windowDays} problem={!latest.ok ? latest.reason : null} />
+      <TodayBoard rates={rates} signals={signalRows} windowDays={windowDays} problem={!latest.ok ? latest.reason : null} pageCodes={pageCodes} />
       <YearBars timing={timing} />
       <DestinationsSection rows={destinationRows(signalRows, rates, DESTINATIONS as Destination[])} windowDays={windowDays} moreCount={moreCurrenciesCount(rates, DESTINATIONS)} />
       </main>
