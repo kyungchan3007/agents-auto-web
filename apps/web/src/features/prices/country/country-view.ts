@@ -23,7 +23,7 @@ const hasBatchim = (s: string) => {
 };
 /** 은 · 는 */
 export const eunNeun = (s: string) => (hasBatchim(s) ? "은" : "는");
-const gwaWa = (s: string) => (hasBatchim(s) ? "과" : "와");
+export const gwaWa = (s: string) => (hasBatchim(s) ? "과" : "와");
 
 const money = (v: number) => numberText(v, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 

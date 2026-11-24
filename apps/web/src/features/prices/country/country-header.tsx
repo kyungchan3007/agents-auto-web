@@ -1,5 +1,7 @@
+"use client";
+
 // 나라 페이지 첫 면 왼쪽 (작업 0344 · 시안 1-new) — 제목 위 경로 · 큰 제목 · 오늘 기준 한 줄 답 상자 (통화가 없는 나라는 상자 없음)
-// 서버가 그림 — 검색 · AI 가 읽는 첫 HTML 에 최종 문장이 들어감
+// 큰 제목의 강조(EmphText · 카운트업)가 브라우저 부품이라 'use client' — 서버 첫 그림에도 문장이 그대로 들어감(prices-header.tsx 와 같음)
 import { EmphText } from "@hav/ui/text/emph";
 import Link from "next/link";
 import type { CountryView } from "./country-model";
