@@ -52,7 +52,9 @@ test.describe("직구 입력 안내 아래 빈칸 (작업 0208 추가)", () => {
     const min = wide ? 580.8 : w <= 427 ? (w >= 400 ? 596 : w >= 361 ? 616 : w >= 330 ? 660 : 680) : 576;
     const h = (await box(tid(page, "calc-result"))).height;
     expect(h).toBeGreaterThanOrEqual(min - 0.5);
-    expect(h).toBeLessThanOrEqual(min + 8);
+    // 작업 0350: 입력 카드에 '같은 판매자에게 같은 날 산 물건' 구역이 더해져 입력 카드가 커졌고, 넓은 화면은 두 카드 아래 선이 같게(작업 0259) 결과 카드가 입력 카드 높이까지 늘어남 — 위 한도는 '글만큼'(min + 8)이거나 넓은 화면에서 입력 카드 높이(± 1)
+    const inputH = wide ? (await box(tid(page, "calc-input"))).height : 0;
+    expect(h).toBeLessThanOrEqual(Math.max(min + 8, inputH + 1));
     await fill(page, "price", "abc");
     expect((await box(tid(page, "calc-result"))).height).toBeGreaterThanOrEqual(min - 0.5);
   });
