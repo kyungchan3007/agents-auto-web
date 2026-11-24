@@ -7,9 +7,9 @@ import { DESTINATIONS } from "../common/places";
 import { todayBoard } from "./today-view";
 import { Ticket } from "./ticket";
 
-type Props = { rates: FxRate[]; signals: SignalRow[]; windowDays: number; problem: string | null };
+type Props = { rates: FxRate[]; signals: SignalRow[]; windowDays: number; problem: string | null; pageCodes?: readonly string[] };
 
-export function TodayBoard({ rates, signals, windowDays, problem }: Props) {
+export function TodayBoard({ rates, signals, windowDays, problem, pageCodes = [] }: Props) {
   const found = cheapestDestination(signals, rates, DESTINATIONS as Destination[]);
   const board = todayBoard({ found, hasRates: rates.length > 0, windowDays, problem });
   const source = found ? rates.find((r) => r.currency === found.rate.currency) : undefined;
@@ -19,6 +19,7 @@ export function TodayBoard({ rates, signals, windowDays, problem }: Props) {
       rates={rates}
       signals={signals}
       windowDays={windowDays}
+      pageCodes={pageCodes}
       notice={
         source?.source === "frankfurter" ? (
           <p className="mt-2 text-small text-fg-2">

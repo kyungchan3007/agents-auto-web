@@ -4,6 +4,7 @@
 // 시트 · "내 여행지 고르기" 버튼 없음 — 누르면 바로 바뀜 · 목록에 없는 나라는 검색 칸으로 · 휴대폰은 칩이 줄바꿈(가로 스크롤 없음)
 // 화면 약속: data-testid="trip-switcher"(전체) · "pick-chip"(칩 · aria-pressed) · combobox "여행지 검색" · listbox "여행지 제안" · option
 import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
+import { TRIP_SEARCH_PLACEHOLDER } from "./trip-copy";
 import { useTripSwitcher } from "./use-trip-switcher";
 import { Flag } from "@hav/ui/data/flag";
 import { Input } from "@hav/ui/form/field";
@@ -43,11 +44,11 @@ export function TripSwitcher({ className = "" }: { className?: string }) {
           aria-expanded={s.expanded}
           aria-controls={s.expanded ? s.ids.list : undefined}
           aria-activedescendant={s.activeId}
-          placeholder="도시 · 나라 이름 (예: 도쿄)"
+          placeholder={TRIP_SEARCH_PLACEHOLDER}
           value={s.query}
           onChange={s.onChange}
           onKeyDown={s.onInputKey}
-          className="h-11"
+          className="h-11 border-[3px]! border-sun! hover:border-sun! focus:border-sun!"
         />
         {s.expanded && (
           <ul id={s.ids.list} role="listbox" aria-label="여행지 제안" className="absolute inset-x-0 bottom-full z-20 mb-1 max-h-64 overflow-y-auto rounded-[0.625rem] border-2 border-fg bg-card sm:top-full sm:bottom-auto sm:mt-1 sm:mb-0">
