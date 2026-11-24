@@ -50,6 +50,7 @@ test.describe("찾기 창 · 단축키 (ADD-02 · ADD-03)", () => {
     await mockGeo(page); // 작업 0352: 빌드가 /geo 를 열쇠 없이 401 로 만들어(작업 0326) 질문 · 판 목록이 /bff/geo 를 받은 뒤에 생김
     await quietSession(page);
     await page.goto("/geo");
+    await expect(page.getByRole("searchbox", { name: "질문 걸러 보기" })).toBeVisible(); // 작업 0353: 판 · 질문 목록은 /bff/geo 를 받은 뒤에 생김 — 자료가 그려진 뒤에 찾기 창을 엶
     await hydrated(page.locator(".adm-find")); // 단축키는 하이드레이션 뒤에 붙음
     await page.keyboard.press("ControlOrMeta+k");
     const box = page.getByRole("dialog", { name: "찾기" });
@@ -142,6 +143,8 @@ test.describe("GEO 측정 (ADD-05)", () => {
     await quietSession(page);
     await page.goto("/geo");
     const rows = tid(page, "geo-bots").locator('[data-testid="bar-row"]');
+    // 작업 0353: 자료는 브라우저가 /bff/geo 를 받은 뒤에 그려지므로 막대가 나타나기를 기다린 뒤 셈(goto 직후엔 0 개 — CI 가 느려 드러남)
+    await expect(rows.first()).toBeVisible();
     expect(await rows.count()).toBeGreaterThan(0);
     const values = await rows.evaluateAll((els) => els.map((e) => Number(e.getAttribute("data-value") ?? "0")));
     for (let i = 0; i < values.length; i++) expect((await rows.nth(i).innerText()).replace(/,/g, "")).toContain(String(values[i]));
@@ -152,7 +155,7 @@ test.describe("GEO 측정 (ADD-05)", () => {
     await quietSession(page);
     await page.goto("/geo");
     const table = tid(page, "rename-questions");
-    test.skip((await table.locator("tbody tr[data-q]").count()) === 0, "질문 자료 없음");
+    await expect(table.locator("tbody tr[data-q]").first()).toBeVisible(); // 작업 0353: 질문 표는 /bff/geo 를 받은 뒤에 그려짐(고정 자료에 질문이 있음)
     const all = await table.locator("tbody tr[data-q]").count();
     const box = page.getByRole("searchbox", { name: "질문 걸러 보기" });
     await box.fill("환율");
@@ -175,8 +178,8 @@ test.describe("GEO 측정 (ADD-05)", () => {
     await quietSession(page);
     await page.goto("/geo");
     const card = tid(page, "geo-bot-pages");
+    await expect(card.locator('[data-testid="bot-pages-bot"]').first()).toBeVisible(); // 작업 0353: 봇 카드는 /bff/geo 를 받은 뒤에 그려짐 — 기다리지 않으면 0 개로 읽고 조용히 건너뛰었음
     const all = await card.locator('[data-testid="bot-pages-bot"]').count();
-    test.skip(all === 0, "봇 자료 없음");
     await card.getByRole("button", { name: "검색 엔진" }).click();
     const eng = await card.locator('[data-testid="bot-pages-bot"]').count();
     await card.getByRole("button", { name: "AI 봇" }).click();

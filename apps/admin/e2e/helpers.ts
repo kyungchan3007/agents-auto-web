@@ -58,7 +58,10 @@ export const GEO_FIXTURE = {
     { day, kind: "training", name: "GPTBot", hits: 2 + i },
     { day, kind: "engine", name: "Googlebot", hits: 1 + i },
   ]),
-  botPages: [{ name: "GPTBot", kind: "training", hits: 14, paths: [{ path: "/", hits: 10 }, { path: "/calc", hits: 4 }] }],
+  botPages: [
+    { name: "GPTBot", kind: "training", hits: 14, paths: [{ path: "/", hits: 10 }, { path: "/calc", hits: 4 }] },
+    { name: "Googlebot", kind: "engine", hits: 9, paths: [{ path: "/", hits: 6 }, { path: "/prices", hits: 3 }] },
+  ],
   answerDays: FIXTURE_DAYS.flatMap((day, i) => [
     { day, edition: 1, engine: "claude", question: GEO_QUESTION, group: "general", status: "ok", found: true, cited: i % 2 === 0 },
     { day, edition: 1, engine: "claude", question: GEO_QUESTION_2, group: "general", status: "ok", found: true, cited: false },
