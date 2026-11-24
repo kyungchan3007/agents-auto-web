@@ -12,7 +12,7 @@
   "apps/web/src/features/prices/route/": ["prices-redesign.spec.ts", "prices-route.spec.ts", "country-pick.spec.ts", "detail-design.spec.ts", "tap-44.spec.ts", "prices-route-mobile.spec.ts", "prices-tiles.spec.ts"],
   "apps/web/src/features/prices/bands/": ["prices-redesign.spec.ts", "prices-route.spec.ts", "country-pick.spec.ts", "detail-design.spec.ts", "tap-44.spec.ts", "prices-route-mobile.spec.ts", "prices-tiles.spec.ts"],
   "apps/admin/src/features/geo/": ["admin.spec.ts", "geo-bot-pages.spec.ts", "rename-compare.spec.ts", "basics.spec.ts"],
-  "apps/admin/src/features/log/": ["admin.spec.ts", "basics.spec.ts"],
+  "apps/admin/src/features/log/": ["admin.spec.ts", "basics.spec.ts", "log-today-gate.spec.ts"],
   "apps/admin/src/features/how/": ["admin.spec.ts", "basics.spec.ts", "admin-gate.spec.ts"],
   "apps/admin/src/app/how/": ["admin.spec.ts", "basics.spec.ts", "admin-gate.spec.ts"],
   "apps/admin/src/features/marketing/": ["admin.spec.ts", "ig-insights.spec.ts"],
