@@ -27,6 +27,8 @@
 - .agents/specs/0344-country-prices/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- apps/web/src/features/home/** (가져오기만): 떠나기 싼 달 규칙을 홈과 나라 페이지가 함께 쓰도록 packages/shared/src/domain 으로 옮김(같은 규칙 두 벌 금지).
+- apps/web/src/features/prices/budget/** : 예산 카드에 처음 고를 나라(initial) 인자 추가.
 
 ## 위험
 - 정적 페이지 수만큼 빌드 시간이 늘어난다(나라 약 30개).
