@@ -80,7 +80,8 @@ test.describe("물건 더하기 · 지우기 · 합계 문장 (작업 0350 · �
     await page.goto("/calc");
     await page.locator("#price").fill("100");
     await addItem(page, "100");
-    await expect(tid(page, "calc-limit-bar")).toHaveAttribute("data-ratio", "1");
+    // 달러 → 원 → 달러 로 돌아오는 계산이라 정확히 1 이 아니라 0.9999999999999999 로 나올 수 있음(기존 calc 계산 그대로) — 숫자로 비교
+    await expect.poll(async () => Number(await tid(page, "calc-limit-bar").getAttribute("data-ratio"))).toBeCloseTo(1, 9);
     await expect(tid(page, "combined-sentence")).toHaveCount(0);
     await rows(page).last().getByRole("textbox").fill("100.01");
     await expect(tid(page, "combined-sentence")).toHaveText("물건 두 개 합계 $100 + $100.01 = $200.01 · 하나씩은 한도 안이지만 합치면 넘습니다");
