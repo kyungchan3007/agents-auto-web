@@ -27,6 +27,9 @@
 - .agents/specs/0345-currency-answer-faq/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- packages/shared/src/domain/travel.ts: countryPath · priceGapSentence 를 0344 나라 페이지와 함께 쓰도록 옮김(두 벌 금지).
+- apps/web/src/features/prices/country/** : 나라 FAQ 가 공통 FaqList 를 쓰도록 바꿈.
+- 질문 칸 위치: 시안 6-new 는 통화 목록 아래지만 목록이 layout 에 있어 통화 코드를 몰라, 상세 맨 끝(목록 위 · 출처 줄 위)에 둠. 목록 아래로 옮기려면 병렬 라우트가 필요해 하지 않음.
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋의 CI gate)
