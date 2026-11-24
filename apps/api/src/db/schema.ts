@@ -81,6 +81,13 @@ export const githubItems = sqliteTable("github_items", {
   syncedAt: text("synced_at").notNull(),
 });
 
+/** 팀 현황 한 장씩 — GitHub Actions(sync-tasks.yml)가 key 마다 바꿔 넣음 · "today-issue" 오늘 할 일 이슈의 체크 항목 · "gate-runs" 최근 자동 검사 요약 (작업 0341) */
+export const teamSnapshots = sqliteTable("team_snapshots", {
+  key: text("key").primaryKey(),
+  body: text("body").notNull(), // JSON
+  syncedAt: text("synced_at").notNull(),
+});
+
 /** GEO 방문 집계 — 하루 · 종류 · 이름 · 페이지별 횟수만 (IP · 전체 User-Agent · 쿼리는 저장하지 않음 · 작업 0129) */
 export const geoHits = sqliteTable(
   "geo_hits",
