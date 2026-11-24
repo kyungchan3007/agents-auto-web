@@ -6,7 +6,8 @@ import type { Fetched } from "@hav/shared/api";
 import { SiteNav } from "@/shared/nav/site-nav";
 import { RATE_SOURCE_LABEL } from "@hav/shared/currency";
 import type { FxLatest } from "@hav/shared/fx";
-import { EmptyState } from "@hav/ui/feedback/empty-state";
+import { emptyProps } from "@hav/shared/fx-schedule";
+import { DataEmpty } from "@hav/ui/feedback/data-empty";
 import { FadeUpGroup } from "@hav/ui/motion/fade-up";
 import { PageFooter } from "@hav/ui/layout/page-footer";
 import { TextLink } from "@hav/ui/text/text-link";
@@ -20,7 +21,7 @@ import { CalcForm } from "./calculator/calc-form";
 import { CustomsSection } from "./customs/customs-section";
 import { ImportPriceSection } from "./import-price/import-price-section";
 
-export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { latest: Fetched<FxLatest>; customs: Record<string, CustomsRate>; trend: Point[] | null; usdDays: FxDay[] | null; importPrice: MonthPoint[] | null }) {
+export function CalcPage({ latest, customs, trend, usdDays, importPrice, builtAt = null }: { latest: Fetched<FxLatest>; /** 빌드 시각 — 빈 상태 이름표의 "확인" 시각 */ builtAt?: string | null; customs: Record<string, CustomsRate>; trend: Point[] | null; usdDays: FxDay[] | null; importPrice: MonthPoint[] | null }) {
   const hasRates = latest.ok && latest.data.rates.length > 0;
   // 입력 상태는 여기서 한 번 — 파랑 면 큰 문장 · 아래 입력 · 결과가 같이 씀 (작업 0175)
   const form = useCalcForm(latest.ok ? latest.data.rates : [], customs);
@@ -46,7 +47,7 @@ export function CalcPage({ latest, customs, trend, usdDays, importPrice }: { lat
             {hasRates ? (
               <CalcForm form={form} />
             ) : (
-              <EmptyState>환율을 받지 못해 계산할 수 없습니다 ({latest.ok ? "통화 없음" : latest.reason})</EmptyState>
+              <DataEmpty {...emptyProps({ screen: "calc", at: builtAt })} />
             )}
           </div>
         </div>
