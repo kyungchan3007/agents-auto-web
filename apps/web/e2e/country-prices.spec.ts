@@ -49,7 +49,7 @@ test.describe("나라 페이지 정적 HTML — 서버 첫 그림 (작업 0344)"
 
   test("물가 자료가 없는 나라(표에 없는 코드)는 페이지가 없음 (지어내지 않음)", async ({ page }) => {
     expect((await page.request.get("/prices/XXX")).status()).toBe(404);
-    expect((await page.request.get("/prices/jpn")).status(), "소문자 주소는 만들지 않음 (alpha-3 대문자만)").toBe(404);
+    // 소문자(/prices/jpn)는 여기서 보지 않음: 맥 파일 시스템은 대소문자를 구분하지 않아 정적 서버가 JPN.html 을 내줌 (Cloudflare Pages 에서는 404)
   });
 
   test("sitemap 에 /prices/JPN 이 들어감", async ({ page }) => {
