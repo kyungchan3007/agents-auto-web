@@ -116,6 +116,7 @@ test.describe("접속 기록 표 — 만드는 방식 (작업 0326)", () => {
     ],
   };
   const open = async (page: Page, body: object, status = 200) => {
+    await session(page, 200, { name: "owner" }); // 작업 0339: 본인에게만 보임
     await page.route("**/bff/admin-visits*", (route) => route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) }));
     await page.goto("/how");
   };
@@ -152,6 +153,23 @@ test.describe("접속 기록 표 — 만드는 방식 (작업 0326)", () => {
     await open(page, { unexpected: true });
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
     await expect(tid(page, "admin-visit-row")).toHaveCount(0);
+  });
+
+  test("리뷰어 토큰 · 세션을 못 받으면 표가 없음 · /bff/admin-visits 를 부르지 않음 (작업 0339)", async ({ page }) => {
+    let called = 0;
+    await page.route("**/bff/admin-visits*", (route) => {
+      called++;
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(REPORT) });
+    });
+    for (const [status, body] of [[200, { name: "apply-acme-1124" }], [401, { error: "x" }]] as const) {
+      await page.unroute("**/session");
+      await session(page, status, body);
+      await page.goto("/how");
+      await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+      await page.waitForTimeout(500);
+      await expect(tid(page, "admin-visits")).toHaveCount(0);
+    }
+    expect(called).toBe(0);
   });
 
   test("다른 어드민 화면(/log · /geo)에는 접속 기록 표가 없음 · /bff/admin-visits 를 부르지 않음", async ({ page }) => {
