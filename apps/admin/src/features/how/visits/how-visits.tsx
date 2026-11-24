@@ -1,11 +1,17 @@
 "use client";
 
 // 만드는 방식 — 접속 기록 (작업 0326 · 맨 아래 작은 표) · 지원 토큰 이름별 처음 · 마지막 접속 시각만 · IP · 기기 · 경로는 받지 않음
+//   작업 0339: 본인(owner)에게만 보임 · 다른 토큰이면 표를 그리지 않고 /bff/admin-visits 도 부르지 않음(Worker 도 404)
+import { useIsOwner } from "@/shared/gate/use-is-owner";
 import { Panel } from "@/shared/ui/panel/panel";
 import { useAdminVisits } from "./use-admin-visits";
 import { visitRows } from "./visits-view";
 
 export function HowVisits() {
+  return useIsOwner() ? <VisitsTable /> : null;
+}
+
+function VisitsTable() {
   const r = useAdminVisits();
   const rows = r?.ok ? visitRows(r.data) : [];
   return (
