@@ -12,7 +12,7 @@ const won = (n: number) => `${numberText(n, { maximumFractionDigits: 2 })}원`;
 export function CustomsSection({ points, bank }: { points: Point[] | null; bank: FxRate | undefined }) {
   const v = customsView(points, bank);
   return (
-    <section data-testid="customs-section" data-fu={4} className="min-w-0 rounded-[1.5rem] border border-line bg-card px-6 py-6" aria-labelledby="customs-title">
+    <section id="customs" data-testid="customs-section" data-fu={4} className="min-w-0 scroll-mt-24 rounded-[1.5rem] border border-line bg-card px-6 py-6" aria-labelledby="customs-title">
       <SectionTitle id="customs-title" className="text-[1.125rem] leading-tight text-fg">
         이번 주 과세환율
       </SectionTitle>
