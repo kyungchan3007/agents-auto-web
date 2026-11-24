@@ -247,12 +247,29 @@ test.describe("저장된 칩 첫 그림 깜빡임 없음 (작업 0231 · lead �
   type CF = { t: number; vis: { c: string; x: number; leaving: boolean }[]; attr: boolean; ready: boolean; ls: string | null; navs: number };
   const frames = (page: Page) => page.evaluate(() => (window as unknown as { __cf: unknown[] }).__cf) as Promise<CF[]>;
   const SAVED = ["GBP", "SGD", "AUD", "MYR", "CNH", "JPY", "USD"];
+  /** 기계 속도 재기(작업 0354) — 고정 계산이 걸린 시간(ms · 5번 중 가장 빠른 값). 기준 기기(개발 맥)에서 약 23.7ms · 6배 늦추면 약 133ms */
+  const CPU_BENCH = () => {
+    let best = Number.POSITIVE_INFINITY;
+    for (let r = 0; r < 5; r++) {
+      const t = performance.now();
+      let x = 0;
+      for (let i = 0; i < 4e6; i++) x += Math.sqrt(i) * Math.sin(i);
+      if (x === 0.5) console.log(x);
+      best = Math.min(best, performance.now() - t);
+    }
+    return best;
+  };
+  const REF_BENCH_MS = 23.7;
 
   test("저장이 있고 CPU 가 6배 느려도 — 첫 프레임부터 틀린 칩(기본 줄)이 한 번도 안 보임 · html 에 data-recent-chips · 저장 순서로 나타남 · 밀림 모션 없음", async ({ page }) => {
     await seed(page, SAVED);
     await page.addInitScript(INIT);
     const cdp = await page.context().newCDPSession(page);
-    await cdp.send("Emulation.setCPUThrottlingRate", { rate: 6 });
+    // 작업 0354: '6배 느린 CPU' 는 기준 기기(개발 노트북)의 6배 — 기계가 이미 느린 CI 에서는 같은 6배가 실제로는 수십 배라 저장 칩이 4초 안에 준비되지 못해(globals.css 의 4초 안전장치가 기본 칩 줄을 보여 줌) 조건 밖이 됐음 → 이 기계의 속도를 재어 기준 기기 기준 6배가 되도록 늦춤 값을 맞춤(기준 기기에서는 그대로 6배 · 조건은 약하게 만들지 않음)
+    const bench = await page.evaluate(CPU_BENCH);
+    const rate = Math.min(6, Math.max(1, (6 * REF_BENCH_MS) / bench));
+    test.info().annotations.push({ type: "CPU 늦춤", description: `이 기계는 기준 기기의 ${(bench / REF_BENCH_MS).toFixed(1)}배 느림 → 늦춤 ${rate.toFixed(2)}배 (목표: 기준 기기의 6배 느림)` });
+    await cdp.send("Emulation.setCPUThrottlingRate", { rate });
     await page.goto("/currencies/GBP");
     test.skip(!(await hasAll(page, SAVED)), "받은 통화가 모자람");
     await page.waitForTimeout(5500);
