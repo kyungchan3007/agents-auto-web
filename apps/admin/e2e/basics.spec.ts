@@ -1,6 +1,7 @@
 // 어드민 화면 기본기 (작업 0312 에 운영 e2e 에서 어드민 경로 부분만 옮김)
 //   a11y.spec(0213) · features.spec(0101 · 0105) · emphasis.spec · light-only.spec(0173) · no-photos.spec(0222) · site-name.spec(0197) · pages.spec(SR-LOG-01 · SR-GEO-01)
 import { type Locator, type Page, expect, test } from "@playwright/test";
+import { mockGeo, quietSession } from "./helpers";
 
 const PAGES = ["/log", "/geo", "/how"];
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
@@ -21,6 +22,11 @@ function watchErrors(page: Page) {
 test.describe("제목 구조 · 본문 바로가기 (작업 0213)", () => {
   for (const path of PAGES) {
     test(`${path} — h1 하나 · 섹션 제목은 h2 · 단계를 건너뛰지 않음`, async ({ page }) => {
+      // 작업 0352: /geo 는 빌드가 열쇠 없이 401 로 만들어(작업 0326) 섹션 제목(h2)이 브라우저가 /bff/geo 를 받은 뒤에 생김 — 고정 자료로 채움
+      if (path === "/geo") {
+        await mockGeo(page);
+        await quietSession(page);
+      }
       await page.goto(path);
       await page.waitForTimeout(300);
       const hs = await page.evaluate(() => [...document.querySelectorAll("h1,h2,h3,h4,h5,h6")].map((h) => ({ level: Number(h.tagName[1]), text: (h.textContent ?? "").trim().slice(0, 24) })));
@@ -124,6 +130,8 @@ test.describe("작업실 /log (SR-LOG-01)", () => {
 
 test.describe("GEO 측정 /geo (SR-GEO-01)", () => {
   test("큰 제목 · 측정 수치 카드 4개 · 읽는 법", async ({ page }) => {
+    await mockGeo(page); // 작업 0352: 수치 카드는 /bff/geo 를 받은 뒤에 그려짐(빌드는 열쇠가 없어 401 · 작업 0326)
+    await quietSession(page);
     await page.goto("/geo");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("AI 검색에서 이 사이트가 어떻게 쓰이는지 잽니다");
     const cards = tid(page, "geo-cards");

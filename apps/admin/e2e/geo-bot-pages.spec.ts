@@ -3,6 +3,7 @@
 //   DOM: data-testid="geo-bot-pages"(카드) 안에 "bot-pages-bot"[data-bot=이름](봇마다 · 제목 h3 + 글 '이름 · 총 N회 · M곳') · "bar-row"[data-value=횟수](경로 막대) · "bot-pages-rest"('그 밖 N곳 · M회')
 //   빈 상태 글 '아직 기록이 없습니다.' · 브라우저가 받는 /bff/geo 를 가짜 응답으로 바꿔 숫자를 정함 (rename-compare.spec.ts 와 같은 방식)
 import { type Page, expect, test } from "@playwright/test";
+import { quietSession } from "./helpers";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 640;
@@ -22,6 +23,7 @@ const WITH_PAGES = {
 };
 
 async function open(page: Page, body: object) {
+  await quietSession(page); // 작업 0352: 안내 창 확인용 /session 이 정적 서버에서 404 → 콘솔 'Failed to load resource' 오류(작업 0326 뒤) — 알 수 없는 모양 200 으로 조용히
   await page.route("**/bff/geo*", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(body) }));
   await page.goto("/geo");
 }

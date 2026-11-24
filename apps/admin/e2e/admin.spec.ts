@@ -2,7 +2,7 @@
 //   ADD-01 틀 · ADD-02 찾기 창 · ADD-03 단축키 · ADD-04 작업실 · ADD-05 GEO · ADD-06 만드는 방식 · ADD-07 사람 역할 · ADD-08 움직임 줄이기
 //   빌드한 사이트를 읽음 (미리보기와 같은 정적 파일) · 휴대폰 · 넓은 화면 두 프로젝트에서 돎
 import { type Page, expect, test } from "@playwright/test";
-import { hydrated } from "./helpers";
+import { hydrated, mockGeo, quietSession } from "./helpers";
 
 const tid = (page: Page, id: string) => page.getByTestId(id);
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 820;
@@ -47,6 +47,8 @@ test.describe("어드민 틀 (ADD-01)", () => {
 test.describe("찾기 창 · 단축키 (ADD-02 · ADD-03)", () => {
   test("⌘K / Ctrl+K 로 열고 초성으로 찾아 Enter 로 그 판에 감 · Esc 로 닫힘", async ({ page }) => {
     test.skip(isPhone(page), "글쇠 단축키는 넓은 화면");
+    await mockGeo(page); // 작업 0352: 빌드가 /geo 를 열쇠 없이 401 로 만들어(작업 0326) 질문 · 판 목록이 /bff/geo 를 받은 뒤에 생김
+    await quietSession(page);
     await page.goto("/geo");
     await hydrated(page.locator(".adm-find")); // 단축키는 하이드레이션 뒤에 붙음
     await page.keyboard.press("ControlOrMeta+k");
@@ -73,6 +75,8 @@ test.describe("찾기 창 · 단축키 (ADD-02 · ADD-03)", () => {
 
   test("숫자 단축키 1 · 2 · 3 으로 화면 이동 · 글을 입력하는 중에는 쓰지 않음", async ({ page }) => {
     test.skip(isPhone(page), "글쇠 단축키는 넓은 화면");
+    await mockGeo(page); // 작업 0352: /geo 의 '질문 걸러 보기' 칸은 /bff/geo 를 받은 뒤에 생김(빌드는 401)
+    await quietSession(page);
     await page.goto("/log");
     await hydrated(page.locator(".adm-find"));
     await page.keyboard.press("2");
@@ -111,6 +115,8 @@ test.describe("작업실 (ADD-04)", () => {
 
 test.describe("GEO 측정 (ADD-05)", () => {
   test("요약 숫자 4 · 날마다 그래프(막대마다 그날 기록 글) · 막대를 누르면 아래에 그날 기록", async ({ page }) => {
+    await mockGeo(page); // 작업 0352: 요약 칸 · 막대는 /bff/geo 를 받은 뒤에 그려짐(빌드는 열쇠가 없어 401 · 작업 0326)
+    await quietSession(page);
     await page.goto("/geo");
     await expect(tid(page, "geo-cards").locator(".adm-stat")).toHaveCount(4);
     const bars = tid(page, "day-bar");
@@ -126,10 +132,14 @@ test.describe("GEO 측정 (ADD-05)", () => {
 
   test("서버가 그린 HTML 에도 막대 숫자 · 날마다 기록 · 요약 숫자가 그대로", async ({ page }) => {
     const html = await (await page.request.get("/geo")).text();
+    // 작업 0352: 작업 0326 이 API 읽기에 어드민 열쇠를 요구한 뒤 열쇠 없는 빌드(로컬 · CI)는 /geo 를 'HTTP 401' 로 빌드해 서버 그림에 자료가 없음 — 이 검사는 자료가 있게 빌드된 때(열쇠를 넘긴 빌드 · 빌드용 고정 자료 API)만 의미가 있어 그때만 확인
+    test.skip(html.includes("HTTP 401"), "빌드에 어드민 열쇠가 없어 /geo 가 HTTP 401 로 빌드됨(작업 0326) — 서버 그림 자료 검사는 건너뜀");
     for (const id of ["bar-row", "day-bar", "geo-cards", "rename-compare", "geo-bot-pages"]) expect(html, id).toContain(`data-testid="${id}"`);
   });
 
   test("가로 막대 숫자(글)는 data-value 와 같음", async ({ page }) => {
+    await mockGeo(page); // 작업 0352: /geo 자료는 /bff/geo 를 받은 뒤에 그려짐(빌드는 열쇠가 없어 401 · 작업 0326)
+    await quietSession(page);
     await page.goto("/geo");
     const rows = tid(page, "geo-bots").locator('[data-testid="bar-row"]');
     expect(await rows.count()).toBeGreaterThan(0);
@@ -138,6 +148,8 @@ test.describe("GEO 측정 (ADD-05)", () => {
   });
 
   test("일반 질문 걸러 보기(낱자 · 초성) · 정렬 · 맞는 것이 없으면 안내", async ({ page }) => {
+    await mockGeo(page); // 작업 0352: /geo 자료는 /bff/geo 를 받은 뒤에 그려짐(빌드는 열쇠가 없어 401 · 작업 0326)
+    await quietSession(page);
     await page.goto("/geo");
     const table = tid(page, "rename-questions");
     test.skip((await table.locator("tbody tr[data-q]").count()) === 0, "질문 자료 없음");
@@ -159,6 +171,8 @@ test.describe("GEO 측정 (ADD-05)", () => {
   });
 
   test("봇별 읽은 페이지 — AI 봇 · 검색 엔진으로 묶어 보기", async ({ page }) => {
+    await mockGeo(page); // 작업 0352: /geo 자료는 /bff/geo 를 받은 뒤에 그려짐(빌드는 열쇠가 없어 401 · 작업 0326)
+    await quietSession(page);
     await page.goto("/geo");
     const card = tid(page, "geo-bot-pages");
     const all = await card.locator('[data-testid="bot-pages-bot"]').count();
@@ -271,6 +285,8 @@ test.describe("알리기 (작업 0307)", () => {
 test.describe("움직임 줄이기 (ADD-08)", () => {
   test.use({ reducedMotion: "reduce" });
   test("안내판 숫자는 처음부터 최종 값 · 화면 읽기 이름도 최종 값", async ({ page }) => {
+    await mockGeo(page); // 작업 0352: /geo 자료는 /bff/geo 를 받은 뒤에 그려짐(빌드는 열쇠가 없어 401 · 작업 0326)
+    await quietSession(page);
     await page.goto("/geo");
     const flap = tid(page, "geo-cards").locator(".adm-flap").first();
     const label = (await flap.getAttribute("aria-label")) ?? "";
