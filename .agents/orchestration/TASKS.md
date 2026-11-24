@@ -159,6 +159,7 @@
 | 0346 | 막다른 화면 없애기: 환율을 못 받은 날 /calc · 통화 상세 · 여행 물가 예산 카드에 공통 빈 상태 카드(이유 · 다시 받는 시각 · 이어 볼 곳) (Quick · 이탈 줄이기 시안 3) | test → builder | PR | task/0346-empty-states | packages/shared fx-schedule · packages/ui data-empty · features/{import-calc,currencies,prices} |
 | 0351 | main PR #409 전체 e2e 실패 고치기(운영 다섯 spec · 어드민은 묶음 전에도 깨졌는지 먼저) (Quick) | test → builder | 머지됨 (#410) | task/0351-main-e2e-fix | apps/web/e2e · apps/admin/e2e · 원인 코드 |
 | 0352 | 어드민 e2e 여섯 곳(0326 뒤 빌드 401 로 깨짐) 테스트 고치기: 가짜 응답 · 서버 그림 검사는 자료 없는 빌드면 건너뜀 (Quick) | test | 진행 중 | task/0352-admin-e2e-fixture | apps/admin/e2e |
+| 0353 | #409 두 번째 어드민 e2e 두 곳(admin.spec:140 · traffic.spec:42) (Quick) | test | 진행 중 | task/0353-admin-e2e-fixture-2 | apps/admin/e2e |
 | (후보) | 인스타 성과 — 릴스 · 스토리 게시물은 지표별 다시 부르기(종류가 지원 안 하는 지표 하나로 요청 전체 400 · geo 자문 11-23) | builder | 릴스 올릴 때 | — | apps/api/scripts/ig-insights.ts |
 | (후보) | Meta 광고 성과 읽기 — 노출 · 도달 · 클릭 · 지출(광고 계정 연결됨 11-23 · 광고 0개 · 0323 prd "나중에 포함") | geo → builder | 광고 대기 | — | — |
 | (후보) | 흔들리는 e2e 다음 묶음(11-23 test 확인) — currency-chips:248~251 · geo-bot-pages:55/66/96(재시도까지 실패) · home:101 · flights-window:199 · currency-chart:163 · admin:28 · home-bars:181 · axis-clear:29 · rename-compare:40 | test | 다음 작업 후보 | — | apps/web/e2e/** · apps/admin/e2e/** |
