@@ -6,7 +6,8 @@ import type { FxRate } from "@hav/shared/fx";
 import { type ChangeEvent, useState } from "react";
 import { useQueryParam } from "@hav/ui/hooks/browser/use-query-param";
 import { kstDate } from "@hav/shared/date";
-import { type CalcInput, type Rate, calc } from "./calc";
+import type { CalcInput, Rate } from "./calc";
+import { addExtra, calcCombined, canAddExtra, removeExtra } from "./combined";
 import { type CustomsRate, pickRate } from "../common/customs-rate";
 import { EXAMPLE, exampleFor } from "./example";
 
@@ -20,16 +21,29 @@ export function useCalcForm(rates: FxRate[], customs: Record<string, CustomsRate
   const fromUrl = useQueryParam("currency");
   const [picked, setInput] = useState<Partial<CalcInput>>({});
   const [touched, setTouched] = useState(false);
+  // 같은 판매자에게 같은 날 산 더한 물건 값 글 (작업 0350 · 합산과세) — 이 화면 상태에만 (IMP-01)
+  const [extras, setExtras] = useState<string[]>([]);
   const currency = picked.currency ?? (table[fromUrl] ? fromUrl : "USD");
   // 처음 들어온 그대로면(달러 · 환율 있음) 예시 값 — 한 칸이라도 고치면 "예시" 표시만 사라지고 값은 남음 (작업 0200)
   const example = touched ? null : exampleFor(currency, !!used[currency]);
   const input: CalcInput = { price: example ? EXAMPLE.price : "", shipping: "", dutyRate: "", ...picked, currency, route: picked.route ?? (currency === "USD" ? "us-list" : "other") };
-  const result = input.price.trim() !== "" ? calc(input, used) : null;
+  const combinedCalc = calcCombined(input, extras, used);
+  const result = input.price.trim() !== "" ? combinedCalc.result : null;
+  const { combined, extraError } = combinedCalc;
   return {
     codes: groupByRegion(rates).flatMap((g) => g.items.map((r) => r.currency)),
     input,
     result,
     example: example !== null,
+    extras,
+    combined,
+    extraError,
+    canAdd: canAddExtra(extras),
+    /** 큰 문장에 쓸 물건 값 — 더한 물건이 있으면 합계 (작업 0350) */
+    headlineInput: combined ? { ...input, price: String(combined.total) } : input,
+    addItem: () => setExtras(addExtra),
+    removeItem: (i: number) => setExtras((e) => removeExtra(e, i)),
+    setExtra: (i: number, v: string) => setExtras((e) => e.map((x, n) => (n === i ? v : x))),
     rate: table[input.currency],
     source: picks[input.currency]?.source,
     set: (k: keyof CalcInput) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -38,6 +52,7 @@ export function useCalcForm(rates: FxRate[], customs: Record<string, CustomsRate
       setInput((i) => ({ ...(example ? { price: EXAMPLE.price } : {}), ...i, [k]: v }));
       setTouched(true);
     },
-    err: (f: string) => (result && !result.ok && result.field === f ? result.reason : null),
+    // 더한 물건의 오류는 그 줄에 보임 — 첫 물건 칸에 같은 글을 또 띄우지 않음
+    err: (f: string) => (result && !result.ok && result.field === f && !(f === "price" && extraError) ? result.reason : null),
   };
 }

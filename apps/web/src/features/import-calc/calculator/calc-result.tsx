@@ -14,7 +14,7 @@ import { limitWidth, usdWhole } from "./calc-copy";
 // 원화 금액 — 값이 있으면 굴러가는 숫자(자리 이름 slot) · 없으면 "—" (작업 0227 · 값이 바뀌면 자리마다 굴러 맞춰짐 · 처음 값은 그대로)
 const won = (v: number | null, slot: string): ReactNode => (v == null ? "—" : <RollingNumber slot={slot} value={v} suffix="원" />);
 
-export function CalcResult({ result: r, rate, source, dutyRate }: { result: Result | null; rate: FxRate | undefined; source?: RateSource; dutyRate: string }) {
+export function CalcResult({ result: r, rate, source, dutyRate, combinedSentence = null }: { result: Result | null; rate: FxRate | undefined; source?: RateSource; dutyRate: string; /** 하나씩은 한도 안이지만 합치면 넘을 때의 한 줄 (작업 0350 · 합산과세) */ combinedSentence?: string | null }) {
   const rateText = source ? source.label : rate ? `${rate.date} 기준 · ${SOURCE_NAME[rate.source]}` : "환율을 받지 못했습니다";
   // 큰 숫자 = "모두 합쳐 예상"(합계) — 한도 안이면 합계가 물건 값 그대로 · 한도를 넘었는데 합계를 계산할 수 없는 상태(관세율 없음)는 물건 값 그대로 둠(숫자를 지어내지 않음 · 사용자 결정 대기 · 작업 0291)
   const big = r?.ok ? (r.tax?.total ?? r.priceKrw) : 0;
@@ -52,6 +52,11 @@ export function CalcResult({ result: r, rate, source, dutyRate }: { result: Resu
               </>
             )}
           </div>
+          {combinedSentence && (
+            <p data-testid="combined-sentence" className="mt-2 text-small font-semibold text-sun">
+              {combinedSentence}
+            </p>
+          )}
         </div>
         <div data-testid="calc-tag-bottom" className="flex-1 bg-card px-6 py-5 text-fg">
           {r?.ok && (
