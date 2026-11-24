@@ -1,6 +1,6 @@
 // 홈 맨 위 "여행 타이밍" — 통계청 국제항공료 지수(kosis-cpi:air-fare)로 가장 싼 달 · 가장 비싼 달 (작업 0169)
-// 달별 평균 = 최근 36개월 같은 달 평균 (@hav/shared/travel 의 monthlyAverages · /flights 와 같은 계산) · 값이 없으면 숫자 · 달을 지어내지 않음
-import { type MonthPoint, monthlyAverages } from "@hav/shared/travel";
+// 달별 평균 = 최근 36개월 같은 달 평균 (@hav/shared/travel 의 monthTiming · /flights · 나라 페이지와 같은 계산) · 값이 없으면 숫자 · 달을 지어내지 않음
+import { type MonthPoint, monthTiming } from "@hav/shared/travel";
 
 export type IndexPoint = MonthPoint;
 
@@ -8,27 +8,10 @@ export type TravelTiming =
   | { kind: "preparing" }
   | { kind: "ready"; months: { month: number; avg: number }[]; cheapest: number; priciest: number; years: number; complete: boolean };
 
-/** 값이 있는 달이 2개 미만이면 선을 그릴 수 없어 preparing · 같은 값이면 싼 달은 앞선 달 · 비싼 달은 뒤선 달 (모두 같아도 겹치지 않음) */
+/** 값이 있는 달이 2개 미만이면 preparing · 계산은 @hav/shared/travel 의 monthTiming (나라 페이지와 같은 규칙) */
 export function travelTiming(points: IndexPoint[] | null | undefined): TravelTiming {
-  const avg = monthlyAverages(points ?? []);
-  const months = Object.entries(avg)
-    .map(([m, v]) => ({ month: Number(m), avg: v.avg, n: v.n }))
-    .sort((a, b) => a.month - b.month);
-  if (months.length < 2) return { kind: "preparing" };
-  let cheapest = months[0];
-  let priciest = months[0];
-  for (const m of months) {
-    if (m.avg < cheapest.avg) cheapest = m;
-    if (m.avg >= priciest.avg) priciest = m;
-  }
-  return {
-    kind: "ready",
-    months: months.map(({ month, avg: a }) => ({ month, avg: a })),
-    cheapest: cheapest.month,
-    priciest: priciest.month,
-    years: Math.max(...months.map((m) => m.n)),
-    complete: months.length === 12,
-  };
+  const t = monthTiming(points);
+  return t ? { kind: "ready", ...t } : { kind: "preparing" };
 }
 
 /** 문구는 받은 값으로만 — 달이 모자라면 "1년 중" 대신 "받은 달 중" (없는 달을 비교한 척하지 않음) */

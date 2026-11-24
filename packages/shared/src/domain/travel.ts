@@ -161,6 +161,22 @@ export function monthlyAverages(points: MonthPoint[]): Record<number, { avg: num
   return Object.fromEntries(Object.entries(sums).map(([m, s]) => [Number(m), { avg: s.sum / s.n, n: s.n }]));
 }
 
+/** 달별 평균에서 가장 싼 달 · 가장 비싼 달 — 홈 "여행 타이밍" 과 나라 페이지 항공권 카드가 같이 씀 (작업 0344 · 같은 규칙 한 벌)
+ *  값이 있는 달이 2개 미만이면 null · 같은 값이면 싼 달은 앞선 달 · 비싼 달은 뒤선 달(모두 같아도 겹치지 않음) · complete = 12달 모두 있음 */
+export function monthTiming(points: MonthPoint[] | null | undefined): { months: { month: number; avg: number }[]; cheapest: number; priciest: number; years: number; complete: boolean } | null {
+  const months = Object.entries(monthlyAverages(points ?? []))
+    .map(([m, v]) => ({ month: Number(m), avg: v.avg, n: v.n }))
+    .sort((a, b) => a.month - b.month);
+  if (months.length < 2) return null;
+  let cheapest = months[0];
+  let priciest = months[0];
+  for (const m of months) {
+    if (m.avg < cheapest.avg) cheapest = m;
+    if (m.avg >= priciest.avg) priciest = m;
+  }
+  return { months: months.map(({ month, avg }) => ({ month, avg })), cheapest: cheapest.month, priciest: priciest.month, years: Math.max(...months.map((m) => m.n)), complete: months.length === 12 };
+}
+
 /** 3D 비행기 모델 파일 주소 · 출처 표시 — CC-BY 4.0 은 출처 표시가 조건 (작업 0164 · 홈과 /flights 가 함께 씀 · 파일은 apps/web/public/models/plane.glb 236,520 바이트) */
 export const PLANE_MODEL_URL = "/models/plane.glb";
 
