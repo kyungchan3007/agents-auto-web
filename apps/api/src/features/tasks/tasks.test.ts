@@ -55,7 +55,7 @@ describe("GET /tasks 응답", () => {
   });
 
   it("아직 한 번도 안 받았으면 빈 목록 · syncedAt null", () => {
-    expect(summarize([])).toEqual({ names: {}, done: [], syncedAt: null, snags: {}, snagsSince: null });
+    expect(summarize([])).toEqual({ names: {}, done: [], syncedAt: null, snags: {}, snagsSince: null, today: null, gate: null });
   });
 
   it("막힘 — 0 보다 큰 작업만 · 세기 시작한 때는 가장 이른 since (작업 0075)", () => {
