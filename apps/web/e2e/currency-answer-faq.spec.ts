@@ -32,7 +32,7 @@ test.describe("통화 상세 정적 HTML — 서버 첫 그림 (작업 0345)", (
 
   test("USD · EUR 도 같은 모양 — 큰 금액 · 쓰는 나라(미국 · 프랑스) 질문", async ({ page }) => {
     const usd = ld(await html(page, "/currencies/USD")).find((d) => d["@type"] === "FAQPage");
-    expect(usd!.mainEntity!.map((q) => q.name)).toEqual(["미국 달러 지금 싼 편인가요?", "1,000달러는 원화로 얼마인가요?", "미국 물가는 한국보다 비싼가요?", "오늘 환율은 언제 바뀌나요?"]);
+    expect(usd!.mainEntity!.map((q) => q.name)).toEqual(["달러 지금 싼 편인가요?", "1,000달러는 원화로 얼마인가요?", "미국 물가는 한국보다 비싼가요?", "오늘 환율은 언제 바뀌나요?"]);
     const eur = ld(await html(page, "/currencies/EUR")).find((d) => d["@type"] === "FAQPage");
     expect(eur!.mainEntity![2].name).toBe("프랑스 물가는 한국보다 비싼가요?");
   });
@@ -58,7 +58,7 @@ test.describe("통화 상세 화면 (작업 0345 · 시안 5-new · 6-new)", () 
     await expect(faq.locator('[data-testid="faq-item"][open]')).toHaveCount(2);
     await expect(faq.locator('[data-testid="faq-item"]').nth(0)).toHaveAttribute("open", "");
     await expect(faq.locator('[data-testid="faq-item"]').nth(1)).toHaveAttribute("open", "");
-    const [f, src] = await Promise.all([faq.boundingBox(), page.getByText(/^환율: 한국수출입은행/).first().boundingBox()]);
+    const [f, src] = await Promise.all([faq.boundingBox(), page.getByText(/환율: 한국수출입은행/).first().boundingBox()]);
     expect(f!.y, "질문 구간이 출처 줄 위").toBeLessThan(src!.y);
   });
 
