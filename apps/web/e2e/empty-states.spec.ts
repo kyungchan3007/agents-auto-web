@@ -91,3 +91,39 @@ test.describe("통화 상세 값을 못 받은 날 (작업 0346)", () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
   });
 });
+
+// 여행 물가 — 환율을 못 받은 빌드에서 예산 카드 결과 칸(하루 · N일 금액) 자리가 같은 빈 상태 (lead 결정 · 작업 0346)
+//   통화가 원래 없는 나라(마카오)는 그대로 · 환전 카드 한 줄(/prices/[code] 의 '자료 없음')은 그대로
+test.describe("여행 물가 예산 카드 — 환율을 못 받은 나라 (작업 0346)", () => {
+  for (const path of ["/prices", "/prices/JPN"]) {
+    test(`${path} — 예산 카드 결과 칸이 DataEmpty(제목에 나라 이름 · 이유 · 링크 둘) · 금액 칸은 없음`, async ({ page }) => {
+      await page.goto(path); // /prices 는 처음 고른 나라가 일본
+      const budget = tid(page, "budget");
+      const card = budget.locator('[data-testid="data-empty"]');
+      await expect(card).toBeVisible();
+      await expect(card).toHaveAttribute("data-surface", "light");
+      await expect(card.getByText(CHECKED)).toBeVisible();
+      await expect(card).toContainText("일본");
+      await expect(card).toContainText("받지 못했습니다");
+      await expect(card).toContainText("30분마다");
+      expect(await card.getByRole("link").evaluateAll((as) => as.map((a) => a.getAttribute("href")))).toEqual(["/currencies", "/calc"]);
+      await expect(tid(page, "budget-total"), "금액 칸은 숨음 (지어내지 않음)").toHaveCount(0);
+      await expect(tid(page, "budget-day")).toHaveCount(0);
+      await expect(budget.getByLabel("나라")).toBeVisible(); // 입력은 그대로 — 다른 나라를 고를 수 있음
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+    });
+  }
+
+  test("통화가 원래 없는 나라(/prices/MAC)는 그대로 — 예산 금액이 보이고 빈 상태 카드 없음", async ({ page }) => {
+    await page.goto("/prices/MAC");
+    await expect(tid(page, "budget-total")).toBeVisible();
+    await expect(tid(page, "budget").locator('[data-testid="data-empty"]')).toHaveCount(0);
+  });
+
+  test("/prices/JPN 의 환전 카드 한 줄은 그대로 — '자료 없음' + 통화 둘러보기 링크", async ({ page }) => {
+    await page.goto("/prices/JPN");
+    const cards = tid(page, "next-card");
+    await expect(cards.first()).toContainText("자료 없음");
+    await expect(cards.first().getByRole("link")).toHaveAttribute("href", "/currencies");
+  });
+});
