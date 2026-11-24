@@ -48,7 +48,7 @@ export function TripSwitcher({ className = "" }: { className?: string }) {
           value={s.query}
           onChange={s.onChange}
           onKeyDown={s.onInputKey}
-          className="h-11 border-[3px]! border-sun! hover:border-sun! focus:border-sun!"
+          className="h-11 border-[3px]! border-sun! hover:border-sun! focus:border-sun! max-sm:px-3 max-sm:placeholder:text-[0.75rem] max-sm:placeholder:tracking-tight"
         />
         {s.expanded && (
           <ul id={s.ids.list} role="listbox" aria-label="여행지 제안" className="absolute inset-x-0 bottom-full z-20 mb-1 max-h-64 overflow-y-auto rounded-[0.625rem] border-2 border-fg bg-card sm:top-full sm:bottom-auto sm:mt-1 sm:mb-0">
