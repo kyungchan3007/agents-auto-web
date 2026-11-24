@@ -41,9 +41,10 @@ export function parseDays(s: string): number | null {
  * 여행 하루 예산의 시작 나라 (작업 0212) — 직접 고른 나라 > 주소(?country=) > 여행지로 고른 나라 > 일본 > 목록 첫 나라
  * rows 는 화면 목록 순서(이름순) · 물가 자료에 없는 나라(두바이 등)는 건너뜀
  */
-export function budgetCountry(a: { rows: { country: string }[]; chosen: string | null; fromUrl: string | null; pickedTrip: string | null }): string {
+export function budgetCountry(a: { rows: { country: string }[]; chosen: string | null; fromUrl: string | null; pickedTrip: string | null; /** 나라 페이지(/prices/JPN)가 미리 골라 둔 나라 — 직접 고른 나라 다음 (작업 0344) */ initial?: string | null }): string {
   const has = (c: string | null): c is string => c !== null && a.rows.some((r) => r.country === c);
   if (has(a.chosen)) return a.chosen;
+  if (has(a.initial ?? null)) return a.initial as string;
   if (has(a.fromUrl)) return a.fromUrl;
   if (has(a.pickedTrip)) return a.pickedTrip;
   return a.rows.some((r) => r.country === "JPN") ? "JPN" : (a.rows[0]?.country ?? "");

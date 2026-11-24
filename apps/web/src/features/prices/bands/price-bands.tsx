@@ -11,6 +11,7 @@ import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import { SignalPin } from "@/shared/signal/signal-pin";
 import { CountUp } from "@hav/ui/motion/count-up";
 import Link from "next/link";
+import { countryPath } from "../country/country-view";
 import { usePriceBands } from "./use-price-bands";
 import { type PriceBand, rateBadgeText } from "./bands";
 import { relativePct, yearNote } from "../common/price-text";
@@ -34,7 +35,9 @@ function CountryRow({ r, signalOf, percentileOf, latestYear }: { r: Row; signalO
       <span className="flex min-w-0 items-center gap-3">
         <Flag country={TRAVEL_COUNTRIES[r.country]?.flag ?? null} label={`${r.name} 국기`} className="h-4 w-6 shrink-0" />
         <span className="min-w-0">
-          <span className="block text-[1.125rem] font-semibold text-fg">{r.name}</span>
+          <Link data-testid="price-band-link" href={countryPath(r.country)} className="block text-[1.125rem] font-semibold text-fg hover:underline">
+            {r.name}
+          </Link>
           <span className="block text-small text-fg-2">
             물가 <CountUp value={relativePct(r.relative)} /> (한국 100){yearNote(r.year, latestYear)}
           </span>
