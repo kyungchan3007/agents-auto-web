@@ -169,3 +169,20 @@ test("도착지 목록 아래 '다른 통화 N개 모두 보기 ›' — 누르�
   await link.click();
   await expect(page).toHaveURL(/\/currencies\/?$/);
 });
+
+// 작업 0351 — 사용자 디자인 결정 '제목 위 라벨 유지': 노트북 높이(1280×720 포함)에서도 큰 제목 위 '여행 타이밍' 라벨이 보임 (0347 이 낮은 화면에서 숨겼던 것을 되돌림)
+for (const [width, height] of [
+  [1280, 720],
+  [1366, 768],
+  [1440, 900],
+  [1920, 1080],
+] as const) {
+  test(`홈 제목 위 라벨 '여행 타이밍' — ${width}×${height} 에서도 보임`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    await page.goto("/");
+    const label = page.locator('*:text-is("여행 타이밍"):not(header *)').first();
+    await expect(label).toBeVisible();
+    const [l, h1] = await Promise.all([label.boundingBox(), page.getByRole("heading", { level: 1 }).boundingBox()]);
+    expect(l!.y + l!.height, "라벨은 큰 제목 위").toBeLessThanOrEqual(h1!.y + 2);
+  });
+}
