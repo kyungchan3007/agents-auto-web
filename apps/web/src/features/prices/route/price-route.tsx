@@ -5,6 +5,8 @@
 //   정거장 = 지금 정적 자의 핀(구간마다 맨 위 두 나라) + 한국 · 값은 아래 목록의 "물가 N (한국 100)" 과 같음(추가 API 없음 · 지어내지 않음)
 //   서버 첫 그림 · 자바스크립트 꺼짐 = 첫 정거장(가장 싼 나라) 카드와 자 · 핀 · 한국 100 꼬리표 · 움직임 줄이기 = 같은 화면에서 움직임 없이 바로 바뀜(모든 카드를 펼친 정적 목록은 없앰)
 import { Flag } from "@hav/ui/data/flag";
+import Link from "next/link";
+import { countryPath } from "../country/country-view";
 import type { Signal } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import { SectionTitle } from "@hav/ui/text/heading";
@@ -75,7 +77,11 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
           </p>
           <p className="h-(--route-name-h) overflow-hidden text-(length:--route-name) leading-[1.2] font-bold tracking-display">
             <span key={swap} data-testid="route-card-name" className={`block ${live && swap > 0 ? "animate-[route-up_.42s_cubic-bezier(.2,.9,.3,1)]" : ""}`}>
-              {stop.name}
+              {stop.country === "KR" ? stop.name : (
+                <Link data-testid="route-card-link" href={countryPath(stop.country)} className="hover:underline">
+                  {stop.name}
+                </Link>
+              )}
             </span>
           </p>
         </div>
