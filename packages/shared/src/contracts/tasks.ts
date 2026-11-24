@@ -15,6 +15,26 @@ export type DoneTask = z.infer<typeof DoneTask>;
 export const TaskSnag = z.object({ blocked: z.number().int().nonnegative(), failed: z.number().int().nonnegative() });
 export type TaskSnag = z.infer<typeof TaskSnag>;
 
+/** 오늘 할 일 이슈의 체크 항목 — 굵은 머리만 (작업 0341) */
+export const TodayIssue = z.object({
+  number: z.number().int().positive(),
+  title: z.string(),
+  url: z.string(),
+  items: z.array(z.object({ done: z.boolean(), head: z.string() })),
+});
+export type TodayIssue = z.infer<typeof TodayIssue>;
+
+/** 최근 자동 검사(gate) 요약 — 끝난 실행만 · 시간은 초 · 값을 모르면 null · 실패 줄은 최근부터 최대 3 (작업 0341) */
+export const GateRuns = z.object({
+  total: z.number().int().nonnegative(),
+  pass: z.number().int().nonnegative(),
+  fail: z.number().int().nonnegative(),
+  medianSec: z.number().nonnegative().nullable(),
+  latestSec: z.number().nonnegative().nullable(),
+  failed: z.array(z.object({ branch: z.string(), runUrl: z.string(), prNumber: z.number().int().positive().nullable(), prUrl: z.string().nullable() })),
+});
+export type GateRuns = z.infer<typeof GateRuns>;
+
 /** GET /tasks — names: 작업 번호 → 이름 (저장소 주인이 연 이슈에서) · done: 머지된 PR 최근부터 */
 export const TasksSummary = z.object({
   names: z.record(z.string(), z.string()),
@@ -25,6 +45,9 @@ export const TasksSummary = z.object({
   snags: z.record(z.string(), TaskSnag).default({}),
   /** 막힘을 세기 시작한 때 (그 전 기록은 지워져 모름) · 하나도 없으면 null */
   snagsSince: IsoDateTime.nullable().default(null),
+  /** 오늘 할 일 이슈 · 최근 자동 검사 — 아직 못 받았거나 모양이 다르면 null · 예전 응답에는 없어서 기본값 (작업 0341) */
+  today: TodayIssue.nullable().default(null),
+  gate: GateRuns.nullable().default(null),
 });
 export type TasksSummary = z.infer<typeof TasksSummary>;
 

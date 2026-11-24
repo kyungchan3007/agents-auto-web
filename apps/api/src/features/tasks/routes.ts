@@ -5,7 +5,7 @@ import { taskRows } from "./store";
 import { summarize } from "./summary";
 
 export const taskRoutes = new Hono<{ Bindings: Env }>().get("/", async (c) => {
-  const { rows, snagRows } = await taskRows(c.env.DB);
+  const { rows, snagRows, snapshots } = await taskRows(c.env.DB);
   c.header("cache-control", "public, max-age=60");
-  return c.json(summarize(rows, snagRows));
+  return c.json(summarize(rows, snagRows, snapshots));
 });
