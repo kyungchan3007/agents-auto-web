@@ -1,6 +1,7 @@
 // GET /ga4 응답 만들기 — D1 에서 읽은 행 → 날짜별 · 유입 경로별(기간 합) · 페이지별(기간 합) (순수 함수 · 작업 0324)
 //   합계는 받은 행의 합만 · 같은 키는 날짜를 가로질러 합침
 import type { Ga4Report } from "@hav/shared/ga4";
+import { parseEngagement } from "./engagement";
 import type { Ga4DailyRow, Ga4PageRow, Ga4SourceRow } from "./report";
 
 const TOP = 20;
@@ -24,8 +25,16 @@ function pagesTop(rows: Ga4PageRow[]): Ga4Report["pages"] {
   return [...sum].map(([path, views]) => ({ path, views })).sort((a, b) => b.views - a.views || cmp(a.path, b.path)).slice(0, TOP);
 }
 
-export const ga4Report = (daily: Ga4DailyRow[], sources: Ga4SourceRow[], pages: Ga4PageRow[]): Ga4Report => ({
+/** 저장된 한 장(team_snapshots) → 데이터 · 없거나 깨졌으면 null */
+const snapshotOf = (snapshots: { key: string; body: string }[], key: string) => {
+  const row = snapshots.find((s) => s.key === key);
+  return row ? parseEngagement(row.body) : null;
+};
+
+export const ga4Report = (daily: Ga4DailyRow[], sources: Ga4SourceRow[], pages: Ga4PageRow[], snapshots: { key: string; body: string }[] = []): Ga4Report => ({
   daily: daily.map((d) => ({ day: d.day, users: d.users, sessions: d.sessions, pageViews: d.pageViews })).sort((a, b) => cmp(b.day, a.day)),
   sources: sourcesTop(sources),
   pages: pagesTop(pages),
+  engagement: snapshotOf(snapshots, "ga4-page-engagement"),
+  baseline: snapshotOf(snapshots, "ga4-page-engagement-baseline"),
 });
