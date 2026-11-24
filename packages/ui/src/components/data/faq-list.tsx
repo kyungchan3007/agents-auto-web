@@ -14,7 +14,7 @@ export function FaqList({ items, linkText = "자세히 보기" }: { items: FaqLi
           </summary>
           <p className="mt-2 text-small text-fg-2">{it.a}</p>
           {it.href && (
-            <a data-testid="faq-link" href={it.href} className="mt-2 inline-block text-small font-bold text-fg underline-offset-2 hover:underline">
+            <a data-testid="faq-link" href={it.href} className="tap-44 mt-2 inline-block text-small font-bold text-fg underline-offset-2 hover:underline">
               {linkText} ›
             </a>
           )}
