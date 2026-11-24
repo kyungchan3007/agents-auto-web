@@ -226,12 +226,13 @@ test.describe("만드는 방식 (ADD-06 · ADD-07)", () => {
   });
 });
 
-test.describe("만드는 방식 — 세 칸 · 검색 · 시행착오 (작업 0306)", () => {
-  test("세 칸 · 검색 설명 → 규칙 → 궁금한 것 → 시행착오 순서", async ({ page }) => {
+test.describe("만드는 방식 — 세 칸 · 검색 (작업 0306 · 시행착오는 0340 에 지움)", () => {
+  test("세 칸 · 검색 설명 → 규칙 → 궁금한 것 순서 · 시행착오 칸 없음 (작업 0340)", async ({ page }) => {
     await page.goto("/how");
     await expect(page.getByTestId("how-focus").locator(".adm-panel")).toHaveCount(3);
-    const order = await page.evaluate(() => ["how-focus", "how-search", "how-rules", "how-faq", "how-trials"].map((id) => document.querySelector(`[data-testid="${id}"]`)?.getBoundingClientRect().top ?? -1));
+    const order = await page.evaluate(() => ["how-focus", "how-search", "how-rules", "how-faq"].map((id) => document.querySelector(`[data-testid="${id}"]`)?.getBoundingClientRect().top ?? -1));
     for (let i = 1; i < order.length; i++) expect(order[i], `순서 ${i}`).toBeGreaterThan(order[i - 1]);
+    await expect(page.getByTestId("how-trials")).toHaveCount(0);
   });
 
   test("검색 예시 — 다낭 → VND(도시 앞글자) · 화살표 · Enter 로 고름 · 없으면 안내", async ({ page }) => {
@@ -248,22 +249,6 @@ test.describe("만드는 방식 — 세 칸 · 검색 · 시행착오 (작업 03
     await expect(box.locator(".adm-srch-picked")).toContainText("/currencies/VND");
     await input.fill("없는도시이름");
     await expect(box).toContainText("찾는 통화가 없습니다");
-  });
-
-  test("시행착오 — 종류로 골라 보기 · 펼치면 원인 · 바꾼 것 · 근거 링크", async ({ page }) => {
-    await page.goto("/how");
-    const tr = page.getByTestId("how-trials");
-    const all = await tr.locator("[data-trial]").count();
-    expect(all).toBeGreaterThan(10);
-    await tr.getByRole("group", { name: "시행착오 종류" }).getByRole("button", { name: /^데이터/ }).click();
-    const data = await tr.locator("[data-trial]").count();
-    expect(data).toBeLessThan(all);
-    const first = tr.locator("[data-trial]").first();
-    await first.getByRole("button").first().click();
-    await expect(first).toContainText("원인");
-    await expect(first).toContainText("바꾼 것");
-    await expect(first.locator(".src a").first()).toHaveAttribute("href", /github\.com\/kyungchan3007\/agents-auto-web/);
-    await expect(tr).not.toContainText("영어로 답함");
   });
 });
 
