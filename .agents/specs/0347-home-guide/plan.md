@@ -19,6 +19,8 @@
 - .agents/specs/0347-home-guide/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- src/checks/role-boundary.test.ts: 앱 공통 폴더 허용 목록에 trip/trip-copy.ts (test).
+- 휴대폰 360 폭은 안내 문장이 세 줄이라 첫 화면(800 높이)에서 칩 일부가 아래로 내려감. 휴대폰은 노트북 높이 구간 규칙 밖이고 원래 스크롤 화면이라 그대로 둠(lead 판단).
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋의 CI gate)
