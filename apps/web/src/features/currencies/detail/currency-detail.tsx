@@ -8,7 +8,8 @@ import type { PriceLevels } from "@hav/shared/prices";
 import type { CurrencySignal } from "@hav/shared/signal";
 import { countriesOf } from "@hav/shared/travel";
 import { pinBasis } from "@/shared/signal/signal-pin-text";
-import { EmptyState } from "@hav/ui/feedback/empty-state";
+import { emptyProps } from "@hav/shared/fx-schedule";
+import { DataEmpty } from "@hav/ui/feedback/data-empty";
 import { FreshnessNote } from "@/shared/rate/freshness-note";
 import { BigRateNumber } from "./header/big-rate-number";
 import { Converter } from "../converter/converter";
@@ -23,12 +24,12 @@ import { bigRate } from "./range/redesign";
 
 const DOT = { cheap: "bg-pin-cheap", normal: "bg-pin-line", expensive: "bg-pin-expensive" } as const;
 
-export type DetailData = { code: string; rate: FxRate | null; signal: Fetched<CurrencySignal>; history: Fetched<FxHistory>; /** 물가 자료 — 쓰는 나라 물가 질문 (못 받았으면 null · 작업 0345) */ levels?: PriceLevels | null; problem: string | null };
+export type DetailData = { code: string; rate: FxRate | null; signal: Fetched<CurrencySignal>; history: Fetched<FxHistory>; /** 물가 자료 — 쓰는 나라 물가 질문 (못 받았으면 null · 작업 0345) */ levels?: PriceLevels | null; problem: string | null; /** 빌드 시각 — 빈 상태 이름표의 "확인" 시각 (작업 0346) */ builtAt?: string | null };
 
-export function CurrencyDetail({ code, rate, signal, history, levels = null, problem }: DetailData) {
+export function CurrencyDetail({ code, rate, signal, history, levels = null, builtAt = null }: DetailData) {
   const name = currencyName(code);
   if (!rate) {
-    return <EmptyState>{problem ?? `${name}(${code}) 환율이 아직 수집되지 않았습니다`}</EmptyState>;
+    return <DataEmpty {...emptyProps({ screen: "currency", name: `${name}(${code})`, at: builtAt })} />;
   }
   const t = rateText(rate);
   const big = bigRate(rate);
