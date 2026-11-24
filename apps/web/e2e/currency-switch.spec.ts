@@ -39,6 +39,12 @@ async function pageSnap(page: Page) {
   });
 }
 
+/** 1년 평균 줄을 화면에 넣고 세어 가는 움직임(약 1초 + 0.22초 기다림)이 끝나기를 기다림 (작업 0351) */
+async function avgIntoView(page: Page) {
+  await tid(page, "route-avg").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(1800);
+}
+
 /** 전환 동안 매 프레임 모음 — 클라이언트 이동은 문서가 이어지므로 같은 기록기가 계속 돎 */
 const RECORD = `
   (() => {
@@ -214,6 +220,7 @@ test.describe("통화 바꾸기 전환 (작업 0231 · 모션 7 · 4)", () => {
     const fr = await stopRec(page);
     expect(Math.max(...fr.map((f) => f.moving)), "글자판 굴러가는 칸이 한 번은 있음").toBeGreaterThan(0);
     expect(fr[fr.length - 1].moving, "끝에는 멈춤").toBe(0);
+    await avgIntoView(page); // 작업 0351: 1년 평균 숫자는 화면에 들어올 때 세므로(use-count-up) 한 줄 답이 위에 생긴 뒤 노트북 높이에서는 줄이 첫 화면 아래 — 보이게 한 뒤 끝 상태를 잼
     const got = await pageSnap(page);
     const fresh = await freshSnap(page, "USD");
     expect(got).toEqual(fresh);
@@ -229,6 +236,7 @@ test.describe("통화 바꾸기 전환 (작업 0231 · 모션 7 · 4)", () => {
     await settle(page, "USD", 4500);
     await chip(page, "JPY").click();
     await settle(page, "JPY", 4500);
+    await avgIntoView(page); // 작업 0351 (위와 같은 이유)
     expect(await pageSnap(page)).toEqual(await freshSnap(page, "JPY"));
     expect(await tid(page, "chip").evaluateAll((els) => els.sort((a, b) => a.getBoundingClientRect().x - b.getBoundingClientRect().x)[0].getAttribute("data-code"))).toBe("JPY");
     await expect(tid(page, "currency-chips").locator('a[aria-current="page"]')).toHaveAttribute("data-code", "JPY");

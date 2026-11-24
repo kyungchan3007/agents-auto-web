@@ -10,7 +10,7 @@ import { type Locator, type Page, expect, test } from "@playwright/test";
 const VIEW = { width: 390, height: 844 };
 const MIN = 43.5; // 0.5px 간격으로 잰 값이라 44 에서 0.5 까지 허용
 
-type Target = { id: string; page: string; sel: string; size?: { w?: number; h?: number }; need?: "both" | "h" };
+type Target = { id: string; page: string; sel: string; size?: { w?: number; h?: number; /** 같은 대상이 다른 모양일 때 허용하는 또 다른 높이들 (작업 0351) */ alsoH?: number[] }; need?: "both" | "h" };
 // 크기 = claude-desktop 이 390px 에서 잰 값(작업서) — 맞는지는 이 테스트가 확인(± 2px)
 const TARGETS: Target[] = [
   { id: "로고", page: "/", sel: 'header a[href="/"]', size: { w: 54, h: 33 } },
@@ -26,7 +26,8 @@ const TARGETS: Target[] = [
   { id: "범례 탭 travel-legend", page: "/flights", sel: '[data-testid="travel-legend"] button', size: { h: 32 } },
   { id: "나라 단추 route-stop", page: "/prices", sel: '[data-testid="route-stop"]', size: { h: 31 } },
   { id: "나라 더 보기", page: "/prices", sel: 'button[aria-expanded="false"]:has-text("나라 더 보기")', size: { h: 30 } },
-  { id: "통화 상세 링크", page: "/prices", sel: 'a[aria-label$="통화 상세"]', size: { h: 28 } },
+  // 작업 0351: '보통' 판정 핀은 2px 테두리(border-2 · signal-pin.tsx)라 원래 디자인이 32px · 쌈 · 비쌈 핀은 28px — 그날 신호에 따라 둘 다 나옴(작업서는 쌈 · 비쌈만 잼)
+  { id: "통화 상세 링크", page: "/prices", sel: 'a[aria-label$="통화 상세"]', size: { h: 28, alsoH: [32] } },
   { id: "금액 칩", page: "/currencies/USD", sel: '[role="group"][aria-label="빠른 금액"] button', size: { h: 32 } },
   { id: "통화 칩 chip", page: "/currencies/USD", sel: '[data-testid="chip"]', size: { h: 36 } },
   { id: "기간 단추(1개월 · 3개월 · 1년)", page: "/currencies/USD", sel: '[data-testid="year-flow"] button[aria-pressed]' },
@@ -77,7 +78,7 @@ test.describe("휴대폰 390px — 누르는 자리 44px 이상 (작업 0268)", 
           expect(m.up + m.down, `${name}: 눌리는 영역 높이(px)`).toBeGreaterThanOrEqual(MIN);
           if (m.w < 44) expect(m.left + m.right, `${name}: 폭이 44 미만이라 눌리는 영역 폭(px)도`).toBeGreaterThanOrEqual(MIN);
           // 보이는 크기는 지금 그대로(작업서 측정값 ± 2px)
-          if (t.size?.h) expect(Math.abs(m.h - t.size.h), `${name}: 보이는 높이 ${m.h.toFixed(1)}px (작업서 ${t.size.h}px)`).toBeLessThanOrEqual(2);
+          if (t.size?.h) expect(Math.min(...[t.size.h, ...(t.size.alsoH ?? [])].map((h) => Math.abs(m.h - h))), `${name}: 보이는 높이 ${m.h.toFixed(1)}px (작업서 ${[t.size.h, ...(t.size.alsoH ?? [])].join(" 또는 ")}px)`).toBeLessThanOrEqual(2);
           if (t.size?.w) expect(Math.abs(m.w - t.size.w), `${name}: 보이는 폭 ${m.w.toFixed(1)}px (작업서 ${t.size.w}px)`).toBeLessThanOrEqual(2);
         }
       }
