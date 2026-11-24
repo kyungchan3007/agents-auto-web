@@ -71,6 +71,23 @@ test.describe("작업실 — 오늘 팀이 한 일 · 자동 검사 (작업 0341
     await expect(fail).toContainText("task/0331-readme-refresh");
   });
 
+  // 작업 0352: 같은 PR 의 실패 실행이 둘이면 두 줄이 같은 PR 주소를 가져, 줄 키가 겹쳐 새 자료가 와도 옛 줄이 남던 것(실행 주소로 고침) — 실패 줄은 실행마다 한 줄씩 · 서로 다른 줄
+  test("같은 PR 의 실패 실행이 둘이어도 줄이 실행마다 하나씩 나옴 · 빌드 때 받은 옛 줄이 남지 않음", async ({ page }) => {
+    const twice = { ...GATE, fail: 2, failed: [{ branch: "task/0342-x", runUrl: `${U}/actions/runs/21`, prNumber: 401, prUrl: `${U}/pull/401` }, { branch: "task/0342-x", runUrl: `${U}/actions/runs/22`, prNumber: 401, prUrl: `${U}/pull/401` }] };
+    await mockTasks(page, { today: TODAY, gate: twice });
+    await page.goto("/log");
+    await hydrated(tid(page, "record-card"));
+    const fail = tid(page, "gate-fail");
+    await expect(fail).toHaveCount(2);
+    for (const i of [0, 1]) await expect(fail.nth(i)).toContainText("PR #401 · task/0342-x");
+    // 한 줄짜리 새 자료로 바뀌면 그 한 줄만 남음 (빌드 때 받은 실제 자료의 줄이 남지 않음)
+    await page.unroute("**/bff/tasks*");
+    await mockTasks(page, { today: TODAY, gate: GATE });
+    await page.reload();
+    await hydrated(tid(page, "record-card"));
+    await expect(tid(page, "gate-fail")).toHaveCount(1);
+  });
+
   test("기존 '작업 NNNN 머지 · 제목' 줄은 칸에서 사라짐", async ({ page }) => {
     await mockTasks(page, { today: TODAY, gate: GATE });
     await page.goto("/log");
