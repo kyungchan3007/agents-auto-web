@@ -141,6 +141,8 @@
 | 0326 | 어드민 입구 — 지원 링크(토큰)로만 · 쿠키 · 막는 화면 · 안내 창 · 접속 기록 · 본인용 owner · API 어드민 경로 키 (Full · 보호 파일 schema.ts · 마이그레이션 0014 승인 · main 은 비밀값 3개 등록 뒤) | test → builder | 머지됨 (#384) · main 반영 · init 끝 | task/0326-admin-token-gate | apps/admin/{worker,src} · packages/edge · apps/api/{src/index.ts,src/features/admin,src/db/schema.ts,drizzle/migrations} · packages/shared · scripts/admin-token.mjs |
 | 0329 | admin:token — 최신 버전이 미리보기만일 때 비밀값 넣기 실패를 한국어로 이유 · 해결 알림 · --versions 선택 (Quick · 작업 종류 ③) | test → builder | 머지됨 (#386) | task/0329-admin-token-preview | scripts/admin-token{.mjs,-lib.ts} |
 | 0330 | 문구 수정 — 어드민 안내 창 첫 줄 "열람 권한이 부여된 분께만…유효 기간 7일" · admin:token add 기본 기한 발급일+7일 (Quick) | lead | 진행 중 | task/0330-gate-welcome-copy | gate-welcome.tsx · admin-gate.spec.ts · scripts/admin-token{.mjs,-lib.ts} · admin-token-lib.test.ts · docs/architecture.md |
+| 0337 | 11-24(화) 수집 점검 기록: 환율 12:00 회차 · 새벽 예약 수집(gsc · ig · ga4, 안 돌아 lead 가 직접 실행) (Quick · 자료 · #395) | data | 진행 중 | task/0337-data-health-1124 | docs/data-health.md |
+| 0338 | 11-24 GEO 측정 · #157 조사 댓글 · 인스타 11-24 게시 확인 (Quick · 자료 · #395) | geo | 진행 중 | task/0338-geo-measure-1124 | apps/api/data/geo-answers/2026-11-24.json |
 | (후보) | 인스타 성과 — 릴스 · 스토리 게시물은 지표별 다시 부르기(종류가 지원 안 하는 지표 하나로 요청 전체 400 · geo 자문 11-23) | builder | 릴스 올릴 때 | — | apps/api/scripts/ig-insights.ts |
 | (후보) | Meta 광고 성과 읽기 — 노출 · 도달 · 클릭 · 지출(광고 계정 연결됨 11-23 · 광고 0개 · 0323 prd "나중에 포함") | geo → builder | 광고 대기 | — | — |
 | (후보) | 흔들리는 e2e 다음 묶음(11-23 test 확인) — currency-chips:248~251 · geo-bot-pages:55/66/96(재시도까지 실패) · home:101 · flights-window:199 · currency-chart:163 · admin:28 · home-bars:181 · axis-clear:29 · rename-compare:40 | test | 다음 작업 후보 | — | apps/web/e2e/** · apps/admin/e2e/** |
