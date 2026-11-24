@@ -261,7 +261,10 @@ test.describe("새 홈 — 카드 안 여행지 바꾸기 (작업 0217 지적)",
     await expect(switcher(page).getByRole("combobox", { name: "여행지 검색" })).toBeVisible();
     const card = await box(page, "ticket");
     const sw = await box(page, "trip-switcher");
-    expect(sw.y).toBeGreaterThan(card.y + 200);
+    const flap = await box(page, "flap-board");
+    // 작업 0347(시안 9-C): 칩 줄 + 검색 칸이 90일 신호 줄 위로 올라와 카드 위쪽 절반에 있음 — 예전 기준(카드 위에서 200px 아래)은 신호 줄 아래였을 때의 값 · 지금은 안내판 바로 아래부터
+    expect(sw.y).toBeGreaterThanOrEqual(flap.y + flap.height - 1);
+    expect(sw.y).toBeGreaterThan(card.y + 100);
     expect(sw.y + sw.height).toBeLessThanOrEqual(card.y + card.height + 1); // 카드 안
   });
 
