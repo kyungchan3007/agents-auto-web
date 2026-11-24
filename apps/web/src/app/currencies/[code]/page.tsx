@@ -6,7 +6,8 @@ import { loadDetail } from "@/features/currencies/page-data/load";
 import { DEFAULT_CODE } from "@/features/currencies/browse/route";
 import { api, mustHave } from "@hav/shared/api";
 import { JsonLd } from "@/shared/seo/json-ld";
-import { breadcrumbLd, pageMeta, rateDatasetLd } from "@/shared/seo/seo";
+import { breadcrumbLd, faqLd, pageMeta, rateDatasetLd } from "@/shared/seo/seo";
+import { detailFaq } from "@/features/currencies/detail/detail-faq";
 
 // 통화마다 정적 페이지 — API 가 준 통화 전부 (FX-03) · API 가 안 되면 달러 하나만 ("자료 없음")
 export const dynamicParams = false;
@@ -28,10 +29,12 @@ export async function generateMetadata({ params }: PageProps<"/currencies/[code]
 export default async function Page({ params }: PageProps<"/currencies/[code]">) {
   const { code } = await params;
   const d = await loadDetail(code);
+  const faq = faqLd(detailFaq(d).items);
   return (
     <>
       <JsonLd data={breadcrumbLd([{ name: "통화 둘러보기", path: "/currencies" }, { name: `${currencyName(code)} ${code}`, path: `/currencies/${code}` }])} />
       {d.rate && <JsonLd data={rateDatasetLd(code, d.rate)} />}
+      {faq && <JsonLd data={faq} />}
       <CurrencyDetail {...d} />
     </>
   );

@@ -3,7 +3,7 @@ import { api } from "@hav/shared/api";
 import type { DetailData } from "../detail/currency-detail";
 
 export async function loadDetail(code: string): Promise<DetailData> {
-  const [latest, signal, history] = await Promise.all([api.latest(), api.signal(code), api.history(code, 365)]);
+  const [latest, signal, history, levels] = await Promise.all([api.latest(), api.signal(code), api.history(code, 365), api.priceLevels()]);
   const rate = latest.ok ? (latest.data.rates.find((r) => r.currency === code) ?? null) : null;
-  return { code, rate, signal, history, problem: latest.ok ? null : latest.reason };
+  return { code, rate, signal, history, levels: levels.ok ? levels.data : null, problem: latest.ok ? null : latest.reason };
 }
