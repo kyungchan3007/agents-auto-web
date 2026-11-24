@@ -159,7 +159,7 @@
 | 0346 | 막다른 화면 없애기: 환율을 못 받은 날 /calc · 통화 상세 · 여행 물가 예산 카드에 공통 빈 상태 카드(이유 · 다시 받는 시각 · 이어 볼 곳) (Quick · 이탈 줄이기 시안 3) | test → builder | PR | task/0346-empty-states | packages/shared fx-schedule · packages/ui data-empty · features/{import-calc,currencies,prices} |
 | 0351 | main PR #409 전체 e2e 실패 고치기(운영 다섯 spec · 어드민은 묶음 전에도 깨졌는지 먼저) (Quick) | test → builder | 머지됨 (#410) | task/0351-main-e2e-fix | apps/web/e2e · apps/admin/e2e · 원인 코드 |
 | 0353 | #409 두 번째 어드민 e2e 두 곳(admin.spec:140 · traffic.spec:42) (Quick) | test | 머지됨 (#413) | task/0353-admin-e2e-fixture-2 | apps/admin/e2e |
-| 0354 | #409 전체 e2e: currency-chips:251(저장된 칩 깜빡임 · 두 번 연속 실패) · currency-answer-faq:75 흔들림 (Quick) | test → builder | 진행 중 | task/0354-chips-flaky | apps/web/e2e · 원인 코드 |
+| 0354 | #409 전체 e2e: currency-chips:251(저장된 칩 깜빡임 · 두 번 연속 실패) · currency-answer-faq:75 흔들림 (Quick) | test → builder | 머지됨 (#414) | task/0354-chips-flaky | apps/web/e2e · 원인 코드 |
 | 0352 | 어드민 e2e 여섯 곳(0326 뒤 빌드 401 로 깨짐) 테스트 고치기: 가짜 응답 · 서버 그림 검사는 자료 없는 빌드면 건너뜀 (Quick) | test | 머지됨 (#411) | task/0352-admin-e2e-fixture | apps/admin/e2e |
 | 0350 | 직구 합산과세: 같은 판매자에게 같은 날 산 물건 더하기 · 합계로 한도 판단 (Full · 이탈 줄이기 시안 7 · 고시 제68조 확인) | test → builder | PR | task/0350-import-combined | docs/domain/import-calc.md · features/import-calc · packages/shared domain |
 | (후보) | 인스타 성과 — 릴스 · 스토리 게시물은 지표별 다시 부르기(종류가 지원 안 하는 지표 하나로 요청 전체 400 · geo 자문 11-23) | builder | 릴스 올릴 때 | — | apps/api/scripts/ig-insights.ts |
