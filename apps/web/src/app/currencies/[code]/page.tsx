@@ -1,3 +1,4 @@
+import { buildTimeIso } from "@hav/shared/fx-schedule";
 import type { Metadata } from "next";
 import { currencyName } from "@hav/shared/currency";
 import { CurrencyDetail } from "@/features/currencies/detail/currency-detail";
@@ -35,7 +36,7 @@ export default async function Page({ params }: PageProps<"/currencies/[code]">) 
       <JsonLd data={breadcrumbLd([{ name: "통화 둘러보기", path: "/currencies" }, { name: `${currencyName(code)} ${code}`, path: `/currencies/${code}` }])} />
       {d.rate && <JsonLd data={rateDatasetLd(code, d.rate)} />}
       {faq && <JsonLd data={faq} />}
-      <CurrencyDetail {...d} />
+      <CurrencyDetail {...d} builtAt={buildTimeIso()} />
     </>
   );
 }
