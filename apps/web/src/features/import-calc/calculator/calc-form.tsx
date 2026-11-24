@@ -6,12 +6,13 @@ import { Input, Select, UnitInput } from "@hav/ui/form/field";
 import type { ReactNode } from "react";
 import { summaryLine } from "./calc-copy";
 import { CalcResult } from "./calc-result";
+import { ADD_ITEM_LABEL, COMBINED_LABEL, COMBINED_NOTE } from "./combined";
 import { DUTY_FREE_USD, ROUTE_LABEL, type Route } from "./rules";
 import type { useCalcForm } from "./use-calc-form";
 
 // 입력 상태는 위(calc-page)에서 한 번 만들어 내려받음 — 맨 위 큰 문장(사진 위)이 같은 입력으로 바뀌어야 해서 (작업 0175)
 export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
-  const { codes, input, result, rate, source, set, err, example } = form;
+  const { codes, input, result, rate, source, set, err, example, extras, combined, extraError, canAdd, addItem, removeItem, setExtra } = form;
   return (
     <>
       {/* 휴대폰 — 결과가 두 번째 화면이라 폼 위에 요약 한 줄 · 높이 고정(글만 바뀜) (작업 0208) */}
@@ -36,6 +37,29 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
         <Field label="물건 값" hint="현지 세금 · 현지 배송비까지 넣은 값" htmlFor="price" error={err("price")} badge={example}>
           <UnitInput unit={input.currency} id="price" inputMode="decimal" autoComplete="off" value={input.price} onChange={set("price")} placeholder="180" />
         </Field>
+          </div>
+          {/* 같은 판매자에게 같은 날 산 물건 (작업 0350 · 합산과세 · 고시 제68조) — 해당하는 물건만 더하면 합계로 면세 한도를 봄 */}
+          <div data-testid="combined-items" className="mt-4">
+            <p className="text-small font-bold text-fg">{COMBINED_LABEL}</p>
+            <p data-testid="combined-note" className="mt-1 text-small text-fg-2">
+              {COMBINED_NOTE}
+            </p>
+            {extras.map((value, i) => (
+              <div key={i} data-testid="combined-item" className="mt-3">
+                <div className="flex items-center gap-2">
+                  <div className="min-w-0 flex-1">
+                    <UnitInput unit={input.currency} aria-label={`더한 물건 ${i + 1} 값`} inputMode="decimal" autoComplete="off" value={value} onChange={(e) => setExtra(i, e.target.value)} aria-invalid={extraError?.index === i} />
+                  </div>
+                  <button type="button" data-testid="combined-remove" aria-label="물건 지우기" onClick={() => removeItem(i)} className="tap-44 grid size-11 shrink-0 place-items-center rounded-[0.875rem] border-2 border-field-line text-fg-2 hover:border-cheap/60 hover:text-fg">
+                    <span aria-hidden>✕</span>
+                  </button>
+                </div>
+                {extraError?.index === i && <p className="mt-1.5 text-small text-expensive">{extraError.reason}</p>}
+              </div>
+            ))}
+            <button type="button" data-testid="combined-add" disabled={!canAdd} onClick={addItem} className="tap-44 mt-3 inline-flex min-h-11 items-center rounded-pill border-2 border-field-line px-4 text-small font-bold text-fg hover:border-cheap/60 disabled:cursor-not-allowed disabled:opacity-50">
+              {ADD_ITEM_LABEL}
+            </button>
           </div>
         </fieldset>
         <div aria-hidden className="h-px shrink-0 bg-line" />
@@ -75,7 +99,7 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
         </fieldset>
       </form>
 
-      <CalcResult result={result} rate={rate} source={source} dutyRate={input.dutyRate} />
+      <CalcResult result={result} rate={rate} source={source} dutyRate={input.dutyRate} combinedSentence={combined?.sentence ?? null} />
       </div>
     </>
   );
