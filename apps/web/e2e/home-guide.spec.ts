@@ -153,6 +153,8 @@ test.describe("노트북 높이마다 첫 화면 — 안내 · 탑승권 카드 
       expect(await bottom(tid(page, "ticket-evidence"), "90일 신호 줄"), "90일 신호 줄 아래 끝").toBeLessThanOrEqual(height);
       expect(await bottom(tid(page, "ticket").getByTestId("flap-board"), "안내판"), "안내판 아래 끝").toBeLessThanOrEqual(height);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), "가로 넘침").toBeLessThanOrEqual(0);
+      // 제목 위 라벨('여행 타이밍')도 그대로 보임 — 사용자 결정 '제목 위 라벨 유지' (작업 0351)
+      await expect(page.locator('*:text-is("여행 타이밍"):not(header *)').first(), "제목 위 라벨").toBeVisible();
       // 큰 제목은 줄이되 없애지 않음
       expect(await page.getByRole("heading", { level: 1 }).evaluate((el) => parseFloat(getComputedStyle(el).fontSize)), "큰 제목 글자 크기").toBeGreaterThanOrEqual(40);
       // 작은 줄과 카드가 겹치지 않고 너무 떨어지지도 않음

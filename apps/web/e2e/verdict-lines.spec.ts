@@ -34,6 +34,16 @@ test.describe("통화 판정 줄 (작업 0298)", () => {
     });
   }
 
+  // 작업 0351: 통화 상세 질문 1 의 답이 지운 설명 문장('최근 90일 중 N%의 날보다 …')을 되살렸던 것 — 판정 줄 말('하위 N% · 낮음')로 쓴다
+  for (const code of ["USD", "JPY", "EUR"]) {
+    test(`/currencies/${code} — 자주 묻는 질문 1 의 답은 판정 줄 말('… 하위 · 상위 N% · 낮음 · 보통 · 높음' 또는 신호 없음)이고 지운 설명 문장이 아님 (작업 0351)`, async ({ page }) => {
+      await open(page, code, 1280);
+      const answer = (await page.getByTestId("faq-item").first().innerText()).replace(/\s+/g, " ");
+      expect(answer, "질문 1 답에 신호 말").toMatch(/(하위|상위) \d+% · (낮음|보통|높음)|신호를 받지 못했습니다/);
+      expect(answer, "지운 설명 문장이 아님").not.toMatch(/최근 \d+일 중 (\d+%의 날보다|가장 (낮|높)습니다)|최근 \d+일 중간 수준/);
+    });
+  }
+
   for (const code of PEGGED) {
     test(`/currencies/${code} — 셋째 줄이 보임: '(통화 이름)은(는) 미국 달러에 고정된 통화라 달러와 같이 움직입니다'`, async ({ page }) => {
       await open(page, code, 1280);

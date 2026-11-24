@@ -28,6 +28,9 @@ const TARGETS: Target[] = [
   { id: "나라 더 보기", page: "/prices", sel: 'button[aria-expanded="false"]:has-text("나라 더 보기")', size: { h: 30 } },
   // 작업 0351: '보통' 판정 핀은 2px 테두리(border-2 · signal-pin.tsx)라 원래 디자인이 32px · 쌈 · 비쌈 핀은 28px — 그날 신호에 따라 둘 다 나옴(작업서는 쌈 · 비쌈만 잼)
   { id: "통화 상세 링크", page: "/prices", sel: 'a[aria-label$="통화 상세"]', size: { h: 28, alsoH: [32] } },
+  // 작업 0351: 0344 나라 이름 링크(보이는 높이 27px 그대로) · 0345 통화 상세 질문 속 '나라 물가 자세히 보기' 링크(20px 그대로)도 같은 조건(눌리는 영역 44px)
+  { id: "나라 이름 링크 price-band-link", page: "/prices", sel: '[data-testid="price-band-link"]', size: { h: 27 } },
+  { id: "질문 링크 faq-link", page: "/currencies/USD", sel: '[data-testid="faq-link"]', size: { h: 20 } },
   { id: "금액 칩", page: "/currencies/USD", sel: '[role="group"][aria-label="빠른 금액"] button', size: { h: 32 } },
   { id: "통화 칩 chip", page: "/currencies/USD", sel: '[data-testid="chip"]', size: { h: 36 } },
   { id: "기간 단추(1개월 · 3개월 · 1년)", page: "/currencies/USD", sel: '[data-testid="year-flow"] button[aria-pressed]' },
@@ -53,6 +56,8 @@ async function open(page: Page, path: string) {
   await page.setViewportSize(VIEW);
   await page.goto(path);
   await page.waitForLoadState("networkidle");
+  // 접힌 질문 속 링크(faq-link)도 재도록 펼쳐 둠 — 펼침은 화면 아래쪽 높이만 바꿈 (작업 0351)
+  await page.evaluate(() => document.querySelectorAll("details").forEach((d) => { d.open = true; }));
 }
 
 const byPage = [...new Set(TARGETS.map((t) => t.page))];
@@ -66,7 +71,7 @@ test.describe("휴대폰 390px — 누르는 자리 44px 이상 (작업 0268)", 
         const loc = page.locator(t.sel);
         const n = await loc.count();
         // 자료가 없어 그려지지 않는 칸(나라 더 보기 · 통화 상세 링크 · 출발일 달력 · 12달 구역 등)은 건너뜀 — 로고 · 메뉴 · 통화 칩 · 기간 단추처럼 늘 있는 대상은 반드시 있어야 함
-        if (n === 0 && ["도시 칩 pick-chip", "year-link", "more-currencies", "통화 상세 링크", "도시 칩 airfare-chip", "다시 보기 window-replay", "달력 이전 airfare-prev", "달력 다음 airfare-next", "나라 더 보기", "범례 탭 travel-legend"].includes(t.id)) continue;
+        if (n === 0 && ["도시 칩 pick-chip", "year-link", "more-currencies", "통화 상세 링크", "도시 칩 airfare-chip", "다시 보기 window-replay", "달력 이전 airfare-prev", "달력 다음 airfare-next", "나라 더 보기", "나라 이름 링크 price-band-link", "질문 링크 faq-link", "범례 탭 travel-legend"].includes(t.id)) continue;
         expect(n, `${t.id} 가 화면에 있음`).toBeGreaterThan(0);
         for (let i = 0; i < n; i++) {
           const el = loc.nth(i);
