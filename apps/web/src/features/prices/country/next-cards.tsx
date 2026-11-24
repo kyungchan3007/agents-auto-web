@@ -22,7 +22,7 @@ function cards(v: CountryView): Card[] {
 
 export function NextCards({ v }: { v: CountryView }) {
   return (
-    <section aria-labelledby="country-next" className="mt-14">
+    <section aria-labelledby="country-next" className="mt-0">
       <h2 id="country-next" className="font-display text-[1.75rem] leading-tight font-extrabold tracking-display text-fg sm:text-[2.25rem]">
         {v.name} 여행, 다음으로 볼 것
       </h2>
