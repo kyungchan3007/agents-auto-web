@@ -41,6 +41,16 @@ export function breadcrumbLd(items: { name: string; path: string }[]) {
   };
 }
 
+/** 자주 묻는 질문 — 문항이 없으면 null (빈 FAQPage 를 내지 않음) · 화면에 있는 문항만 넣음 (작업 0344) */
+export function faqLd(items: { q: string; a: string }[]) {
+  if (items.length === 0) return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((it) => ({ "@type": "Question", name: it.q, acceptedAnswer: { "@type": "Answer", text: it.a } })),
+  };
+}
+
 /** 통화 상세 환율 자료 — 기준일 · 출처 · 값은 받은 환율에서만 */
 export function rateDatasetLd(code: string, rate: Pick<FxRate, "date" | "baseRate" | "unit" | "source">) {
   const name = `${currencyName(code)} ${code} 환율`;

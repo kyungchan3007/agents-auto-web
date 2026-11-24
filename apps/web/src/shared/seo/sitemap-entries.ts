@@ -4,7 +4,7 @@ import type { FxRate } from "@hav/shared/fx";
 
 const RATE_PAGES = new Set<string>(["/", "/currencies", "/prices", "/calc"]);
 
-export function sitemapEntries(siteUrl: string, pages: readonly string[], rates: Pick<FxRate, "currency" | "date">[], pageDates: Record<string, string | null | undefined> = {}) {
+export function sitemapEntries(siteUrl: string, pages: readonly string[], rates: Pick<FxRate, "currency" | "date">[], pageDates: Record<string, string | null | undefined> = {}, countryCodes: readonly string[] = []) {
   const latest = rates.reduce<string | null>((m, r) => (m === null || r.date > m ? r.date : m), null);
   return [
     ...pages.map((p) => ({
@@ -13,6 +13,8 @@ export function sitemapEntries(siteUrl: string, pages: readonly string[], rates:
       priority: p === "/" ? 1 : 0.8,
       ...(latest && RATE_PAGES.has(p) ? { lastModified: latest } : pageDates[p] ? { lastModified: pageDates[p] } : {}),
     })),
+    // 나라별 여행 물가 /prices/[code] (작업 0344) — 환율 기준일이 있으면 그 날 · 없으면 날짜를 만들지 않음
+    ...countryCodes.map((c) => ({ url: `${siteUrl}/prices/${c}`, changeFrequency: "daily" as const, priority: 0.6, ...(latest ? { lastModified: latest } : {}) })),
     ...rates.map((r) => ({ url: `${siteUrl}/currencies/${r.currency}`, changeFrequency: "daily" as const, priority: 0.5, lastModified: r.date })),
   ];
 }
