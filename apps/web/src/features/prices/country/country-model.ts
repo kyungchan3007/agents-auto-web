@@ -6,7 +6,7 @@ import type { PriceLevels } from "@hav/shared/prices";
 import { type MonthPoint, TRAVEL_COUNTRIES, monthTiming, travelBands } from "@hav/shared/travel";
 import { budgetOf, wonText } from "../budget/budget";
 import { pickedHeadline } from "../prices-copy";
-import { type CompareItem, type FaqItem, type FlightCard, compareCountries, countryFaq, eunNeun, flightCard, oneLineAnswer } from "./country-view";
+import { type CompareItem, type FaqItem, type FlightCard, compareCountries, countryFaq, eunNeun, flightCard, gwaWa, oneLineAnswer } from "./country-view";
 
 export type CountryInput = {
   code: string;
@@ -35,8 +35,10 @@ export type CountryView = {
   oneLine: { label: string; text: string; note: string | null } | null;
   flight: FlightCard;
   budget: { dailyWon: number; days: number; totalWon: number; text: string };
-  exchange: { unit: string; value: string; note: string } | null;
+  exchange: { unit: string; title: string; value: string; note: string } | null;
   compare: CompareItem[];
+  /** "일본과 견줘 볼 나라" */
+  compareTitle: string;
   faq: FaqItem[];
   index: number;
 };
@@ -59,7 +61,7 @@ export function countryView(i: CountryInput): CountryView | null {
   const flight = flightCard({ code: i.code, calendar: i.calendar, timing: monthTiming(i.airPoints) });
   const b = budgetOf(DAILY, DAYS, row.relative, per !== null && i.rate ? per / i.rate.unit : null);
   const budget = { dailyWon: b.dailyWon, days: DAYS, totalWon: b.totalWon, text: `${wonText(b.totalWon)}` };
-  const exchange = one && i.rate && meta.currency ? { unit: label, value: `${per!.toLocaleString("ko-KR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}원`, note: sig ?? "신호를 받지 못했습니다" } : null;
+  const exchange = one && i.rate && meta.currency ? { unit: label, title: `${currencyName(meta.currency)} 지금 바꿔도 될까`, value: `${per!.toLocaleString("ko-KR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}원`, note: sig ?? "신호를 받지 못했습니다" } : null;
   return {
     code: i.code,
     name: row.name,
@@ -72,6 +74,7 @@ export function countryView(i: CountryInput): CountryView | null {
     budget,
     exchange,
     compare: compareCountries(i.code, all),
+    compareTitle: `${row.name}${gwaWa(row.name)} 견줘 볼 나라`,
     index: Math.round(row.relative * 100),
     faq: countryFaq({
       name: row.name,

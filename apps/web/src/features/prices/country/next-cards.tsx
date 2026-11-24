@@ -7,7 +7,7 @@ type Card = { kicker: string; title: string; big: string; say: string; href: str
 /** 카드 셋의 글 — 순서 고정 (환전 · 항공권 · 예산) */
 function cards(v: CountryView): Card[] {
   const fx: Card = v.exchange
-    ? { kicker: "1 · 환전", title: `${v.exchange.unit.replace(/^\d+/, "")} 지금 바꿔도 될까`, big: `${v.exchange.value} / ${v.exchange.unit}`, say: v.exchange.note, href: `/currencies/${v.currency}`, link: "환율 1년 흐름 보기" }
+    ? { kicker: "1 · 환전", title: v.exchange.title, big: `${v.exchange.value} / ${v.exchange.unit}`, say: v.exchange.note, href: `/currencies/${v.currency}`, link: "환율 1년 흐름 보기" }
     : { kicker: "1 · 환전", title: "환전은 지금 해도 될까", big: "자료 없음", say: "이 나라 통화의 오늘 환율을 받지 못했습니다", href: v.currency ? `/currencies/${v.currency}` : "/currencies", link: "통화 둘러보기" };
   const f = v.flight;
   const air: Card =

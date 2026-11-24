@@ -1,15 +1,14 @@
 // 견줘 볼 나라 (작업 0344 · 시안 2-new) — 그 나라 물가 기준으로 다시 계산한 % · 누르면 그 나라 페이지
 import Link from "next/link";
 import type { CountryView } from "./country-model";
-import { countryPath, eunNeun } from "./country-view";
+import { countryPath } from "./country-view";
 
 export function CompareList({ v }: { v: CountryView }) {
   if (v.compare.length === 0) return null;
   return (
     <section aria-labelledby="country-compare" className="mt-12">
       <h2 id="country-compare" className="text-[1.25rem] font-bold text-fg">
-        {v.name}
-        {eunNeun(v.name) === "은" ? "과" : "와"} 견줘 볼 나라
+        {v.compareTitle}
       </h2>
       <p className="mt-1 text-small text-fg-2">
         {v.name} 물가({v.index})를 기준으로 비교합니다 · 누르면 그 나라 페이지로 갑니다
