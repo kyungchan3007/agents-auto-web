@@ -56,3 +56,6 @@ export function emptyCopy(p: { screen: EmptyScreen; name?: string }): { title: s
 export function emptyProps(p: { screen: EmptyScreen; name?: string; at: string | null }) {
   return { checked: checkedAtText(p.at), ...emptyCopy(p) };
 }
+
+/** 지금 시각(ISO) — 정적 페이지가 만들어지는 때가 곧 "확인한 시각"이라 서버 페이지가 빈 상태 이름표에 넘김 (tsx 에는 날짜 계산을 두지 않음 · 작업 0346) */
+export const buildTimeIso = (): string => new Date().toISOString();
