@@ -1,5 +1,5 @@
 // 자주 묻는 질문 (작업 0344 · 시안 6-new) — <details> · 처음 두 개 펼침 · 같은 문항이 구조화 자료(FAQPage)에도 들어감
-import { FaqList } from "@/shared/ui/faq/faq-list";
+import { FaqList } from "@hav/ui/data/faq-list";
 import type { FaqItem } from "./country-view";
 
 export function CountryFaq({ name, year, items }: { name: string; year: number; items: FaqItem[] }) {

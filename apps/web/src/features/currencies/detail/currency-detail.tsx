@@ -16,7 +16,7 @@ import { CurrencyKicker } from "./header/currency-kicker";
 import { PeriodChart } from "../period-chart/period-chart";
 import { RangeCard } from "./range/range-card";
 import { SwitchFade } from "../switch/switch-fade";
-import { FaqList } from "@/shared/ui/faq/faq-list";
+import { FaqList } from "@hav/ui/data/faq-list";
 import { detailFaq } from "./detail-faq";
 import { currencyListName, yearStats } from "./detail-view";
 import { bigRate } from "./range/redesign";
