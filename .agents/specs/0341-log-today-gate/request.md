@@ -27,3 +27,12 @@ claude-desktop 작업서(qitem-20261124031351-8e15243bb04c588e) "만들 것" 원
 > 2. 보호 파일 목록을 시안과 함께 보냄.
 > 3. 승인 뒤 구현: Full Loop(자료 계약 · 수집 변경). 테스트는 test.
 > 4. gate 통과 → develop `--rebase` 머지 → 어드민 작업이라 main fast-forward(보내기 전 목록 확인).
+
+## 사용자 승인 (11-24 · claude-desktop 경유)
+
+> 승인, 진행해
+
+- 질문: "시안대로 진행하고 보호 파일 세 개를 승인할까요?"
+- 시안 1~3번 그대로 확정: 칸 제목 '오늘 팀이 한 일 · 자동 검사'(한 칸에 위아래) · 걸린 시간은 가운데 값과 최근 한 번 둘 다 · 실패한 검사는 브랜치 이름 + 실행 링크(브랜치로 PR 을 찾으면 PR 링크).
+- 승인된 보호 파일: apps/api/src/db/schema.ts(team_snapshots 표 하나) · apps/api/drizzle/migrations/ 새 파일 하나 · .github/workflows/sync-tasks.yml(오늘 할 일 이슈 본문 · 검사 기록 단계 · 검사 끝날 때 트리거). 이 밖의 보호 파일은 범위 밖.
+- 시안: .tmp/today-1124/sian-0341/ (now · after · after-fail, 1280 · 390)
