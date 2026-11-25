@@ -55,14 +55,15 @@ export function preScroll(list: HTMLElement, top: (rowTop: number, listHeight: n
   list.scrollTop = top(rowTop, list.clientHeight);
 }
 
-const slideFrom = () => (matchMedia("(max-width: 639px)").matches ? "translateY(100%)" : "translateX(100%)");
+/** 시트(폭 전체)는 아래에서 · 사이드바는 옆에서 */
+const slideFrom = (panel: HTMLElement) => (rect(panel).width >= innerWidth - 1 ? "translateY(100%)" : "translateX(100%)");
 
 /** 시작 요소 → 사이드바 (패널은 이미 최종 자리에 그려져 있음) · label 은 시작 요소가 사라지며 잠깐 보일 글 · 시작 요소가 없으면 옆에서 밀려 들어옴 */
 export function playOpen(els: MotionEls, label = ""): void {
   const { btn, panel, backdrop, list, head } = els;
   backdrop?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 420, easing: "ease-out", fill: "backwards" });
   if (!btn) {
-    panel.animate([{ transform: slideFrom() }, { transform: "none" }], { duration: 420, easing: EASE });
+    panel.animate([{ transform: slideFrom(panel) }, { transform: "none" }], { duration: 420, easing: EASE });
     return;
   }
   const final = rect(panel);
@@ -104,7 +105,7 @@ export function playClose(els: MotionEls): Promise<void> {
   const { btn, panel, backdrop, list, head } = els;
   backdrop?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 420, delay: 80, fill: "forwards" });
   if (!btn) {
-    return panel.animate([{ transform: "none" }, { transform: slideFrom() }], { duration: 360, easing: EASE, fill: "forwards" }).finished.then(
+    return panel.animate([{ transform: "none" }, { transform: slideFrom(panel) }], { duration: 360, easing: EASE, fill: "forwards" }).finished.then(
       () => undefined,
       () => undefined,
     );

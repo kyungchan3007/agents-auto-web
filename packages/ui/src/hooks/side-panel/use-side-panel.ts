@@ -20,11 +20,18 @@ export type SidePanelOptions = {
   origin?: RefObject<HTMLElement | null>;
   label?: string;
   preScroll?: (rowTop: number, listHeight: number) => number;
+  /** Tab 이 패널 안에서만 돌게(모달) · 기본 true · 뒤를 덮지 않는 사이드바는 false */
+  trap?: boolean;
+  /** 열린 뒤에도 시작 요소를 계속 보임(기본 false = 패널이 시작 요소를 대신해 숨김) · 뒤를 덮지 않는 사이드바에서 누른 줄이 사라지지 않게 */
+  keepOrigin?: boolean;
 };
+
+/** 열리는 움직임(0.68초)이 끝난 뒤 */
+const OPEN_SETTLE_MS = 720;
 
 const frames = () => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
 
-export function useSidePanel({ lock = true, backdrop: withBackdrop = true, origin, label, preScroll: preScrollTop }: SidePanelOptions = {}) {
+export function useSidePanel({ lock = true, backdrop: withBackdrop = true, origin, label, preScroll: preScrollTop, trap = true, keepOrigin = false }: SidePanelOptions = {}) {
   const reduce = !!useReducedMotion();
   const [open, setOpen] = useState(false); // 열림(닫는 움직임이 시작되면 false)
   const [mounted, setMounted] = useState(false); // 패널이 화면에 있음(닫는 움직임이 끝날 때까지 true)
@@ -44,8 +51,12 @@ export function useSidePanel({ lock = true, backdrop: withBackdrop = true, origi
     if (!open || !e) return;
     if (e.list && preScrollTop) preScroll(e.list, preScrollTop);
     if (reduce) {
-      if (e.btn) hideBtn(e.btn);
-    } else playOpen(e, label);
+      if (e.btn && !keepOrigin) hideBtn(e.btn);
+    } else {
+      playOpen(e, label);
+      const btn = e.btn;
+      if (keepOrigin && btn) window.setTimeout(() => showBtn(btn), OPEN_SETTLE_MS); // 늘어나는 움직임이 끝나면 다시 보임
+    }
     (e.panel.querySelector<HTMLElement>("[data-side-close]") ?? e.panel).focus({ preventScroll: true });
     // 열릴 때 한 번만 — 다른 값이 바뀔 때마다 다시 움직이지 않음
   }, [open, reduce]);
@@ -99,8 +110,16 @@ export function useSidePanel({ lock = true, backdrop: withBackdrop = true, origi
 
   /** Tab 이 패널 밖으로 나가지 않게 */
   const onKeyDown = (e: KeyboardEvent) => {
-    if (panel.current) trapTab(e, panel.current);
+    if (trap && panel.current) trapTab(e, panel.current);
   };
 
-  return { open, mounted, show, hide, panelRef: panel, backdropRef: backdrop, onKeyDown, withBackdrop };
+  /** 열린 채 시작 요소를 바꿈(다른 줄을 눌렀을 때) — 이전 것은 다시 보이고 새 것이 시작 요소가 되어 닫으면 그리로 돌아감 */
+  const moveOrigin = (next: HTMLElement | null) => {
+    const prev = origin?.current ?? null;
+    if (prev && prev !== next) showBtn(prev);
+    if (origin) origin.current = next;
+    if (next && !reduce && !keepOrigin) hideBtn(next);
+  };
+
+  return { open, mounted, show, hide, moveOrigin, panelRef: panel, backdropRef: backdrop, onKeyDown, withBackdrop };
 }
