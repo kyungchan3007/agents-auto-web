@@ -112,7 +112,7 @@ export function CurrencyDetail({ code, rate, signal, history, levels = null, bui
 
       {/* 자주 묻는 질문 (작업 0345 · 시안 6-new) — 처음 두 개 펼침 · 같은 문항이 FAQPage 구조화 자료에도 들어감 */}
       {faq.items.length > 0 && (
-        <section data-testid="currency-faq" aria-labelledby="currency-faq-t" className="mx-auto mt-16 max-w-[44rem]">
+        <section data-testid="currency-faq" aria-labelledby="currency-faq-t" className="mt-16 max-w-[44rem]">
           <h2 id="currency-faq-t" className="font-display text-[1.75rem] leading-tight font-extrabold tracking-display text-fg sm:text-[2.25rem]">
             {name}, 자주 묻는 질문
           </h2>
