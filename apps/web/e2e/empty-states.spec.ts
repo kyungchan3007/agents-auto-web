@@ -9,6 +9,9 @@
 import { type Page, expect, test } from "@playwright/test";
 import { PROD_LAUNCH, names, prodUrl, recordPreview, recordProd } from "./click-track";
 
+// 브라우저 시작 옵션은 파일 맨 위에서만 줄 수 있음 — flapfx.com 이름만 127.0.0.1 로 풀려 다른 검사에는 영향 없음 (작업 0359)
+test.use({ launchOptions: PROD_LAUNCH });
+
 const FIXTURE = process.env.EMPTY_FIXTURE === "1";
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const CHECKED = /^자료 없음 · \d{4}-\d{2}-\d{2} \d{2}:\d{2} 확인$/;
@@ -132,7 +135,6 @@ test.describe("여행 물가 예산 카드 — 환율을 못 받은 나라 (작�
 // 작업 0359 — 막다른 화면의 '그동안 볼 수 있는 것' 링크를 누르면 empty_next (운영 흉내 · 미리보기는 보내지 않음) — 환율을 못 받는 고정 자료 빌드에서만
 test.describe("막다른 화면 링크 클릭 이벤트 (작업 0359)", () => {
   test.describe("운영 주소", () => {
-    test.use({ launchOptions: PROD_LAUNCH });
     test("/currencies/USD 의 링크를 누르면 empty_next 하나 · /calc 의 링크도 같은 이름", async ({ page, context, baseURL }) => {
       await recordProd(context);
       await page.goto(prodUrl(baseURL, "/currencies/USD"));
