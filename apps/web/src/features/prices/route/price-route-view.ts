@@ -6,7 +6,7 @@ import { rulerPins } from "./ruler";
 export type RouteBand = "cheap" | "mid" | "exp" | "base";
 export type RouteStop = { country: string; name: string; value: number; band: RouteBand; side: "up" | "down" | "kr"; index: number };
 
-const bandOf = (value: number): RouteBand => (value / 100 < 0.9 ? "cheap" : value / 100 > 1.1 ? "exp" : "mid");
+export const bandOf = (value: number): RouteBand => (value / 100 < 0.9 ? "cheap" : value / 100 > 1.1 ? "exp" : "mid");
 
 /** 정거장 — 핀 + 한국(값이 100 보다 작은 정거장들 뒤 · 100 이상 앞) · 값 오름차순 · 나라가 하나도 없으면 [] (한국만 있는 노선을 만들지 않음) */
 export function routeStops(bands: { rows: { country: string; name: string; relative: number }[] }[], perBand = 2): RouteStop[] {
