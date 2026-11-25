@@ -3,6 +3,9 @@
 //         내 여행지(usePickedTrip)는 노선에 자동으로(없으면 정거장으로 더하고 노란 테두리 + "내 여행지" 꼬리표 · 비행기와 카드가 그 나라로) · 칩 ✕ 로 그 노선에서만 빼기 · 카드 "{나라} 자세히 보기 ›"(지금은 나라 페이지 링크) · 서버 첫 그림은 기본 노선 · 세 폭 1440 · 900 · 375
 //   움직임 모양(핀 · 칩 차례로 · 비행기 날아감 곡선)은 @design 이라 여기서 보지 않음 — 끝난 모양 · 움직임 줄이기만
 //   기존 표시 그대로: route-section · route-stops · route-stop(data-country · data-value · data-active) · route-ruler · route-pin · route-kr-tag · route-plane · route-card · route-card-name · route-card-link
+//   휴대폰(760px 이하 · lead 결정 B): 가로 자 · 핀 · 비행기 · 칩 대신 작업 0283 세로 노선(route-list · route-row-item · route-row · route-row-plane)을 그대로 쓰고, 탭 줄이 그 위에 있음
+//     세로 노선의 골라진 정거장 = 펼쳐진 줄(aria-expanded="true" · 하나) · 세로 노선 쪽 새 표시: route-row-item 에 data-mine="true"(내 여행지) · 그 li 안(단추 밖)에 route-mine-tag · route-mine-remove ·
+//     route-row 에 data-name · 펼친 칸 안에 route-card-detail("{나라} 자세히 보기 ›" · 한국 줄에는 없음)
 //   builder 가 새로 다는 표시(data-testid)
 //     route-tabs        탭 줄 (role="tablist" · aria-label "노선 고르기") · 노선 구간 안
 //     route-tab         탭 하나 (role="tab" · aria-selected · data-tab = spread | popular | sea | eu · 글 = 탭 이름 · 기본 탭 글에 "기본")
@@ -20,9 +23,22 @@ const EU = ["ESP", "ITA", "FRA", "DEU", "GBR", "CHE"];
 const POPULAR = ["JPN", "VNM", "USA", "THA", "PHL", "TWN", "HKG", "SGP", "MAC", "IDN"]; // docs/domain/travel-price.md 순위 순서
 
 type St = { country: string; value: number; name: string; active: boolean; mine: boolean };
+/** 휴대폰 폭(760 이하)이면 세로 노선 · 아니면 가로 노선 */
+const compact = (page: Page) => (page.viewportSize()?.width ?? 0) <= 760;
 const stops = (page: Page): Promise<St[]> =>
-  tid(page, "route-stop").evaluateAll((els) => els.map((e) => ({ country: e.getAttribute("data-country") ?? "", value: Number(e.getAttribute("data-value")), name: e.getAttribute("data-name") ?? "", active: e.getAttribute("data-active") === "true", mine: e.getAttribute("data-mine") === "true" })));
+  compact(page)
+    ? tid(page, "route-row-item").evaluateAll((els) =>
+        els.map((li) => {
+          const row = li.querySelector('[data-testid="route-row"]');
+          return { country: li.getAttribute("data-country") ?? "", value: Number(row?.getAttribute("data-value")), name: row?.getAttribute("data-name") ?? "", active: row?.getAttribute("aria-expanded") === "true", mine: li.getAttribute("data-mine") === "true" };
+        }),
+      )
+    : tid(page, "route-stop").evaluateAll((els) => els.map((e) => ({ country: e.getAttribute("data-country") ?? "", value: Number(e.getAttribute("data-value")), name: e.getAttribute("data-name") ?? "", active: e.getAttribute("data-active") === "true", mine: e.getAttribute("data-mine") === "true" })));
 const codes = async (page: Page) => (await stops(page)).map((s) => s.country);
+/** 정거장 단추(가로 = 칩 · 세로 = 줄 단추) */
+const stopBtn = (page: Page, country: string) => (compact(page) ? page.locator(`[data-testid="route-row"][data-country="${country}"]`) : page.locator(`[data-testid="route-stop"][data-country="${country}"]`));
+/** 내 여행지 정거장(가로 = 칩 · 세로 = li) */
+const mineEl = (page: Page) => (compact(page) ? page.locator('[data-testid="route-row-item"][data-mine="true"]') : page.locator('[data-testid="route-stop"][data-mine="true"]'));
 const box = async (loc: ReturnType<Page["locator"]>) => {
   const b = await loc.boundingBox();
   if (!b) throw new Error("화면에 없음");
@@ -78,7 +94,7 @@ test.describe("탭 줄 (작업 0360)", () => {
       expect(s.find((x) => x.country === "KR")?.value, id).toBe(100);
       const v = s.map((x) => x.value);
       expect(v, `${id} 값 오름차순`).toEqual([...v].sort((a, b) => a - b));
-      await expect(tid(page, "route-kr-tag")).toContainText("한국 100 기준");
+      if (!compact(page)) await expect(tid(page, "route-kr-tag")).toContainText("한국 100 기준");
     }
   });
 
@@ -116,19 +132,38 @@ test.describe("탭 줄 (작업 0360)", () => {
     expect(c).toContain("JPN"); // 1위 일본은 물가 자료가 있음
   });
 
-  test("탭을 바꾸면 비행기와 카드가 새 노선의 정거장으로: 골라진 정거장이 하나 · 카드 이름이 그 정거장 · 비행기가 그 정거장 위", async ({ page }) => {
+  test("탭을 바꾸면 비행기와 카드가 새 노선의 정거장으로: 골라진 정거장이 하나 · 카드 이름이 그 정거장 · 비행기가 그 정거장 위 (휴대폰은 펼쳐진 줄 하나 · 비행기 번호가 그 줄)", async ({ page }) => {
     for (const id of ["sea", "eu", "popular", "spread"]) {
       await choose(page, id);
       const s = await stops(page);
       const active = s.filter((x) => x.active);
       expect(active, id).toHaveLength(1);
-      await expect(tid(page, "route-card-name"), id).toContainText(active[0].name);
-      await expect.poll(async () => Math.abs((await planeX(page)) - (await stopX(page, active[0].country))), { message: `${id}: 비행기가 골라진 정거장 위` }).toBeLessThan(8);
-      expect(await tid(page, "route-pin").count(), `${id}: 핀은 한국 뺀 정거장마다`).toBe(s.length - 1);
+      if (compact(page)) {
+        const idx = s.findIndex((x) => x.active);
+        await expect(tid(page, "route-row-plane"), `${id}: 비행기가 펼쳐진 줄에`).toHaveAttribute("data-plane", String(idx));
+        expect(await tid(page, "route-row").count(), `${id}: 줄은 정거장마다`).toBe(s.length);
+      } else {
+        await expect(tid(page, "route-card-name"), id).toContainText(active[0].name);
+        await expect.poll(async () => Math.abs((await planeX(page)) - (await stopX(page, active[0].country))), { message: `${id}: 비행기가 골라진 정거장 위` }).toBeLessThan(8);
+        expect(await tid(page, "route-pin").count(), `${id}: 핀은 한국 뺀 정거장마다`).toBe(s.length - 1);
+      }
     }
   });
 
-  test("자 눈금 범위가 노선에 맞게: 유럽은 한국이 왼쪽 끝 가까이 · 동남아는 한국이 오른쪽 · 기본은 한국이 가운데쯤", async ({ page }) => {
+  test("휴대폰: 탭 줄이 세로 노선 위에 있고 탭을 바꾸면 세로 목록이 그 노선으로 바뀜 (가로 자 · 핀 · 칩은 쓰지 않음)", async ({ page }) => {
+    test.skip(!compact(page), "휴대폰(760px 이하) 전용");
+    const [tabs, list] = [await box(tid(page, "route-tabs")), await box(tid(page, "route-list"))];
+    expect(tabs.y + tabs.height, "탭 줄은 세로 노선 위").toBeLessThanOrEqual(list.y + 1);
+    await choose(page, "eu");
+    for (const c of (await codes(page)).filter((k) => k !== "KR")) expect(EU, c).toContain(c);
+    await choose(page, "sea");
+    for (const c of (await codes(page)).filter((k) => k !== "KR")) expect(SEA, c).toContain(c);
+    await expect(tid(page, "route-ruler"), "가로 자는 보이지 않음").toBeHidden();
+    await expect(tid(page, "route-stops"), "가로 칩 줄은 보이지 않음").toBeHidden();
+  });
+
+  test("자 눈금 범위가 노선에 맞게: 유럽은 한국이 왼쪽 끝 가까이 · 동남아는 한국이 오른쪽 · 기본은 한국이 가운데쯤 (가로 노선 전용)", async ({ page }) => {
+    test.skip(compact(page), "가로 자는 휴대폰에서 쓰지 않음(세로 노선)");
     const krRel = async () => {
       const [r, k] = [await box(tid(page, "route-ruler")), await box(tid(page, "route-kr-tag"))];
       return (k.x + k.width / 2 - r.x) / r.width;
@@ -194,7 +229,8 @@ test.describe("서버 첫 그림은 기본 노선 (작업 0360)", () => {
     expect(sel[0]).toContain('data-tab="spread"');
     expect(html).not.toContain('data-mine="true"');
     expect(html).toMatch(/한국보다 물가가 \d+% 낮습니다/);
-    const serverStops = [...html.matchAll(/<[^>]*data-testid="route-stop"[^>]*>/g)].map((m) => /data-country="([A-Z]+)"/.exec(m[0])?.[1] ?? "");
+    const stopTag = compact(page) ? "route-row-item" : "route-stop";
+    const serverStops = [...html.matchAll(new RegExp(`<[^>]*data-testid="${stopTag}"[^>]*>`, "g"))].map((m) => /data-country="([A-Z]+)"/.exec(m[0])?.[1] ?? "");
     expect(serverStops.length).toBeGreaterThanOrEqual(3);
     await open(page);
     expect(await codes(page), "서버 첫 그림의 정거장 = 하이드레이션 뒤 기본 노선").toEqual(serverStops);
@@ -220,13 +256,17 @@ test.describe("내 여행지 (작업 0360)", () => {
     const mine = s.filter((x) => x.mine);
     expect(mine.map((x) => x.country)).toEqual(["JPN"]);
     expect(s.map((x) => x.country).filter((c) => c !== "KR" && c !== "JPN").every((c) => EU.includes(c))).toBe(true);
-    expect(mine[0].active, "비행기와 카드가 내 여행지로").toBe(true);
+    expect(mine[0].active, "비행기와 카드가 내 여행지로(휴대폰은 그 줄이 펼쳐짐)").toBe(true);
+    await expect(mineEl(page).locator('[data-testid="route-mine-tag"]')).toHaveText("내 여행지");
+    if (compact(page)) {
+      await expect(tid(page, "route-row-plane")).toHaveAttribute("data-plane", String(s.findIndex((x) => x.mine)));
+      return;
+    }
     await expect(tid(page, "route-card-name")).toContainText("일본");
     await expect.poll(async () => Math.abs((await planeX(page)) - (await stopX(page, "JPN")))).toBeLessThan(8);
-    const chip = page.locator('[data-testid="route-stop"][data-mine="true"]');
-    await expect(chip.locator('[data-testid="route-mine-tag"]')).toHaveText("내 여행지");
     await expect(page.locator('[data-testid="route-pin"][data-mine="true"]')).toHaveCount(1);
     // 노란 테두리: 굵기 2px 이상 · 다른 칩의 테두리 색과 다름
+    const chip = mineEl(page);
     const border = (l: ReturnType<Page["locator"]>) => l.evaluate((el) => { const c = getComputedStyle(el); return { w: parseFloat(c.borderTopWidth), color: c.borderTopColor }; });
     const mb = await border(chip);
     const ob = await border(page.locator('[data-testid="route-stop"]:not([data-mine="true"])').first());
@@ -266,7 +306,7 @@ test.describe("내 여행지 (작업 0360)", () => {
     await choose(page, "eu");
     expect((await stops(page)).some((x) => x.mine)).toBe(false);
     await page.evaluate((v) => window.dispatchEvent(new CustomEvent("flapfx:intro-pick", { detail: JSON.parse(v) })), PICK("JPN", "도쿄"));
-    await expect(page.locator('[data-testid="route-stop"][data-mine="true"]')).toHaveCount(1);
+    await expect(mineEl(page)).toHaveCount(1);
     expect(await codes(page)).toContain("JPN");
   });
 
@@ -276,9 +316,9 @@ test.describe("내 여행지 (작업 0360)", () => {
     expect((await stops(page)).some((x) => x.mine)).toBe(false);
     const select = tid(page, "budget").getByLabel("나라");
     await select.selectOption("JPN");
-    await expect(page.locator('[data-testid="route-stop"][data-mine="true"]')).toHaveCount(1);
+    await expect(mineEl(page)).toHaveCount(1);
     expect((await stops(page)).filter((x) => x.mine).map((x) => x.country)).toEqual(["JPN"]);
-    await expect(page.locator('[data-testid="route-stop"][data-mine="true"] [data-testid="route-mine-tag"]')).toHaveText("내 여행지");
+    await expect(mineEl(page).locator('[data-testid="route-mine-tag"]')).toHaveText("내 여행지");
     await select.selectOption("THA");
     await expect.poll(async () => (await stops(page)).filter((x) => x.mine).map((x) => x.country)).toEqual(["THA"]);
     expect(await codes(page), "이전 내 여행지(일본)는 노선에서 빠짐").not.toContain("JPN");
@@ -290,9 +330,9 @@ test.describe("내 여행지 (작업 0360)", () => {
     await choose(page, "eu");
     const withMine = await codes(page);
     expect(withMine).toContain("JPN");
-    await page.locator('[data-testid="route-stop"][data-mine="true"] [data-testid="route-mine-remove"]').click();
+    await mineEl(page).locator('[data-testid="route-mine-remove"]').click();
     expect(await codes(page)).toEqual(withMine.filter((c) => c !== "JPN"));
-    await expect(page.locator('[data-testid="route-pin"][data-country="JPN"]')).toHaveCount(0);
+    if (!compact(page)) await expect(page.locator('[data-testid="route-pin"][data-country="JPN"]')).toHaveCount(0);
     await expect(tid(page, "route-mine-tag")).toHaveCount(0);
     expect((await stops(page)).filter((x) => x.active)).toHaveLength(1); // 카드 · 비행기는 남은 정거장 중 하나로
     await choose(page, "sea");
@@ -308,16 +348,18 @@ test.describe("'{나라} 자세히 보기 ›' (작업 0360 · 사이드바는 �
     const s = await stops(page);
     const away = s.filter((x) => x.country !== "KR");
     for (const st of away.slice(0, 2)) {
-      await page.locator(`[data-testid="route-stop"][data-country="${st.country}"]`).click();
-      await expect(page.locator(`[data-testid="route-stop"][data-country="${st.country}"]`)).toHaveAttribute("data-active", "true");
+      await stopBtn(page, st.country).click();
+      if (compact(page)) await expect(stopBtn(page, st.country)).toHaveAttribute("aria-expanded", "true");
+      else await expect(stopBtn(page, st.country)).toHaveAttribute("data-active", "true");
       const d = tid(page, "route-card-detail");
       await expect(d).toHaveText(new RegExp(`^${st.name} 자세히 보기\\s*›$`));
       await expect(d).toHaveAttribute("href", new RegExp(`/prices/${st.country}/?$`));
     }
-    await page.locator('[data-testid="route-stop"][data-country="KR"]').click();
-    await expect(tid(page, "route-card-name")).toContainText("한국");
+    await stopBtn(page, "KR").click();
+    if (!compact(page)) await expect(tid(page, "route-card-name")).toContainText("한국");
+    else await expect(stopBtn(page, "KR")).toHaveAttribute("aria-expanded", "true");
     await expect(tid(page, "route-card-detail")).toHaveCount(0);
-    await page.locator(`[data-testid="route-stop"][data-country="${away[0].country}"]`).click();
+    await stopBtn(page, away[0].country).click();
     await tid(page, "route-card-detail").click();
     await expect(page).toHaveURL(new RegExp(`/prices/${away[0].country}/?$`));
   });
@@ -330,7 +372,7 @@ test.describe("움직임 줄이기 (작업 0360)", () => {
     const running = await page.evaluate(() => document.getAnimations().filter((a) => a.effect && Number(a.effect.getComputedTiming().duration) > 1 && a.effect.getComputedTiming().iterations !== Number.POSITIVE_INFINITY && a.playState === "running").length);
     expect(running).toBe(0);
     const active = (await stops(page)).find((x) => x.active)!;
-    expect(Math.abs((await planeX(page)) - (await stopX(page, active.country)))).toBeLessThan(8);
+    if (!compact(page)) expect(Math.abs((await planeX(page)) - (await stopX(page, active.country)))).toBeLessThan(8);
   });
 
   test("움직임 있음: 탭을 바꾸면 3초 안에 핀이 모두 보이고 비행기가 골라진 정거장 위에 섬 (모양은 @design)", async ({ page }) => {
@@ -338,6 +380,11 @@ test.describe("움직임 줄이기 (작업 0360)", () => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await choose(page, "sea");
     const n = (await stops(page)).length - 1;
+    if (compact(page)) {
+      await expect(tid(page, "route-row")).toHaveCount(n + 1);
+      await expect.poll(async () => (await tid(page, "route-row-item").evaluateAll((els) => els.filter((e) => Number(getComputedStyle(e).opacity) > 0.99).length)), { timeout: 3000 }).toBe(n + 1);
+      return;
+    }
     await expect(tid(page, "route-pin")).toHaveCount(n);
     await expect.poll(async () => (await tid(page, "route-pin").evaluateAll((els) => els.filter((e) => Number(getComputedStyle(e).opacity) > 0.99).length)), { timeout: 3000 }).toBe(n);
     const active = (await stops(page)).find((x) => x.active)!;
@@ -347,7 +394,7 @@ test.describe("움직임 줄이기 (작업 0360)", () => {
 
 test.describe("세 폭 1440 · 900 · 375 — 넘침 · 겹침 없음 (작업 0360 · 중간 폭 확인)", () => {
   for (const w of [1440, 900, 375]) {
-    test(`${w}px — 탭 줄이 화면 안 · 가로 넘침 없음 · 핀끼리 겹치지 않음 · 핀이 카드를 덮지 않음 (탭마다 · 내 여행지 포함)`, async ({ page }) => {
+    test(`${w}px — 탭 줄이 화면 안 · 가로 넘침 없음 · ${w <= 760 ? "세로 노선 줄이 겹치지 않고 44px" : "핀끼리 겹치지 않음 · 핀이 카드를 덮지 않음"} (탭마다 · 내 여행지 포함)`, async ({ page }) => {
       test.skip(test.info().project.name === "휴대폰", "폭은 이 검사가 직접 정함 — 한 번만");
       await withPicked(page, "JPN", "도쿄");
       await page.emulateMedia({ reducedMotion: "reduce" });
@@ -364,6 +411,20 @@ test.describe("세 폭 1440 · 900 · 375 — 넘침 · 겹침 없음 (작업 03
           expect(b.x, `${where} 탭 왼쪽`).toBeGreaterThanOrEqual(-1);
           expect(b.x + b.width, `${where} 탭 오른쪽`).toBeLessThanOrEqual(w + 1);
           if (w === 375) expect(b.height, `${where} 탭 누르는 자리 44px`).toBeGreaterThanOrEqual(44);
+        }
+        if (compact(page)) {
+          // 휴대폰 375: 세로 노선 — 줄이 위에서 아래로 차례로 · 겹치지 않음 · 줄 높이 44px 이상 · 내 여행지 표시가 줄 안
+          const items = await Promise.all((await tid(page, "route-row-item").all()).map(box));
+          expect(items.length, `${where} 정거장 줄`).toBeGreaterThanOrEqual(3);
+          for (let i = 1; i < items.length; i++) expect(items[i].y, `${where} 줄 ${i} · ${i + 1} 겹침`).toBeGreaterThanOrEqual(items[i - 1].y + items[i - 1].height - 1);
+          for (const r of await tid(page, "route-row").all()) expect((await box(r)).height, `${where} 줄 누르는 자리 44px`).toBeGreaterThanOrEqual(44);
+          for (const it of items) {
+            expect(it.x, `${where} 줄 왼쪽`).toBeGreaterThanOrEqual(-1);
+            expect(it.x + it.width, `${where} 줄 오른쪽`).toBeLessThanOrEqual(w + 1);
+          }
+          await expect(mineEl(page).locator('[data-testid="route-mine-tag"]'), `${where} 내 여행지 꼬리표`).toHaveCount(1);
+          await expect(tid(page, "route-card-detail").first(), `${where} 자세히 보기`).toBeVisible();
+          continue;
         }
         const pins = await Promise.all((await tid(page, "route-pin").all()).map(box));
         for (let i = 0; i < pins.length; i++) {
