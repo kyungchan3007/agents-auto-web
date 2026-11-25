@@ -29,3 +29,6 @@ export const allRows = <T,>(bands: { rows: T[] }[]) => bands.flatMap((b) => b.ro
 
 /** 펼쳤으면 전부 · 아니면 앞 folded 개 */
 export const shownRows = <T,>(rows: T[], open: boolean, folded: number) => (open ? rows : rows.slice(0, folded));
+
+/** 화면에 그려진 나라 순서(나라 코드) — 접힌 목록은 구간마다 앞 folded 개 · 펼치면 모두 · 사이드바의 ‹ › · n / 전체가 이 순서를 씀 (작업 0361) */
+export const renderedOrder = (bands: { rows: { country: string }[] }[], open: boolean, folded: number): string[] => bands.flatMap((b) => shownRows(b.rows, open, folded)).map((r) => r.country);

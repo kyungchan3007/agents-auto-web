@@ -15,7 +15,8 @@ import { countryPath } from "../country/country-view";
 import { usePriceBands } from "./use-price-bands";
 import { type PriceBand, rateBadgeText } from "./bands";
 import { relativePct, yearNote } from "../common/price-text";
-import { allRows, hiddenCount, shownRows } from "./bands";
+import { allRows, hiddenCount, renderedOrder, shownRows } from "./bands";
+import { useSideContext } from "../side/use-side-context";
 
 const BAND_TITLE: Record<Band, string> = { cheap: "한국보다 싼 곳", similar: "비슷한 곳", pricey: "한국보다 비싼 곳" };
 // 세 카드는 같은 틀(흰 바탕 · 같은 테두리) — 구분은 제목 색 + 제목 앞 작은 점 (작업 0212)
@@ -27,15 +28,16 @@ type Props = { bands: PriceBand[]; signalOf: Record<string, Signal | null>; perc
 
 type Row = PriceBand["rows"][number];
 
-/** 나라 한 줄 — 국기 · 이름 · 물가 · 판정 핀 (묶음 목록 · 펼친 한 목록이 같이 씀) */
-function CountryRow({ r, signalOf, percentileOf, latestYear }: { r: Row; signalOf: Props["signalOf"]; percentileOf: Record<string, number | null>; latestYear?: number }) {
+/** 나라 한 줄 — 국기 · 이름 · 물가 · 판정 핀 (묶음 목록 · 펼친 한 목록이 같이 씀) · 이름 링크는 HTML 에서 나라 페이지 링크 그대로 · 누를 때만 사이드바 · 시트로 가로챔 (작업 0361) */
+function CountryRow({ r, signalOf, percentileOf, latestYear, order }: { r: Row; signalOf: Props["signalOf"]; percentileOf: Record<string, number | null>; latestYear?: number; order: string[] }) {
   const signal = r.currency ? signalOf[r.currency] : null;
+  const side = useSideContext();
   return (
     <li className="flex break-inside-avoid items-center justify-between gap-3 border-b border-line py-3">
       <span className="flex min-w-0 items-center gap-3">
         <Flag country={TRAVEL_COUNTRIES[r.country]?.flag ?? null} label={`${r.name} 국기`} className="h-4 w-6 shrink-0" />
         <span className="min-w-0">
-          <Link data-testid="price-band-link" href={countryPath(r.country)} className="tap-44 block text-[1.125rem] font-semibold text-fg hover:underline">
+          <Link data-testid="price-band-link" href={countryPath(r.country)} onClick={(e) => side?.onLink(r.country, e, order)} className="tap-44 block text-[1.125rem] font-semibold text-fg hover:underline">
             {r.name}
           </Link>
           <span className="block text-small text-fg-2">
@@ -59,16 +61,17 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
   const open = opened || unfolded;
   const merged = opened && !unfolded; // 펼친 상태(처음 화면의 접힌 세 칸은 그대로) = 세 묶음을 물가 낮은 순 한 목록으로 합쳐 세 단으로 흘림 (작업 0248 · 4번)
   const more = unfolded ? 0 : hiddenCount(bands, FOLDED);
+  const order = merged ? allRows(bands).map((r) => r.country) : renderedOrder(bands, open, FOLDED); // 사이드바 ‹ › · n / 전체의 순서 = 화면에 그려진 순서
   return (
     <FadeUpGroup id="price-bands" data-testid="price-bands" className="scroll-mt-24">
       {merged ? (
-        <ul data-testid="price-merged" className="border-t-[3px] border-fg pt-2 lg:columns-3 lg:gap-x-12 lg:[column-rule:1px_solid_var(--hav-line)]">
+        <ul data-testid="price-merged" className="border-t-[3px] border-fg pt-2 lg:columns-3 lg:gap-x-12 lg:[column-rule:1px_solid_var(--hav-line)] lg:group-data-[push=true]/prices:columns-1 lg:group-data-[push=true]/prices:min-[1380px]:columns-3">
           {allRows(bands).map((r) => (
-            <CountryRow key={r.country} r={r} signalOf={signalOf} percentileOf={percentileOf} latestYear={latestYear} />
+            <CountryRow key={r.country} r={r} signalOf={signalOf} percentileOf={percentileOf} latestYear={latestYear} order={order} />
           ))}
         </ul>
       ) : (
-      <div className="grid items-start border-t-[3px] border-fg lg:grid-cols-3 lg:divide-x lg:divide-line">
+      <div className="grid items-start border-t-[3px] border-fg lg:grid-cols-3 lg:divide-x lg:divide-line lg:group-data-[push=true]/prices:grid-cols-1 lg:group-data-[push=true]/prices:divide-x-0 lg:group-data-[push=true]/prices:min-[1380px]:grid-cols-3 lg:group-data-[push=true]/prices:min-[1380px]:divide-x">
         {bands.map((b, bi) => (
           <section key={b.id} data-fu={bi} aria-labelledby={`band-${b.id}`} className="min-w-0 border-b border-line py-5 lg:border-b-0 lg:px-6 lg:first:pl-0 lg:last:pr-0">
             <SectionTitle id={`band-${b.id}`} className={`flex items-center gap-3 text-[1.75rem] leading-tight ${BAND_TEXT[b.id]}`}>
@@ -77,7 +80,7 @@ export function PriceBands({ bands, signalOf, percentileOf = {}, latestYear, unf
             </SectionTitle>
             <ul className="mt-3 [&>li:last-child]:border-b-0">
               {shownRows(b.rows, open, FOLDED).map((r) => (
-                <CountryRow key={r.country} r={r} signalOf={signalOf} percentileOf={percentileOf} latestYear={latestYear} />
+                <CountryRow key={r.country} r={r} signalOf={signalOf} percentileOf={percentileOf} latestYear={latestYear} order={order} />
               ))}
             </ul>
           </section>
