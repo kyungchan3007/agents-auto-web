@@ -118,7 +118,7 @@ export const hasVersionsFlag = (argv: string[]): boolean => argv.includes("--ver
 //   코드가 같으면 한 번의 명령으로 끝낸다: versions secret put → 그 새 버전 하나만 100% 배포. 코드가 다르거나 판정할 수 없으면 비밀값을 넣지 않고 멈춘다(운영 코드가 바뀌는 배포는 하지 않음).
 //   wrangler 4.x 의 JSON 모양 (node_modules/wrangler 소스로 확인 · 작업 0367 plan "정한 것")
 //     versions list --json                → [{ id, metadata: { created_on }, … }] (오래된 것부터 정렬해 마지막이 최신)
-//     versions deployments list --json    → [{ created_on, versions: [{ version_id, percentage }] }] (마지막이 지금 배포)
+//     deployments list --json             → [{ created_on, versions: [{ version_id, percentage }] }] (마지막이 지금 배포 · 등록 이름은 `wrangler deployments list` · `versions deployments list` 는 없음)
 //     versions view <id> --json           → { id, resources: { script: { etag }, bindings: [{ type, name }] } } — etag = 스크립트 내용 해시 · type "secret_text" 의 name = 비밀값 이름(값은 오지 않음)
 export type VersionFacts = { etag: string | null; secrets: string[] };
 export type Preflight = { action: "direct" } | { action: "versions" } | { action: "stop"; reason: string };
@@ -208,7 +208,7 @@ export function preflightStopHelp(reason: string, config: string): string {
 
 const withConfig = (args: string[], config: string): string[] => [...args, "--config", config];
 export const listVersionsArgs = (config: string): string[] => withConfig(["versions", "list", "--json"], config);
-export const listDeploymentsArgs = (config: string): string[] => withConfig(["versions", "deployments", "list", "--json"], config);
+export const listDeploymentsArgs = (config: string): string[] => withConfig(["deployments", "list", "--json"], config);
 export const viewVersionArgs = (id: string, config: string): string[] => withConfig(["versions", "view", id, "--json"], config);
 /** 그 버전 하나만 100% — 다른 버전은 섞지 않음 */
 export const deployVersionArgs = (id: string, config: string): string[] => withConfig(["versions", "deploy", `${id}@100%`, "--yes"], config);
