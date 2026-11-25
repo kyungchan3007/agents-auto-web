@@ -18,10 +18,18 @@ const rowFlag = (list: HTMLElement, code: string) => list.querySelector<HTMLElem
 function clone(from: Element, r: DOMRect): HTMLElement {
   const c = document.createElement("div");
   c.setAttribute("aria-hidden", "true");
+  c.dataset.moreFly = "";
   c.style.cssText = `position:fixed;left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;z-index:90;pointer-events:none`;
   c.innerHTML = from.innerHTML;
   document.body.appendChild(c);
   return c;
+}
+
+/** 열리는 움직임이 아직 끝나지 않았을 때 닫으면 — 진행 중인 움직임 · 날아가던 국기를 멈추고 제자리로 (바로 닫는 움직임을 시작할 수 있게) */
+export function settle(els: MotionEls): void {
+  els.panel.getAnimations({ subtree: true }).forEach((a) => a.cancel());
+  document.querySelectorAll("[data-more-fly]").forEach((c) => c.remove());
+  els.list.querySelectorAll<HTMLElement>("[data-side-flag]").forEach((f) => (f.style.opacity = ""));
 }
 
 /** 지금 통화 줄이 목록 안에 보이도록 목록을 미리 내려 둠 */

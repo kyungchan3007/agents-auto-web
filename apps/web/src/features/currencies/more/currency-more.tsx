@@ -4,6 +4,7 @@
 //   버튼: 오른쪽 "실제로 바꿀 때" 카드 아래 · 양끝 · 모서리 둥글기는 그 카드와 같게 · 글 + 국기 겹침(기본 앞 네 통화 · 고르면 그 하나) + ›
 //   자바스크립트가 없으면(하이드레이션 전) 같은 모양의 링크 — 맨 아래 둘러보기(#currency-list)로 이동
 //   사이드바: 제목 · 기준 날짜 · 안내 · 검색 칸 · 둘러보기 표와 같은 자료 · 같은 순서의 줄(줄 전체가 그 통화로 가는 링크 · 지금 통화는 칠함) · 목록은 overscroll contain
+import { OUTLINE_BOX } from "@hav/ui/action/outline-link";
 import { Input } from "@hav/ui/form/field";
 import Link from "next/link";
 import { createPortal } from "react-dom";
@@ -12,7 +13,8 @@ import { SEARCH_EMPTY } from "../search/search-view";
 import { MORE_TITLE, SIDE_HINT, SIDE_TITLE } from "./more-view";
 import { useCurrencyMore } from "./use-currency-more";
 
-const BUTTON = "tap-44 flex min-h-[4.25rem] w-full items-center justify-between gap-3 rounded-[1.5rem] border-2 border-pin-ink bg-card px-5 py-3.5 text-left text-fg hover:bg-surface-2";
+// 테두리 버튼 공통 모양 규칙(OUTLINE_BOX · 0355)에 위 "실제로 바꿀 때" 카드와 같은 모서리 둥글기
+const BUTTON = `${OUTLINE_BOX} flex min-h-[4.25rem] w-full items-center justify-between gap-3 rounded-[1.5rem] px-5 py-3.5 text-left`;
 const ROW_GRID = "grid grid-cols-[1.75rem_minmax(0,1fr)_auto_4.25rem] items-center gap-x-3";
 
 export function CurrencyMore() {

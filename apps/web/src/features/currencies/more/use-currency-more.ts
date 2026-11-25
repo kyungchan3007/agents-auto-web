@@ -9,7 +9,7 @@ import { useCurrencyPick } from "../browse/use-currency-pick";
 import { commitPick } from "../chips/use-recent-currencies";
 import { useMoreContext } from "./use-more-context";
 import { MORE_TITLE, buttonFlags, filterSideRows, moreSubText, pickedSub, preScrollTop, sideRows } from "./more-view";
-import { playClose, playOpen, preScroll, trapTab } from "./more-motion";
+import { playClose, playOpen, preScroll, settle, trapTab } from "./more-motion";
 import { useScrollLock } from "./use-scroll-lock";
 
 const subscribe = () => () => undefined;
@@ -33,7 +33,8 @@ export function useCurrencyMore() {
   const list = useRef<HTMLUListElement | null>(null);
   const head = useRef<HTMLDivElement | null>(null);
   const closeBtn = useRef<HTMLButtonElement | null>(null);
-  const busy = useRef(false);
+  const opening = useRef(false); // 열기를 막 눌러 다시 열리지 않게
+  const closing = useRef(false); // 닫는 중에 또 닫지 않게
 
   useScrollLock(mounted);
 
@@ -51,27 +52,29 @@ export function useCurrencyMore() {
   }, [open, reduce]);
 
   const onOpen = () => {
-    if (busy.current || open || items.length === 0) return;
-    busy.current = true;
+    if (opening.current || closing.current || open || items.length === 0) return;
+    opening.current = true;
     setMounted(true);
     setOpen(true);
-    window.setTimeout(() => (busy.current = false), reduce ? 0 : 720);
+    window.setTimeout(() => (opening.current = false), reduce ? 0 : 720);
   };
 
   /** 닫기 — 고른 통화가 있으면 그 국기 하나만 버튼으로 돌아감(고른 통화를 먼저 정함) */
   const close = async (code?: string): Promise<void> => {
-    if (!open || busy.current) return;
-    busy.current = true;
+    if (!open || closing.current) return;
+    closing.current = true;
     setOpen(false);
     if (code) setPicked(code);
     if (!reduce && panel.current && btn.current && backdrop.current && list.current && head.current) {
+      const els = { btn: btn.current, panel: panel.current, backdrop: backdrop.current, list: list.current, head: head.current };
+      settle(els); // 열리는 움직임이 끝나기 전에 닫아도 바로 닫는 움직임으로
       await frames(); // 버튼 국기가 새로 그려진 뒤에 돌아갈 자리를 잼
-      await playClose({ btn: btn.current, panel: panel.current, backdrop: backdrop.current, list: list.current, head: head.current });
+      await playClose(els);
     } else if (btn.current) btn.current.style.visibility = "";
     setMounted(false);
     setQuery("");
     btn.current?.focus({ preventScroll: true });
-    busy.current = false;
+    closing.current = false;
   };
 
   const onKeyDown = (e: KeyboardEvent) => {
