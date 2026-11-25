@@ -2,7 +2,7 @@
 //   막는 화면(①) · 사용할 수 없는 링크(③) · 쿠키 · 접속 기록 저장은 Worker 쪽이라 단위(worker/gate/gate.test.ts)로 봄 — 이 e2e 는 정적 서버(Worker 없음)에서 브라우저가 받는 /session · /bff/admin-visits 를 가짜 응답으로 바꿈
 //   운영 코드에 우회 경로 없음 · 기존 e2e 는 /session 이 없는 정적 서버라 안내 창이 안 뜸(응답이 404 면 아무것도 안 함)
 //   화면 약속(builder 가 이 이름으로 만듦)
-//     안내 창 — 어드민 앱 쪽 부품. 브라우저가 GET /session 을 불러 {name} 을 받음 · 이름이 owner 가 아니고 · 이 브라우저에서 "둘러보기"로 닫은 적이 없으면 띄움(localStorage)
+//     안내 창 — 어드민 앱 쪽 부품. 브라우저가 GET /session 을 불러 {name} 을 받음 · 이름이 owner 가 아니고 · 이 브라우저에서 그 이름으로 "둘러보기"를 눌러 닫은 적이 없으면 띄움(localStorage · 이름마다 따로 · 작업 0369)
 //       role="dialog" · data-testid="gate-welcome" · 이름에 "전용 링크" 가 들어감
 //       머리 "전용 링크로 들어오셨습니다" · 이름이 apply-<회사>-<날짜 숫자> 모양이면 "<회사> 회사 님, 반갑습니다" 한 줄(아니면 머리만) · 토큰 이름(원문 그대로) 표시
 //       글: "열람 권한이 부여된 분께만 제공되는 전용 링크입니다. 유효 기간은 발급일로부터 7일입니다."(작업 0330) · "7일 동안 다시 넣지 않도록 브라우저에 로그인 쿠키를 저장합니다." · "이 토큰으로 처음 · 마지막에 접속한 시각만 기록합니다. 이름 · 이메일 등 개인 정보는 받지 않습니다." · "검색 엔진에는 막아 두었습니다."
@@ -70,6 +70,23 @@ test.describe("첫 진입 안내 창 (작업 0326)", () => {
     await page.waitForTimeout(600);
     await expect(welcome(page)).toHaveCount(0);
     await page.goto("/geo");
+    await page.waitForTimeout(600);
+    await expect(welcome(page)).toHaveCount(0);
+  });
+
+  test("다른 회사 링크로 들어오면 다시 뜸 · 닫은 회사는 그대로 안 뜸 (작업 0369)", async ({ page }) => {
+    await session(page, 200, { name: "apply-acme-1124" });
+    await page.goto("/log");
+    await welcome(page).getByRole("button", { name: "둘러보기" }).click();
+    await expect(welcome(page)).toHaveCount(0);
+    await page.unroute("**/session");
+    await session(page, 200, { name: "apply-beta-1125" });
+    await page.reload();
+    await expect(welcome(page)).toContainText("beta 회사 님, 반갑습니다");
+    await welcome(page).getByRole("button", { name: "둘러보기" }).click();
+    await page.unroute("**/session");
+    await session(page, 200, { name: "apply-acme-1124" });
+    await page.reload();
     await page.waitForTimeout(600);
     await expect(welcome(page)).toHaveCount(0);
   });
