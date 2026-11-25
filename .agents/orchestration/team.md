@@ -121,7 +121,8 @@
   - PR 은 lead만 연다. base 는 develop 이다(급한 버그 같은 예외만 main). 제목은 "작업 NNNN: 요약", 버그 · 보안 수정은 "작업 NNNN: 패치(버그|보안) — 요약"
   - 담당자는 kyungchan3007 로 지정한다
   - 머지: PR 최신 커밋의 CI gate 가 통과하면 lead 가 바로 `gh pr merge --rebase` 로 머지한다. 사람의 "머지해"를 기다리지 않는다(2026-11-24 사용자 결정 · 작업 0343). 보호 파일이 바뀐 PR 은 harness-approved 라벨이 붙은 뒤 새로 돈 gate 가 통과해야 머지한다. harness-approved 라벨은 lead 가 붙이지 않는다(사용자 · claude-desktop 이 붙임)
-  - main 반영: develop → main 은 fast-forward(`git push origin origin/develop:main`). 보내기 전에 `git log origin/main..origin/develop` 을 확인하고, 사용자 확인을 기다리는 작업이 섞여 있으면 보내지 말고 claude-desktop 에 먼저 알린다. 어드민 작업은 develop 머지 뒤 바로 main 에 반영한다
+  - main 반영: develop → main 은 fast-forward(`git push origin origin/develop:main`). 보내기 전에 `git log origin/main..origin/develop` 을 확인하고, 사용자 확인을 기다리는 작업이 섞여 있으면 보내지 말고 claude-desktop 에 먼저 알린다
+  - 어드민 반영(작업 0368): 어드민(`flapfx-admin`)의 운영 브랜치는 `admin` 이다(main 아님 · 다른 브랜치 빌드는 꺼 둠). 어드민 작업은 develop 머지 뒤 바로 `git push origin origin/develop:admin` 으로 fast-forward 한다. main 반영(운영 사이트)과는 따로 한다. admin 에 develop 의 운영 사이트 커밋이 함께 가도 어드민 빌드에는 영향이 없다
   - 완료는 PR 최신 커밋의 CI gate 가 COMPLETED + SUCCESS 일 때만 말한다. "통과"의 기준은 [verdict.md "게이트 판정 규칙"](verdict.md) 하나다. 로컬 전체 게이트 PASS 는 PR 전 조건이 아니고, 로컬에서 돌린 것(바뀐 spec · 실패한 spec 등)은 보고에 무엇을 돌렸는지 적는다. 비밀값은 코드 · 로그 · 커밋에 쓰지 않는다
 - PR · 이슈 본문 · 댓글에는 팀 내부 절차 문장을 쓰지 않는다 (게이트 결과 한 줄만) — 11-20 사용자 지적
 - 남의 범위를 바꿔야 하면: 직접 고치지 말고 lead에게 요청
