@@ -7,6 +7,7 @@
 //     /calc 의 링크 "이번 주 관세청 과세환율 (아래)" → #customs: 이 칸이 가리키는 곳에 id="customs" (이번 주 과세환율 구역)
 //   여행 물가(환율 없는 나라)의 자리는 builder 가 정해 lead 에게 알림 — 그 화면은 이 파일에 더함
 import { type Page, expect, test } from "@playwright/test";
+import { PROD_LAUNCH, names, prodUrl, recordPreview, recordProd } from "./click-track";
 
 const FIXTURE = process.env.EMPTY_FIXTURE === "1";
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
@@ -125,5 +126,37 @@ test.describe("여행 물가 예산 카드 — 환율을 못 받은 나라 (작�
     const cards = tid(page, "next-card");
     await expect(cards.first()).toContainText("자료 없음");
     await expect(cards.first().getByRole("link")).toHaveAttribute("href", "/currencies/JPY"); // 통화가 있는 나라는 그 통화 상세로(next-cards.tsx)
+  });
+});
+
+// 작업 0359 — 막다른 화면의 '그동안 볼 수 있는 것' 링크를 누르면 empty_next (운영 흉내 · 미리보기는 보내지 않음) — 환율을 못 받는 고정 자료 빌드에서만
+test.describe("막다른 화면 링크 클릭 이벤트 (작업 0359)", () => {
+  test.describe("운영 주소", () => {
+    test.use({ launchOptions: PROD_LAUNCH });
+    test("/currencies/USD 의 링크를 누르면 empty_next 하나 · /calc 의 링크도 같은 이름", async ({ page, context, baseURL }) => {
+      await recordProd(context);
+      await page.goto(prodUrl(baseURL, "/currencies/USD"));
+      await page.waitForLoadState("networkidle");
+      expect(await page.evaluate(() => location.hostname)).toBe("flapfx.com");
+      expect(await names(page), "열기만 해서는 없음").toEqual([]);
+      await tid(page, "data-empty").getByRole("link", { name: /여행 물가/ }).click();
+      await expect(page).toHaveURL(/\/prices\/?$/);
+      expect(await names(page)).toEqual(["empty_next"]);
+      await page.evaluate(() => sessionStorage.removeItem("__ev"));
+      await page.goto(prodUrl(baseURL, "/calc"));
+      await page.waitForLoadState("networkidle");
+      await tid(page, "data-empty").getByRole("link", { name: /통화별 1년 흐름/ }).click();
+      await expect(page).toHaveURL(/\/currencies\/?$/);
+      expect(await names(page)).toEqual(["empty_next"]);
+    });
+  });
+
+  test("미리보기 · 로컬(지금 주소)에서는 보내지 않음", async ({ page, context }) => {
+    await recordPreview(context);
+    await page.goto("/currencies/USD");
+    await page.waitForLoadState("networkidle");
+    await tid(page, "data-empty").getByRole("link", { name: /여행 물가/ }).click();
+    await expect(page).toHaveURL(/\/prices\/?$/);
+    expect(await names(page)).toEqual([]);
   });
 });
