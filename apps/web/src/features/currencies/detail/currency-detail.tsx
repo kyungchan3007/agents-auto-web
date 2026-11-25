@@ -91,7 +91,10 @@ export function CurrencyDetail({ code, rate, signal, history, levels = null, bui
         </div>
         {/* 오른쪽: 실제로 바꿀 때 카드 → 그 아래 "다른 나라 통화 보기"(작업 0356) · 버튼 아래선은 왼쪽 "1년 최저 · 최고" 카드 아래선(둘이 같은 줄 높이 · mt-auto) */}
         <div className="flex min-w-0 flex-col gap-4">
-          <Converter code={code} rate={rate} />
+          {/* 카드만 감싸는 칸 — 따라오는(sticky) 환전 카드는 이 칸 안에서만 움직여 버튼을 덮지 않음 (칸은 남는 높이를 채우고 버튼이 그 아래) */}
+          <div className="min-h-0 flex-1">
+            <Converter code={code} rate={rate} />
+          </div>
           <div className="mt-auto">
             <CurrencyMore />
           </div>
