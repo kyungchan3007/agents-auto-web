@@ -18,7 +18,14 @@
 - 운영 배포가 둘로 나뉜(점진 배포) 상태면 판정 불가로 멈춤 (가정)
 
 ## 정한 것
-- (builder 가 확인한 필드 이름 · 근거 파일을 여기 적음)
+- 근거: node_modules/wrangler 4.154.0 `wrangler-dist/cli.js` (versions list · deployments list · view 의 `--json` 은 API 응답을 그대로 출력). 실제 Cloudflare 에는 돌리지 않음.
+  - 내용 해시: `versions view <id> --json` 의 `resources.script.etag` (cli.js 의 versions 업로드가 같은 필드를 `etag: versionResult.resources.script.etag` 로 씀). 값이 없거나 문자열이 아니면 판정 불가로 멈춤.
+  - 비밀값 이름: 같은 JSON 의 `resources.bindings[]` 중 `type === "secret_text"` 의 `name` (값은 오지 않음).
+  - 최신 버전: `versions list --json` 배열에서 `metadata.created_on` 이 가장 늦은 `id`.
+  - 운영 배포 버전: `versions deployments list --json` 의 `created_on` 이 가장 늦은 배포가 `versions` 하나 · `percentage === 100` 일 때의 `version_id` (아니면 점진 배포로 보고 멈춤).
+  - 배포: `versions deploy <새 버전>@100% --yes --config <설정>` · 배포 뒤 deployments 를 다시 읽어 그 버전인지 확인.
+  - 주의: etag 가 내용 해시인지(비밀값만 달라져도 바뀌는지)는 소스만으로 확정할 수 없음. 바뀌면 "코드 다름"으로 멈추는 안전한 쪽으로만 틀리고, 첫 실사용 때 확인한다.
+  - 흐름: 점검(읽기만)을 비밀값 넣기 전에 Worker 별로 끝냄(init 은 어드민 · API 둘 다 먼저) → 넣기 → versions 경로면 새 버전 확인 · 배포 → 그 뒤에야 로컬 목록 저장 · 새 링크 출력(배포가 실패하면 링크 · 로컬 저장 없음).
 
 ## 파일 계획
 - scripts/admin-token.mjs · scripts/admin-token-lib.ts (builder)

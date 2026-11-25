@@ -113,3 +113,105 @@ export const versionsPutNotice = (config: string): string =>
 
 /** 명령 인자에 정확히 --versions 가 있으면 true */
 export const hasVersionsFlag = (argv: string[]): boolean => argv.includes("--versions");
+
+// ── 미리보기 버전 점검 (작업 0367) — Workers Builds 가 푸시마다 새 버전만 올려 "최신 버전 ≠ 운영 배포 버전" 이어도
+//   코드가 같으면 한 번의 명령으로 끝낸다: versions secret put → 그 새 버전 하나만 100% 배포. 코드가 다르거나 판정할 수 없으면 비밀값을 넣지 않고 멈춘다(운영 코드가 바뀌는 배포는 하지 않음).
+//   wrangler 4.x 의 JSON 모양 (node_modules/wrangler 소스로 확인 · 작업 0367 plan "정한 것")
+//     versions list --json                → [{ id, metadata: { created_on }, … }] (오래된 것부터 정렬해 마지막이 최신)
+//     versions deployments list --json    → [{ created_on, versions: [{ version_id, percentage }] }] (마지막이 지금 배포)
+//     versions view <id> --json           → { id, resources: { script: { etag }, bindings: [{ type, name }] } } — etag = 스크립트 내용 해시 · type "secret_text" 의 name = 비밀값 이름(값은 오지 않음)
+export type VersionFacts = { etag: string | null; secrets: string[] };
+export type Preflight = { action: "direct" } | { action: "versions" } | { action: "stop"; reason: string };
+
+/** wrangler JSON 출력 → 값 · 앞뒤에 다른 글이 섞여도 첫 [ 또는 { 부터 읽음 · 못 읽으면 null */
+export function parseJson(text: string): unknown {
+  const at = text.search(/[[{]/);
+  if (at < 0) return null;
+  try {
+    return JSON.parse(text.slice(at));
+  } catch {
+    return null;
+  }
+}
+
+const rec = (v: unknown): Record<string, unknown> | null => (typeof v === "object" && v !== null && !Array.isArray(v) ? (v as Record<string, unknown>) : null);
+
+/** 최신 버전 id — 만든 때(metadata.created_on)가 가장 늦은 것 · 목록이 비었거나 모양이 다르면 null */
+export function latestVersionId(listJson: unknown): string | null {
+  if (!Array.isArray(listJson)) return null;
+  const rows = listJson.flatMap((v) => {
+    const r = rec(v);
+    const created = rec(r?.metadata)?.created_on;
+    return typeof r?.id === "string" && typeof created === "string" ? [{ id: r.id, created }] : [];
+  });
+  if (rows.length === 0) return null;
+  return rows.reduce((a, b) => (b.created > a.created ? b : a)).id;
+}
+
+/** 지금 운영 배포 버전 id — 가장 최근 배포가 버전 하나 100% 일 때만 · 점진 배포(둘 이상 · 100% 아님) · 모양이 다르면 null */
+export function productionVersionId(deploymentsJson: unknown): string | null {
+  if (!Array.isArray(deploymentsJson) || deploymentsJson.length === 0) return null;
+  const rows = deploymentsJson.flatMap((d) => {
+    const r = rec(d);
+    return r && typeof r.created_on === "string" && Array.isArray(r.versions) ? [{ created: r.created_on, versions: r.versions as unknown[] }] : [];
+  });
+  if (rows.length === 0) return null;
+  const last = rows.reduce((a, b) => (b.created > a.created ? b : a));
+  if (last.versions.length !== 1) return null;
+  const v = rec(last.versions[0]);
+  return typeof v?.version_id === "string" && v.percentage === 100 ? v.version_id : null;
+}
+
+/** 버전 상세 → 스크립트 내용 해시(etag) · 비밀값 이름(글자순 · 값은 읽지 않음) · 모양이 다르면 null */
+export function versionFacts(viewJson: unknown): VersionFacts | null {
+  const r = rec(viewJson);
+  const res = rec(r?.resources);
+  if (!res) return null;
+  const etag = rec(res.script)?.etag;
+  const bindings = Array.isArray(res.bindings) ? res.bindings : [];
+  const secrets = bindings.flatMap((b) => {
+    const x = rec(b);
+    return x?.type === "secret_text" && typeof x.name === "string" ? [x.name] : [];
+  });
+  return { etag: typeof etag === "string" && etag !== "" ? etag : null, secrets: [...new Set(secrets)].sort() };
+}
+
+const sameList = (a: string[], b: string[]): boolean => a.length === b.length && a.every((x, i) => x === b[i]);
+
+/** 최신 버전 vs 운영 배포 버전 → 할 일 · 같은 버전이면 그냥 secret put · 코드(etag)와 비밀값 이름이 같으면 versions 경로 · 그 밖에는 모두 멈춤(가정으로 배포하지 않음) */
+export function judgePreflight(p: { latestId: string | null; prodId: string | null; latest: VersionFacts | null; prod: VersionFacts | null }): Preflight {
+  if (p.latestId === null) return { action: "stop", reason: "최신 버전을 찾지 못했습니다" };
+  if (p.prodId === null) return { action: "stop", reason: "운영 배포가 버전 하나 100% 가 아닙니다(점진 배포 중이거나 읽지 못함)" };
+  if (p.latestId === p.prodId) return { action: "direct" };
+  if (!p.latest || !p.prod) return { action: "stop", reason: "버전 정보를 읽지 못했습니다" };
+  if (p.latest.etag === null || p.prod.etag === null) return { action: "stop", reason: "코드가 같은지 판정할 값(내용 해시)이 없습니다" };
+  if (p.latest.etag !== p.prod.etag) return { action: "stop", reason: "최신 미리보기 버전의 코드가 운영 배포 버전과 다릅니다" };
+  if (!sameList(p.latest.secrets, p.prod.secrets)) return { action: "stop", reason: "최신 버전의 비밀값 이름이 운영 배포 버전과 다릅니다" };
+  return { action: "versions" };
+}
+
+/** versions secret put 으로 만든 새 버전을 배포해도 되는가 — 코드가 운영과 같고 운영의 비밀값 이름이 모두 남아 있을 때만 */
+export function judgeNewVersion(prod: VersionFacts | null, created: VersionFacts | null): boolean {
+  if (!prod || !created || prod.etag === null || prod.etag !== created.etag) return false;
+  return prod.secrets.every((s) => created.secrets.includes(s));
+}
+
+/** 멈춤 안내 — 이유 + 할 일(운영 반영 뒤 다시 실행 · 대시보드 배포) · 비밀값은 넣지 않았음 */
+export function preflightStopHelp(reason: string, config: string): string {
+  return [
+    `멈춥니다: ${reason}. 비밀값은 넣지 않았습니다.`,
+    "할 일 (둘 중 하나):",
+    "  1. 운영 반영(main)이 끝나 최신 버전이 운영에 배포된 뒤 이 명령을 다시 실행합니다.",
+    `  2. Cloudflare 대시보드의 Workers > 배포 에서 원하는 버전을 직접 배포한 뒤 다시 실행합니다 (설정: ${config}).`,
+  ].join("\n");
+}
+
+const withConfig = (args: string[], config: string): string[] => [...args, "--config", config];
+export const listVersionsArgs = (config: string): string[] => withConfig(["versions", "list", "--json"], config);
+export const listDeploymentsArgs = (config: string): string[] => withConfig(["versions", "deployments", "list", "--json"], config);
+export const viewVersionArgs = (id: string, config: string): string[] => withConfig(["versions", "view", id, "--json"], config);
+/** 그 버전 하나만 100% — 다른 버전은 섞지 않음 */
+export const deployVersionArgs = (id: string, config: string): string[] => withConfig(["versions", "deploy", `${id}@100%`, "--yes"], config);
+
+/** 점검을 거칠 명령인가 — 수동 경로(--versions)는 점검 없이 예전 그대로 */
+export const needsPreflight = (cmd: string | undefined, versions: boolean): boolean => !versions && (cmd === "add" || cmd === "remove" || cmd === "init");
