@@ -11,6 +11,7 @@
 //   처음 들어옴 · 새로 고침 · 주소로 바로 옴은 전환이 아니므로 flag-fly · 글자판 굴러감 · 스크롤 이동 없음
 //   움직임 줄이기면 스크롤 · 국기 · 카운트업 · 칩 밀림 없이 바로 최종
 import { type Page, expect, test } from "@playwright/test";
+import { listCodes, listLink, openSide } from "./currency-list";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 640;
@@ -78,7 +79,6 @@ const startRec = (page: Page) => page.evaluate(RECORD);
 const stopRec = (page: Page) => page.evaluate(() => { const w = window as unknown as { __sw: unknown[]; __swStop: boolean }; w.__swStop = true; return w.__sw; }) as Promise<Fr[]>;
 const recNow = (page: Page) => page.evaluate(() => performance.now() - (window as unknown as { __swT0: number }).__swT0);
 
-const listLink = (page: Page, code: string) => tid(page, "currency-list").locator(`a[href="/currencies/${code}"]`);
 const chip = (page: Page, code: string) => tid(page, "chip").and(page.locator(`[data-code="${code}"]`));
 const settle = async (page: Page, code: string, ms = 4500) => {
   await expect(page).toHaveURL(new RegExp(`/currencies/${code}/?$`), { timeout: 12000 });
@@ -101,13 +101,13 @@ test.describe("통화 바꾸기 전환 (작업 0231 · 모션 7 · 4)", () => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/currencies/JPY");
     await page.waitForTimeout(800);
-    await tid(page, "currency-list").scrollIntoViewIfNeeded();
     await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
     await page.waitForTimeout(300);
     const y0 = await page.evaluate(() => scrollY);
     expect(y0, "준비: 아래로 내려 있음").toBeGreaterThan(300);
     await startRec(page);
     await page.waitForTimeout(150);
+    await openSide(page);
     await listLink(page, "USD").click();
     await settle(page, "USD", 4000);
     const fr = (await stopRec(page)).filter((f) => f.t > 100);
@@ -184,7 +184,7 @@ test.describe("통화 바꾸기 전환 (작업 0231 · 모션 7 · 4)", () => {
     await page.waitForTimeout(1500);
     const oldPos = Number(await tid(page, "route-plane").getAttribute("data-position"));
     // 오늘 점 위치가 JPY 와 15%p 이상 다른 통화를 자료에서 고름(목록의 통화를 하나씩 새 탭으로 열어 읽음) — 그런 통화가 없을 때만 건너뜀
-    const codes = (await tid(page, "currency-list").locator("a[href^='/currencies/']").evaluateAll((els) => els.map((e) => (e.getAttribute("href") ?? "").split("/").pop() ?? ""))).filter((c) => c && c !== "JPY").slice(0, 14);
+    const codes = (await listCodes(page)).filter((c) => c && c !== "JPY").slice(0, 14);
     let target: { code: string; pos: number } | null = null;
     const probe = await page.context().newPage();
     await probe.emulateMedia({ reducedMotion: "reduce" });
@@ -197,6 +197,7 @@ test.describe("통화 바꾸기 전환 (작업 0231 · 모션 7 · 4)", () => {
     test.skip(!target, "JPY 와 오늘 점 위치가 15%p 이상 다른 통화가 없음(자료)");
     const { code, pos: newPos } = target!;
     await startRec(page);
+    await openSide(page);
     await listLink(page, code).click();
     await settle(page, code, 5000);
     const fr = await stopRec(page);
@@ -268,6 +269,7 @@ test.describe("통화 바꾸기 전환 (작업 0231 · 모션 7 · 4)", () => {
     await page.waitForTimeout(300);
     await startRec(page);
     await page.waitForTimeout(100);
+    await openSide(page);
     await listLink(page, "USD").click();
     await expect(page).toHaveURL(/\/currencies\/USD\/?$/, { timeout: 4000 });
     await page.waitForTimeout(1200);

@@ -8,8 +8,9 @@
 //     저장: localStorage "flapfx:recent-currencies"(JSON 배열 · 맨 앞이 가장 최근) — 다음 방문에도 같은 칩 줄 · 저장이 없으면 지금 운영 그대로(JPY · USD · EUR · THB + 지금 통화가 넷 밖이면 맨 앞)
 //     움직임 줄이기면 밀림 · 빠짐 · 상자 펼침 모두 움직임 없이 바로 최종
 //   첫 그림 깜빡임 고침(lead 결정): 저장이 있는 사람만 — 문서 앞쪽 아주 작은 인라인 스크립트가 localStorage "flapfx:recent-currencies" 가 있으면 <html data-recent-chips> 를 달고 → CSS 가 그 표시가 있고 아직 하이드레이션 전이면 칩 줄을 visibility hidden → 저장 순서로 그린 뒤 해제(밀림 모션 없이 나타남) · 저장이 없으면(처음 방문) 숨김 없이 첫 프레임부터 기본 칩 · JS 꺼짐은 기본 칩 · 저장이 깨져 있어도 영영 숨지 않음
-//   목록의 통화는 아래 둘러보기 목록 [data-testid="currency-list"] 의 링크로 고름 (받은 통화가 달라도 되게 목록에서 읽음)
+//   목록의 통화는 "다른 나라 통화 보기" 사이드바 목록 [data-testid="currency-side-list"] 의 링크로 고름(작업 0365: 둘러보기 표는 통화 상세에서 빠짐) (받은 통화가 달라도 되게 목록에서 읽음)
 import { type Page, expect, test } from "@playwright/test";
+import { listCodes, pickFromList } from "./currency-list";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 640;
@@ -22,14 +23,13 @@ const rowCodes = (page: Page) =>
 const stored = (page: Page) => page.evaluate((k) => JSON.parse(window.localStorage.getItem(k) ?? "[]") as string[], KEY);
 /** 목록에서 기본 네 통화가 아닌 통화 코드 n개 */
 const others = async (page: Page, n: number) => {
-  const all = await tid(page, "currency-list").locator("a[href^='/currencies/']").evaluateAll((els) => els.map((e) => (e.getAttribute("href") ?? "").split("/").pop() ?? ""));
+  const all = await listCodes(page);
   return all.filter((c) => !DEFAULT4.includes(c)).slice(0, n);
 };
-const pickFromList = (page: Page, code: string) => tid(page, "currency-list").locator(`a[href="/currencies/${code}"]`).click();
 const seed = (page: Page, list: string[]) => page.addInitScript(([k, v]) => { try { window.localStorage.setItem(k as string, v as string); } catch {} }, [KEY, JSON.stringify(list)]);
 /** 목록에 이 통화들이 모두 있는지(자료 조건 · 구현 유무와 상관없음) */
 const hasAll = async (page: Page, codes: string[]) => {
-  const all = await tid(page, "currency-list").locator("a[href^='/currencies/']").evaluateAll((els) => els.map((e) => (e.getAttribute("href") ?? "").split("/").pop() ?? ""));
+  const all = await listCodes(page);
   return codes.every((c) => all.includes(c));
 };
 const urlIs = (page: Page, code: string) => expect(page).toHaveURL(new RegExp(`/currencies/${code}/?$`), { timeout: 8000 });
@@ -38,7 +38,7 @@ test.describe("고른 통화 칩 (작업 0231)", () => {
   test("처음 칩 줄은 지금 운영 그대로 — JPY · USD · EUR · THB (저장 없음) · 더보기 없음 · 칩마다 data-code · 지금 통화 aria-current", async ({ page }) => {
     await page.goto("/currencies/JPY");
     const row = await rowCodes(page);
-    const avail = await tid(page, "currency-list").locator("a[href^='/currencies/']").evaluateAll((els) => els.map((e) => (e.getAttribute("href") ?? "").split("/").pop()));
+    const avail = await listCodes(page);
     expect(row).toEqual(DEFAULT4.filter((c) => avail.includes(c)));
     await expect(tid(page, "chip-more")).toHaveCount(0);
     await expect(tid(page, "chip").first()).toHaveAttribute("aria-current", "page");

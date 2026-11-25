@@ -16,7 +16,8 @@ const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 test.describe("통화 /currencies/USD (SR-CUR-01)", () => {
   test("목록 · 상세 · 환산기 · 물가 링크", async ({ page }) => {
     await page.goto("/currencies/USD");
-    await expect(tid(page, "currency-list")).toContainText("둘러보기");
+    await expect(tid(page, "currency-list"), "통화 상세에는 둘러보기 표가 없음(작업 0365)").toHaveCount(0);
+    await expect(tid(page, "currency-more")).toBeVisible();
     const detail = tid(page, "currency-detail");
     await expect(detail).toContainText("USD");
     await expect(detail).toContainText("실제로 바꿀 때");
@@ -70,13 +71,12 @@ test.describe("통화 /currencies/USD (SR-CUR-01)", () => {
     expect(a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height, "두 라벨이 겹침").toBe(false);
   });
 
-  test("배치 — 위쪽 검색 · 칩 → 상세 → 맨 아래 목록 (작업 0219 · 넓은 화면 · 휴대폰 같은 순서)", async ({ page }) => {
+  test("배치 — 위쪽 검색 · 칩 → 상세 (맨 아래 표는 작업 0365 로 없어짐) (작업 0219 · 넓은 화면 · 휴대폰 같은 순서)", async ({ page }) => {
     await page.goto("/currencies/USD");
-    const list = await box(tid(page, "currency-list"));
     const detail = await box(tid(page, "currency-detail"));
     const jump = await box(tid(page, "currency-jump"));
     expect(jump.y).toBeLessThan(detail.y);
-    expect(list.y).toBeGreaterThanOrEqual(detail.y + detail.height - 1);
+    await expect(tid(page, "currency-list"), "맨 아래 둘러보기 표 없음(작업 0365)").toHaveCount(0);
   });
 });
 

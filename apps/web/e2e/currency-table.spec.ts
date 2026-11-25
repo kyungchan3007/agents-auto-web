@@ -1,3 +1,4 @@
+// 작업 0365: 통화 상세(/currencies/XXX)에서는 이 표를 뺌 → 표 검사는 /currencies 목록 페이지에서 (이 페이지의 표는 그대로)
 // 작업 0260 — 통화 "둘러보기"를 카드 22장에서 표로 (테스트 먼저 · 구현 전에는 FAIL 이 정상) · 기준: handoff.md "고치면" · 요청 원문 시안 32번 B안
 //
 // 화면에 다는 표시(builder 가 다는 것) — data-testid="currency-list"(기존 · 둘러보기 구간) 안:
@@ -22,7 +23,7 @@ const drops = async (page: Page) => (await rows(page).evaluateAll((els) => els.m
 
 test.describe("통화 둘러보기 표 (작업 0260)", () => {
   test("표 구조 — 줄마다 이름 · 오늘 환율 · 90일 최고보다 · 줄 전체가 그 통화 상세로 가는 링크 · 국기", async ({ page }) => {
-    await page.goto("/currencies/USD");
+    await page.goto("/currencies");
     const n = await rows(page).count();
     expect(n, "통화 줄 수").toBeGreaterThan(3);
     for (let i = 0; i < Math.min(n, 8); i++) {
@@ -42,7 +43,7 @@ test.describe("통화 둘러보기 표 (작업 0260)", () => {
   });
 
   test("이름이 앞 · 통화 코드는 뒤(작게) — 지금은 코드가 앞이고 이름이 작음 · 단위 표기(엔 100)는 그대로", async ({ page }) => {
-    await page.goto("/currencies/USD");
+    await page.goto("/currencies");
     const row = rows(page).filter({ has: page.locator('a[href="/currencies/JPY"]') });
     await expect(row).toHaveCount(1);
     const order = await row.evaluate((el) => {
@@ -57,13 +58,13 @@ test.describe("통화 둘러보기 표 (작업 0260)", () => {
   });
 
   test("\"최근 90일 중 하위 N%\" · \"상위 N%\" · \"최근 90일 최저\" 글은 표에서 뺌", async ({ page }) => {
-    await page.goto("/currencies/USD");
+    await page.goto("/currencies");
     const text = await list(page).innerText();
     expect(text).not.toMatch(/하위\s*\d+%|상위\s*\d+%|최근 90일 중|최근 90일 최저/);
   });
 
   test("많이 내린 순서 — 내린 폭이 큰 줄이 위 · 최고 · 기록 없음은 뒤 (두 단이면 첫 단 위에서 둘째 단 아래로 이어서)", async ({ page }) => {
-    await page.goto("/currencies/USD");
+    await page.goto("/currencies");
     const d = await drops(page);
     const nums = d.filter((x): x is number => typeof x === "number");
     test.skip(nums.length < 2, "90일 최고가 실린 신호 응답이 아직 없음(옛 응답) · 숫자 줄이 둘 미만");
@@ -77,7 +78,7 @@ test.describe("통화 둘러보기 표 (작업 0260)", () => {
   });
 
   test("넓은 화면은 두 단(앞 절반 · 뒤 절반 · 단마다 머리 줄) · 휴대폰은 한 단", async ({ page }) => {
-    await page.goto("/currencies/USD");
+    await page.goto("/currencies");
     const cols = list(page).locator('[data-testid="currency-col"]');
     await expect(cols).toHaveCount(2);
     const n1 = await cols.nth(0).locator('li[data-testid="currency-row"]').count();
@@ -105,7 +106,7 @@ test.describe("통화 둘러보기 표 (작업 0260)", () => {
   });
 
   test("막대는 넓은 화면에서만 · 길이는 내린 폭에 비례(가장 많이 내린 통화가 꽉 참) · 휴대폰은 숫자만", async ({ page }) => {
-    await page.goto("/currencies/USD");
+    await page.goto("/currencies");
     const bars = list(page).locator('[data-testid="currency-bar"]');
     if (!isWide(page)) {
       const n = await bars.count();
@@ -133,7 +134,7 @@ test.describe("통화 둘러보기 표 (작업 0260)", () => {
 
   test("휴대폰 — 통화 코드 · 막대는 숨김 · 이름 · 환율 · 내린 폭은 보임 · 가로로 넘치지 않음", async ({ page }) => {
     test.skip(isWide(page), "휴대폰 전용");
-    await page.goto("/currencies/USD");
+    await page.goto("/currencies");
     const row = rows(page).first();
     await expect(row.locator('[data-testid="currency-code"]')).toBeHidden();
     for (const id of ["currency-name", "currency-rate", "currency-drop"]) await expect(row.locator(`[data-testid="${id}"]`)).toBeVisible();
@@ -147,7 +148,7 @@ test.describe("통화 둘러보기 표 (작업 0260)", () => {
   });
 
   test("지금 보는 통화 줄은 표시됨(aria-current) · 줄을 누르면 그 통화 상세로", async ({ page }) => {
-    await page.goto("/currencies/USD");
+    await page.goto("/currencies");
     const current = list(page).locator('a[aria-current="page"]');
     await expect(current).toHaveCount(1);
     await expect(current).toHaveAttribute("href", "/currencies/USD");
@@ -159,7 +160,7 @@ test.describe("통화 둘러보기 표 (작업 0260)", () => {
   });
 
   test("화면 낭독 이름에 이름 · 환율과 내린 폭이 들어감", async ({ page }) => {
-    await page.goto("/currencies/USD");
+    await page.goto("/currencies");
     const n = await rows(page).count();
     let numeric = 0;
     for (let i = 0; i < Math.min(n, 22); i++) {
