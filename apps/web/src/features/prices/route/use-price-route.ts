@@ -28,6 +28,8 @@ type Out = {
   reroutes: number;
   /** 이번 이동이 같은 값 사이였나(스페인 111 ↔ 아랍에미리트 111 — 비행기 제자리 · 작업 0251) */
   sameValue: boolean;
+  /** 자 상자의 지금 폭(px) — 몰린 핀 이름을 한 줄 더 밀어 내는 계산에 씀 (작업 0360) · 처음은 넓은 화면 기준 추정값 */
+  rulerW: number;
   ruler: RefObject<HTMLDivElement | null>;
   vp: RefObject<HTMLDivElement | null>;
   goto: (i: number) => void;
@@ -40,6 +42,7 @@ export function usePriceRoute(values: number[], routeKey = "", start = 0): Out {
   const n = values.length;
   const ruler = useRef<HTMLDivElement>(null);
   const vp = useRef<HTMLDivElement>(null);
+  const [rulerW, setRulerW] = useState(1100);
   const [st, setSt] = useState({ key: routeKey, reroutes: 0, active: start, target: start, from: values[start] ?? values[0] ?? 0, t: 1, dir: "forward" as "forward" | "back", swap: 0, same: false });
   const toValue = values[st.target] ?? values[0] ?? 0;
   const planeValue = st.t >= 1 ? toValue : st.from + (toValue - st.from) * ease(st.t);
@@ -80,6 +83,15 @@ export function usePriceRoute(values: number[], routeKey = "", start = 0): Out {
     [n, reduce, values],
   );
 
+  // 자 폭을 재서 따라감(화면 폭이 바뀌어도) — 처음 한 번은 관찰자가 바로 알려 줌
+  useEffect(() => {
+    const r = ruler.current;
+    if (!r || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => setRulerW(r.offsetWidth));
+    ro.observe(r);
+    return () => ro.disconnect();
+  }, []);
+
   // 휴대폰: 자가 화면보다 넓으면 말(동그라미)을 따라 옆으로 흐름 — 그릴 때마다 말 위치(data-plane-x · %)를 읽어 맞춤
   useLayoutEffect(() => {
     const r = ruler.current;
@@ -93,7 +105,7 @@ export function usePriceRoute(values: number[], routeKey = "", start = 0): Out {
     } else r.style.transform = "";
   }, [planeValue]);
 
-  return { armed, active: st.active, target: st.target, moving, planeValue, dir: st.dir, swap: st.swap, reroutes: st.reroutes, sameValue: st.same, ruler, vp, goto };
+  return { armed, active: st.active, target: st.target, moving, planeValue, dir: st.dir, swap: st.swap, reroutes: st.reroutes, sameValue: st.same, rulerW, ruler, vp, goto };
 }
 
 /** 카드 숫자 — 정거장이 바뀌면 이전 값에서 새 값으로 약 0.75초 (ease-out) · 처음은 바로 */

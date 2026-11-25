@@ -10,14 +10,14 @@ import { countryPath } from "../country/country-view";
 import type { Signal } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import { SectionTitle } from "@hav/ui/text/heading";
-import type { CSSProperties } from "react";
+import { type CSSProperties, Fragment } from "react";
 import { useCountTween, usePlaneFlip, usePriceRoute, useRouteTiles } from "./use-price-route";
 import { type PriceBand, rateBadgeText } from "../bands/bands";
 import { OutlineLink } from "@hav/ui/action/outline-link";
 import { routeScale } from "@hav/shared/route-tabs";
 import { type RouteBand, routeCardText } from "./price-route-view";
 import { RouteTabs } from "./route-tabs";
-import { type UiStop, detailText, routeKeyOf, startOf, uiStops } from "./route-ui";
+import { TIER_REM, type UiStop, detailText, pinTiers, routeKeyOf, startOf, uiStops } from "./route-ui";
 import { useRouteTabs } from "./use-route-tabs";
 import { PriceRouteList } from "./price-route-list";
 import { rulerX } from "./ruler";
@@ -163,10 +163,11 @@ function Route({ stops, rt, extras, signalOf, percentileOf, latestYear }: { stop
   const n = stops.length;
   const start = startOf(stops); // 새 노선에서 비행기 · 카드가 갈 첫 정거장 = 내 여행지가 있으면 그 나라
   const routeKey = routeKeyOf(rt.tab, stops);
-  const { armed, active, target, moving, planeValue, dir, swap, reroutes, sameValue, ruler, vp, goto } = usePriceRoute(stops.map((st) => st.value), routeKey, start);
+  const { armed, active, target, moving, planeValue, dir, swap, reroutes, sameValue, rulerW, ruler, vp, goto } = usePriceRoute(stops.map((st) => st.value), routeKey, start);
   const scale = routeScale(rt.tab, stops.map((st) => st.value));
   const appear = armed && reroutes > 0; // 탭을 바꾼 뒤 핀 · 칩이 차례로 다시 나타남(움직임 줄이기는 바로)
   const x = (v: number) => rulerX(v, scale);
+  const { tiers, up: tierUp, down: tierDown } = pinTiers(stops, scale, rulerW); // 몰린 핀 이름은 한 줄 더 밀어 냄
   const noExtra: Extra = { currency: null, year: null };
   const planeX = x(planeValue);
   // 이웃 정거장 값이 같은 이동(스페인 111 ↔ 아랍에미리트 111)은 비행기가 가만히 — 뛰지 않고 · 고리가 다시 퍼지지 않고 · 좌우로 뒤집히지 않음 (작업 0251 ㄴ) · 바뀌는 것은 나라 쪽뿐
@@ -228,7 +229,8 @@ function Route({ stops, rt, extras, signalOf, percentileOf, latestYear }: { stop
             ref={ruler}
             data-testid="route-ruler"
             data-plane-x={planeX}
-            className="relative h-(--rh) [--rh:var(--route-rh)] [--tt:var(--route-tt)] max-[760px]:w-[960px]"
+            className="relative h-(--rh) [--rh:calc(var(--route-rh)+(var(--tu)+var(--td))*7rem)] [--tt:calc(var(--route-tt)+var(--tu)*7rem)] max-[760px]:w-[960px]"
+            style={{ "--tu": tierUp, "--td": tierDown } as CSSProperties}
           >
             <div className="absolute inset-x-0 top-(--tt) h-[22px] rounded-[0.625rem]" style={{ background: trackBg(scale.lo, scale.hi) }} />
             <div className="absolute inset-x-0 top-[calc(var(--tt)+22px)]">
@@ -275,16 +277,21 @@ function Route({ stops, rt, extras, signalOf, percentileOf, latestYear }: { stop
                 const val = <span className="text-[1.375rem] leading-[1.15] font-bold tracking-[0.02em] tabular-nums">{s.value}</span>;
                 const fl = <RouteFlag country={s.country} name={s.name} className={`my-[3px] size-[1.875rem] ring-[2px] ${s.mine ? "ring-sun" : ""}`} />;
                 const stem = <span className="block h-[22px] w-[1.5px] bg-current opacity-45" />;
+                const tier = tiers[s.country] ?? 0;
                 return (
+                  <Fragment key={`${routeKey}:${s.country}`}>
+                  {tier > 0 && (
+                    // 몰린 핀을 한 줄 밀어 낸 만큼 자까지 이어 주는 줄기 (핀 상자 밖 · 핀끼리 상자가 겹치지 않게)
+                    <span aria-hidden className={`absolute w-[1.5px] -translate-x-1/2 bg-current opacity-45 ${up ? "bottom-[calc(var(--rh)-var(--tt)+2px)]" : "top-[calc(var(--tt)+24px)]"}`} style={{ left: `${x(s.value)}%`, color: col, height: `${tier * TIER_REM}rem` }} />
+                  )}
                   <div
-                    key={`${routeKey}:${s.country}`}
                     data-testid="route-pin"
                     data-country={s.country}
                     data-value={s.value}
                     data-side={s.side}
                     data-mine={s.mine ? "true" : undefined}
-                    className={`absolute flex -translate-x-1/2 flex-col items-center transition-[opacity,transform] duration-[350ms] ${up ? "bottom-[calc(var(--rh)-var(--tt)+2px)]" : "top-[calc(var(--tt)+24px)]"} ${on ? (up ? "-translate-y-1.5 scale-[1.12] opacity-100" : "translate-y-1.5 scale-[1.12] opacity-100") : past ? "opacity-70" : "opacity-45"}`}
-                    style={{ left: `${x(s.value)}%`, color: col, ...(appear ? { animation: "route-fade .4s ease-out both", animationDelay: `${s.index * 60}ms` } : {}) }}
+                    className={`absolute flex -translate-x-1/2 flex-col items-center transition-[opacity,transform] duration-[350ms] ${up ? "bottom-[calc(var(--rh)-var(--tt)+2px+var(--tier)*7rem)]" : "top-[calc(var(--tt)+24px+var(--tier)*7rem)]"} ${on ? (up ? "-translate-y-1.5 scale-[1.12] opacity-100" : "translate-y-1.5 scale-[1.12] opacity-100") : past ? "opacity-70" : "opacity-45"}`}
+                    style={{ left: `${x(s.value)}%`, color: col, "--tier": tier, ...(appear ? { animation: "route-fade .4s ease-out both", animationDelay: `${s.index * 60}ms` } : {}) } as CSSProperties}
                   >
                     {up ? (
                       <>
@@ -302,6 +309,7 @@ function Route({ stops, rt, extras, signalOf, percentileOf, latestYear }: { stop
                       </>
                     )}
                   </div>
+                  </Fragment>
                 );
               })}
             <>
