@@ -22,6 +22,8 @@
 - .agents/specs/0356-currency-sidebar/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- 환전 카드(sticky)가 스크롤하면 버튼을 덮어, Converter 만 감싸는 칸 안에서만 따라오게 바꿈. 따라오는 범위가 버튼 높이 + 간격(약 100px)만큼 줄어듦(사용자에게 알림).
+- 버튼 양끝 기준은 안쪽 흰 면이 아니라 바깥 카드(converter-card · 사용자 지적).
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋의 CI gate)
