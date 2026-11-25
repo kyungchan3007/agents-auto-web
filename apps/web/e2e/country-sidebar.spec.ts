@@ -44,6 +44,15 @@ async function openAt(page: Page, i = 0) {
   await expect(side(page)).toBeVisible();
   return link;
 }
+/** 목록은 구간마다 나라 2곳만 보이고 나머지는 "나라 더 보기" 로 펼침 — 일본 · 마카오 같은 나라는 펼친 뒤에 있음 */
+async function expandAll(page: Page) {
+  const before = await links(page).count();
+  const more = tid(page, "price-bands").getByRole("button", { name: /나라 더 보기/ });
+  if ((await more.count()) > 0) {
+    await more.click();
+    await expect.poll(() => links(page).count(), { message: "나라 더 보기 뒤 링크가 늘어남" }).toBeGreaterThan(before);
+  }
+}
 const hrefs = async (page: Page) => (await links(page).evaluateAll((as) => as.map((a) => a.getAttribute("href")))).map(codeOf);
 
 test.describe("HTML 은 지금처럼 링크 (작업 0361)", () => {
@@ -112,7 +121,9 @@ test.describe("넓은 화면 1440 — 오른쪽 420px · 뒤를 덮지 않고 �
 
   test("뒤 스크롤을 잠그지 않음: 열린 동안 왼쪽 본문에서 휠을 굴리면 페이지가 내려감", async ({ page }) => {
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
-    await openAt(page);
+    // 링크를 화면으로 스크롤하지 않고 바로 열어(페이지 끝에 가 있으면 더 내려갈 곳이 없음) 페이지가 위쪽에 있는 채로 시험
+    await links(page).first().evaluate((el) => (el as HTMLElement).click());
+    await expect(side(page)).toBeVisible();
     const y0 = await page.evaluate(() => scrollY);
     await page.mouse.move(200, 300);
     await page.mouse.wheel(0, 600);
@@ -172,9 +183,29 @@ test.describe("‹ › · n / 전체 (작업 0361)", () => {
   });
 });
 
+test.describe("n / 전체는 지금 펼친 목록 기준 (작업 0361)", () => {
+  test("나라 더 보기로 펼치면 전체가 늘어나고 · 새로 드러난 마지막 나라가 n / n · 접으면 다시 줄어듦", async ({ page }) => {
+    await open(page, 1440);
+    const folded = await links(page).count();
+    await openAt(page, 0);
+    await expect(tid(page, "country-side-pos")).toHaveText(`1 / ${folded}`);
+    await page.keyboard.press("Escape");
+    await expect(side(page)).toBeHidden();
+    await expandAll(page);
+    const all = await links(page).count();
+    expect(all).toBeGreaterThan(folded);
+    await openAt(page, 0);
+    await expect(tid(page, "country-side-pos")).toHaveText(`1 / ${all}`);
+    await links(page).last().evaluate((el) => (el as HTMLElement).click());
+    await expect(tid(page, "country-side-pos")).toHaveText(`${all} / ${all}`);
+    await expect(tid(page, "country-side-next")).toBeDisabled();
+  });
+});
+
 test.describe("내용 (작업 0361)", () => {
   test.beforeEach(async ({ page }) => {
     await open(page, 1440);
+    await expandAll(page); // 일본 · 마카오는 접힌 목록 안에 있음
   });
 
   test("경로 · 물가 문장(나라 페이지 제목과 같은 규칙) · 한 줄 답 · 값 · 예산 · 다음으로 볼 것 · 자세히 보기", async ({ page }) => {
@@ -187,10 +218,11 @@ test.describe("내용 (작업 0361)", () => {
     await other.goto("/prices/JPN");
     const h1 = ((await other.getByRole("heading", { level: 1 }).innerText()) ?? "").replace(/\s+/g, " ").trim();
     const oneline = other.locator('[data-testid="country-oneline"]');
-    const onelineText = (await oneline.count()) ? ((await oneline.innerText()) ?? "").replace(/\s+/g, " ").trim() : null;
+    // 나라 페이지의 한 줄 답 상자: 첫 줄 이름표("오늘 기준 한 줄 답 · 날짜") · 둘째 줄 문장 · 셋째 줄 보충(note) — 사이드바는 문장을 보임
+    const onelineText = (await oneline.count()) ? (((await oneline.innerText()) ?? "").split("\n").map((l) => l.trim()).filter(Boolean)[1] ?? null) : null;
     await other.close();
     expect(((await tid(page, "country-side-title").innerText()) ?? "").replace(/\s+/g, " ").trim()).toBe(h1);
-    if (onelineText) await expect(tid(page, "country-side-answer")).toContainText(onelineText.replace(/^오늘 기준 한 줄 답[^\n]*?\s/, "").slice(0, 12));
+    if (onelineText) await expect(tid(page, "country-side-answer")).toContainText(onelineText);
     else await expect(tid(page, "country-side-answer")).toContainText("아직 환율을 받지 않아 물가만");
     // 값 = 목록의 물가 N · 예산 = 약 N 천 원
     const row = links(page).nth(i).locator("xpath=ancestor::li[1]");
@@ -350,6 +382,14 @@ test.describe("세 폭 1440 · 1100 · 1024 · 900 · 375 — 목록이 찌그�
           widths.push(b.width);
         }
         expect(Math.min(...widths), `${w}px 가장 좁은 링크 폭`).toBeGreaterThanOrEqual(90);
+        // 같은 쪽에 있는 위쪽 노선 카드 · 자도 밀려 줄어든 폭 안에서 잘리지 않음 (사이드바가 본문을 밀면 노선 카드 폭도 같이 줄어듦 · 휴대폰 규칙은 화면 폭 760 이하라 이 폭에서는 안 걸림)
+        const clipped = await tid(page, "route-card").evaluate((card) => {
+          const c = card.getBoundingClientRect();
+          return [...card.querySelectorAll("*")].filter((e) => (e.textContent ?? "").trim() !== "" && e.children.length === 0 && e.getBoundingClientRect().width > 0 && e.getBoundingClientRect().right > c.right + 1).map((e) => `${(e.textContent ?? "").trim().slice(0, 16)}(+${Math.round(e.getBoundingClientRect().right - c.right)}px)`);
+        });
+        expect(clipped, `${w}px 노선 카드 안 글이 카드 오른쪽 밖으로 잘림`).toEqual([]);
+        const routeBox = await box(tid(page, "route-card"));
+        expect(routeBox.x + routeBox.width, `${w}px 노선 카드가 패널 밑으로 들어감`).toBeLessThanOrEqual(panel.x + 1);
         // 목록의 칸(구간) 상자가 서로 겹치지 않음
         const secs = await tid(page, "price-bands").locator("section").evaluateAll((els) => els.map((e) => { const r = e.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; }));
         for (let i = 0; i < secs.length; i++) for (let j = i + 1; j < secs.length; j++) {
