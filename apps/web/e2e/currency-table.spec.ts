@@ -156,7 +156,8 @@ test.describe("통화 둘러보기 표 (작업 0260)", () => {
     await jpy.scrollIntoViewIfNeeded();
     await jpy.click();
     await page.waitForURL(/\/currencies\/JPY/);
-    await expect(list(page).locator('a[aria-current="page"]')).toHaveAttribute("href", "/currencies/JPY");
+    await expect(list(page), "통화 상세에는 표가 없음(작업 0365) · 지금 통화 표시는 사이드바 목록에서").toHaveCount(0);
+    await expect(tid(page, "currency-side-list").locator('a[aria-current="page"]')).toHaveAttribute("href", /\/currencies\/JPY\/?$/);
   });
 
   test("화면 낭독 이름에 이름 · 환율과 내린 폭이 들어감", async ({ page }) => {
