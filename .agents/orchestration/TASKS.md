@@ -170,7 +170,7 @@
 | 0362 | 문구 수정 (Quick · 어드민 만드는 방식 첫 단계 예시 지우기 · 머지 뒤 main ff) | builder | 머지됨 (#427) · main 반영 | task/0362-admin-how-copy | apps/admin/src/features/how/common/how.ts |
 | 0360 | 여행 물가 노선 고르기 탭 · 내 여행지 (Full · 흐름 시안 · develop 까지) | test → builder (geo 출처) | 머지됨 (#428) | task/0360-route-tabs | packages/shared travel · features/prices · docs/domain/travel-price.md |
 | 0361 | 여행 물가 목록 나라 → 사이드바(넓은 화면 밀어내기) · 바텀 시트 · 노선 카드 연결 · 통화 사이드바를 공통 부품으로 (Full · 흐름 시안) | builder → test | 머지됨 (#429) | task/0361-country-sidebar | packages/ui side-panel · features/currencies/more · features/prices/side |
-| 0363 | 운영 반영 #430 전체 e2e 실패 고치기(나라 링크 → 사이드바 기대 · 노선 구간 높이 판단 · /prices 초점 고리) (Quick) | test → builder | 진행 중 | task/0363-prices-flow-e2e | apps/web/e2e · features/prices · packages/ui |
+| 0363 | 운영 반영 #430 전체 e2e 실패 고치기(나라 링크 → 사이드바 기대 · 노선 구간 높이 판단 · /prices 초점 고리) (Quick) | test → builder | PR | task/0363-prices-flow-e2e | apps/web/e2e · features/prices · packages/ui |
 | (후보) | 인스타 성과 — 릴스 · 스토리 게시물은 지표별 다시 부르기(종류가 지원 안 하는 지표 하나로 요청 전체 400 · geo 자문 11-23) | builder | 릴스 올릴 때 | — | apps/api/scripts/ig-insights.ts |
 | (후보) | Meta 광고 성과 읽기 — 노출 · 도달 · 클릭 · 지출(광고 계정 연결됨 11-23 · 광고 0개 · 0323 prd "나중에 포함") | geo → builder | 광고 대기 | — | — |
 | (후보) | 흔들리는 e2e 다음 묶음(11-23 test 확인) — currency-chips:248~251 · geo-bot-pages:55/66/96(재시도까지 실패) · home:101 · flights-window:199 · currency-chart:163 · admin:28 · home-bars:181 · axis-clear:29 · rename-compare:40 | test | 다음 작업 후보 | — | apps/web/e2e/** · apps/admin/e2e/** |

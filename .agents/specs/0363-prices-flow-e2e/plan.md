@@ -13,6 +13,11 @@
 
 ## 계획 밖 변경 이유
 
+## 판정
+- country-prices:133 · route-tabs:357: 의도된 변경(누르면 사이드바) · 테스트 고침.
+- prices-route:116 구간 높이: 시안에도 있는 탭 줄 · 설명 줄만큼 늘어남(두 줄 빼면 옛 한도 안) · 한도를 그만큼 늘림.
+- focus-ring:78: 코드 원인(골라진 노선 칩이 어두운 면 표시 없음) · data-surface=dark.
+
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋의 CI gate)
 - [ ] #430 전체 e2e 통과
