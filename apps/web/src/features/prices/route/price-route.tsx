@@ -13,11 +13,19 @@ import { SectionTitle } from "@hav/ui/text/heading";
 import type { CSSProperties } from "react";
 import { useCountTween, usePlaneFlip, usePriceRoute, useRouteTiles } from "./use-price-route";
 import { type PriceBand, rateBadgeText } from "../bands/bands";
-import { type RouteBand, type RouteStop, routeCardText, routeStops } from "./price-route-view";
+import { OutlineLink } from "@hav/ui/action/outline-link";
+import { routeScale } from "@hav/shared/route-tabs";
+import { type RouteBand, routeCardText } from "./price-route-view";
+import { RouteTabs } from "./route-tabs";
+import { type UiStop, detailText, routeKeyOf, startOf, uiStops } from "./route-ui";
+import { useRouteTabs } from "./use-route-tabs";
 import { PriceRouteList } from "./price-route-list";
-import { rulerScale, rulerX } from "./ruler";
+import { rulerX } from "./ruler";
 import { budgetWon, gapPct, signalChipTone, wonDigits, yearOnly } from "../common/price-text";
 import { awayStops, cardNumbers, routeExtras, rulerTicks, trackBg, trailWidth } from "./price-route-view";
+
+/** 칩 테두리 — 내 여행지는 노란 2px · 골라진 칩은 진하게 · 지나온 칩은 옅게 */
+const chipLine = (s: UiStop, active: number) => (s.mine ? "border-2 border-sun" : s.index === active ? "border border-fg" : s.index < active ? "border border-fg/40" : "border border-line hover:border-cheap");
 
 const COLOR: Record<RouteBand, string> = {
   cheap: "var(--hav-pin-cheap)",
@@ -38,7 +46,7 @@ function RouteFlag({ country, name, className }: { country: string; name: string
   );
 }
 
-function SignalCell({ stop, extra, signalOf, percentileOf, small }: { stop: RouteStop; extra: Extra; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"]; small: boolean }) {
+function SignalCell({ stop, extra, signalOf, percentileOf, small }: { stop: UiStop; extra: Extra; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"]; small: boolean }) {
   if (stop.country === "KR") return <span className="inline-flex items-center rounded-[6px] bg-sun px-3.5 py-[0.4375rem] text-[0.8125rem] font-bold whitespace-nowrap text-fg">한국 100 기준</span>;
   const s = extra.currency ? signalOf[extra.currency] : null;
   if (!s) return null;
@@ -54,7 +62,7 @@ function SignalCell({ stop, extra, signalOf, percentileOf, small }: { stop: Rout
 /** 정거장 카드 아랫줄 — 움직이는 카드는 넓은 화면에서 세 칸 가로 · 휴대폰(760 이하)은 하루 예산을 아랫줄로 */
 const ROW = "grid grid-cols-[calc(var(--route-tile-w)*3+0.5rem)_1fr_1.25fr] border-t-2 border-dashed border-line pt-(--route-row-pt) max-[760px]:grid-cols-2 max-[760px]:gap-y-(--route-row-gap) [&>div]:border-l [&>div]:border-line [&>div]:px-8 [&>div:first-child]:border-l-0 [&>div:first-child]:pl-0 max-[760px]:[&>div]:pr-0 max-[760px]:[&>div]:pl-4 max-[760px]:[&>div:first-child]:pl-0 max-[760px]:[&>div:nth-child(3)]:col-span-2 max-[760px]:[&>div:nth-child(3)]:border-t max-[760px]:[&>div:nth-child(3)]:border-l-0 max-[760px]:[&>div:nth-child(3)]:pt-(--route-row-gap) max-[760px]:[&>div:nth-child(3)]:pl-0";
 /** 카드 한 장 — 정거장 하나의 모습 (움직이는 카드 · 정적 카드가 같은 틀) */
-function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap = 0 }: { swap?: number; stop: RouteStop; n: number; extra: Extra; latestYear?: number; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"]; live: boolean }) {
+function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap = 0 }: { swap?: number; stop: UiStop; n: number; extra: Extra; latestYear?: number; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"]; live: boolean }) {
   const t = routeCardText(stop, stop.index, n);
   const pctN = useCountTween(gapPct(stop.value));
   const budN = useCountTween(budgetWon(stop.value));
@@ -85,6 +93,13 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
             </span>
           </p>
         </div>
+        {stop.country !== "KR" && (
+          <div className="flex-none max-[760px]:basis-full">
+            <OutlineLink href={countryPath(stop.country)} testId="route-card-detail">
+              {detailText(stop.name)}
+            </OutlineLink>
+          </div>
+        )}
         {(stop.country === "KR" || (extra.currency && signalOf[extra.currency])) && (
           <div data-testid="route-card-signal" className="flex-none text-right max-[760px]:basis-full max-[760px]:pl-[4.375rem] max-[760px]:text-left">
             <SignalCell stop={stop} extra={extra} signalOf={signalOf} percentileOf={percentileOf} small />
@@ -135,17 +150,22 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
 // mx-px: 감싼 영역이 넘치는 1px 을 잘라 카드 바깥 둘레 선(ring)이 양쪽에서 잘리던 것을 안으로 들여 온전히 보이게 — 왼쪽 굵은 색 띠는 그대로 (작업 0248 · 20번)
 const CARD = "relative mx-px overflow-hidden rounded-3xl bg-card px-8 pt-(--route-card-pt) pb-(--route-card-pb) ring-1 ring-line before:absolute before:inset-y-0 before:left-0 before:w-1.5 before:bg-(--c) max-[760px]:rounded-[1.5rem] max-[760px]:px-[1.125rem] max-[760px]:before:w-[5px]";
 
+// 정거장 = uiStops (작업 0360 · 탭 · 내 여행지) — 기본 탭에 내 여행지가 없으면 기존 routeStops(bands) 와 똑같음
 export function PriceRoute({ bands, signalOf, percentileOf, latestYear }: Props) {
-  const stops = routeStops(bands);
+  const rt = useRouteTabs();
+  const stops = uiStops(rt.tab, bands, rt.mine);
   if (stops.length < 2) return null; // 나라가 없으면 노선 없음 (지어내지 않음)
   const extras: Record<string, Extra> = routeExtras(bands);
-  return <Route stops={stops} extras={extras} signalOf={signalOf} percentileOf={percentileOf} latestYear={latestYear} />;
+  return <Route stops={stops} rt={rt} extras={extras} signalOf={signalOf} percentileOf={percentileOf} latestYear={latestYear} />;
 }
 
-function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: RouteStop[]; extras: Record<string, Extra>; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"]; latestYear?: number }) {
+function Route({ stops, rt, extras, signalOf, percentileOf, latestYear }: { stops: UiStop[]; rt: ReturnType<typeof useRouteTabs>; extras: Record<string, Extra>; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"]; latestYear?: number }) {
   const n = stops.length;
-  const { armed, active, target, moving, planeValue, dir, swap, sameValue, ruler, vp, goto } = usePriceRoute(stops.map((st) => st.value));
-  const scale = rulerScale(stops.map((st) => st.value));
+  const start = startOf(stops); // 새 노선에서 비행기 · 카드가 갈 첫 정거장 = 내 여행지가 있으면 그 나라
+  const routeKey = routeKeyOf(rt.tab, stops);
+  const { armed, active, target, moving, planeValue, dir, swap, reroutes, sameValue, ruler, vp, goto } = usePriceRoute(stops.map((st) => st.value), routeKey, start);
+  const scale = routeScale(rt.tab, stops.map((st) => st.value));
+  const appear = armed && reroutes > 0; // 탭을 바꾼 뒤 핀 · 칩이 차례로 다시 나타남(움직임 줄이기는 바로)
   const x = (v: number) => rulerX(v, scale);
   const noExtra: Extra = { currency: null, year: null };
   const planeX = x(planeValue);
@@ -167,27 +187,40 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
             <p className="mt-1.5 text-small text-fg-2 max-[760px]:hidden">나라 이름을 누르면 그 나라로 갑니다 · 싼 나라에서 한국을 지나 비싼 나라 순서입니다</p>
             <p className="mt-1.5 hidden text-[0.9375rem] text-fg-2 max-[760px]:block">물가가 낮은 나라부터 차례로 놓았습니다. 나라를 누르면 하루 예산이 펼쳐지고, 다시 누르면 접힙니다</p>
           </div>
-          <ol data-testid="route-stops" className="m-0 flex max-[760px]:hidden min-w-0 list-none flex-wrap justify-end gap-1 p-0 max-[760px]:flex-nowrap max-[760px]:justify-start max-[760px]:overflow-x-auto sm:max-[760px]:pb-1 max-sm:-my-2 max-sm:pt-2 max-sm:pb-3">
-            {stops.map((s) => (
-              <li key={s.country} className="max-[760px]:shrink-0">
-                <button
-                  type="button"
-                  data-testid="route-stop"
-                  data-country={s.country}
-                  data-value={s.value}
-                  data-active={s.index === active ? "true" : "false"}
-                  onClick={() => goto(s.index)}
-                  className={`tap-44 max-[760px]:focus-visible:outline-offset-[-4px] flex cursor-pointer items-center gap-1.5 rounded-pill border py-[0.3125rem] pr-2.5 pl-1.5 text-[0.8125rem] whitespace-nowrap transition-colors duration-[250ms] ${s.index === active ? "border-fg bg-fg font-bold text-card max-[760px]:[--hav-ring:var(--hav-ring-on-dark)]" : s.index < active ? "border-fg/40 text-fg hover:border-cheap hover:bg-surface-2" : "border-line text-fg-2 hover:border-cheap hover:bg-surface-2"}`}
-                >
+        </div>
+        <RouteTabs tabs={rt.tabs} tab={rt.tab} note={rt.note} onChoose={rt.choose} />
+        <ol key={routeKey} data-testid="route-stops" className="m-0 mb-4 flex list-none flex-wrap gap-1.5 p-0 max-[760px]:hidden">
+          {stops.map((s) => (
+            <li key={s.country} style={appear ? { animation: "route-fade .4s ease-out both", animationDelay: `${s.index * 60}ms` } : undefined}>
+              <span
+                data-testid="route-stop"
+                data-country={s.country}
+                data-name={s.name}
+                data-value={s.value}
+                data-active={s.index === active ? "true" : "false"}
+                data-mine={s.mine ? "true" : undefined}
+                className={`flex items-center rounded-pill text-[0.8125rem] whitespace-nowrap transition-colors duration-[250ms] ${chipLine(s, active)} ${s.index === active ? "bg-fg font-bold text-card" : s.index < active ? "text-fg hover:bg-surface-2" : "text-fg-2 hover:bg-surface-2"}`}
+              >
+                <button type="button" onClick={() => goto(s.index)} className="tap-44 flex cursor-pointer items-center gap-1.5 rounded-pill py-[0.3125rem] pr-2.5 pl-1.5">
                   <RouteFlag country={s.country} name={s.name} className="size-4 ring-0" />
                   {s.name}
+                  {s.mine && (
+                    <b data-testid="route-mine-tag" className="rounded-[4px] bg-sun px-1.5 py-px text-[0.6875rem] font-bold text-fg">
+                      내 여행지
+                    </b>
+                  )}
                 </button>
-              </li>
-            ))}
-          </ol>
-        </div>
+                {s.mine && (
+                  <button type="button" data-testid="route-mine-remove" aria-label="이 노선에서 빼기" onClick={rt.remove} className="mr-1.5 grid size-6 cursor-pointer place-items-center rounded-full text-[0.75rem] hover:bg-surface-2">
+                    <span aria-hidden>✕</span>
+                  </button>
+                )}
+              </span>
+            </li>
+          ))}
+        </ol>
         <div className="hidden max-[760px]:block">
-          <PriceRouteList stops={stops} extras={extras} signalOf={signalOf} percentileOf={percentileOf} latestYear={latestYear} />
+          <PriceRouteList key={routeKey} stops={stops} start={start} onRemove={rt.remove} extras={extras} signalOf={signalOf} percentileOf={percentileOf} latestYear={latestYear} />
         </div>
         <div className="max-[760px]:hidden">
         <div ref={vp} className={`relative -mx-2 mt-1 px-2 max-[760px]:mx-[-1rem] max-[760px]:px-0 max-[760px]:overflow-hidden`}>
@@ -240,17 +273,18 @@ function Route({ stops, extras, signalOf, percentileOf, latestYear }: { stops: R
                 const col = COLOR[s.band];
                 const nm = <span className="text-[0.8125rem] leading-tight font-bold text-fg">{s.name}</span>;
                 const val = <span className="text-[1.375rem] leading-[1.15] font-bold tracking-[0.02em] tabular-nums">{s.value}</span>;
-                const fl = <RouteFlag country={s.country} name={s.name} className="my-[3px] size-[1.875rem] ring-[2px]" />;
+                const fl = <RouteFlag country={s.country} name={s.name} className={`my-[3px] size-[1.875rem] ring-[2px] ${s.mine ? "ring-sun" : ""}`} />;
                 const stem = <span className="block h-[22px] w-[1.5px] bg-current opacity-45" />;
                 return (
                   <div
-                    key={s.country}
+                    key={`${routeKey}:${s.country}`}
                     data-testid="route-pin"
                     data-country={s.country}
                     data-value={s.value}
                     data-side={s.side}
+                    data-mine={s.mine ? "true" : undefined}
                     className={`absolute flex -translate-x-1/2 flex-col items-center transition-[opacity,transform] duration-[350ms] ${up ? "bottom-[calc(var(--rh)-var(--tt)+2px)]" : "top-[calc(var(--tt)+24px)]"} ${on ? (up ? "-translate-y-1.5 scale-[1.12] opacity-100" : "translate-y-1.5 scale-[1.12] opacity-100") : past ? "opacity-70" : "opacity-45"}`}
-                    style={{ left: `${x(s.value)}%`, color: col }}
+                    style={{ left: `${x(s.value)}%`, color: col, ...(appear ? { animation: "route-fade .4s ease-out both", animationDelay: `${s.index * 60}ms` } : {}) }}
                   >
                     {up ? (
                       <>

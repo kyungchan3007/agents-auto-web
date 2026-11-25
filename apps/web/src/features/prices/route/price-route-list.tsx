@@ -10,11 +10,13 @@ import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import type { CSSProperties } from "react";
 import { useRouteList } from "./use-route-list";
 import { rateBadgeText } from "../bands/bands";
-import type { RouteStop } from "./price-route-view";
+import { OutlineLink } from "@hav/ui/action/outline-link";
+import { countryPath } from "../country/country-view";
+import { type UiStop, detailText } from "./route-ui";
 import { barPct, budgetWon, cheaperText, digitCells, gapPct, signalChipTone, wonDigits, yearNote } from "../common/price-text";
 
 type Extra = { currency: string | null; year: number | null };
-type Props = { stops: RouteStop[]; extras: Record<string, Extra>; signalOf: Record<string, Signal | null>; percentileOf: Record<string, number | null>; latestYear?: number };
+type Props = { stops: UiStop[]; /** 처음 펼쳐질 줄 번호 */ start?: number; /** 내 여행지 ✕ */ onRemove?: () => void; extras: Record<string, Extra>; signalOf: Record<string, Signal | null>; percentileOf: Record<string, number | null>; latestYear?: number };
 
 /** 값 색 — 한국보다 낮으면 파랑 · 높으면 빨강 · 한국은 남색 */
 const colorOf = (v: number) => (v === 100 ? "var(--hav-pin-ink)" : v < 100 ? "var(--hav-pin-cheap)" : "var(--hav-pin-expensive)");
@@ -39,7 +41,7 @@ function Chevron() {
   );
 }
 
-function Detail({ stop, extra, latestYear, signalOf, percentileOf }: { stop: RouteStop; extra: Extra; latestYear?: number; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"] }) {
+function Detail({ stop, on, extra, latestYear, signalOf, percentileOf }: { stop: UiStop; on: boolean; extra: Extra; latestYear?: number; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"] }) {
   const v = stop.value;
   const s = extra.currency ? signalOf[extra.currency] : null;
   const note = yearNote(extra.year, latestYear);
@@ -77,6 +79,13 @@ function Detail({ stop, extra, latestYear, signalOf, percentileOf }: { stop: Rou
       <p className="mt-2 mb-0 text-[0.8125rem] text-fg-2">
         한국에서 하루 100,000원 쓰는 만큼{note}
       </p>
+      {on && stop.country !== "KR" && (
+        <div className="mt-4">
+          <OutlineLink href={countryPath(stop.country)} testId="route-card-detail">
+            {detailText(stop.name)}
+          </OutlineLink>
+        </div>
+      )}
       {s && stop.country !== "KR" && (
         <span className={`mt-3 inline-flex items-center rounded-[0.375rem] px-2.5 py-1 text-[0.8125rem] font-semibold ${tone}`}>{rateBadgeText(s, percentileOf[extra.currency ?? ""] ?? null)}</span>
       )}
@@ -84,8 +93,8 @@ function Detail({ stop, extra, latestYear, signalOf, percentileOf }: { stop: Rou
   );
 }
 
-export function PriceRouteList({ stops, extras, signalOf, percentileOf, latestYear }: Props) {
-  const { list, open, plane, planeY, toggle } = useRouteList();
+export function PriceRouteList({ stops, start = 0, onRemove, extras, signalOf, percentileOf, latestYear }: Props) {
+  const { list, open, plane, planeY, toggle } = useRouteList(start);
   const noExtra: Extra = { currency: null, year: null };
   return (
     <div data-testid="route-list" className="relative">
@@ -96,7 +105,7 @@ export function PriceRouteList({ stops, extras, signalOf, percentileOf, latestYe
           const up = i === 0 ? "transparent" : railOf(stops[i - 1].value);
           const down = i === stops.length - 1 ? "transparent" : railOf(s.value);
           return (
-            <li key={s.country} data-testid="route-row-item" data-country={s.country} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-x-3" style={{ "--c": color } as CSSProperties}>
+            <li key={s.country} data-testid="route-row-item" data-country={s.country} data-mine={s.mine ? "true" : undefined} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-x-3" style={{ "--c": color } as CSSProperties}>
               <div aria-hidden className="relative">
                 <i className="absolute top-0 left-3.5 h-7 w-1" style={{ background: up }} />
                 <i className="absolute top-7 bottom-0 left-3.5 w-1" style={{ background: down }} />
@@ -107,6 +116,7 @@ export function PriceRouteList({ stops, extras, signalOf, percentileOf, latestYe
                   type="button"
                   data-testid="route-row"
                   data-country={s.country}
+                  data-name={s.name}
                   data-value={s.value}
                   aria-expanded={on}
                   aria-controls={`route-more-${s.country}`}
@@ -121,12 +131,22 @@ export function PriceRouteList({ stops, extras, signalOf, percentileOf, latestYe
                   <span className="text-[1.375rem] font-bold tabular-nums text-(--c)">{s.value}</span>
                   <Chevron />
                 </button>
+                {s.mine && (
+                  <div className="mb-2 flex items-center gap-2 pl-10">
+                    <b data-testid="route-mine-tag" className="rounded-[0.375rem] bg-sun px-2 py-0.5 text-[0.75rem] font-bold text-fg">
+                      내 여행지
+                    </b>
+                    <button type="button" data-testid="route-mine-remove" aria-label="이 노선에서 빼기" onClick={onRemove} className="tap-44 inline-flex min-h-8 cursor-pointer items-center gap-1 rounded-pill border border-line px-2.5 text-[0.75rem] text-fg-2 hover:bg-surface-2">
+                      <span aria-hidden>✕</span> 빼기
+                    </button>
+                  </div>
+                )}
                 <div aria-hidden className="relative mb-3 h-1 rounded-[0.125rem] bg-surface-2">
                   <b className={`absolute inset-y-0 left-0 rounded-[0.125rem] bg-(--c) transition-opacity duration-[250ms] motion-reduce:transition-none ${on ? "opacity-100" : "opacity-45"}`} style={{ width: barPct(s.value, BAR_MAX) }} />
                   <u className="absolute -top-[3px] -bottom-[3px] w-0.5 bg-fg no-underline" style={{ left: barPct(100, BAR_MAX) }} />
                 </div>
                 <div id={`route-more-${s.country}`} hidden={!on}>
-                  <Detail stop={s} extra={extras[s.country] ?? noExtra} latestYear={latestYear} signalOf={signalOf} percentileOf={percentileOf} />
+                  <Detail stop={s} on={on} extra={extras[s.country] ?? noExtra} latestYear={latestYear} signalOf={signalOf} percentileOf={percentileOf} />
                 </div>
               </div>
             </li>
