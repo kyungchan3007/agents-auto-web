@@ -1,5 +1,5 @@
-// 통화 둘러보기 — 새 디자인(작업 0219): 위쪽 검색 + 국기 칩 줄 → 상세(children) → 맨 아래 다른 통화 목록 (docs/design.md 페이지 패턴 "둘러보기")
-// 검색 · 칩 · 목록은 레이아웃이라 통화를 바꿔도 남고, 상세(children)만 바뀜 (작업 0168: 동전을 뺌)
+// 통화 둘러보기 — 새 디자인(작업 0219): 위쪽 검색 + 국기 칩 줄 → 상세(children) (맨 아래 둘러보기 표는 /currencies 페이지만 · 작업 0365)
+// 검색 · 칩은 레이아웃이라 통화를 바꿔도 남고, 상세(children)만 바뀜 (작업 0168: 동전을 뺌)
 import type { Fetched } from "@hav/shared/api";
 import { SiteNav } from "@/shared/nav/site-nav";
 import { SOURCE_NOTE } from "@hav/shared/currency";
@@ -7,10 +7,7 @@ import type { FxChanges, FxLatest } from "@hav/shared/fx";
 import type { SignalList } from "@hav/shared/signal";
 import type { ReactNode } from "react";
 import { CurrencyChips } from "../chips/currency-chips";
-import { CurrencyTable } from "./currency-table";
 import { CurrencySearch } from "../search/currency-search";
-import { FadeUpGroup } from "@hav/ui/motion/fade-up";
-import { Eyebrow } from "@hav/ui/text/heading";
 import { TextLink } from "@hav/ui/text/text-link";
 import { PageFooter } from "@hav/ui/layout/page-footer";
 import { signalMaps } from "@/shared/signal/signal-maps";
@@ -41,13 +38,6 @@ export function BrowseLayout({ latest, signals, changes, children }: { latest: F
             <main id="main" tabIndex={-1} data-testid="currency-detail" className="mt-8 min-w-0">
               {children}
             </main>
-            {/* 맨 아래 — 다른 통화 목록 (지금 목록 부품 · 격자) · id 는 자바스크립트 없을 때 버튼 링크가 가리킴 */}
-            <FadeUpGroup id="currency-list" data-testid="currency-list" className="mt-[4.5rem] min-w-0 sm:mt-24">
-              <Eyebrow data-fu={0}>둘러보기</Eyebrow>
-              <div data-fu={3} className="mt-4">
-                <CurrencyTable items={items} />
-              </div>
-            </FadeUpGroup>
           </MoreProvider>
         </div>
       </section>

@@ -2,7 +2,7 @@
 
 // 통화 상세 "다른 나라 통화 보기" 버튼 + 오른쪽 사이드바(휴대폰은 아래 시트) (작업 0356 · 시안 10-C · 모션 A · 스크롤 1) — 그리기만
 //   버튼: 오른쪽 "실제로 바꿀 때" 카드 아래 · 양끝 · 모서리 둥글기는 그 카드와 같게 · 글 + 국기 겹침(기본 앞 네 통화 · 고르면 그 하나) + ›
-//   자바스크립트가 없으면(하이드레이션 전) 같은 모양의 링크 — 맨 아래 둘러보기(#currency-list)로 이동
+//   자바스크립트가 없으면(하이드레이션 전) 같은 모양의 링크 — 통화 목록 페이지(/currencies)로 이동 (작업 0365)
 //   사이드바: 제목 · 기준 날짜 · 안내 · 검색 칸 · 둘러보기 표와 같은 자료 · 같은 순서의 줄(줄 전체가 그 통화로 가는 링크 · 지금 통화는 칠함) · 목록은 overscroll contain
 import { OUTLINE_BOX } from "@hav/ui/action/outline-link";
 import { Input } from "@hav/ui/form/field";
@@ -48,12 +48,12 @@ export function CurrencyMore() {
           {body}
         </button>
       ) : (
-        <a href="#currency-list" data-testid="currency-more" data-track="fx_other_open" className={BUTTON}>
+        <Link href="/currencies" data-testid="currency-more" data-track="fx_other_open" className={BUTTON}>
           {body}
-        </a>
+        </Link>
       )}
-      {mounted && (
-        <SidePanel panelRef={panelRef} backdropRef={backdropRef} onClose={onClose} onKeyDown={onKeyDown} labelledBy="currency-side-title" testId="currency-sidebar" backdropTestId="currency-backdrop">
+      {/* 닫힌 동안에도 목록을 서버 첫 그림에 미리 그려 둠(hidden · 작업 0365) · 열면 portal 로 바뀜 */}
+      <SidePanel closed={!mounted} panelRef={panelRef} backdropRef={backdropRef} onClose={onClose} onKeyDown={onKeyDown} labelledBy="currency-side-title" testId="currency-sidebar" backdropTestId="currency-backdrop">
           <div data-side-head className="shrink-0 px-5 pt-5 sm:px-6 sm:pt-6">
             <div className="flex items-center justify-between gap-3">
               <h2 id="currency-side-title" className="text-[1.375rem] font-bold text-fg">
@@ -111,7 +111,6 @@ export function CurrencyMore() {
             {shown.length === 0 && <li className="px-2 py-3 text-small text-fg-2">{SEARCH_EMPTY}</li>}
           </ul>
         </SidePanel>
-      )}
     </>
   );
 }

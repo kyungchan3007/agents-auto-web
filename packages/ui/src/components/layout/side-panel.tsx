@@ -23,6 +23,8 @@ type Props = {
   layout?: "auto" | "side" | "sheet";
   /** 뒤를 막는 창인가(aria-modal) · 기본 true · 뒤를 덮지 않는 사이드바는 false */
   modal?: boolean;
+  /** 닫힌 채 미리 그리기(작업 0365) · true 면 막 · portal 없이 그 자리에 숨겨서(hidden) 그림 — 서버 첫 그림 HTML 에 내용(링크)이 남고 화면 · 접근성 트리에서는 빠짐 · 열면 false 로 바꿔 portal 로 */
+  closed?: boolean;
   children: ReactNode;
 };
 
@@ -32,7 +34,14 @@ const LAYOUT = {
   sheet: "inset-x-0 bottom-0 h-(--sheet-h) rounded-t-[1.5rem]",
 } as const;
 
-export function SidePanel({ panelRef, backdropRef, onClose, onKeyDown, labelledBy, backdrop = true, testId, backdropTestId, width = 440, sheetHeight = 85, layout = "auto", modal = true, children }: Props) {
+export function SidePanel({ panelRef, backdropRef, onClose, onKeyDown, labelledBy, backdrop = true, testId, backdropTestId, width = 440, sheetHeight = 85, layout = "auto", modal = true, closed = false, children }: Props) {
+  if (closed) {
+    return (
+      <aside hidden data-testid={testId} data-surface="light">
+        {children}
+      </aside>
+    );
+  }
   return createPortal(
     <>
       {backdrop && <div ref={backdropRef} data-testid={backdropTestId} onClick={onClose} className="fixed inset-0 z-[70] bg-[#0f1432]/45" />}
