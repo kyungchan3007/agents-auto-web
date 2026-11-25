@@ -2,6 +2,8 @@
 //   GSC_SERVICE_ACCOUNT_JSON=... node --experimental-strip-types apps/api/scripts/ga4-sync.ts > .tmp/ga4.sql
 //   Search Console 과 같은 서비스 계정 키를 씀(scope 만 analytics.readonly) · 최근 28일을 매일 다시 읽어 덮어씀(GA4 는 며칠 뒤 값이 바뀜)
 //   403(권한 없음 · Data API 꺼짐)이면 요약에 남기고 실패 — 값을 지어내지 않음
+import { clickRows, clickSnapshot, clickSql } from "../src/features/ga4/clicks.ts";
+import { CLICK_EVENTS_SINCE } from "../../../packages/shared/src/domain/click-events.ts";
 import { engagementRows, engagementSnapshot, engagementSql, rangeEndingOn } from "../src/features/ga4/engagement.ts";
 import { dailyRows, ga4Sql, pageRows, sourceRows } from "../src/features/ga4/report.ts";
 import { accessToken } from "../src/features/geo/gsc.ts";
@@ -46,5 +48,14 @@ try {
   process.stderr.write(`기준값 요청 실패 — ${e instanceof Error ? e.message : "알 수 없는 오류"}\n`);
 }
 
-process.stderr.write(`GA4 날짜 ${daily.length}줄 · 유입 경로 ${sources.length}줄 · 페이지 ${pages.length}줄 · 머무름 ${current ? `${current.pages.length}쪽` : "없음"} · 기준값 ${baseline ? `${baseline.pages.length}쪽` : "없음"}\n`);
-process.stdout.write(`${[ga4Sql({ daily, sources, pages }), engagementSql(current, new Date().toISOString(), baseline)].filter(Boolean).join("\n")}\n`);
+// 버튼 클릭 수 (작업 0359) — 최근 28일 · eventName 은 이벤트 표(packages/shared)로 거름 · 실패해도 나머지 수집은 계속(다음 날 다시)
+const clickRange = rangeEndingOn(yesterday);
+let clicks: ReturnType<typeof clickSnapshot> = null;
+try {
+  clicks = clickSnapshot(clickRows(await report("버튼 클릭", ["date", "eventName"], ["eventCount", "totalUsers"])), clickRange, CLICK_EVENTS_SINCE);
+} catch (e) {
+  process.stderr.write(`버튼 클릭 요청 실패 — ${e instanceof Error ? e.message : "알 수 없는 오류"}\n`);
+}
+
+process.stderr.write(`GA4 날짜 ${daily.length}줄 · 유입 경로 ${sources.length}줄 · 페이지 ${pages.length}줄 · 머무름 ${current ? `${current.pages.length}쪽` : "없음"} · 기준값 ${baseline ? `${baseline.pages.length}쪽` : "없음"} · 버튼 클릭 ${clicks ? `${clicks.events.length}종` : "없음"}\n`);
+process.stdout.write(`${[ga4Sql({ daily, sources, pages }), engagementSql(current, new Date().toISOString(), baseline), clickSql(clicks, new Date().toISOString())].filter(Boolean).join("\n")}\n`);
