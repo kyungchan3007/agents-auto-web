@@ -35,3 +35,6 @@
 - CI gate · main 대상 전체 e2e.
 
 ## 계획과 달라진 점
+- 보내기: 버튼마다 onClick 대신 data-track 표시만 달고 문서 전체 클릭 감지(use-click-tracking · 운영에서만 듣기)로 보냄. 서버 부품(FaqList · DataEmpty · OutlineLink)은 표시 속성만 통과. 홈 검색 고르기는 검색어로 고른 때만(칩 제외).
+- '누른 사람' 칸은 날짜별 합이라 머리를 '누른 사람(일별 합)'으로 밝힘.
+- 보내기 시작한 날 CLICK_EVENTS_SINCE 2026-11-25(오늘 운영 반영).
