@@ -173,7 +173,8 @@
 | 0363 | 운영 반영 #430 전체 e2e 실패 고치기(나라 링크 → 사이드바 기대 · 노선 구간 높이 판단 · /prices 초점 고리) (Quick) | test → builder | 머지됨 (#431) | task/0363-prices-flow-e2e | apps/web/e2e · features/prices · packages/ui |
 | 0364 | 패치(버그): 노선 칩 초점 고리(0363 뒤 '인도' 칩이 밝은 면에서 흰 고리) (Quick) | test → builder | 머지됨 (#432) · main 반영 | task/0364-route-chip-ring | features/prices/route |
 | 0365 | 통화 상세 맨 아래 둘러보기 표 숨기기 · 사이드바 통화 목록을 서버 HTML 에 미리 그려 링크 유지 (Quick) | test → builder | 머지됨 (#433) · main 반영 | task/0365-hide-browse-table | app/currencies · features/currencies · packages/ui side-panel |
-| 0366 | 통화 상세 고칠 것 넷: 한 줄 답 줄이기 · 높이 고정 · 버튼 국기 마지막 고른 통화(사이드바 · 칩 · 검색) · 열 때 국기 사라짐(넓은 화면 보이는 줄만 · 시트는 날기 없음) (Quick) | test → builder | PR | task/0366-currency-fixes | features/currencies · packages/ui side-panel |
+| 0366 | 통화 상세 고칠 것 넷: 한 줄 답 줄이기 · 높이 고정 · 버튼 국기 마지막 고른 통화(사이드바 · 칩 · 검색) · 열 때 국기 사라짐(넓은 화면 보이는 줄만 · 시트는 날기 없음) (Quick) | test → builder | 머지됨 (#435) | task/0366-currency-fixes | features/currencies · packages/ui side-panel |
+| 0367 | admin:token 비밀값 넣기 전 버전 확인 (Quick) | builder → test | 취소 (어드민 운영 브랜치를 admin 으로 나눠 필요 없어짐 · PR 없음 · 구현은 task/0367-admin-token-preflight 에 남김) | task/0367-admin-token-preflight | 없음 |
 | (후보) | 인스타 성과 — 릴스 · 스토리 게시물은 지표별 다시 부르기(종류가 지원 안 하는 지표 하나로 요청 전체 400 · geo 자문 11-23) | builder | 릴스 올릴 때 | — | apps/api/scripts/ig-insights.ts |
 | (후보) | Meta 광고 성과 읽기 — 노출 · 도달 · 클릭 · 지출(광고 계정 연결됨 11-23 · 광고 0개 · 0323 prd "나중에 포함") | geo → builder | 광고 대기 | — | — |
 | (후보) | 흔들리는 e2e 다음 묶음(11-23 test 확인) — currency-chips:248~251 · geo-bot-pages:55/66/96(재시도까지 실패) · home:101 · flights-window:199 · currency-chart:163 · admin:28 · home-bars:181 · axis-clear:29 · rename-compare:40 | test | 다음 작업 후보 | — | apps/web/e2e/** · apps/admin/e2e/** |
