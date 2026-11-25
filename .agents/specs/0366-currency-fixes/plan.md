@@ -1,0 +1,24 @@
+# 계획
+
+## 무엇을 · 왜
+- 1. 한 줄 답: "1파운드는 1,761.5원으로, 1년 평균 1,937.1원보다 9% 낮습니다."(오늘 값 · 1년 평균 · % · 1년 최저 부분 뺌 · 높으면 "높습니다" · 같을 때 규칙 그대로). 상자 높이 고정(넓은 화면 한 줄 · 휴대폰 두 줄) · 통화를 바꿔도 상자와 아래 1년 최저 · 최고 카드가 움직이지 않음. 자주 묻는 질문 첫 답은 그대로.
+- 2. 버튼 국기: 몇 번을 고르든 마지막으로 고른 통화 하나 · 아래 줄 "고른 통화 · …". 기본 네 개는 처음 들어왔을 때만(결함).
+- 3. 칩 · 검색으로 바꿀 때도 같은 규칙(페이지 흐름 안에서만 기억 · 새로 고침 시 기본).
+- 4. 열 때 국기가 아래로 가며 사라짐: 원인을 재현해 확인. 넓은 화면은 목록을 날아갈 줄이 보이게 먼저 맞춘 뒤 목표를 재고, 보이지 않으면 날지 않고 버튼 자리에서 작아짐 · 닫을 때도 보이는 줄에서만. 휴대폰 시트는 국기 날아가기 없음. 여행 물가 사이드바(같은 공통 부품)도 같은 규칙.
+- 작업 종류 ③: 요구마다 기능 테스트 · 움직임 모양은 @design.
+
+## 파일 계획
+- apps/web/src/features/currencies/** (한 줄 답 · 고른 통화 · 칩 · 검색)
+- packages/ui/src/lib/side-panel/** · packages/ui/src/components/layout/side-panel.tsx · packages/ui/src/hooks/side-panel/**
+- .changeset/*.md (patch)
+- *.test.ts · apps/web/e2e/** · .agents/e2e-map.json (test)
+- .agents/specs/0366-currency-fixes/** · .agents/orchestration/TASKS.md
+
+## 계획 밖 변경 이유
+
+## 완료 기준
+- [ ] bash .agents/checks.sh PASS (PR 최신 커밋의 CI gate)
+- [ ] 미리보기 주소는 그 커밋 빌드가 끝난 것을 확인한 뒤 회신
+
+## 허점
+-
