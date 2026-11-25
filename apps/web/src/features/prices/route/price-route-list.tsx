@@ -13,6 +13,7 @@ import { rateBadgeText } from "../bands/bands";
 import { OutlineLink } from "@hav/ui/action/outline-link";
 import { countryPath } from "../country/country-view";
 import { type UiStop, detailText } from "./route-ui";
+import { useSideContext } from "../side/use-side-context";
 import { barPct, budgetWon, cheaperText, digitCells, gapPct, signalChipTone, wonDigits, yearNote } from "../common/price-text";
 
 type Extra = { currency: string | null; year: number | null };
@@ -42,6 +43,7 @@ function Chevron() {
 }
 
 function Detail({ stop, on, extra, latestYear, signalOf, percentileOf }: { stop: UiStop; on: boolean; extra: Extra; latestYear?: number; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"] }) {
+  const side = useSideContext(); // 자세히 보기 — 나라 사이드바 · 시트로 열림 (작업 0361)
   const v = stop.value;
   const s = extra.currency ? signalOf[extra.currency] : null;
   const note = yearNote(extra.year, latestYear);
@@ -81,7 +83,7 @@ function Detail({ stop, on, extra, latestYear, signalOf, percentileOf }: { stop:
       </p>
       {on && stop.country !== "KR" && (
         <div className="mt-4">
-          <OutlineLink href={countryPath(stop.country)} testId="route-card-detail">
+          <OutlineLink href={countryPath(stop.country)} testId="route-card-detail" onClick={(e) => side?.onLink(stop.country, e)}>
             {detailText(stop.name)}
           </OutlineLink>
         </div>

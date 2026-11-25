@@ -19,6 +19,7 @@ import { type RouteBand, routeCardText } from "./price-route-view";
 import { RouteTabs } from "./route-tabs";
 import { TIER_REM, type UiStop, detailText, pinBackWidth, pinTiers, routeKeyOf, startOf, uiStops } from "./route-ui";
 import { useRouteTabs } from "./use-route-tabs";
+import { useSideContext } from "../side/use-side-context";
 import { PriceRouteList } from "./price-route-list";
 import { rulerX } from "./ruler";
 import { budgetWon, gapPct, signalChipTone, wonDigits, yearOnly } from "../common/price-text";
@@ -54,15 +55,16 @@ function SignalCell({ stop, extra, signalOf, percentileOf, small }: { stop: UiSt
   return (
     <>
       <span className={`inline-flex items-center rounded-[6px] px-3.5 py-[0.4375rem] text-[0.8125rem] font-bold whitespace-nowrap ${tone}`}>{rateBadgeText(s, percentileOf[extra.currency ?? ""] ?? null)}</span>
-      {small && <small className="mt-1 block text-[0.75rem] text-fg-2 max-[760px]:hidden">오늘 그 나라 통화 신호</small>}
+      {small && <small className="mt-1 block text-[0.75rem] text-fg-2 @max-[700px]:hidden">오늘 그 나라 통화 신호</small>}
     </>
   );
 }
 
 /** 정거장 카드 아랫줄 — 움직이는 카드는 넓은 화면에서 세 칸 가로 · 휴대폰(760 이하)은 하루 예산을 아랫줄로 */
-const ROW = "grid grid-cols-[calc(var(--route-tile-w)*3+0.5rem)_1fr_1.25fr] border-t-2 border-dashed border-line pt-(--route-row-pt) max-[760px]:grid-cols-2 max-[760px]:gap-y-(--route-row-gap) [&>div]:border-l [&>div]:border-line [&>div]:px-8 [&>div:first-child]:border-l-0 [&>div:first-child]:pl-0 max-[760px]:[&>div]:pr-0 max-[760px]:[&>div]:pl-4 max-[760px]:[&>div:first-child]:pl-0 max-[760px]:[&>div:nth-child(3)]:col-span-2 max-[760px]:[&>div:nth-child(3)]:border-t max-[760px]:[&>div:nth-child(3)]:border-l-0 max-[760px]:[&>div:nth-child(3)]:pt-(--route-row-gap) max-[760px]:[&>div:nth-child(3)]:pl-0";
+const ROW = "grid grid-cols-[calc(var(--route-tile-w)*3+0.5rem)_1fr_1.25fr] border-t-2 border-dashed border-line pt-(--route-row-pt) @max-[700px]:grid-cols-2 @max-[700px]:gap-y-(--route-row-gap) [&>div]:border-l [&>div]:border-line [&>div]:px-8 [&>div:first-child]:border-l-0 [&>div:first-child]:pl-0 @max-[700px]:[&>div]:pr-0 @max-[700px]:[&>div]:pl-4 @max-[700px]:[&>div:first-child]:pl-0 @max-[700px]:[&>div:nth-child(3)]:col-span-2 @max-[700px]:[&>div:nth-child(3)]:border-t @max-[700px]:[&>div:nth-child(3)]:border-l-0 @max-[700px]:[&>div:nth-child(3)]:pt-(--route-row-gap) @max-[700px]:[&>div:nth-child(3)]:pl-0";
 /** 카드 한 장 — 정거장 하나의 모습 (움직이는 카드 · 정적 카드가 같은 틀) */
 function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap = 0 }: { swap?: number; stop: UiStop; n: number; extra: Extra; latestYear?: number; signalOf: Props["signalOf"]; percentileOf: Props["percentileOf"]; live: boolean }) {
+  const side = useSideContext(); // 자세히 보기 — 나라 사이드바 · 시트로 열림 (작업 0361) · 제공자 밖이면 나라 페이지 링크 그대로
   const t = routeCardText(stop, stop.index, n);
   const pctN = useCountTween(gapPct(stop.value));
   const budN = useCountTween(budgetWon(stop.value));
@@ -72,14 +74,14 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
   const year = yearOnly(extra.year, latestYear);
   return (
     <>
-      <div className="flex flex-wrap items-center gap-x-[1.125rem] gap-y-2 max-[760px]:gap-x-3.5">
+      <div className="flex flex-wrap items-center gap-x-[1.125rem] gap-y-2 @max-[700px]:gap-x-3.5">
         <span className="relative size-(--route-flag) flex-none">
           <span key={swap} className={`absolute inset-0 grid ${live && swap > 0 ? "animate-[route-pop_.45s_cubic-bezier(.3,1.5,.5,1)]" : ""} place-items-center overflow-hidden rounded-full bg-surface-2 ring-[3px] ring-card ring-offset-[1px] ring-offset-line`}>
             <Flag country={TRAVEL_COUNTRIES[stop.country]?.flag ?? (stop.country === "KR" ? "KR" : null)} label={`${stop.name} 국기`} className="h-full w-[150%] max-w-none shrink-0 rounded-none" />
           </span>
         </span>
         <div className="min-w-0 flex-1">
-          <p data-testid="route-card-meta" className="text-[0.8125rem] text-fg-2 max-[760px]:text-[0.75rem]">
+          <p data-testid="route-card-meta" className="text-[0.8125rem] text-fg-2 @max-[700px]:text-[0.75rem]">
             {t.meta}
             {year && <> · {year}</>}
           </p>
@@ -94,14 +96,14 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
           </p>
         </div>
         {stop.country !== "KR" && (
-          <div className="flex-none max-[760px]:basis-full">
-            <OutlineLink href={countryPath(stop.country)} testId="route-card-detail">
+          <div className="flex-none @max-[700px]:basis-full">
+            <OutlineLink href={countryPath(stop.country)} testId="route-card-detail" onClick={(e) => side?.onLink(stop.country, e)}>
               {detailText(stop.name)}
             </OutlineLink>
           </div>
         )}
         {(stop.country === "KR" || (extra.currency && signalOf[extra.currency])) && (
-          <div data-testid="route-card-signal" className="flex-none text-right max-[760px]:basis-full max-[760px]:pl-[4.375rem] max-[760px]:text-left">
+          <div data-testid="route-card-signal" className="flex-none text-right @max-[700px]:basis-full @max-[700px]:pl-[4.375rem] @max-[700px]:text-left">
             <SignalCell stop={stop} extra={extra} signalOf={signalOf} percentileOf={percentileOf} small />
           </div>
         )}
@@ -121,26 +123,26 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
         </div>
         <div>
           <p className="mb-1.5 text-[0.8125rem] text-fg-2">한국과 비교</p>
-          <p data-testid="route-card-pct" className="text-(length:--route-big) leading-[1.1] font-bold tracking-display whitespace-nowrap text-(--c) tabular-nums max-[760px]:whitespace-normal">
+          <p data-testid="route-card-pct" className="text-(length:--route-big) leading-[1.1] font-bold tracking-display whitespace-nowrap text-(--c) tabular-nums @max-[700px]:whitespace-normal">
             {stop.value === 100 ? (
               <>
-                기준<small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:block max-[760px]:text-[0.8125rem]">100,000원 그대로</small>
+                기준<small className="ml-1 text-[1.125rem] tracking-normal @max-[700px]:block @max-[700px]:text-[0.8125rem]">100,000원 그대로</small>
               </>
             ) : (
               <>
                 {pctNum}
-                <small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:text-[0.9375rem]">{stop.value < 100 ? "% 저렴합니다" : "% 비쌉니다"}</small>
+                <small className="ml-1 text-[1.125rem] tracking-normal @max-[700px]:text-[0.9375rem]">{stop.value < 100 ? "% 저렴합니다" : "% 비쌉니다"}</small>
               </>
             )}
           </p>
         </div>
         <div>
           <p className="mb-1.5 text-[0.8125rem] text-fg-2">하루 예산 예시</p>
-          <p data-testid="route-card-budget" className="text-(length:--route-big) leading-[1.1] font-bold tracking-display whitespace-nowrap text-(--c) tabular-nums max-[760px]:whitespace-normal">
+          <p data-testid="route-card-budget" className="text-(length:--route-big) leading-[1.1] font-bold tracking-display whitespace-nowrap text-(--c) tabular-nums @max-[700px]:whitespace-normal">
             약 {wonDigits(bud)}
-            <small className="ml-1 text-[1.125rem] tracking-normal max-[760px]:text-[0.9375rem]">원</small>
+            <small className="ml-1 text-[1.125rem] tracking-normal @max-[700px]:text-[0.9375rem]">원</small>
           </p>
-          <p className="mt-1.5 text-[0.8125rem] text-fg-2 max-[760px]:text-[0.75rem]">한국에서 하루 100,000원 쓰는 만큼 · 물가 비율로 계산</p>
+          <p className="mt-1.5 text-[0.8125rem] text-fg-2 @max-[700px]:text-[0.75rem]">한국에서 하루 100,000원 쓰는 만큼 · 물가 비율로 계산</p>
         </div>
       </div>
     </>
@@ -148,7 +150,7 @@ function Card({ stop, n, extra, latestYear, signalOf, percentileOf, live, swap =
 }
 
 // mx-px: 감싼 영역이 넘치는 1px 을 잘라 카드 바깥 둘레 선(ring)이 양쪽에서 잘리던 것을 안으로 들여 온전히 보이게 — 왼쪽 굵은 색 띠는 그대로 (작업 0248 · 20번)
-const CARD = "relative mx-px overflow-hidden rounded-3xl bg-card px-8 pt-(--route-card-pt) pb-(--route-card-pb) ring-1 ring-line before:absolute before:inset-y-0 before:left-0 before:w-1.5 before:bg-(--c) max-[760px]:rounded-[1.5rem] max-[760px]:px-[1.125rem] max-[760px]:before:w-[5px]";
+const CARD = "relative mx-px overflow-hidden rounded-3xl bg-card px-8 pt-(--route-card-pt) pb-(--route-card-pb) ring-1 ring-line before:absolute before:inset-y-0 before:left-0 before:w-1.5 before:bg-(--c) @max-[700px]:rounded-[1.5rem] @max-[700px]:px-[1.125rem] @max-[700px]:before:w-[5px]";
 
 // 정거장 = uiStops (작업 0360 · 탭 · 내 여행지) — 기본 탭에 내 여행지가 없으면 기존 routeStops(bands) 와 똑같음
 export function PriceRoute({ bands, signalOf, percentileOf, latestYear }: Props) {
@@ -285,7 +287,7 @@ function Route({ stops, rt, extras, signalOf, percentileOf, latestYear }: { stop
                 const past = s.index < active;
                 const up = s.side === "up";
                 const col = COLOR[s.band];
-                const nm = <span className="text-[0.8125rem] leading-tight font-bold text-fg">{s.name}</span>;
+                const nm = <span className="text-[0.8125rem] leading-tight font-bold whitespace-nowrap text-fg">{s.name}</span>;
                 const val = <span className="text-[1.375rem] leading-[1.15] font-bold tracking-[0.02em] tabular-nums">{s.value}</span>;
                 const fl = <RouteFlag country={s.country} name={s.name} className={`my-[3px] size-[1.875rem] ring-[2px] ${s.mine ? "ring-sun" : ""}`} />;
                 const stem = <span className="block h-[22px] w-[1.5px] bg-current opacity-45" />;
@@ -338,6 +340,7 @@ function Route({ stops, rt, extras, signalOf, percentileOf, latestYear }: { stop
             </>
           </div>
         </div>
+        <div className="@container">
         <article
           data-testid="route-card"
           data-moving={moving ? "true" : "false"}
@@ -352,6 +355,7 @@ function Route({ stops, rt, extras, signalOf, percentileOf, latestYear }: { stop
             {moving ? `다음 정거장 → ${nextName}` : ""}
           </p>
         </article>
+        </div>
         </div>
       </div>
     </section>
