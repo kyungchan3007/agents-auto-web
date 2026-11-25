@@ -109,6 +109,10 @@ main:focus {
   from { transform: translateY(100%); opacity: 0; }
   to { transform: none; opacity: 1; }
 }
+/* 노선 탭을 바꾸면 핀 · 칩이 차례로 다시 나타남 (작업 0360) — 끝 값은 원래 투명도 그대로 */
+@keyframes route-fade {
+  from { opacity: 0; }
+}
 @keyframes route-pop {
   from { transform: scale(0.6) rotate(-25deg); opacity: 0; }
   to { transform: none; opacity: 1; }
