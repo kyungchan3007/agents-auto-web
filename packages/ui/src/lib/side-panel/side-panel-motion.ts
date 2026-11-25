@@ -1,6 +1,7 @@
 // 사이드바 · 시트 공통 모션 (작업 0361 1단계 · 0356 "다른 나라 통화 보기" 모션 A 를 꺼냄 · 시안 .tmp/sian-retention/index.html 의 show() · hide() 기준) — React 없는 순수 DOM 움직임 (Web Animations API)
 //   열 때: 시작 요소(버튼 · 누른 줄)가 그대로 늘어나 사이드바(0.68초 · cubic-bezier(.7,0,.25,1)) · 시작 요소 글은 0.16초에 사라짐 · 시작 요소의 날아갈 조각([data-fly])은 곡선을 그리며 목록의 제 자리([data-fly-to])로 날아가 앉음 · 다 펼쳐진 뒤 머리([data-side-head]) · 줄이 위에서부터 차례로
 //   닫을 때: 조각이 시작 요소로 돌아가고 · 사이드바가 줄어들어 시작 요소가 되며 · 시작 요소가 한 번 살짝 튐
+//   국기 날아가기는 넓은 화면 사이드바에서만(시트는 없음 · 작업 0366) · 목표 줄은 움직임을 시작하기 전(최종 크기 · 목록을 미리 내린 뒤)에 재고 · 목록 보이는 범위 밖 줄의 국기는 날지 않고 제 자리에서 작아지며 사라짐
 //   시작 요소가 없으면 옆(넓은 화면) · 아래(좁은 화면)에서 밀려 들어오고 나감
 //   움직임 줄이기면 부르는 쪽이 이 함수들을 거치지 않고 바로 열고 닫음 (여기서는 그리기만)
 //   패널 안 약속: 머리 = [data-side-head] · 스크롤 목록 = [data-scroll-ok] · 닫기 단추 = [data-side-close] · 지금 줄 = [aria-current="page"]
@@ -30,10 +31,11 @@ const flagsOf = (root: Element) => [...root.querySelectorAll<HTMLElement>("[data
 const rowFlag = (list: HTMLElement, key: string) => list.querySelector<HTMLElement>(`[data-fly-to="${key}"]`);
 
 /** 날아가는 국기 한 장 — 출발 자리에 같은 모양을 복제해 화면 맨 위에 올림 */
-function clone(from: Element, r: DOMRect): HTMLElement {
+function clone(from: Element, r: DOMRect, kind: "fly" | "shrink" = "fly"): HTMLElement {
   const c = document.createElement("div");
   c.setAttribute("aria-hidden", "true");
-  c.dataset.sideFly = "";
+  if (kind === "fly") c.dataset.sideFly = "";
+  else c.dataset.sideShrink = "";
   c.style.cssText = `position:fixed;left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;z-index:90;pointer-events:none`;
   c.innerHTML = from.innerHTML;
   document.body.appendChild(c);
@@ -43,7 +45,7 @@ function clone(from: Element, r: DOMRect): HTMLElement {
 /** 열리는 움직임이 아직 끝나지 않았을 때 닫으면 — 진행 중인 움직임 · 날아가던 국기를 멈추고 제자리로 (바로 닫는 움직임을 시작할 수 있게) */
 export function settle(els: MotionEls): void {
   els.panel.getAnimations({ subtree: true }).forEach((a) => a.cancel());
-  document.querySelectorAll("[data-side-fly]").forEach((c) => c.remove());
+  document.querySelectorAll("[data-side-fly],[data-side-shrink]").forEach((c) => c.remove());
   els.list?.querySelectorAll<HTMLElement>("[data-fly-to]").forEach((f) => (f.style.opacity = ""));
 }
 
@@ -54,6 +56,11 @@ export function preScroll(list: HTMLElement, top: (rowTop: number, listHeight: n
   const rowTop = rect(cur).top - rect(list).top + list.scrollTop;
   list.scrollTop = top(rowTop, list.clientHeight);
 }
+
+/** 시트인가 — 폭 전체를 쓰면 시트(국기 날아가기 없음) */
+const isSheet = (panel: HTMLElement) => rect(panel).width >= innerWidth - 1;
+/** 상자 안에 다 들어 있는가(약간의 오차 허용) */
+const within = (r: DOMRect, box: DOMRect) => r.top >= box.top - 1 && r.bottom <= box.bottom + 1 && r.left >= box.left - 1 && r.right <= box.right + 1;
 
 /** 시트(폭 전체)는 아래에서 · 사이드바는 옆에서 */
 const slideFrom = (panel: HTMLElement) => (rect(panel).width >= innerWidth - 1 ? "translateY(100%)" : "translateX(100%)");
@@ -69,7 +76,16 @@ export function playOpen(els: MotionEls, label = ""): void {
   const final = rect(panel);
   const b = rect(btn);
   const radius = getComputedStyle(panel).borderRadius;
-  const starts = flagsOf(btn).map((el) => ({ key: el.dataset.fly ?? "", from: el, r: rect(el) }));
+  // 날아갈 조각의 목표 줄 — 어떤 움직임도 시작하기 전(패널 최종 크기 · 목록은 미리 내려 둔 상태 · 줄 모두 제 자리)에 잼 · 시트는 날지 않음 · 목록 보이는 범위 밖 줄은 날지 않고 작아짐
+  const listBox = list ? rect(list) : null;
+  const sheet = isSheet(panel);
+  const starts = sheet
+    ? []
+    : flagsOf(btn).map((el) => {
+        const target = list ? rowFlag(list, el.dataset.fly ?? "") : null;
+        const t = target ? rect(target) : null;
+        return { from: el, r: rect(el), target, t, seen: !!(t && listBox && within(t, listBox)) };
+      });
   hideBtn(btn);
 
   const ghost = document.createElement("div");
@@ -84,10 +100,13 @@ export function playOpen(els: MotionEls, label = ""): void {
   if (!list) return;
   [...list.children].forEach((row, i) => row.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 280, delay: 600 + i * 28, fill: "backwards", easing: EASE }));
 
-  starts.forEach(({ key, from, r }, i) => {
-    const target = rowFlag(list, key);
-    if (!target) return;
-    const t = rect(target);
+  starts.forEach(({ from, r, target, t, seen }, i) => {
+    if (!target || !t || !seen) {
+      // 목록에서 보이지 않는 줄 — 날지 않고 버튼 자리에서 작아지며 사라짐
+      const el = clone(from, r, "shrink");
+      el.animate([{ transform: "none", opacity: 1 }, { transform: "scale(.2)", opacity: 0 }], { duration: 320, delay: 60 + i * 40, easing: EASE, fill: "forwards" }).onfinish = () => el.remove();
+      return;
+    }
     const el = clone(from, r);
     target.style.opacity = "0";
     const [sx, sy, dx, dy] = [t.width / r.width, t.height / r.height, t.left - r.left, t.top - r.top];
@@ -119,6 +138,7 @@ export function playClose(els: MotionEls): Promise<void> {
 
   // 시작 요소에 남을 조각(버튼에 남을 국기)이 제 자리에서 시작 요소로 돌아감 — 목록 밖으로 나가 있는 줄은 날지 않음
   flagsOf(btn).forEach((flag, i) => {
+    if (isSheet(panel)) return; // 시트는 국기 날아가기 없음 (작업 0366)
     const src = list ? rowFlag(list, flag.dataset.fly ?? "") : null;
     if (!src || !listBox) return;
     const s = rect(src);
