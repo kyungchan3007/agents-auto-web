@@ -119,8 +119,10 @@ test.describe("여행 물가 — 나라 단추로 고르는 물가 노선 (작�
     await stopsReady(page);
     expect(await tid(page, "route-stage").evaluate((e) => getComputedStyle(e).position), "고정되지 않음").not.toBe("sticky");
     // 구간(노선) 높이: 하이드레이션 · 글꼴이 자리 잡은 최종 높이가 되기를 기다림 · 넓은 화면은 화면 한 장 이하 · 휴대폰은 한 장의 1.2배 이하(여러 장이 아님)
+    //   작업 0360 · 시안대로 더해진 탭 줄 · 설명 줄(과 그 간격 24px)만큼 한도를 늘림 — 그 두 줄을 뺀 높이는 지금도 한도 안(1280×800 729px · 휴대폰 927px)이라 다른 곳이 커진 것이 아님
     const vh = page.viewportSize()!.height;
-    const limit = isPhone(page) ? vh * 1.2 : vh;
+    const extra = (await tid(page, "route-tabs").evaluate((e) => e.getBoundingClientRect().height)) + (await tid(page, "route-note").evaluate((e) => e.getBoundingClientRect().height)) + 24;
+    const limit = (isPhone(page) ? vh * 1.2 : vh) + extra;
     await expect.poll(async () => (await tid(page, "route-section").boundingBox())!.height, { message: `구간 높이(px) ≤ ${Math.round(limit)}`, timeout: 8000 }).toBeLessThanOrEqual(limit);
   });
 
