@@ -10,6 +10,16 @@ const OPEN_MS = 680;
 const CLOSE_MS = 560;
 
 const rect = (el: Element) => el.getBoundingClientRect();
+
+/** 열린 동안 버튼 숨기기 — visibility:hidden 은 쓰지 않음(풀어도 전역 transition 때문에 한 프레임 계산값이 hidden 이라 그 순간의 focus() 가 모두 실패했음) · opacity 0 은 숨겨도 포커스를 받음 */
+export function hideBtn(btn: HTMLElement): void {
+  btn.style.transition = "none";
+  btn.style.opacity = "0";
+}
+export function showBtn(btn: HTMLElement): void {
+  btn.style.opacity = "";
+  btn.style.transition = "";
+}
 const frame = (r: DOMRect, radius: string) => ({ left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px`, borderRadius: radius });
 const flagsOf = (root: Element) => [...root.querySelectorAll<HTMLElement>("[data-currency]")];
 const rowFlag = (list: HTMLElement, code: string) => list.querySelector<HTMLElement>(`[data-side-flag="${code}"]`);
@@ -47,7 +57,7 @@ export function playOpen(els: MotionEls, label: string): void {
   const b = rect(btn);
   const radius = getComputedStyle(panel).borderRadius;
   const starts = flagsOf(btn).map((el) => ({ code: el.dataset.currency ?? "", from: el, r: rect(el) }));
-  btn.style.visibility = "hidden";
+  hideBtn(btn);
 
   const ghost = document.createElement("div");
   ghost.textContent = label;
@@ -108,12 +118,12 @@ export function playClose(els: MotionEls): Promise<void> {
   return main.finished.then(
     () => {
       clones.forEach((c) => c.remove());
-      btn.style.visibility = "";
+      showBtn(btn);
       btn.animate([{ transform: "scale(.97)" }, { transform: "scale(1.02)" }, { transform: "none" }], { duration: 260, easing: EASE });
     },
     () => {
       clones.forEach((c) => c.remove());
-      btn.style.visibility = "";
+      showBtn(btn);
     },
   );
 }

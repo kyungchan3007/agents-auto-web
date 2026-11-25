@@ -64,7 +64,8 @@ export function CurrencyMore() {
               data-testid="currency-sidebar"
               data-surface="light"
               onKeyDown={onKeyDown}
-              className="fixed z-[71] flex flex-col overflow-hidden bg-card text-fg max-sm:inset-x-0 max-sm:bottom-0 max-sm:h-[85dvh] max-sm:rounded-t-[1.5rem] sm:top-0 sm:right-0 sm:h-dvh sm:w-[440px]"
+              tabIndex={-1}
+              className="fixed z-[71] flex flex-col outline-none overflow-hidden bg-card text-fg max-sm:inset-x-0 max-sm:bottom-0 max-sm:h-[85dvh] max-sm:rounded-t-[1.5rem] sm:top-0 sm:right-0 sm:h-dvh sm:w-[440px]"
             >
               <div ref={headRef} className="shrink-0 px-5 pt-5 sm:px-6 sm:pt-6">
                 <div className="flex items-center justify-between gap-3">

@@ -9,7 +9,7 @@ import { useCurrencyPick } from "../browse/use-currency-pick";
 import { commitPick } from "../chips/use-recent-currencies";
 import { useMoreContext } from "./use-more-context";
 import { MORE_TITLE, buttonFlags, filterSideRows, moreSubText, pickedSub, preScrollTop, sideRows } from "./more-view";
-import { playClose, playOpen, preScroll, settle, trapTab } from "./more-motion";
+import { hideBtn, playClose, playOpen, preScroll, settle, showBtn, trapTab } from "./more-motion";
 import { useScrollLock } from "./use-scroll-lock";
 
 const subscribe = () => () => undefined;
@@ -47,7 +47,7 @@ export function useCurrencyMore() {
   useLayoutEffect(() => {
     if (!open || !panel.current || !list.current || !btn.current || !backdrop.current || !head.current) return;
     preScroll(list.current, preScrollTop);
-    if (reduce) btn.current.style.visibility = "hidden";
+    if (reduce) hideBtn(btn.current);
     else playOpen({ btn: btn.current, panel: panel.current, backdrop: backdrop.current, list: list.current, head: head.current }, MORE_TITLE);
     closeBtn.current?.focus({ preventScroll: true });
   }, [open, reduce]);
@@ -80,7 +80,7 @@ export function useCurrencyMore() {
       settle(els); // 열리는 움직임이 끝나기 전에 닫아도 바로 닫는 움직임으로
       await frames(); // 버튼 국기가 새로 그려진 뒤에 돌아갈 자리를 잼
       await playClose(els);
-    } else if (btn.current) btn.current.style.visibility = "";
+    } else if (btn.current) showBtn(btn.current);
     refocus.current = true;
     setMounted(false);
     setQuery("");
@@ -88,11 +88,21 @@ export function useCurrencyMore() {
     closing.current = false;
   };
 
-  const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Escape") {
+  // Esc 는 문서 전체에서 들음 — 사이드바 안 글을 눌러 포커스가 body 로 가도 닫힘 (포커스가 안에 있든 없든)
+  useEffect(() => {
+    if (!open) return;
+    const onEsc = (e: globalThis.KeyboardEvent) => {
+      if (e.key !== "Escape") return;
       e.preventDefault();
       void close();
-    } else if (panel.current) trapTab(e, panel.current);
+    };
+    document.addEventListener("keydown", onEsc);
+    return () => document.removeEventListener("keydown", onEsc);
+  });
+
+  /** Tab 이 사이드바 밖으로 나가지 않게 */
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (panel.current) trapTab(e, panel.current);
   };
 
   /** 통화 줄 — 닫는 움직임 뒤 그 통화로 바뀜(칩 · 목록과 같은 전환) · 새 탭 · 키 조합은 링크 그대로 */
