@@ -427,15 +427,39 @@ test.describe("세 폭 1440 · 1100 · 1024 · 900 · 375 — 목록이 찌그�
 });
 
 test.describe("0360 노선 카드 버튼 연결 (작업 0361)", () => {
-  test("노선 카드 '{나라} 자세히 보기 ›' 를 누르면 같은 사이드바(주소 그대로) · HTML 링크는 나라 페이지", async ({ page }) => {
+  /** 가로 카드 · 세로 목록 둘 다 DOM 에 있고 폭에 따라 하나만 보임 */
+  const visibleDetail = (page: Page) => tid(page, "route-card-detail").filter({ visible: true });
+
+  for (const [w, h] of [[1440, 900], [375, 812]] as const) {
+    test(`${w}px — 노선 카드 '{나라} 자세히 보기 ›' 를 누르면 같은 사이드바(시트)가 열리고 주소 그대로 · 닫으면 그 버튼으로 포커스 · HTML 링크는 나라 페이지`, async ({ page }) => {
+      await open(page, w, h);
+      const detail = visibleDetail(page);
+      await expect(detail).toHaveCount(1);
+      const href = await detail.getAttribute("href");
+      expect(href).toMatch(/^\/prices\/[A-Z]{3}$/);
+      await detail.scrollIntoViewIfNeeded();
+      await detail.evaluate((el) => (el as HTMLElement).click());
+      await expect(side(page)).toBeVisible();
+      await expect(page).toHaveURL(/\/prices\/?$/);
+      await expect(tid(page, "country-side-detail")).toHaveAttribute("href", new RegExp(`${href}/?$`));
+      await expect(side(page), "사이드바 이름에 그 나라").toHaveAccessibleName(/\S/);
+      if (w >= 1024) await expect(tid(page, "country-side-backdrop")).toHaveCount(0);
+      else await expect(tid(page, "country-side-backdrop")).toBeVisible();
+      await page.keyboard.press("Escape");
+      await expect(side(page)).toBeHidden();
+      await expect(detail, "닫으면 누른 노선 카드 버튼으로 포커스").toBeFocused();
+    });
+  }
+
+  test("탭을 바꿔 노선이 달라져도 카드 버튼이 그 정거장 나라의 사이드바를 엶", async ({ page }) => {
     await open(page, 1440);
-    const detail = tid(page, "route-card-detail");
-    test.skip((await detail.count()) === 0, "0360 노선 탭이 아직 합쳐지지 않음");
+    const tabs = tid(page, "route-tab");
+    test.skip((await tabs.count()) === 0, "노선 탭 없음");
+    await page.locator('[data-testid="route-tab"][data-tab="sea"]').click();
+    const detail = visibleDetail(page);
     const href = await detail.getAttribute("href");
-    expect(href).toMatch(/^\/prices\/[A-Z]{3}$/);
     await detail.evaluate((el) => (el as HTMLElement).click());
     await expect(side(page)).toBeVisible();
-    await expect(page).toHaveURL(/\/prices\/?$/);
     await expect(tid(page, "country-side-detail")).toHaveAttribute("href", new RegExp(`${href}/?$`));
   });
 });
