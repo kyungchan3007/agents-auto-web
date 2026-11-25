@@ -13,6 +13,7 @@ import { DataEmpty } from "@hav/ui/feedback/data-empty";
 import { FreshnessNote } from "@/shared/rate/freshness-note";
 import { BigRateNumber } from "./header/big-rate-number";
 import { Converter } from "../converter/converter";
+import { CurrencyMore } from "../more/currency-more";
 import { CurrencyKicker } from "./header/currency-kicker";
 import { PeriodChart } from "../period-chart/period-chart";
 import { RangeCard } from "./range/range-card";
@@ -88,8 +89,12 @@ export function CurrencyDetail({ code, rate, signal, history, levels = null, bui
             <RangeCard code={code} stats={stats} rate={rate} unitText={t.unit} />
           </div>
         </div>
-        <div className="min-w-0">
+        {/* 오른쪽: 실제로 바꿀 때 카드 → 그 아래 "다른 나라 통화 보기"(작업 0356) · 버튼 아래선은 왼쪽 "1년 최저 · 최고" 카드 아래선(둘이 같은 줄 높이 · mt-auto) */}
+        <div className="flex min-w-0 flex-col gap-4">
           <Converter code={code} rate={rate} />
+          <div className="mt-auto">
+            <CurrencyMore />
+          </div>
         </div>
       </div>
 
