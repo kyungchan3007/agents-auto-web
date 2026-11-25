@@ -15,9 +15,11 @@ export function ClickTable({ report }: { report: Ga4Report }) {
     );
   return (
     <Panel id="traffic-clicks" testId="traffic-clicks" title="버튼 클릭" meta={<Stamp>최근 28일</Stamp>}>
-      <p data-testid="traffic-clicks-since" className="adm-note">
-        {sinceText(report.clicks.since)}
-      </p>
+      <div className="adm-empty">
+        <p data-testid="traffic-clicks-since" className="adm-note">
+          {sinceText(report.clicks.since)}
+        </p>
+      </div>
       <div className="adm-tw">
         <table>
           <thead>
