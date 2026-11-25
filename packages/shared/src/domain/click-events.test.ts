@@ -30,7 +30,7 @@ describe("이벤트 표 (작업 0359)", () => {
     for (const e of CLICK_EVENTS) {
       expect(e.label, `${e.name} 이름`).toMatch(/[가-힣]/);
       expect(e.page, `${e.name} 페이지`).toMatch(/^\/|^[가-힣]/); // 주소(/prices/[code])나 한국어 화면 이름
-      expect(e.page.length, `${e.name} 페이지 길이`).toBeGreaterThan(1);
+      expect(e.page.length, `${e.name} 페이지 길이(홈은 "/" 한 글자)`).toBeGreaterThanOrEqual(1);
     }
     expect(new Set(CLICK_EVENTS.map((e) => e.label)).size).toBe(12);
   });
