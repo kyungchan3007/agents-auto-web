@@ -19,7 +19,7 @@ export function Converter({ code, rate }: { code: string; rate: FxRate }) {
   const foreign = side === "foreign";
   const shown = invalid || !foreign ? "—" : `${value("won")}원`;
   return (
-    <div className="rounded-[1.5rem] border border-line bg-card p-3 shadow-ticket lg:sticky lg:top-[calc(var(--hav-nav-h)+1rem)]">
+    <div data-testid="converter-card" className="rounded-[1.5rem] border border-line bg-card p-3 shadow-ticket lg:sticky lg:top-[calc(var(--hav-nav-h)+1rem)]">
       <section data-testid="converter" data-surface="elevated" aria-labelledby="converter-title" className="rounded-[1.5rem] bg-surface p-5 text-fg sm:p-6">
         <SectionTitle id="converter-title" className="text-city text-fg">
           실제로 바꿀 때
