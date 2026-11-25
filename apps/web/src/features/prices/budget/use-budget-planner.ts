@@ -2,7 +2,7 @@
 
 // 여행 예산 계산 상태 (작업 0088) — 입력은 이 화면 상태에만 (보내지 않음) · 계산은 budget.ts
 import type { SignalList } from "@hav/shared/signal";
-import type { TravelRow } from "@hav/shared/travel";
+import { PICK_EVENT, type PickedTrip, type TravelRow, TRAVEL_CITIES, TRAVEL_COUNTRIES, readPicked, writePicked } from "@hav/shared/travel";
 import { useState } from "react";
 import { usePickedTrip } from "@/shared/trip/use-picked-trip";
 import { useQueryParam } from "@hav/ui/hooks/browser/use-query-param";
@@ -25,10 +25,23 @@ export function useBudgetPlanner(rows: TravelRow[], latestOf: Record<string, Lat
   const d = parseDaily(daily);
   const n = parseDays(days);
   const latest = row?.currency ? (latestOf[row.currency] ?? null) : null;
+  /** 예산 카드에서 나라를 고르면 홈 검색 칸 · 인트로와 같은 내 여행지로도 저장 (노선이 따라옴 · 작업 0360) — 예산 금액은 이어 씀 */
+  const chooseCountry = (code: string) => {
+    setCountry(code);
+    let store: Storage | null = null;
+    try {
+      store = window.localStorage;
+    } catch {
+      store = null;
+    }
+    const trip: PickedTrip = { v: 1, country: code, city: TRAVEL_CITIES[code]?.[0] ?? TRAVEL_COUNTRIES[code]?.name ?? code, budget: readPicked(store)?.budget ?? 0 };
+    writePicked(store, trip);
+    window.dispatchEvent(new CustomEvent<PickedTrip>(PICK_EVENT, { detail: trip }));
+  };
   return {
     sorted,
     country,
-    setCountry,
+    setCountry: chooseCountry,
     daily,
     setDaily,
     days,
