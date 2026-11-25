@@ -239,6 +239,21 @@ test.describe("내용 (작업 0361)", () => {
     await expect(tid(page, "country-side-detail")).toHaveAttribute("href", /\/prices\/JPN\/?$/);
   });
 
+  test("다음으로 볼 것 번호는 1부터 빈틈없이 이어짐 — 환전 카드가 있는 나라(일본)도 없는 나라(헝가리 · 마카오)도", async ({ page }) => {
+    const all = await hrefs(page);
+    const picks = ["JPN", "HUN", "MAC"].filter((c) => all.includes(c));
+    expect(picks.length, "환전이 있는 나라와 없는 나라가 둘 다 목록에 있어야 함").toBeGreaterThanOrEqual(2);
+    for (const code of picks) {
+      await openAt(page, all.indexOf(code));
+      const kickers = await tid(page, "country-side-next-card").evaluateAll((els) => els.map((e) => ((e as HTMLElement).innerText.split("\n").map((l) => l.trim()).find((l) => l !== "") ?? "")));
+      expect(kickers.length, code).toBeGreaterThanOrEqual(2);
+      const nums = kickers.map((k) => Number(/^(\d+)\s*·/.exec(k)?.[1]));
+      expect(nums, `${code} 카드 번호(${kickers.join(" | ")})`).toEqual(kickers.map((_, i) => i + 1));
+      await page.keyboard.press("Escape");
+      await expect(side(page)).toBeHidden();
+    }
+  });
+
   test("받는 통화가 없는 나라(마카오)는 한 줄 답 자리에 '아직 환율을 받지 않아 물가만' · 환전 카드 없음", async ({ page }) => {
     const i = (await hrefs(page)).indexOf("MAC");
     test.skip(i < 0, "마카오가 목록에 없음");
