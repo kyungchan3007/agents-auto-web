@@ -10,9 +10,14 @@
 
 ## 계획 밖 변경 이유
 
+## 판정
+- 원인: 0363 의 data-surface=dark 가 토큰 전체를 뒤집어 골라진 칩이 밝은 바탕이 됨(화면 퇴행) · 고리만 흰색.
+- 고침: data-surface 를 떼고 골라진 칩에만 토큰 클래스 [--hav-ring:var(--hav-ring-on-dark)](통화 칩과 같은 방식 · 직접 색 숫자 없음).
+
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋의 CI gate)
 - [ ] #430 전체 e2e 통과(focus-ring /prices)
 
 ## 허점
+- data-surface 는 고리 색만이 아니라 토큰 전체를 바꾼다는 것을 모르고 고침을 제안 · 확인 없이 냄. 고리 색만 바꿀 때는 --hav-ring-on-dark 토큰.
 - 0363 의 초점 고리 수정을 focus-ring.spec 으로 확인하지 못하고(로컬 가드) 냈다가 반대 방향으로 다시 실패.
