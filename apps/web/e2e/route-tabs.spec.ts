@@ -353,8 +353,8 @@ test.describe("내 여행지 (작업 0360)", () => {
   });
 });
 
-test.describe("'{나라} 자세히 보기 ›' (작업 0360 · 사이드바는 작업 0361 · 지금은 나라 페이지 링크)", () => {
-  test("카드에 '{나라} 자세히 보기 ›' 링크 · 골라진 정거장이 바뀌면 나라도 바뀜 · 한국 카드에는 없음 · 누르면 나라 페이지", async ({ page }) => {
+test.describe("'{나라} 자세히 보기 ›' (작업 0360 · 누르면 나라 사이드바(시트) · HTML 링크는 나라 페이지 · 작업 0361)", () => {
+  test("카드에 '{나라} 자세히 보기 ›' 링크(HTML 은 나라 페이지) · 골라진 정거장이 바뀌면 나라도 바뀜 · 한국 카드에는 없음 · 누르면 나라 사이드바(시트)가 열리고 그 안 링크로 나라 페이지", async ({ page }) => {
     await open(page);
     await choose(page, "sea");
     const s = await stops(page);
@@ -373,6 +373,10 @@ test.describe("'{나라} 자세히 보기 ›' (작업 0360 · 사이드바는 �
     await expect(detail(page)).toHaveCount(0);
     await selectStop(page, away[0].country);
     await detail(page).click();
+    await expect(tid(page, "country-sidebar"), "누르면 사이드바(좁은 폭은 시트)").toBeVisible();
+    await expect(page, "나라 페이지로 가지 않고 /prices 그대로").toHaveURL(/\/prices\/?$/);
+    await expect(tid(page, "country-side-detail")).toHaveAttribute("href", new RegExp(`/prices/${away[0].country}/?$`));
+    await tid(page, "country-side-detail").click();
     await expect(page).toHaveURL(new RegExp(`/prices/${away[0].country}/?$`));
   });
 });

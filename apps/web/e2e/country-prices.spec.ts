@@ -11,6 +11,7 @@
 //     price-band-link   /prices 목록 칩(나라 줄)의 링크 → /prices/XXX
 //   메타: <title> 에 나라 이름 · 길이 있는 description · canonical https://…/prices/XXX · FAQPage + BreadcrumbList JSON-LD
 import { type Page, expect, test } from "@playwright/test";
+import { hydrated } from "./helpers";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const html = async (page: Page, path: string) => {
@@ -130,13 +131,19 @@ test.describe("/prices 에서 나라 페이지로 (작업 0344 · /prices 는 �
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/한국보다 물가가 \d+% 낮습니다/);
   });
 
-  test("노선 카드의 나라 이름 · 목록 칩이 /prices/XXX 로 이어짐", async ({ page }) => {
+  // 작업 0361: 목록의 나라 이름을 누르면 나라 페이지로 가지 않고 사이드바(좁은 폭은 시트)가 열림 — HTML 에는 /prices/XXX 링크가 그대로 남음(검색엔진용 · 자바스크립트 꺼짐) · 나라 페이지는 사이드바 맨 아래 링크로
+  test("노선 카드의 나라 이름 · 목록 칩은 HTML 에 /prices/XXX 링크로 남고 · 누르면 사이드바(좁은 폭은 시트)가 열리며 · 그 안의 링크로 나라 페이지에 감", async ({ page }) => {
     await page.goto("/prices");
     await expect(tid(page, "route-card-link").first()).toHaveAttribute("href", /^\/prices\/[A-Z]{3}$/);
     const chip = tid(page, "price-band-link").first();
     await expect(chip).toHaveAttribute("href", /^\/prices\/[A-Z]{3}$/);
     const href = await chip.getAttribute("href");
+    await hydrated(chip); // 하이드레이션 전에는 링크 이동이라 사이드바로 가로채지 못함
     await chip.click();
+    await expect(tid(page, "country-sidebar"), "누르면 사이드바(좁은 폭은 시트)").toBeVisible();
+    await expect(page, "나라 페이지로 가지 않고 /prices 그대로").toHaveURL(/\/prices\/?$/);
+    await expect(tid(page, "country-side-detail")).toHaveAttribute("href", new RegExp(`${href}/?$`));
+    await tid(page, "country-side-detail").click();
     await expect(page).toHaveURL(new RegExp(`${href}/?$`));
     await expect(page.getByRole("heading", { level: 1 })).toContainText("물가");
   });
