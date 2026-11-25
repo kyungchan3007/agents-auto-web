@@ -32,3 +32,9 @@ export function uiStops(tab: RouteTabId, bands: { rows: { country: string; name:
     return { country: s.country, name: s.name, value: s.value, band: kr ? "base" : bandOf(s.value), side, index, mine: s.mine };
   });
 }
+
+/** 새 노선에서 비행기 · 카드가 갈 첫 정거장 번호 — 내 여행지가 있으면 그 나라 · 없으면 0 */
+export const startOf = (stops: { mine: boolean }[]): number => Math.max(0, stops.findIndex((x) => x.mine));
+
+/** 노선이 바뀌면 달라지는 글(탭 · 정거장 구성) — 비행기 · 핀 · 칩이 새 노선으로 다시 시작하는 기준 */
+export const routeKeyOf = (tab: RouteTabId, stops: { country: string }[]): string => `${tab}:${stops.map((x) => x.country).join(",")}`;

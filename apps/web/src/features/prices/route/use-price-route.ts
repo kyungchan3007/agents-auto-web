@@ -24,6 +24,8 @@ type Out = {
   dir: "forward" | "back";
   /** 도착해 카드가 바뀐 횟수 (처음은 0 → 움직임 없이 바로) */
   swap: number;
+  /** 노선이 바뀐 횟수(탭 · ✕ · 내 여행지) — 처음은 0 · 핀 · 칩이 차례로 다시 나타나는 데 씀 (작업 0360) */
+  reroutes: number;
   /** 이번 이동이 같은 값 사이였나(스페인 111 ↔ 아랍에미리트 111 — 비행기 제자리 · 작업 0251) */
   sameValue: boolean;
   ruler: RefObject<HTMLDivElement | null>;
@@ -31,17 +33,23 @@ type Out = {
   goto: (i: number) => void;
 };
 
-/** values = 정거장 값(물가 N) 순서대로 */
-export function usePriceRoute(values: number[]): Out {
+/** values = 정거장 값(물가 N) 순서대로 · routeKey = 노선이 바뀌면 달라지는 글(탭 · 정거장 구성) · start = 새 노선에서 비행기가 날아갈 첫 정거장 번호(내 여행지가 있으면 그 나라 · 작업 0360) */
+export function usePriceRoute(values: number[], routeKey = "", start = 0): Out {
   const reduce = useReducedMotion();
   const armed = !reduce;
   const n = values.length;
   const ruler = useRef<HTMLDivElement>(null);
   const vp = useRef<HTMLDivElement>(null);
-  const [st, setSt] = useState({ active: 0, target: 0, from: values[0] ?? 0, t: 1, dir: "forward" as "forward" | "back", swap: 0, same: false });
+  const [st, setSt] = useState({ key: routeKey, reroutes: 0, active: start, target: start, from: values[start] ?? values[0] ?? 0, t: 1, dir: "forward" as "forward" | "back", swap: 0, same: false });
   const toValue = values[st.target] ?? values[0] ?? 0;
   const planeValue = st.t >= 1 ? toValue : st.from + (toValue - st.from) * ease(st.t);
   const moving = st.t < 1;
+
+  // 노선이 바뀌면(탭 · ✕ · 내 여행지) 지금 비행기 위치에서 새 노선의 첫 정거장으로 날아감 (움직임 줄이기는 바로) — 그릴 때 한 번에 맞춤
+  if (st.key !== routeKey) {
+    const to = values[start] ?? values[0] ?? 0;
+    setSt({ key: routeKey, reroutes: st.reroutes + 1, active: start, target: start, from: planeValue, t: reduce || to === planeValue ? 1 : 0, dir: to >= planeValue ? "forward" : "back", swap: st.swap, same: to === planeValue });
+  }
 
   // 옮겨 가는 동안 requestAnimationFrame 으로 진행(t)을 올리고 · 끝나면 카드를 도착한 나라로
   useEffect(() => {
@@ -85,7 +93,7 @@ export function usePriceRoute(values: number[]): Out {
     } else r.style.transform = "";
   }, [planeValue]);
 
-  return { armed, active: st.active, target: st.target, moving, planeValue, dir: st.dir, swap: st.swap, sameValue: st.same, ruler, vp, goto };
+  return { armed, active: st.active, target: st.target, moving, planeValue, dir: st.dir, swap: st.swap, reroutes: st.reroutes, sameValue: st.same, ruler, vp, goto };
 }
 
 /** 카드 숫자 — 정거장이 바뀌면 이전 값에서 새 값으로 약 0.75초 (ease-out) · 처음은 바로 */
