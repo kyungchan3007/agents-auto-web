@@ -35,10 +35,11 @@ const sideCodes = async (page: Page) => (await sideRows(page).evaluateAll((rs) =
 const flagCodes = async (page: Page) => more(page).locator('[data-testid="currency-more-flag"]').evaluateAll((els) => els.map((e) => e.getAttribute("data-currency")));
 
 /** 열기: 하이드레이션 전 클릭이 사라질 수 있어 사이드바가 보일 때까지 다시 누름 */
-async function open(page: Page) {
+async function open(page: Page, o: { keepScroll?: boolean } = {}) {
   await expect(more(page)).toBeVisible();
   await expect(async () => {
-    if ((await more(page).getAttribute("aria-expanded")) !== "true") await more(page).click();
+    // keepScroll: Playwright 의 마우스 클릭은 누르기 전에 페이지를 먼저 움직이므로(확인함: pointerdown 때 이미 scrollY 가 달라져 있음) 스크롤 검사는 DOM 클릭으로 엶
+    if ((await more(page).getAttribute("aria-expanded")) !== "true") await (o.keepScroll ? more(page).evaluate((el) => (el as HTMLElement).click()) : more(page).click());
     await expect(side(page)).toBeVisible({ timeout: 1500 });
   }).toPass({ timeout: 10_000 });
   await expect(more(page)).toHaveAttribute("aria-expanded", "true");
@@ -280,7 +281,7 @@ test.describe("스크롤 1 — 열린 동안 뒤 화면 잠금 (작업 0356)", (
     expect(y0).toBeGreaterThan(100);
     const kick = tid(page, "currency-kicker");
     const x0 = (await box(kick)).x;
-    await open(page);
+    await open(page, { keepScroll: true });
     expect(await tid(page, "currency-side-list").evaluate((el) => getComputedStyle(el).overscrollBehaviorY)).toBe("contain");
     const list = tid(page, "currency-side-list");
     const lb = await box(list);
@@ -296,6 +297,61 @@ test.describe("스크롤 1 — 열린 동안 뒤 화면 잠금 (작업 0356)", (
     // 닫으면 다시 스크롤됨
     await page.mouse.wheel(0, 200);
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(y0);
+  });
+});
+
+test.describe("스크롤 1 — 키보드 · 터치로도 뒤 화면이 안 움직임 (작업 0356)", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/currencies/USD");
+    await still(page);
+    await page.evaluate(() => window.scrollTo(0, 240));
+  });
+
+  test("사이드바 안(목록 밖)에 포커스가 있을 때 스페이스 · 화살표 · PageDown · End 를 눌러도 페이지 scrollY 그대로", async ({ page }) => {
+    const y0 = await page.evaluate(() => window.scrollY);
+    await open(page, { keepScroll: true });
+    await tid(page, "currency-side-hint").click();
+    for (const key of ["Space", "ArrowDown", "PageDown", "End", "ArrowUp", "PageUp"]) {
+      await page.keyboard.press(key);
+      await page.waitForTimeout(80);
+      expect(await page.evaluate(() => window.scrollY), `${key} 뒤 페이지 위치`).toBe(y0);
+    }
+    await page.keyboard.press("Escape");
+    await closed(page);
+    expect(await page.evaluate(() => window.scrollY), "닫으면 원래 위치").toBe(y0);
+  });
+
+  test("목록 안에서 휠로 내려도 페이지는 그대로 · 목록은 움직임", async ({ page }) => {
+    const y0 = await page.evaluate(() => window.scrollY);
+    await open(page, { keepScroll: true });
+    const list = tid(page, "currency-side-list");
+    await list.evaluate((el) => { el.scrollTop = 0; }); // 지금 통화 줄을 보이려 미리 내려 둔 목록을 맨 위로
+    const t0 = await list.evaluate((el) => el.scrollTop);
+    const lb = await box(list);
+    await page.mouse.move(lb.x + lb.width / 2, lb.y + lb.height / 2);
+    for (let i = 0; i < 6; i++) await page.mouse.wheel(0, 600);
+    await page.waitForTimeout(200);
+    expect(await list.evaluate((el) => el.scrollTop), "목록은 굴러감").toBeGreaterThan(t0);
+    expect(await page.evaluate(() => window.scrollY)).toBe(y0);
+  });
+
+  test("터치로 목록 끝까지 밀고 더 밀어도 · 목록 밖을 밀어도 페이지 scrollY 그대로 (휴대폰)", async ({ page }) => {
+    test.skip(!isPhone(), "터치는 휴대폰 프로젝트에서만");
+    const y0 = await page.evaluate(() => window.scrollY);
+    await open(page, { keepScroll: true });
+    const cdp = await page.context().newCDPSession(page);
+    const swipe = async (x: number, y: number, dy: number) => cdp.send("Input.synthesizeScrollGesture", { x, y, yDistance: dy, speed: 1200, gestureSourceType: "touch" });
+    const lb = await box(tid(page, "currency-side-list"));
+    for (let i = 0; i < 6; i++) await swipe(lb.x + lb.width / 2, lb.y + lb.height * 0.7, -700); // 위로 밀기 = 내리기
+    await page.waitForTimeout(300);
+    expect(await tid(page, "currency-side-list").evaluate((el) => el.scrollTop + el.clientHeight >= el.scrollHeight - 2), "목록 끝").toBe(true);
+    expect(await page.evaluate(() => window.scrollY), "목록 끝에서 더 밀어도").toBe(y0);
+    const sb = await box(side(page));
+    await swipe(sb.x + sb.width / 2, sb.y + 20, -400); // 제목 줄(목록 밖)
+    await swipe(10, 40, -400); // 막 위
+    await page.waitForTimeout(300);
+    expect(await page.evaluate(() => window.scrollY), "목록 밖 · 막을 밀어도").toBe(y0);
   });
 });
 
