@@ -14,7 +14,7 @@ export function DataEmpty({ checked, title, reason, links, linksTitle = "그동�
           <ul className="mt-2 flex flex-wrap gap-2">
             {links.map((l) => (
               <li key={l.href + l.label}>
-                <a href={l.href} className="tap-44 inline-flex items-center gap-1 rounded-pill border-2 border-line bg-card px-4 py-2 text-small font-bold text-fg hover:bg-surface-2">
+                <a href={l.href} data-track="empty_next" className="tap-44 inline-flex items-center gap-1 rounded-pill border-2 border-line bg-card px-4 py-2 text-small font-bold text-fg hover:bg-surface-2">
                   {l.label}
                   <span aria-hidden>›</span>
                 </a>

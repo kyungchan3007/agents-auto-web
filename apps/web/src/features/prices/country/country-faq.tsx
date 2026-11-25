@@ -10,7 +10,7 @@ export function CountryFaq({ name, year, items }: { name: string; year: number; 
         {name} 여행 물가, 자주 묻는 질문
       </h2>
       <p className="mt-2 text-small text-fg-2">숫자는 세계은행 {year}년 물가 자료와 오늘 받은 환율 · 항공권 자료 기준입니다.</p>
-      <FaqList items={items} />
+      <FaqList items={items} track="faq_open_prices" />
     </section>
   );
 }

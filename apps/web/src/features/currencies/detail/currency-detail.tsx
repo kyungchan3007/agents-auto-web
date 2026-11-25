@@ -125,7 +125,7 @@ export function CurrencyDetail({ code, rate, signal, history, levels = null, bui
             {name}, 자주 묻는 질문
           </h2>
           <p className="mt-2 text-small text-fg-2">숫자는 {rate.date} 매매기준율(한국수출입은행) 기준입니다.</p>
-          <FaqList items={faq.items} linkText="나라 물가 자세히 보기" />
+          <FaqList items={faq.items} linkText="나라 물가 자세히 보기" track="faq_open_currency" />
         </section>
       )}
     </div>

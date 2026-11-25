@@ -5,9 +5,9 @@ import type { ReactNode } from "react";
 /** 테두리 버튼 공통 모양 규칙 — 테두리 · 흰 바탕 · 글자색 · 누르는 자리 44px · 마우스를 올리면 살짝 칠함 (모서리 둥글기 · 안쪽 여백은 쓰는 곳이 정함) — 링크(OutlineLink)와 열기 버튼(통화 상세 "다른 나라 통화 보기")이 같이 씀 */
 export const OUTLINE_BOX = "tap-44 border-2 border-line bg-card text-fg hover:bg-surface-2";
 
-export function OutlineLink({ href, children, testId }: { href: string; children: ReactNode; testId?: string }) {
+export function OutlineLink({ href, children, testId, track }: { href: string; children: ReactNode; testId?: string; /** 클릭 이벤트 이름 표시(data-track) — 읽고 보내는 일은 앱이 함 (작업 0359) */ track?: string }) {
   return (
-    <a href={href} data-testid={testId} className={`${OUTLINE_BOX} inline-flex min-h-11 items-center gap-1.5 rounded-pill px-5 py-2.5 text-body font-bold`}>
+    <a href={href} data-testid={testId} data-track={track} className={`${OUTLINE_BOX} inline-flex min-h-11 items-center gap-1.5 rounded-pill px-5 py-2.5 text-body font-bold`}>
       {children}
       <span aria-hidden="true">›</span>
     </a>

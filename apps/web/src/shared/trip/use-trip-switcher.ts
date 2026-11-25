@@ -5,6 +5,7 @@
 import { type DestinationHit, POPULAR_DESTINATIONS, searchDestinations } from "@hav/shared/destination-search";
 import { PICK_EVENT, type PickedTrip, readPicked, writePicked } from "@hav/shared/travel";
 import { type ChangeEvent, type KeyboardEvent, useId, useState } from "react";
+import { trackClick } from "@/shared/seo/track-click";
 import { usePickedTrip } from "./use-picked-trip";
 
 export function useTripSwitcher() {
@@ -18,6 +19,7 @@ export function useTripSwitcher() {
   const ids = { list: `${uid}-list`, option: (i: number) => `${uid}-opt-${i}` };
 
   const choose = (hit: DestinationHit) => {
+    if (query.trim() !== "") trackClick("home_search_pick", { country: hit.country }); // 검색 칸에서 고른 때만(칩은 제외 · 작업 0359)
     let storage: Storage | null = null;
     try {
       storage = window.localStorage;

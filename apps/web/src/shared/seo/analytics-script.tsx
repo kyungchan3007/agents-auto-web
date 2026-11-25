@@ -5,9 +5,11 @@ import Script from "next/script";
 import { GA_MEASUREMENT_ID } from "@/shared/site";
 import { gtagInit, gtagSrc } from "./analytics";
 import { useAnalyticsEnabled } from "./use-analytics-enabled";
+import { useClickTracking } from "./use-click-tracking";
 
 export function AnalyticsScript() {
   const on = useAnalyticsEnabled();
+  useClickTracking(); // 버튼 클릭 이벤트 (작업 0359) — 운영에서만 듣기
   if (!on) return null;
   return (
     <>

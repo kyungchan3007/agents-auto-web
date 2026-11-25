@@ -41,7 +41,7 @@ export function CountryPage({ view, levels, signals, builtAt = null }: { view: C
             <CompareList v={view} />
             <CountryFaq name={view.name} year={view.year} items={view.faq} />
             <div className="mt-10">
-              <OutlineLink href="/prices" testId="more-countries">
+              <OutlineLink href="/prices" testId="more-countries" track="country_all_prices">
                 {view.moreText}
               </OutlineLink>
             </div>
