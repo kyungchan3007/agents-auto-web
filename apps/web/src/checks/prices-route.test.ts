@@ -27,7 +27,7 @@ describe("price-route — 부품", () => {
   it("export · 정거장은 lib/price-route 에서 · 핀(rulerPins)과 같은 나라", () => {
     expect(route()).toMatch(/export function PriceRoute\(/);
     expect(route()).toMatch(/from "\.\/price-route-view"/);
-    for (const f of ["routeStops", "routeCardText"]) expect(route(), f).toMatch(new RegExp(`\\b${f}\\b`));
+    for (const f of ["uiStops", "routeCardText"]) expect(route(), f).toMatch(new RegExp(`\\b${f}\\b`));
   });
   it("DOM 계약 testid", () => {
     for (const id of ["route-section", "route-stage", "route-title", "route-stops", "route-stop", "route-ruler", "route-pin", "route-kr-tag", "route-plane", "route-card", "route-card-name", "route-card-meta", "route-card-value", "route-card-pct", "route-card-budget", "route-card-signal", "route-next"]) expect(route(), id).toContain(id);

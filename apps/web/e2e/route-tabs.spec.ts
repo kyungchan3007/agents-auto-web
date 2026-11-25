@@ -54,6 +54,14 @@ async function open(page: Page, o: { reduce?: boolean } = {}) {
   await expect(tid(page, "route-tabs")).toBeVisible();
   await hydrated(tab(page, "spread"));
 }
+/** 보이는 "자세히 보기" 링크 — 가로 카드 · 세로 목록 둘 다 DOM 에 있고 폭에 따라 하나만 보임 */
+const detail = (page: Page) => tid(page, "route-card-detail").filter({ visible: true });
+/** 정거장을 고름 — 세로 노선은 이미 펼쳐진 줄을 다시 누르면 접히므로(0283) 펼쳐져 있으면 누르지 않음 */
+async function selectStop(page: Page, country: string) {
+  const btn = stopBtn(page, country);
+  if (compact(page) && (await btn.getAttribute("aria-expanded")) === "true") return;
+  await btn.click();
+}
 const choose = async (page: Page, id: string) => {
   await tab(page, id).click();
   await expect(tab(page, id)).toHaveAttribute("aria-selected", "true");
@@ -162,7 +170,7 @@ test.describe("탭 줄 (작업 0360)", () => {
     await expect(tid(page, "route-stops"), "가로 칩 줄은 보이지 않음").toBeHidden();
   });
 
-  test("자 눈금 범위가 노선에 맞게: 유럽은 한국이 왼쪽 끝 가까이 · 동남아는 한국이 오른쪽 · 기본은 한국이 가운데쯤 (가로 노선 전용)", async ({ page }) => {
+  test("자 눈금 범위가 노선에 맞게: 유럽은 한국이 왼쪽 끝 가까이 · 동남아는 한국이 오른쪽 · 기본(지금 범위)은 유럽보다 오른쪽 (가로 노선 전용)", async ({ page }) => {
     test.skip(compact(page), "가로 자는 휴대폰에서 쓰지 않음(세로 노선)");
     const krRel = async () => {
       const [r, k] = [await box(tid(page, "route-ruler")), await box(tid(page, "route-kr-tag"))];
@@ -174,9 +182,8 @@ test.describe("탭 줄 (작업 0360)", () => {
     await choose(page, "sea");
     const sea = await krRel();
     expect(eu, "유럽: 한국(100)이 노선의 가장 싼 쪽이라 왼쪽 끝 가까이").toBeLessThan(0.25);
-    expect(sea, "동남아: 한국이 노선의 가장 비싼 쪽에 가까워 오른쪽").toBeGreaterThan(0.6);
-    expect(base, "기본: 한국이 가운데쯤").toBeGreaterThan(0.25);
-    expect(base).toBeLessThan(0.75);
+    expect(sea, "동남아: 한국이 노선의 가장 비싼 쪽에 가까워 오른쪽 절반").toBeGreaterThan(0.5);
+    expect(base, "기본(지금 그대로 30~120 범위): 한국이 유럽 노선의 한국보다 한참 오른쪽").toBeGreaterThan(eu + 0.3);
     // 모든 핀이 자 안
     const r = await box(tid(page, "route-ruler"));
     for (const p of await tid(page, "route-pin").all()) {
@@ -240,8 +247,13 @@ test.describe("서버 첫 그림은 기본 노선 (작업 0360)", () => {
     const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL });
     const page = await ctx.newPage();
     await page.goto("/prices");
-    await expect(tid(page, "route-ruler")).toBeVisible();
-    await expect(tid(page, "route-card")).toBeVisible();
+    if ((page.viewportSize()?.width ?? 0) <= 760) {
+      await expect(tid(page, "route-list"), "휴대폰은 세로 노선").toBeVisible();
+      await expect(tid(page, "route-row").first()).toBeVisible();
+    } else {
+      await expect(tid(page, "route-ruler")).toBeVisible();
+      await expect(tid(page, "route-card")).toBeVisible();
+    }
     await expect(tab(page, "spread")).toHaveAttribute("aria-selected", "true");
     await ctx.close();
   });
@@ -348,19 +360,19 @@ test.describe("'{나라} 자세히 보기 ›' (작업 0360 · 사이드바는 �
     const s = await stops(page);
     const away = s.filter((x) => x.country !== "KR");
     for (const st of away.slice(0, 2)) {
-      await stopBtn(page, st.country).click();
+      await selectStop(page, st.country);
       if (compact(page)) await expect(stopBtn(page, st.country)).toHaveAttribute("aria-expanded", "true");
       else await expect(stopBtn(page, st.country)).toHaveAttribute("data-active", "true");
-      const d = tid(page, "route-card-detail");
+      const d = detail(page);
       await expect(d).toHaveText(new RegExp(`^${st.name} 자세히 보기\\s*›$`));
       await expect(d).toHaveAttribute("href", new RegExp(`/prices/${st.country}/?$`));
     }
-    await stopBtn(page, "KR").click();
+    await selectStop(page, "KR");
     if (!compact(page)) await expect(tid(page, "route-card-name")).toContainText("한국");
     else await expect(stopBtn(page, "KR")).toHaveAttribute("aria-expanded", "true");
-    await expect(tid(page, "route-card-detail")).toHaveCount(0);
-    await stopBtn(page, away[0].country).click();
-    await tid(page, "route-card-detail").click();
+    await expect(detail(page)).toHaveCount(0);
+    await selectStop(page, away[0].country);
+    await detail(page).click();
     await expect(page).toHaveURL(new RegExp(`/prices/${away[0].country}/?$`));
   });
 });
@@ -386,7 +398,7 @@ test.describe("움직임 줄이기 (작업 0360)", () => {
       return;
     }
     await expect(tid(page, "route-pin")).toHaveCount(n);
-    await expect.poll(async () => (await tid(page, "route-pin").evaluateAll((els) => els.filter((e) => Number(getComputedStyle(e).opacity) > 0.99).length)), { timeout: 3000 }).toBe(n);
+    await expect.poll(async () => (await tid(page, "route-pin").evaluateAll((els) => els.filter((e) => Number(getComputedStyle(e).opacity) > 0).length)), { timeout: 3000 }).toBe(n); // 기존 디자인: 골라진 핀 100% · 지나온 70% · 나머지 45% — 모두 보이면 됨
     const active = (await stops(page)).find((x) => x.active)!;
     await expect.poll(async () => Math.abs((await planeX(page)) - (await stopX(page, active.country))), { timeout: 3000 }).toBeLessThan(8);
   });
@@ -423,7 +435,7 @@ test.describe("세 폭 1440 · 900 · 375 — 넘침 · 겹침 없음 (작업 03
             expect(it.x + it.width, `${where} 줄 오른쪽`).toBeLessThanOrEqual(w + 1);
           }
           await expect(mineEl(page).locator('[data-testid="route-mine-tag"]'), `${where} 내 여행지 꼬리표`).toHaveCount(1);
-          await expect(tid(page, "route-card-detail").first(), `${where} 자세히 보기`).toBeVisible();
+          await expect(detail(page).first(), `${where} 자세히 보기`).toBeVisible();
           continue;
         }
         const pins = await Promise.all((await tid(page, "route-pin").all()).map(box));
@@ -437,7 +449,7 @@ test.describe("세 폭 1440 · 900 · 375 — 넘침 · 겹침 없음 (작업 03
         }
         const card = await box(tid(page, "route-card"));
         for (const [i, p] of pins.entries()) expect(p.y + p.height, `${where} 핀 ${i + 1} 이 카드 위`).toBeLessThanOrEqual(card.y + 1);
-        await expect(tid(page, "route-card-detail").or(tid(page, "route-card-name")).first()).toBeVisible();
+        await expect(detail(page).or(tid(page, "route-card-name").filter({ visible: true })).first()).toBeVisible();
       }
     });
   }
