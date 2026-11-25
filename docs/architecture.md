@@ -65,7 +65,7 @@
 
 ## 어드민 분리 (2026-11-23 · 작업 0312 · 사용자 요청 "어드민을 apps/admin 으로 분리")
 - 기준은 사용자 저장소 `kyungchan3007/frontend-architecture` 의 정리: 앱은 배포 단위 · 앱끼리 참조하지 않음 · 두 앱이 함께 쓰는 코드는 `packages/` · 한 앱만 쓰는 공통은 그 앱의 `src/shared` (자세한 근거는 `.agents/specs/0312-admin-split/sdd.md` "기준")
-- `apps/admin`: 별도 Next 정적 앱 · Worker `flapfx-admin`(`apps/admin/wrangler.jsonc` · 도메인 `admin.flapfx.com`) · 모든 응답에 검색 막음 · `/` → `/log` · 운영 주소는 `flapfx.com` 으로 301 (`apps/admin/worker/host.ts`)
+- `apps/admin`: 별도 Next 정적 앱 · Worker `flapfx-admin`(`apps/admin/wrangler.jsonc` · 도메인 `admin.flapfx.com` · 운영 브랜치 `admin` · 다른 브랜치 빌드 꺼 둠 · 작업 0368) · 모든 응답에 검색 막음 · `/` → `/log` · 운영 주소는 `flapfx.com` 으로 301 (`apps/admin/worker/host.ts`)
 - `apps/web` Worker 는 옛 어드민 경로(`/log` · `/geo` · `/how` · `/marketing`)를 `admin.flapfx.com` 으로 301 만 (`apps/web/worker/host.ts`) · 어드민 경로 목록은 `@hav/shared/site` 의 `ADMIN_PATHS` 한 곳
 - BFF 프록시는 `@hav/edge/bff` 하나 · 경로표는 앱마다(`apps/*/worker/bff-routes.ts`) — 운영은 환율 · 신호 · 물가 · 시계열, 어드민은 작업 · 상태 · GEO · 작업 기록
 - 배포: Workers Builds 를 앱마다 연결(사람이 설정) · 평일 다시 빌드는 `PAGES_DEPLOY_HOOK`(운영) · `ADMIN_DEPLOY_HOOK`(어드민 · 없으면 건너뜀)
