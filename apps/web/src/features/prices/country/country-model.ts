@@ -6,7 +6,7 @@ import type { PriceLevels } from "@hav/shared/prices";
 import { type MonthPoint, TRAVEL_COUNTRIES, monthTiming, travelBands } from "@hav/shared/travel";
 import { budgetOf, wonText } from "../budget/budget";
 import { pickedHeadline } from "../prices-copy";
-import { type CompareItem, type FaqItem, type FlightCard, compareCountries, countryFaq, eunNeun, flightCard, gwaWa, oneLineAnswer } from "./country-view";
+import { type CompareItem, type FaqItem, type FlightCard, compareCountries, countryFaq, countryTargets, eunNeun, flightCard, gwaWa, moreCountriesText, oneLineAnswer } from "./country-view";
 
 export type CountryInput = {
   code: string;
@@ -37,6 +37,8 @@ export type CountryView = {
   budget: { dailyWon: number; days: number; totalWon: number; text: string };
   exchange: { unit: string; title: string; value: string; note: string } | null;
   compare: CompareItem[];
+  /** 아래 이어 가는 버튼 글 — 나라 수는 실제 나라 페이지 목록 개수 (작업 0355) */
+  moreText: string;
   /** "일본과 견줘 볼 나라" */
   compareTitle: string;
   faq: FaqItem[];
@@ -74,6 +76,7 @@ export function countryView(i: CountryInput): CountryView | null {
     budget,
     exchange,
     compare: compareCountries(i.code, all),
+    moreText: moreCountriesText(countryTargets(i.levels).length),
     compareTitle: `${row.name}${gwaWa(row.name)} 견줘 볼 나라`,
     index: Math.round(row.relative * 100),
     faq: countryFaq({
