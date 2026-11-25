@@ -35,3 +35,30 @@ export async function loadCountry(code: string): Promise<{ view: CountryView | n
   };
   return { view: countryView(input), levels: levels.data, problem: null };
 }
+
+/**
+ * 여행 물가 목록의 나라 사이드바 내용 (작업 0361 2단계) — 목록의 모든 나라를 한 번에 · 나라 페이지와 같은 계산(countryView)
+ *   환율 · 신호 · 항공권은 한 번만 받고 · 1년 환율 기록은 통화마다 한 번 · 받지 못한 값은 null 로 두어 사이드바가 "물가만"으로 그림 (지어내지 않음)
+ */
+export async function loadSideViews(levels: PriceLevels): Promise<CountryView[]> {
+  const codes = countryTargets(levels);
+  const currencies = [...new Set(codes.flatMap((c) => TRAVEL_COUNTRIES[c]?.currency ?? []))];
+  const [latest, signals, calendar, air, histories] = await Promise.all([api.latest(), api.signals(), api.airfareCalendar(), api.indicator("kosis-cpi:air-fare", 60), Promise.all(currencies.map((c) => api.history(c, 365)))]);
+  const historyOf = new Map(currencies.map((c, i) => [c, histories[i]]));
+  return codes.flatMap((code) => {
+    const currency = TRAVEL_COUNTRIES[code]?.currency ?? null;
+    const rate = currency && latest.ok ? (latest.data.rates.find((r) => r.currency === currency) ?? null) : null;
+    const sig = currency && signals.ok ? signals.data.signals.find((s) => s.currency === currency) : undefined;
+    const history = currency ? historyOf.get(currency) : undefined;
+    const view = countryView({
+      code,
+      levels,
+      rate,
+      history: rate && history?.ok ? toUnit(history.data.rates, rate.unit) : null,
+      signal: sig && signals.ok ? { signal: sig.signal, percentile: sig.percentile, windowDays: signals.data.rule.windowDays } : null,
+      calendar: calendar.ok ? calendar.data : null,
+      airPoints: air.ok ? air.data.points : null,
+    });
+    return view ? [view] : [];
+  });
+}
