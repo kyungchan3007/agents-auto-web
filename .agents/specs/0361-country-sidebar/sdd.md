@@ -27,3 +27,6 @@
 - 단위 · e2e(여행 물가 사이드바 · 시트 · 세 폭) · currency-sidebar.spec 회귀 · main 대상 전체 e2e.
 
 ## 계획과 달라진 점
+- 공통 부품은 packages/ui(side-panel · use-side-panel · use-scroll-lock · side-panel-motion) · 선택 값 width · sheetHeight · layout · modal · trap.
+- 사이드바가 열려 본문이 좁아지는 중간 폭(1100 · 1024)에서 노선 카드가 잘려, 노선 카드를 카드 폭 기준(@container 700px 미만)으로 쌓게 바꿈.
+- 다음으로 볼 것 번호를 보이는 카드만 1부터(나라 페이지도 같은 함수).
