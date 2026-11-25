@@ -4,7 +4,7 @@
 // builder 가 다는 표시 (data-testid) — 통화 상세(/currencies/CODE)
 //   converter-card         "실제로 바꿀 때" 바깥 카드(버튼 양끝 · 둥글기의 기준 · 안쪽 흰 면 converter 가 아님)
 //   currency-more          열기 버튼 · button · aria-expanded · 글 안에 제목 "다른 나라 통화 보기" · 아래 줄 · 국기 · 끝 ›
-//                          (자바스크립트가 없으면 a[href="#currency-list"] 링크 — 맨 아래 둘러보기로 이동)
+//                          (자바스크립트가 없으면 a[href="/currencies"] 링크 — 통화 목록 페이지로 이동 · 작업 0365)
 //   currency-more-sub      버튼 아래 줄 ("22개 통화 오늘 환율을 한눈에" / "고른 통화 · 일본 엔 100 846.76원")
 //   currency-more-flag     버튼 안 국기 하나하나 · data-currency="JPY"
 //   currency-sidebar       role="dialog" 상자(이름 있음 · 제목 "다른 나라 통화") — 열린 동안만 화면에 있음(닫히면 숨김 또는 없음)
@@ -14,14 +14,14 @@
 //   currency-side-list     스크롤되는 목록 상자 (overscroll-behavior: contain)
 //   currency-side-row      줄 하나 = 줄 전체가 a[href="/currencies/CODE"] · 안에 currency-name · currency-rate · currency-drop(둘러보기 표와 같은 글) · 국기 · 지금 통화는 aria-current="page" + 배경 칠함
 //   사이드바 안 검색 칸 = role=combobox (지금 통화 검색과 같은 동작: '도쿄' → JPY)
-// 둘러보기 표(맨 아래 currency-list)는 그대로 — 사이드바 목록의 자료 · 순서 기준
+// 작업 0365: 통화 상세에는 둘러보기 표가 없음 · 사이드바 목록 줄은 닫혀 있어도 서버 첫 그림 HTML 에 있음 · 자료 · 순서의 기준은 /currencies 목록 페이지의 표
 import { type Locator, type Page, expect, test } from "@playwright/test";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const more = (page: Page) => tid(page, "currency-more");
 const side = (page: Page) => tid(page, "currency-sidebar");
 const sideRows = (page: Page) => side(page).locator('[data-testid="currency-side-row"]');
-const tableRows = (page: Page) => tid(page, "currency-list").locator('li[data-testid="currency-row"]');
+const tableRows = (page: Page) => tid(page, "currency-list").locator('li[data-testid="currency-row"]'); // /currencies 목록 페이지의 표 (통화 상세에는 없음)
 const isPhone = () => test.info().project.name === "휴대폰";
 const codeOf = (href: string | null) => (href ?? "").replace(/\/+$/, "").split("/").pop() ?? "";
 
@@ -32,6 +32,8 @@ async function box(loc: Locator) {
 }
 const tableCodes = async (page: Page) => (await tableRows(page).locator("a[href^='/currencies/']").evaluateAll((as) => as.map((a) => a.getAttribute("href")))).map(codeOf);
 const sideCodes = async (page: Page) => (await sideRows(page).evaluateAll((rs) => rs.map((r) => (r.matches("a") ? r : r.querySelector("a"))?.getAttribute("href") ?? ""))).map(codeOf);
+// 줄 하나 → "이름|환율|90일 최고보다" 글
+const pick = (rows: Locator) => rows.evaluateAll((rs) => rs.map((r) => [r.querySelector('[data-testid="currency-name"]')?.textContent?.trim(), r.querySelector('[data-testid="currency-rate"]')?.textContent?.trim(), r.querySelector('[data-testid="currency-drop"]')?.textContent?.trim()].join("|")));
 const flagCodes = async (page: Page) => more(page).locator('[data-testid="currency-more-flag"]').evaluateAll((els) => els.map((e) => e.getAttribute("data-currency")));
 
 /** 열기: 하이드레이션 전 클릭이 사라질 수 있어 사이드바가 보일 때까지 다시 누름 */
@@ -60,17 +62,17 @@ test.describe("버튼 (작업 0356 · 10c-cta)", () => {
     await still(page);
   });
 
-  test("글 · 아래 줄 개수 = 실제 목록(둘러보기 표) 개수 · aria-expanded 닫힘", async ({ page }) => {
+  test("글 · 아래 줄 개수 = 실제 목록(사이드바 목록 줄) 개수 · aria-expanded 닫힘", async ({ page }) => {
     await expect(more(page)).toContainText("다른 나라 통화 보기");
-    const n = await tableRows(page).count();
+    const n = await sideRows(page).count();
     expect(n).toBeGreaterThan(3);
     await expect(tid(page, "currency-more-sub")).toHaveText(`${n}개 통화 오늘 환율을 한눈에`);
     await expect(more(page)).toHaveAttribute("aria-expanded", "false");
     await expect(side(page)).toBeHidden();
   });
 
-  test("기본 국기 = 목록 앞 네 통화(둘러보기 표 앞 네 줄과 같은 순서)", async ({ page }) => {
-    expect(await flagCodes(page)).toEqual((await tableCodes(page)).slice(0, 4));
+  test("기본 국기 = 목록 앞 네 통화(사이드바 목록 앞 네 줄과 같은 순서)", async ({ page }) => {
+    expect(await flagCodes(page)).toEqual((await sideCodes(page)).slice(0, 4));
   });
 
   test("위치: 넓은 화면 = 오른쪽 '실제로 바꿀 때' 카드 아래 · 양끝 · 모서리 둥글기는 그 카드와 같고 아래선은 왼쪽 '1년 최저 · 최고' 카드 아래선 / 휴대폰 = 그 카드 아래 · 폭 같음", async ({ page }) => {
@@ -214,10 +216,16 @@ test.describe("목록 (작업 0356)", () => {
     await open(page);
   });
 
-  test("자료 · 순서 = 맨 아래 둘러보기 표와 같음(통화 · 오늘 환율 · 90일 최고보다 글)", async ({ page }) => {
-    expect(await sideCodes(page)).toEqual(await tableCodes(page));
-    const pick = (rows: Locator) => rows.evaluateAll((rs) => rs.map((r) => [r.querySelector('[data-testid="currency-name"]')?.textContent?.trim(), r.querySelector('[data-testid="currency-rate"]')?.textContent?.trim(), r.querySelector('[data-testid="currency-drop"]')?.textContent?.trim()].join("|")));
-    expect(await pick(sideRows(page))).toEqual(await pick(tableRows(page)));
+  test("자료 · 순서 = /currencies 목록 페이지의 표와 같음(통화 · 오늘 환율 · 90일 최고보다 글)", async ({ page }) => {
+    await page.goto("/currencies");
+    await still(page);
+    const tableCodesNow = await tableCodes(page);
+    const tablePicked = await pick(tableRows(page));
+    await page.goto("/currencies/USD");
+    await still(page);
+    await open(page);
+    expect(await sideCodes(page)).toEqual(tableCodesNow);
+    expect(await pick(sideRows(page))).toEqual(tablePicked);
   });
 
   test("지금 보는 통화 줄(USD)은 aria-current=page · 배경이 칠해짐(다른 줄은 아님)", async ({ page }) => {
@@ -281,7 +289,7 @@ test.describe("통화 고르기 (작업 0356)", () => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/currencies/USD");
     await still(page);
-    const last = (await tableCodes(page)).at(-1)!;
+    const last = (await sideCodes(page)).at(-1)!;
     await page.goto(`/currencies/${last}`);
     await still(page);
     await open(page);
@@ -406,17 +414,15 @@ test.describe("움직임 줄이기 · 움직임 있음 (작업 0356)", () => {
 });
 
 test.describe("자바스크립트 없이 (작업 0356)", () => {
-  test("버튼은 맨 아래 둘러보기로 가는 링크 · 둘러보기 표는 그대로 있음", async ({ browser, baseURL }) => {
+  test("버튼은 /currencies 통화 목록 페이지로 가는 링크 (작업 0365 · 맨 아래 둘러보기 표가 없어짐)", async ({ browser, baseURL }) => {
     const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL });
     const page = await ctx.newPage();
     await page.goto("/currencies/USD");
     const link = more(page);
     await expect(link).toHaveCount(1);
     expect(await link.evaluate((el) => el.tagName)).toBe("A");
-    const href = (await link.getAttribute("href")) ?? "";
-    expect(href).toMatch(/^#.+/);
-    await expect(page.locator(href)).toHaveCount(1);
-    expect(await tableRows(page).count()).toBeGreaterThan(3);
+    expect(((await link.getAttribute("href")) ?? "").replace(/\/+$/, "")).toBe("/currencies");
+    await expect(tableRows(page), "통화 상세에는 둘러보기 표 줄이 없음").toHaveCount(0);
     await ctx.close();
   });
 });

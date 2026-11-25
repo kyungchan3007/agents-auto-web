@@ -1,7 +1,7 @@
 // 작업 0219 — 새 디자인 통화 상세 (시안 A) · 테스트 먼저
 //   표시: data-testid="currency-jump"(위쪽 검색 + 칩 줄) · "currency-search" · "currency-chips"(칩 줄 nav · 링크마다 국기 · aria-current) · "currency-detail"(본문) · "big-rate"(큰 환율 h1 · data-final)
 //        "route-card"(1년 최저 · 최고 · 평균 한 카드) · "route-plane"(오늘 점 · data-position) · "route-min" · "route-max"(카운트업) · "route-avg"
-//        "converter"(탑승권) · "converter-board"(결과 글자판) · "year-flow"(1년 흐름 구간) · "currency-list"(맨 아래 다른 통화 목록)
+//        "converter"(탑승권) · "converter-board"(결과 글자판) · "year-flow"(1년 흐름 구간) · "currency-side-list"(사이드바의 다른 통화 목록 · 작업 0365: 맨 아래 표는 통화 상세에서 빠짐)
 import { type Page, expect, test } from "@playwright/test";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
@@ -247,13 +247,11 @@ test.describe("새 통화 상세 — 1년 흐름 · 아래 목록 (작업 0219)"
     await expect(tabs.getByRole("button", { name: "1년" })).toHaveAttribute("aria-pressed", "true");
   });
 
-  test("맨 아래 다른 통화 목록 — 그래프 아래 · 링크가 올바른 통화 페이지", async ({ page }) => {
+  test("다른 통화 목록 — 맨 아래 표는 없고 사이드바 목록의 링크가 올바른 통화 페이지 (작업 0365)", async ({ page }) => {
     await page.goto("/currencies/USD");
-    const flow = await box(page, "year-flow");
-    const list = await box(page, "currency-list");
-    expect(list.y).toBeGreaterThanOrEqual(flow.y + flow.height - 1);
-    const jpy = tid(page, "currency-list").getByRole("link", { name: /JPY/ }).first();
-    await expect(jpy).toHaveAttribute("href", "/currencies/JPY");
-    await expect(tid(page, "currency-list").locator('a[aria-current="page"]')).toHaveAttribute("href", "/currencies/USD");
+    await expect(tid(page, "currency-list")).toHaveCount(0);
+    const jpy = tid(page, "currency-side-list").locator('a[href^="/currencies/JPY"]');
+    await expect(jpy).toHaveCount(1);
+    await expect(tid(page, "currency-side-list").locator('a[aria-current="page"]')).toHaveAttribute("href", /\/currencies\/USD\/?$/);
   });
 });

@@ -27,8 +27,8 @@ test.describe("나라 국기 (작업 0199)", () => {
     await noOverlap(rows.first().locator("svg").first(), tid(page, "dest-city").first()); // 작업 0217: 국기는 도시 이름 왼쪽
   });
 
-  test("통화 목록 — 줄마다 svg 국기", async ({ page }) => {
-    await page.goto("/currencies/USD");
+  test("통화 목록 — 줄마다 svg 국기 (/currencies 목록 페이지의 표 · 작업 0365)", async ({ page }) => {
+    await page.goto("/currencies");
     const items = page.getByRole("navigation", { name: "통화 목록" }).locator("li");
     const n = await items.count();
     expect(n).toBeGreaterThan(3);

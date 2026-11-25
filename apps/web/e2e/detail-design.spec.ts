@@ -38,8 +38,8 @@ test.describe("통화 상세 (작업 0212)", () => {
 
   // 작업 0260 — 판정 알약 · 조용한 글자('최근 90일 …')는 표에서 없어짐: "휴대폰 줄의 판정 표시가 칸 안에 있음" 검사는 currency-table.spec.ts 의 "휴대폰 — … 가로로 넘치지 않음"(이름 · 환율 · 내린 폭이 줄 안)으로 옮김
   // 작업 0260 — 카드 격자가 표(두 단 · 휴대폰 한 단)로 바뀜: 모두 보임 · 스크롤 칸 없음 · 가로 넘침 없음은 그대로 지킴
-  test("맨 아래 통화 목록 — 표로 모두 보임 (스크롤 칸 없음 · 중간에서 잘리지 않음 · 가로 넘침 없음)", async ({ page }) => {
-    await page.goto("/currencies/USD");
+  test("통화 목록 페이지(/currencies)의 표 — 모두 보임 (스크롤 칸 없음 · 중간에서 잘리지 않음 · 가로 넘침 없음 · 작업 0365: 통화 상세에는 표 없음)", async ({ page }) => {
+    await page.goto("/currencies");
     const cols = tid(page, "currency-list").locator('[data-testid="currency-col"]');
     await expect(cols.first()).toBeVisible();
     // 한 번의 읽기로 모든 상자를 함께 잼(구간 등장 움직임 도중 서로 다른 순간 값이 섞이지 않게) · 최종 배치가 될 때까지 다시 재며 기다림 (작업 0260 · CI 흔들림)
@@ -62,7 +62,7 @@ test.describe("통화 상세 (작업 0212)", () => {
   });
 
   test("통화 목록의 판정 글자는 '환율 …' 으로 시작하지 않음 — 물가 쪽 알약과 구분", async ({ page }) => {
-    await page.goto("/currencies/USD");
+    await page.goto("/currencies");
     const texts = await tid(page, "currency-list").locator("nav ul li a").allInnerTexts();
     const judged = texts.filter((t) => /최근 90일/.test(t));
     test.skip(judged.length === 0, "판정이 있는 통화 없음");
