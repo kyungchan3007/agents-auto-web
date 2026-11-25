@@ -7,6 +7,7 @@ import type { PriceLevels } from "@hav/shared/prices";
 import type { SignalList } from "@hav/shared/signal";
 import { travelBands } from "@hav/shared/travel";
 import { PageFooter } from "@hav/ui/layout/page-footer";
+import { OutlineLink } from "@hav/ui/action/outline-link";
 import { TextLink } from "@hav/ui/text/text-link";
 import { SiteNav } from "@/shared/nav/site-nav";
 import { signalMaps } from "@/shared/signal/signal-maps";
@@ -39,9 +40,11 @@ export function CountryPage({ view, levels, signals, builtAt = null }: { view: C
             <NextCards v={view} />
             <CompareList v={view} />
             <CountryFaq name={view.name} year={view.year} items={view.faq} />
-            <p className="mt-10 text-small text-fg-2">
-              <TextLink href="/prices">여행 물가 전체 보기</TextLink>
-            </p>
+            <div className="mt-10">
+              <OutlineLink href="/prices" testId="more-countries">
+                {view.moreText}
+              </OutlineLink>
+            </div>
           </div>
         </div>
       </main>

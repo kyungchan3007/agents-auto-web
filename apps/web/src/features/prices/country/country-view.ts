@@ -89,3 +89,6 @@ export function countryFaq(p: { name: string; relative: number; year: number; bu
   else if (p.flight.kind === "timing") items.push({ q: "언제 떠나면 항공권이 싼가요?", a: `${p.flight.say}은 ${p.flight.big}입니다.` });
   return items.map((it, i) => ({ ...it, open: i < 2 }));
 }
+
+/** /prices/[code] 아래 이어 가는 버튼 글 — 나라 수는 받은 숫자 그대로 (끝 화살표 › 는 부품이 꾸밈으로 붙임 · 작업 0355) */
+export const moreCountriesText = (count: number): string => `다른 나라 물가도 보기 · ${count}개 나라`;
