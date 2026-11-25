@@ -12,11 +12,13 @@
 import { type Page, expect, test } from "@playwright/test";
 import { PROD_LAUNCH, expectClean, names, prodUrl, recordPreview, recordProd, sent } from "./click-track";
 
+// 브라우저 시작 옵션은 파일 맨 위에서만 줄 수 있음(describe 안은 불가) — flapfx.com 이름만 127.0.0.1 로 풀리므로 미리보기 검사(127.0.0.1)에는 영향 없음
+test.use({ launchOptions: PROD_LAUNCH });
+
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const search = (page: Page) => page.getByRole("combobox", { name: "여행지 검색" });
 
 test.describe("운영 주소에서 누르면 그 이름의 이벤트 하나 (작업 0359)", () => {
-  test.use({ launchOptions: PROD_LAUNCH });
   test.beforeEach(async ({ context }) => {
     await recordProd(context);
   });
