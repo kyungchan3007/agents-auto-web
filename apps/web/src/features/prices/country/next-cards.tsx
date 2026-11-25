@@ -2,21 +2,21 @@
 import Link from "next/link";
 import type { CountryView } from "./country-model";
 
-type Card = { kicker: string; title: string; big: string; say: string; href: string; link: string };
+type Card = { track: string; kicker: string; title: string; big: string; say: string; href: string; link: string };
 
 /** 카드 셋의 글 — 순서 고정 (환전 · 항공권 · 예산) */
 function cards(v: CountryView): Card[] {
   const fx: Card = v.exchange
-    ? { kicker: "1 · 환전", title: v.exchange.title, big: `${v.exchange.value} / ${v.exchange.unit}`, say: v.exchange.note, href: `/currencies/${v.currency}`, link: "환율 1년 흐름 보기" }
-    : { kicker: "1 · 환전", title: "환전은 지금 해도 될까", big: "자료 없음", say: "이 나라 통화의 오늘 환율을 받지 못했습니다", href: v.currency ? `/currencies/${v.currency}` : "/currencies", link: "통화 둘러보기" };
+    ? { track: "country_next_fx", kicker: "1 · 환전", title: v.exchange.title, big: `${v.exchange.value} / ${v.exchange.unit}`, say: v.exchange.note, href: `/currencies/${v.currency}`, link: "환율 1년 흐름 보기" }
+    : { track: "country_next_fx", kicker: "1 · 환전", title: "환전은 지금 해도 될까", big: "자료 없음", say: "이 나라 통화의 오늘 환율을 받지 못했습니다", href: v.currency ? `/currencies/${v.currency}` : "/currencies", link: "통화 둘러보기" };
   const f = v.flight;
   const air: Card =
     f.kind === "fare"
-      ? { kicker: "2 · 항공권", title: `${f.city}, 언제 떠나면 쌀까`, big: f.big, say: f.say, href: "/flights", link: `${f.city} 출발일 달력 보기` }
+      ? { track: "country_next_flight", kicker: "2 · 항공권", title: `${f.city}, 언제 떠나면 쌀까`, big: f.big, say: f.say, href: "/flights", link: `${f.city} 출발일 달력 보기` }
       : f.kind === "timing"
-        ? { kicker: "2 · 항공권", title: `${v.name}, 언제 떠나면 쌀까`, big: f.big, say: `떠나기 싼 달 · ${f.say}`, href: "/flights", link: "항공권 달 보기" }
-        : { kicker: "2 · 항공권", title: `${v.name}, 언제 떠나면 쌀까`, big: f.say, say: "항공권 자료를 받지 못했습니다", href: "/flights", link: "항공권 보기" };
-  const budget: Card = { kicker: "3 · 예산", title: `${v.budget.days}일이면 얼마나 들까`, big: v.budget.text, say: `한국에서 하루 10만 원 쓰는 만큼 · 물가 비율 ${v.index}`, href: "#budget", link: "예산 다시 짜기" };
+        ? { track: "country_next_flight", kicker: "2 · 항공권", title: `${v.name}, 언제 떠나면 쌀까`, big: f.big, say: `떠나기 싼 달 · ${f.say}`, href: "/flights", link: "항공권 달 보기" }
+        : { track: "country_next_flight", kicker: "2 · 항공권", title: `${v.name}, 언제 떠나면 쌀까`, big: f.say, say: "항공권 자료를 받지 못했습니다", href: "/flights", link: "항공권 보기" };
+  const budget: Card = { track: "country_next_budget", kicker: "3 · 예산", title: `${v.budget.days}일이면 얼마나 들까`, big: v.budget.text, say: `한국에서 하루 10만 원 쓰는 만큼 · 물가 비율 ${v.index}`, href: "#budget", link: "예산 다시 짜기" };
   return [fx, air, budget];
 }
 
@@ -34,7 +34,7 @@ export function NextCards({ v }: { v: CountryView }) {
             <p className="mt-1 text-[1rem] font-bold">{c.title}</p>
             <p className="mt-3 text-[1.5rem] leading-tight font-bold tracking-display tabular-nums sm:text-[1.75rem]">{c.big}</p>
             <p className="mt-1 text-small text-fg-2">{c.say}</p>
-            <Link href={c.href} className="mt-4 inline-block text-small font-bold text-fg underline-offset-2 hover:underline">
+            <Link href={c.href} data-track={c.track} className="mt-4 inline-block text-small font-bold text-fg underline-offset-2 hover:underline">
               {c.link} ›
             </Link>
           </article>

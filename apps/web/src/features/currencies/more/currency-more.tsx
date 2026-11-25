@@ -44,11 +44,11 @@ export function CurrencyMore() {
   return (
     <>
       {hydrated ? (
-        <button ref={btnRef} type="button" data-testid="currency-more" aria-haspopup="dialog" aria-expanded={open} onClick={onOpen} className={BUTTON}>
+        <button ref={btnRef} type="button" data-testid="currency-more" data-track="fx_other_open" aria-haspopup="dialog" aria-expanded={open} onClick={onOpen} className={BUTTON}>
           {body}
         </button>
       ) : (
-        <a href="#currency-list" data-testid="currency-more" className={BUTTON}>
+        <a href="#currency-list" data-testid="currency-more" data-track="fx_other_open" className={BUTTON}>
           {body}
         </a>
       )}
@@ -100,6 +100,8 @@ export function CurrencyMore() {
                       scroll={false}
                       data-testid="currency-side-row"
                       data-currency={r.currency}
+                      data-track={r.current ? undefined : "fx_other_pick"}
+                      data-track-currency={r.currency}
                       aria-current={r.current ? "page" : undefined}
                       onClick={(e) => void onRow(r.currency, e)}
                       className={`${ROW_GRID} rounded-[0.5rem] border-b border-line px-2 py-2.5 hover:bg-surface-2 aria-[current=page]:bg-surface-2`}

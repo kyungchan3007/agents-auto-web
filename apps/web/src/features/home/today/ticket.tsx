@@ -89,7 +89,7 @@ export function Ticket({ initial, rates, signals, windowDays, pageCodes = [], no
             )}
             {/* 고른 나라의 나라 페이지(작업 0344) — 그 나라 페이지가 있을 때만 */}
             {pageLink && (
-              <Link data-testid="picked-country-link" href={pageLink.href} className="self-start border-b-2 border-cheap pb-0.5 text-body font-semibold text-cheap hover:text-fg">
+              <Link data-testid="picked-country-link" data-track="home_country_link" data-track-country={picked?.country} href={pageLink.href} className="self-start border-b-2 border-cheap pb-0.5 text-body font-semibold text-cheap hover:text-fg">
                 {pageLink.text}
               </Link>
             )}

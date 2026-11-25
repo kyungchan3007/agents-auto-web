@@ -2,12 +2,12 @@
 // href 가 있으면 답 아래 링크 (나라 페이지로 잇기 · 정적 사이트라 일반 링크) · 서버 부품 (브라우저 전용 훅 없음)
 export type FaqListItem = { q: string; a: string; open: boolean; href?: string | null };
 
-export function FaqList({ items, linkText = "자세히 보기" }: { items: FaqListItem[]; linkText?: string }) {
+export function FaqList({ items, linkText = "자세히 보기", track }: { items: FaqListItem[]; linkText?: string; /** 펼칠 때 보낼 클릭 이벤트 이름 표시(data-track · 접을 때는 안 보냄) — 읽고 보내는 일은 앱이 함 (작업 0359) */ track?: string }) {
   return (
     <div className="mt-4 border-t border-line">
       {items.map((it) => (
         <details key={it.q} data-testid="faq-item" open={it.open} className="group border-b border-line py-4">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[1.0625rem] font-bold text-fg [&::-webkit-details-marker]:hidden">
+          <summary data-track={track} data-track-when={track ? "closed" : undefined} className="flex cursor-pointer list-none items-center justify-between gap-4 text-[1.0625rem] font-bold text-fg [&::-webkit-details-marker]:hidden">
             {it.q}
             <span aria-hidden className="text-fg-2 group-open:hidden">+</span>
             <span aria-hidden className="hidden text-fg-2 group-open:inline">−</span>

@@ -16,7 +16,7 @@ export function CompareList({ v }: { v: CountryView }) {
       <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {v.compare.map((c) => (
           <li key={c.country}>
-            <Link data-testid="compare-link" href={countryPath(c.country)} className="tap-44 flex h-full flex-wrap items-baseline justify-between gap-x-3 rounded-[0.75rem] border border-line bg-card px-4 py-3 text-fg hover:border-fg">
+            <Link data-testid="compare-link" data-track="country_compare" href={countryPath(c.country)} className="tap-44 flex h-full flex-wrap items-baseline justify-between gap-x-3 rounded-[0.75rem] border border-line bg-card px-4 py-3 text-fg hover:border-fg">
               <span className="font-bold">{c.name}</span>
               <span className="text-small text-fg-2">물가 {c.index}</span>
               <span className="w-full text-small font-bold">{c.diffText}</span>
