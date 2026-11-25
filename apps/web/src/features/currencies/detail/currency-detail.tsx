@@ -81,7 +81,8 @@ export function CurrencyDetail({ code, rate, signal, history, levels = null, bui
           {faq.answer && (
             <div data-testid="currency-answer" className="mt-5 border-l-4 border-sun pl-4">
               <p className="text-small text-fg-2">{faq.answer.label}</p>
-              <p className="mt-1 text-[1.0625rem] font-bold text-fg sm:text-[1.125rem]">{faq.answer.text}</p>
+              {/* 상자 높이 고정(작업 0366): 넓은 화면(lg) 한 줄 · 그보다 좁으면 두 줄 높이를 미리 잡음 — 통화를 바꿔도 상자 · 아래 카드가 움직이지 않음 */}
+              <p className="mt-1 min-h-[2lh] text-[1.0625rem] leading-normal font-bold text-fg sm:text-[1.125rem] lg:min-h-[1lh]">{faq.answer.text}</p>
             </div>
           )}
 

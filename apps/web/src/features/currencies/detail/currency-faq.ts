@@ -33,16 +33,15 @@ function compare(rate: Rate, stats: Stats) {
 
 const unitText = (code: string, rate: Rate) => `${rate.unit}${unitName(code)}`;
 
-/** 한 줄 답 (시안 5-new) — 오늘 값 · 1년 평균 대비 · 1년 최저와의 차이 · 오늘 값이 없으면 null (상자 없음) · 1년 기록이 없으면 오늘 값만 */
+/** 한 줄 답 (시안 5-new · 작업 0366 으로 줄임) — 오늘 값 · 1년 평균 값 · % 만 (1년 최저는 자주 묻는 질문 첫 답에) · 오늘 값이 없으면 null (상자 없음) · 1년 기록이 없으면 오늘 값만 */
 export function answerLine(p: { code: string; rate: Rate | null; stats: Stats | null }): { label: string; text: string } | null {
   if (!p.rate) return null;
   const label = `한 줄 답 · ${p.rate.date} 기준`;
   const head = `${unitText(p.code, p.rate)}${eunNeun(unitText(p.code, p.rate))} ${won(p.rate.baseRate)}`;
   if (!p.stats) return { label, text: `${head}입니다.` };
   const c = compare(p.rate, p.stats);
-  const avg = c.avgGap ? `${c.avgText}보다 ${c.avgGap}고` : `${c.avgText}과 거의 같고`;
-  const min = c.minGap ? `${c.minText}와 ${c.minGap} 차이입니다.` : `${c.minText}와 같은 값입니다.`;
-  return { label, text: `${head}으로, ${avg} ${min}` };
+  const avg = `1년 평균 ${won(p.stats.avg)}`;
+  return { label, text: `${head}으로, ${c.avgGap ? `${avg}보다 ${c.avgGap}습니다.` : `${avg}과 거의 같습니다.`}` };
 }
 
 const BIG: Record<string, { amount: number; text: string }> = {
