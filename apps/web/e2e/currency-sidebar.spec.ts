@@ -2,6 +2,7 @@
 // 원문: 모션 A(버튼이 늘어나 사이드바) + 스크롤 1(열린 동안 뒤 화면 잠금) — 움직임의 모양(0.7초 · 곡선 · 국기 날아감)은 @design 이라 여기서 보지 않음
 //
 // builder 가 다는 표시 (data-testid) — 통화 상세(/currencies/CODE)
+//   converter-card         "실제로 바꿀 때" 바깥 카드(버튼 양끝 · 둥글기의 기준 · 안쪽 흰 면 converter 가 아님)
 //   currency-more          열기 버튼 · button · aria-expanded · 글 안에 제목 "다른 나라 통화 보기" · 아래 줄 · 국기 · 끝 ›
 //                          (자바스크립트가 없으면 a[href="#currency-list"] 링크 — 맨 아래 둘러보기로 이동)
 //   currency-more-sub      버튼 아래 줄 ("22개 통화 오늘 환율을 한눈에" / "고른 통화 · 일본 엔 100 846.76원")
@@ -72,7 +73,7 @@ test.describe("버튼 (작업 0356 · 10c-cta)", () => {
   });
 
   test("위치: 넓은 화면 = 오른쪽 '실제로 바꿀 때' 카드 아래 · 양끝 · 모서리 둥글기는 그 카드와 같고 아래선은 왼쪽 '1년 최저 · 최고' 카드 아래선 / 휴대폰 = 그 카드 아래 · 폭 같음", async ({ page }) => {
-    const conv = tid(page, "converter");
+    const conv = tid(page, "converter-card"); // 바깥 카드(안쪽 흰 면 converter 가 아님) — 사용자 지적
     const [c, m] = [await box(conv), await box(more(page))];
     expect(m.y, "버튼은 환전 카드 아래").toBeGreaterThanOrEqual(c.y + c.height - 1);
     expect(Math.abs(m.x - c.x), "왼쪽 끝").toBeLessThanOrEqual(1.5);
@@ -304,8 +305,8 @@ test.describe("움직임 줄이기 · 움직임 있음 (작업 0356)", () => {
     await page.goto("/currencies/USD");
     await still(page);
     await open(page);
-    const running = await page.evaluate(() => document.getAnimations().filter((a) => a.effect && a.effect.getComputedTiming().iterations !== Number.POSITIVE_INFINITY && a.playState === "running").length);
-    expect(running, "진행 중인 움직임").toBe(0);
+    const running = await page.evaluate(() => document.getAnimations().filter((a) => a.effect && a.effect.getComputedTiming().iterations !== Number.POSITIVE_INFINITY && Number(a.effect.getComputedTiming().duration) > 1 && a.playState === "running").length); // 움직임 줄이기가 거는 0.01ms 즉시 전환은 움직임으로 세지 않음
+    expect(running, "진행 중인 움직임(1ms 넘는 것)").toBe(0);
     expect(Number(await side(page).evaluate((el) => getComputedStyle(el).opacity))).toBe(1);
     await page.keyboard.press("Escape");
     await expect(side(page)).toBeHidden({ timeout: 300 });
