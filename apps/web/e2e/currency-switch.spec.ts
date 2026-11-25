@@ -97,35 +97,19 @@ async function freshSnap(page: Page, code: string) {
 }
 
 test.describe("통화 바꾸기 전환 (작업 0231 · 모션 7 · 4)", () => {
-  test("목록에서 고르면 환율 자리까지 부드럽게 올라간 뒤 전환이 시작 — 스크롤이 위로만 · 중간 프레임 여럿 · 끝에 kicker 가 메뉴 아래 96px 근처 · 올라간 뒤에야 주소가 바뀜", async ({ page }) => {
+  test("사이드바에서 고르면 사이드바가 닫히고 그 통화로 바뀜 — 끝 상태 = 그 통화 페이지를 새로 불러온 것과 같음 · 고른 표시가 옮겨 감 · 칩 맨 앞 (작업 0365: 맨 아래 표가 없어져 '위로 올라간 뒤 이동' 단계는 요구하지 않음)", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/currencies/JPY");
     await page.waitForTimeout(800);
-    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-    await page.waitForTimeout(300);
-    const y0 = await page.evaluate(() => scrollY);
-    expect(y0, "준비: 아래로 내려 있음").toBeGreaterThan(300);
-    await startRec(page);
-    await page.waitForTimeout(150);
     await openSide(page);
     await listLink(page, "USD").click();
     await settle(page, "USD", 4000);
-    const fr = (await stopRec(page)).filter((f) => f.t > 100);
-    const ys = fr.map((f) => f.y);
-    for (let i = 1; i < ys.length; i++) if (fr[i].path === "/currencies/JPY") expect(ys[i], `올라가다 다시 내려감 (t=${fr[i].t.toFixed(0)})`).toBeLessThanOrEqual(ys[i - 1] + 2);
-    const goneUp = fr.filter((f) => f.y < y0 - 20 && f.y > Math.min(...ys) + 20);
-    expect(goneUp.length, "부드럽게 — 올라가는 중간 프레임 수").toBeGreaterThanOrEqual(6);
-    const first = fr.find((f) => f.path === "/currencies/USD")!;
-    expect(first, "주소가 바뀌지 않음").toBeDefined();
-    const lastMove = [...fr].reverse().find((f, i, arr) => arr[i + 1] && Math.abs(f.y - arr[i + 1].y) > 1);
-    expect(first.t, "올라가는 중에 주소가 바뀜 — 다 올라간 뒤 이동").toBeGreaterThanOrEqual((lastMove?.t ?? 0) - 40);
-    const end = fr.find((f) => f.path === "/currencies/USD" && f.kTop !== null)!;
-    expect(end.kTop! - end.nav, "환율 자리(kicker)가 메뉴 띠 아래 96px 근처").toBeGreaterThanOrEqual(60);
-    expect(end.kTop! - end.nav).toBeLessThanOrEqual(140);
-    // 목록에서 고른 표시가 옮겨 감
+    await expect(tid(page, "currency-sidebar"), "사이드바가 닫힘").toBeHidden();
+    await avgIntoView(page);
+    expect(await pageSnap(page)).toEqual(await freshSnap(page, "USD"));
     await expect(listLink(page, "USD")).toHaveAttribute("aria-current", "page");
     await expect(listLink(page, "JPY")).not.toHaveAttribute("aria-current", "page");
-    expect((await tid(page, "chip").first().getAttribute("data-code"))).toBe("USD");
+    expect(await tid(page, "chip").first().getAttribute("data-code")).toBe("USD");
   });
 
   test("칩에서 고르면(환율 자리가 이미 보임) 올라가지 않고 — 국기가 칩에서 제목 옆 국기 자리까지 포물선으로 날아가고 → 글이 바뀜 → 큰 환율 · 최저가 직전 값에서 카운트업(끝 = 새 값)", async ({ page }) => {
@@ -178,7 +162,7 @@ test.describe("통화 바꾸기 전환 (작업 0231 · 모션 7 · 4)", () => {
     expect(tFly, "국기가 날아간 뒤에 카운트업").toBeLessThanOrEqual(tBig + 50);
   });
 
-  test("비행기는 새 자리로 — 움직이는 동안 data-heading(왼쪽으로 가면 left · 아니면 right) · 끝 위치 = 새 통화 값(오늘 점 위치)", async ({ page }) => {
+  test("사이드바에서 고르면 비행기 끝 위치 = 새 통화 값(오늘 점 위치) (작업 0365: 움직이는 동안의 방향 검사는 칩 선택 쪽 테스트가 지킴)", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/currencies/JPY");
     await page.waitForTimeout(1500);
@@ -196,19 +180,12 @@ test.describe("통화 바꾸기 전환 (작업 0231 · 모션 7 · 4)", () => {
     await probe.close();
     test.skip(!target, "JPY 와 오늘 점 위치가 15%p 이상 다른 통화가 없음(자료)");
     const { code, pos: newPos } = target!;
-    await startRec(page);
     await openSide(page);
     await listLink(page, code).click();
     await settle(page, code, 5000);
-    const fr = await stopRec(page);
-    const want = newPos < oldPos ? "left" : "right";
-    const heads = new Set(fr.map((f) => f.plane?.heading).filter(Boolean));
-    expect(heads.has(want), `움직이는 동안 data-heading=${want} (JPY ${oldPos} → ${code} ${newPos}, 본 값 ${[...heads]})`).toBe(true);
-    expect(heads.has(want === "left" ? "right" : "left"), "반대 방향 표시가 섞임").toBe(false);
-    const last = fr[fr.length - 1].plane!;
-    expect(Math.abs(last.f - newPos), "끝 위치").toBeLessThanOrEqual(0.03);
-    const mid = fr.filter((f) => f.plane && f.path === `/currencies/${code}` && Math.min(oldPos, newPos) + 0.02 < f.plane.f && f.plane.f < Math.max(oldPos, newPos) - 0.02);
-    expect(mid.length, "옛 자리와 새 자리 사이를 지남(프레임 수)").toBeGreaterThanOrEqual(3);
+    await expect(tid(page, "currency-sidebar"), "사이드바가 닫힘").toBeHidden();
+    const last = Number(await tid(page, "route-plane").getAttribute("data-position"));
+    expect(Math.abs(last - newPos), `끝 위치 = 새 통화 값 (JPY ${oldPos} → ${code} ${newPos})`).toBeLessThanOrEqual(0.03);
   });
 
   test("'실제로 바꿀 때' — 글자판이 굴러가고(data-moving) 끝 글 · 입력 · 빠른 금액이 그 통화 · 끝 상태 전체가 그 통화 페이지를 새로 불러온 것과 같음 · 물가 링크 · 그래프", async ({ page }) => {
@@ -261,12 +238,10 @@ test.describe("통화 바꾸기 전환 (작업 0231 · 모션 7 · 4)", () => {
     expect(await pageSnap(page)).toEqual(await freshSnap(page, "USD"));
   });
 
-  test("움직임 줄이기 — 고르면 스크롤 · 국기 · 카운트업 · 글자판 · 칩 밀림 없이 바로 최종(주소 · 값 · 칩 · 목록 표시)", async ({ page }) => {
+  test("움직임 줄이기 — 사이드바에서 고르면 국기 · 카운트업 · 글자판 · 칩 밀림 없이 바로 최종(주소 · 값 · 칩 · 목록 표시)", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/currencies/JPY");
     await page.waitForTimeout(800);
-    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-    await page.waitForTimeout(300);
     await startRec(page);
     await page.waitForTimeout(100);
     await openSide(page);
@@ -276,9 +251,8 @@ test.describe("통화 바꾸기 전환 (작업 0231 · 모션 7 · 4)", () => {
     const fr = await stopRec(page);
     expect(fr.filter((f) => f.fly).length, "날아가는 국기").toBe(0);
     expect(Math.max(...fr.map((f) => f.moving)), "굴러가는 칸").toBe(0);
-    const ys = fr.filter((f) => f.t > 150).map((f) => f.y);
-    const jumps = ys.filter((y, i) => i > 0 && Math.abs(y - ys[i - 1]) > 1).length;
-    expect(jumps, "스크롤이 여러 프레임에 걸쳐 움직임(한 번에 이동해야)").toBeLessThanOrEqual(2);
+    await expect(tid(page, "currency-sidebar"), "사이드바가 닫힘").toBeHidden();
+    await avgIntoView(page);
     expect(await pageSnap(page)).toEqual(await freshSnap(page, "USD"));
     await expect(listLink(page, "USD")).toHaveAttribute("aria-current", "page");
     expect(await tid(page, "chip").first().getAttribute("data-code")).toBe("USD");
