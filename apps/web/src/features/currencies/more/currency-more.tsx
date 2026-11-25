@@ -91,7 +91,7 @@ export function CurrencyMore() {
                   <span className="text-right">90일 최고보다</span>
                 </div>
               </div>
-              <ul ref={listRef} id="currency-side-list" data-testid="currency-side-list" className="min-h-0 flex-1 overflow-y-auto px-5 pb-4 [overscroll-behavior:contain] sm:px-6">
+              <ul ref={listRef} id="currency-side-list" data-testid="currency-side-list" data-scroll-ok className="min-h-0 flex-1 overflow-y-auto px-5 pb-4 [overscroll-behavior:contain] sm:px-6">
                 {shown.map((r) => (
                   <li key={r.currency}>
                     <Link

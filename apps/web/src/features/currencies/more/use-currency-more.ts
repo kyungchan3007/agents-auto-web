@@ -4,7 +4,7 @@
 //   열고 닫는 움직임은 more-motion.ts · 뒤 화면 잠금은 use-scroll-lock · 줄 · 글 계산은 more-view.ts (tsx 는 그리기만)
 //   자바스크립트가 없으면(하이드레이션 전) hydrated=false → 버튼 자리에 둘러보기로 가는 링크를 그림
 import { useReducedMotion } from "motion/react";
-import { type KeyboardEvent, type MouseEvent, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import { type KeyboardEvent, type MouseEvent, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useCurrencyPick } from "../browse/use-currency-pick";
 import { commitPick } from "../chips/use-recent-currencies";
 import { useMoreContext } from "./use-more-context";
@@ -35,11 +35,12 @@ export function useCurrencyMore() {
   const closeBtn = useRef<HTMLButtonElement | null>(null);
   const opening = useRef(false); // 열기를 막 눌러 다시 열리지 않게
   const closing = useRef(false); // 닫는 중에 또 닫지 않게
+  const refocus = useRef(false); // 닫힌 뒤 포커스를 버튼으로 돌려야 함
 
   useScrollLock(mounted);
 
   const rows = sideRows(items);
-  const flags = buttonFlags(codes, picked);
+  const flags = buttonFlags(rows.map((r) => r.currency), picked); // 표 · 사이드바 목록과 같은 정렬 순서(많이 내린 순)
   const sub = pickedSub(items, picked && codes.includes(picked) ? picked : null) ?? moreSubText(items.length);
 
   // 열림: 사이드바가 그려진 직후 — 목록을 미리 내려 두고 · 모션 A · 포커스를 안으로
@@ -50,6 +51,15 @@ export function useCurrencyMore() {
     else playOpen({ btn: btn.current, panel: panel.current, backdrop: backdrop.current, list: list.current, head: head.current }, MORE_TITLE);
     closeBtn.current?.focus({ preventScroll: true });
   }, [open, reduce]);
+
+  // 사이드바가 화면에서 치워진 뒤(그려진 다음)에도 포커스가 버튼에 있게 — 포커스를 가진 요소가 사라지면 body 로 가는 것을 막음
+  useEffect(() => {
+    if (mounted || !refocus.current) return;
+    refocus.current = false;
+    btn.current?.focus({ preventScroll: true });
+    const t = requestAnimationFrame(() => btn.current?.focus({ preventScroll: true })); // 브라우저가 사라진 요소의 포커스를 body 로 돌린 뒤에도 한 번 더
+    return () => cancelAnimationFrame(t);
+  }, [mounted]);
 
   const onOpen = () => {
     if (opening.current || closing.current || open || items.length === 0) return;
@@ -71,6 +81,7 @@ export function useCurrencyMore() {
       await frames(); // 버튼 국기가 새로 그려진 뒤에 돌아갈 자리를 잼
       await playClose(els);
     } else if (btn.current) btn.current.style.visibility = "";
+    refocus.current = true;
     setMounted(false);
     setQuery("");
     btn.current?.focus({ preventScroll: true });
