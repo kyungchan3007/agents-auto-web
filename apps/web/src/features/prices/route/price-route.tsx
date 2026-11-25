@@ -202,6 +202,7 @@ function Route({ stops, rt, extras, signalOf, percentileOf, latestYear }: { stop
                 data-value={s.value}
                 data-active={s.index === active ? "true" : "false"}
                 data-mine={s.mine ? "true" : undefined}
+                data-surface={s.index === active ? "dark" : undefined} // 골라진 칩은 남색 바탕이라 안쪽 단추 · ✕ 초점 고리가 어두운 면 규칙(흰색)을 따름
                 className={`flex items-center rounded-pill text-[0.8125rem] whitespace-nowrap transition-colors duration-[250ms] ${chipLine(s, active)} ${s.index === active ? "bg-fg font-bold text-card" : s.index < active ? "text-fg hover:bg-surface-2" : "text-fg-2 hover:bg-surface-2"}`}
               >
                 <button type="button" onClick={() => goto(s.index)} className="tap-44 flex cursor-pointer items-center gap-1.5 rounded-pill py-[0.3125rem] pr-2.5 pl-1.5">
