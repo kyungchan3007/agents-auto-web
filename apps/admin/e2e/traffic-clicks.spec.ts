@@ -53,6 +53,13 @@ test.describe("어드민 유입 — 버튼 클릭 (작업 0359)", () => {
     expect(await col(page, 2, "perDay")).toBe("1.0");
   });
 
+  test("'누른 사람' 칸 머리에 '일별 합'을 밝힘(여러 날 누른 같은 사람이 겹쳐 셈)", async ({ page }) => {
+    await open(page, { clicks: CLICKS });
+    const head = tid(page, "traffic-clicks").getByRole("columnheader", { name: /누른 사람/ });
+    await expect(head).toHaveCount(1);
+    await expect(head).toContainText("일별 합");
+  });
+
   test("보고에 없는 버튼은 0 · 0 · 0.0 (시작 날 이후라 0 번 눌린 것)", async ({ page }) => {
     await open(page, { clicks: CLICKS });
     const last = rows(page).nth(11);
