@@ -43,7 +43,7 @@ export function useSidePanel({ lock = true, backdrop: withBackdrop = true, origi
 
   useScrollLock(lock && mounted);
 
-  const els = () => (panel.current ? { btn: origin?.current ?? null, panel: panel.current, backdrop: backdrop.current, ...partsOf(panel.current) } : null);
+  const els = () => (panel.current ? { btn: origin?.current?.isConnected ? origin.current : null, panel: panel.current, backdrop: backdrop.current, ...partsOf(panel.current) } : null);
 
   // 열림: 패널이 그려진 직후 — 목록을 미리 내려 두고 · 모션 · 포커스를 안으로
   useLayoutEffect(() => {

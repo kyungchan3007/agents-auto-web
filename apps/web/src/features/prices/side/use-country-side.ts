@@ -12,6 +12,9 @@ import { useSideMode } from "./use-side-mode";
 /** 목록에 그려진 그 나라의 링크 (‹ › 로 옮겨 가도 닫을 때 그 줄로 돌아가게) */
 const linkOf = (code: string): HTMLElement | null => document.querySelector<HTMLElement>(`[data-testid="price-band-link"][href="${countryPath(code)}"]`);
 
+/** 화면에 그려진 목록 링크 순서(나라 코드) — 노선 카드 버튼처럼 목록 밖에서 열 때 */
+const domOrder = (): string[] => Array.from(document.querySelectorAll<HTMLElement>('[data-testid="price-band-link"]')).map((a) => (a.getAttribute("href") ?? "").replace(/\/+$/, "").split("/").pop() ?? "");
+
 export function useCountrySide(entries: SideEntry[]) {
   const mode = useSideMode();
   const origin = useRef<HTMLElement | null>(null);
@@ -48,14 +51,14 @@ export function useCountrySide(entries: SideEntry[]) {
     backdropRef: side.backdropRef,
     onKeyDown: side.onKeyDown,
     onClose: () => void side.hide(),
-    onLink: (c: string, e: MouseEvent<HTMLElement>, ord: string[]) => {
+    onLink: (c: string, e: MouseEvent<HTMLElement>, ord?: string[]) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || !(c in byCode)) return; // 새 탭 · 키 조합 · 내용이 없는 나라는 링크 그대로
       e.preventDefault();
       const el = e.currentTarget;
       if (side.mounted && !side.open) return; // 닫는 중
       if (side.open) return switchTo(c, el);
       origin.current = el;
-      setOrder(ord);
+      setOrder(ord ?? domOrder());
       setCode(c);
       setDir(1);
       side.show();

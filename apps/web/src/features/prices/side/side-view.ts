@@ -76,9 +76,7 @@ export function sideEntry(v: CountryView): SideEntry {
     answer: rateLine({ oneLine: v.oneLine ? { label: v.oneLine.label, text: v.oneLine.text } : null, currency: v.currency }),
     value: v.index,
     budget: `약 ${wonDigits(budgetWon(v.index))}원`,
-    cards: nextCards(v)
-      .filter((c) => c.track !== "country_next_fx" || v.exchange !== null)
-      .map((c) => ({ track: c.track, kicker: c.kicker, title: c.title, say: c.say, href: c.href.startsWith("#") ? `${countryPath(v.code)}${c.href}` : c.href, link: c.link })),
+    cards: nextCards(v, { fxOnlyIfRate: true }).map((c) => ({ track: c.track, kicker: c.kicker, title: c.title, say: c.say, href: c.href.startsWith("#") ? `${countryPath(v.code)}${c.href}` : c.href, link: c.link })),
     detailHref: countryPath(v.code),
     detailText: detailLinkText(v.name),
   };
