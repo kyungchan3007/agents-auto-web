@@ -270,6 +270,20 @@ test.describe("내 여행지 (작업 0360)", () => {
     expect(await codes(page)).toContain("JPN");
   });
 
+  test("예산 카드에서 나라를 고르면 내 여행지로 노선에 들어감(홈 검색 칸과 같은 내 여행지) · 다른 나라로 바꾸면 따라 바뀜", async ({ page }) => {
+    await open(page);
+    await choose(page, "eu");
+    expect((await stops(page)).some((x) => x.mine)).toBe(false);
+    const select = tid(page, "budget").getByLabel("나라");
+    await select.selectOption("JPN");
+    await expect(page.locator('[data-testid="route-stop"][data-mine="true"]')).toHaveCount(1);
+    expect((await stops(page)).filter((x) => x.mine).map((x) => x.country)).toEqual(["JPN"]);
+    await expect(page.locator('[data-testid="route-stop"][data-mine="true"] [data-testid="route-mine-tag"]')).toHaveText("내 여행지");
+    await select.selectOption("THA");
+    await expect.poll(async () => (await stops(page)).filter((x) => x.mine).map((x) => x.country)).toEqual(["THA"]);
+    expect(await codes(page), "이전 내 여행지(일본)는 노선에서 빠짐").not.toContain("JPN");
+  });
+
   test("✕ 로 그 노선에서만 뺌: 칩 · 핀 · 꼬리표가 사라지고 · 탭을 옮기면 다시 나옴 · 고른 여행지 자체는 그대로", async ({ page }) => {
     await withPicked(page, "JPN", "도쿄");
     await open(page);
