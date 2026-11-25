@@ -162,6 +162,7 @@
 | 0354 | #409 전체 e2e: currency-chips:251(저장된 칩 깜빡임 · 두 번 연속 실패) · currency-answer-faq:75 흔들림 (Quick) | test → builder | 머지됨 (#414) | task/0354-chips-flaky | apps/web/e2e · 원인 코드 |
 | 0352 | 어드민 e2e 여섯 곳(0326 뒤 빌드 401 로 깨짐) 테스트 고치기: 가짜 응답 · 서버 그림 검사는 자료 없는 빌드면 건너뜀 (Quick) | test | 머지됨 (#411) | task/0352-admin-e2e-fixture | apps/admin/e2e |
 | 0350 | 직구 합산과세: 같은 판매자에게 같은 날 산 물건 더하기 · 합계로 한도 판단 (Full · 이탈 줄이기 시안 7 · 고시 제68조 확인) | test → builder | PR | task/0350-import-combined | docs/domain/import-calc.md · features/import-calc · packages/shared domain |
+| 0355 | 시안 10-A · 10-B: 자주 묻는 질문 왼쪽 정렬 · '다른 나라 물가도 보기' 테두리 버튼(공통 부품) (Quick) | test → builder | 테스트 먼저 | task/0355-faq-left-cta | packages/ui · features/prices/country · features/currencies/detail |
 | (후보) | 인스타 성과 — 릴스 · 스토리 게시물은 지표별 다시 부르기(종류가 지원 안 하는 지표 하나로 요청 전체 400 · geo 자문 11-23) | builder | 릴스 올릴 때 | — | apps/api/scripts/ig-insights.ts |
 | (후보) | Meta 광고 성과 읽기 — 노출 · 도달 · 클릭 · 지출(광고 계정 연결됨 11-23 · 광고 0개 · 0323 prd "나중에 포함") | geo → builder | 광고 대기 | — | — |
 | (후보) | 흔들리는 e2e 다음 묶음(11-23 test 확인) — currency-chips:248~251 · geo-bot-pages:55/66/96(재시도까지 실패) · home:101 · flights-window:199 · currency-chart:163 · admin:28 · home-bars:181 · axis-clear:29 · rename-compare:40 | test | 다음 작업 후보 | — | apps/web/e2e/** · apps/admin/e2e/** |
