@@ -167,7 +167,7 @@
 | 0358 | 11-25 GEO 측정 · #157 조사 댓글(나라 페이지 · FAQPage 비교) (Quick · 자료 · #420) | geo | 머지됨 (#421) | task/0358-geo-measure-1125 | apps/api/data/geo-answers/2026-11-25.json |
 | 0357 | 11-25(수) 수집 점검 기록: 환율 12:00 회차 · 항공권 · 새벽 예약 셋(약 7시간 늦음) (Quick · 자료 · #420) | data | 머지됨 (#422) | task/0357-data-health-1125 | docs/data-health.md |
 | 0359 | 새 버튼 · 링크 클릭 수: GA4 이벤트(버튼마다 이름) → 수집 → 어드민 유입 '버튼 클릭' 표 (Full · 스키마 대신 team_snapshots 키) | test → builder | PR | task/0359-click-events | packages/shared · apps/web shared/seo · features · apps/api ga4 · apps/admin traffic |
-| 0362 | 문구 수정 (Quick · 어드민 만드는 방식 첫 단계 예시 지우기 · 머지 뒤 main ff) | builder | 진행 중 | task/0362-admin-how-copy | apps/admin/src/features/how/common/how.ts |
+| 0362 | 문구 수정 (Quick · 어드민 만드는 방식 첫 단계 예시 지우기 · 머지 뒤 main ff) | builder | PR | task/0362-admin-how-copy | apps/admin/src/features/how/common/how.ts |
 | (후보) | 인스타 성과 — 릴스 · 스토리 게시물은 지표별 다시 부르기(종류가 지원 안 하는 지표 하나로 요청 전체 400 · geo 자문 11-23) | builder | 릴스 올릴 때 | — | apps/api/scripts/ig-insights.ts |
 | (후보) | Meta 광고 성과 읽기 — 노출 · 도달 · 클릭 · 지출(광고 계정 연결됨 11-23 · 광고 0개 · 0323 prd "나중에 포함") | geo → builder | 광고 대기 | — | — |
 | (후보) | 흔들리는 e2e 다음 묶음(11-23 test 확인) — currency-chips:248~251 · geo-bot-pages:55/66/96(재시도까지 실패) · home:101 · flights-window:199 · currency-chart:163 · admin:28 · home-bars:181 · axis-clear:29 · rename-compare:40 | test | 다음 작업 후보 | — | apps/web/e2e/** · apps/admin/e2e/** |
