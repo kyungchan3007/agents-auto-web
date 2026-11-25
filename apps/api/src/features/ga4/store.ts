@@ -19,12 +19,12 @@ export async function ga4Rows(d1: D1Database, since: string): Promise<{ daily: G
 }
 
 /**
- * 페이지별 머무름 두 장 — 새 표를 만들지 않고 작업 0341 의 team_snapshots(key · body JSON)에 둠 (작업 0349 · 보호 파일을 바꾸지 않기 위해)
+ * 페이지별 머무름 두 장 + 버튼 클릭 한 장(작업 0359 · ga4-click-events) — 새 표를 만들지 않고 작업 0341 의 team_snapshots(key · body JSON)에 둠 (작업 0349 · 보호 파일을 바꾸지 않기 위해)
  *   ga4-page-engagement: 매일 덮어씀 · ga4-page-engagement-baseline: 처음 한 번만(INSERT OR IGNORE) — 쓰기는 scripts/ga4-sync.ts · 표가 아직 없으면 빈 목록
  */
 export async function engagementSnapshots(d1: D1Database): Promise<{ key: string; body: string }[]> {
   try {
-    const rows = await drizzle(d1).select().from(teamSnapshots).where(inArray(teamSnapshots.key, ["ga4-page-engagement", "ga4-page-engagement-baseline"]));
+    const rows = await drizzle(d1).select().from(teamSnapshots).where(inArray(teamSnapshots.key, ["ga4-page-engagement", "ga4-page-engagement-baseline", "ga4-click-events"]));
     return rows.map((r) => ({ key: r.key, body: r.body }));
   } catch {
     return [];
