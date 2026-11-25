@@ -53,3 +53,6 @@ export function pinTiers(stops: UiStop[], scale: { lo: number; hi: number }, wid
   const maxOf = (side: "up" | "down") => rulerMaxTier(Object.fromEntries(pins.filter((p) => p.side === side).map((p) => [p.country, tiers[p.country] ?? 0])));
   return { tiers, up: maxOf("up"), down: maxOf("down") };
 }
+
+/** 핀 뒤 바탕의 폭(px) — 이름 글자 수 기준(rulerTiers 의 라벨 폭 추정과 같은 값) */
+export const pinBackWidth = (name: string): number => Math.max(name.length * 14.5, 36) + 8;
