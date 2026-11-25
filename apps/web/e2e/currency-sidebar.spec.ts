@@ -99,6 +99,30 @@ test.describe("버튼 (작업 0356 · 10c-cta)", () => {
   });
 });
 
+test.describe("버튼이 스크롤해도 가려지지 않음 (작업 0356 · 따라오는 환전 카드)", () => {
+  test("스크롤 위치를 바꿔 가며 화면에 들어온 버튼의 가운데를 누르면 버튼이 눌림(따라오는 카드가 덮지 않음)", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/currencies/MYR");
+    await still(page);
+    const seen: string[] = [];
+    for (const y of [0, 100, 200, 300, 400, 500, 600, 800]) {
+      await page.evaluate((top) => window.scrollTo({ top, behavior: "instant" }), y);
+      await page.waitForTimeout(150);
+      const r = await page.evaluate(() => {
+        const b = document.querySelector('[data-testid="currency-more"]') as HTMLElement;
+        const q = b.getBoundingClientRect();
+        const cx = q.x + q.width / 2, cy = q.y + q.height / 2;
+        const inView = cy > 80 && cy < innerHeight - 1; // 위 메뉴 띠(약 72px) 아래 · 화면 안
+        const hit = inView ? document.elementFromPoint(cx, cy) : null;
+        return { inView, covered: inView && !(hit && (b === hit || b.contains(hit))), by: hit?.closest("[data-testid]")?.getAttribute("data-testid") ?? hit?.tagName ?? null, scrollY: Math.round(scrollY) };
+      });
+      if (r.inView) seen.push(`${y}:${r.covered ? `덮임(${r.by})` : "ok"}`);
+      expect(r.covered, `scrollY ${r.scrollY} 에서 버튼 가운데가 ${r.by} 에 덮임`).toBe(false);
+    }
+    expect(seen.length, "버튼이 화면에 들어온 위치가 하나 이상").toBeGreaterThan(0);
+  });
+});
+
 test.describe("열기 · 닫기 · 접근성 (작업 0356 · 10c-side)", () => {
   test.beforeEach(async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
