@@ -2,6 +2,7 @@
 //   정거장 모양은 지금 노선(price-route-view 의 RouteStop)과 같은 틀 + mine(내 여행지) · 물가 차이 큰 곳(기본)은 내 여행지가 없을 때 기존 routeStops 와 똑같음(지금 정책 · 서버 첫 그림이 안 바뀜)
 import { POPULAR_RANKING, type RouteTabId, routeOf } from "@hav/shared/route-tabs";
 import { type RouteStop, bandOf } from "./price-route-view";
+import { rulerMaxTier, rulerTiers, rulerX } from "./ruler";
 
 /** removed = 내 여행지를 이 노선에서 뺐나 (✕ · 그 노선에서만) */
 export type RouteUi = { tab: RouteTabId; removed: boolean };
@@ -38,3 +39,17 @@ export const startOf = (stops: { mine: boolean }[]): number => Math.max(0, stops
 
 /** 노선이 바뀌면 달라지는 글(탭 · 정거장 구성) — 비행기 · 핀 · 칩이 새 노선으로 다시 시작하는 기준 */
 export const routeKeyOf = (tab: RouteTabId, stops: { country: string }[]): string => `${tab}:${stops.map((x) => x.country).join(",")}`;
+
+/** 몰린 핀 이름을 한 줄 더 밀어 내는 줄 높이(rem) — 핀 하나(이름 · 값 · 국기 · 줄기)의 높이 + 여유 · price-route.tsx 의 CSS 계산과 같은 값 */
+export const TIER_REM = 7;
+
+/**
+ * 가로 노선 핀 줄 — 같은 쪽(위 · 아래)에서 이름이 겹치는 핀을 한 줄(tier) 더 자에서 먼 쪽으로 (휴대폰용 rulerTiers 와 같은 규칙) · 겹침이 없으면 모두 0(기존 모습 그대로)
+ *   up · down = 그쪽에 더할 줄 수(자 위 · 아래 여백을 늘림)
+ */
+export function pinTiers(stops: UiStop[], scale: { lo: number; hi: number }, widthPx: number): { tiers: Record<string, number>; up: number; down: number } {
+  const pins = stops.filter((s) => s.side !== "kr").map((s) => ({ country: s.country, name: s.name, x: rulerX(s.value, scale), side: s.side as "up" | "down" }));
+  const tiers = rulerTiers(pins, widthPx);
+  const maxOf = (side: "up" | "down") => rulerMaxTier(Object.fromEntries(pins.filter((p) => p.side === side).map((p) => [p.country, tiers[p.country] ?? 0])));
+  return { tiers, up: maxOf("up"), down: maxOf("down") };
+}
