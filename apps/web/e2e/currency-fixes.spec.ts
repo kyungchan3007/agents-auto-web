@@ -246,12 +246,22 @@ test.describe("열 때 날아가는 국기 (작업 0366 · 4 · 넓은 화면 �
     const last = (await listCodes(page)).at(-1)!;
     await page.goto(`/currencies/${last}`);
     await quiet(page);
+    const buttonFlags = await flags(page);
     await tid(page, "currency-more").scrollIntoViewIfNeeded();
     await record(page, 2600);
     await openSide(page);
     await page.waitForTimeout(2800);
     const fr = await frames(page);
     for (const f of fr) for (const b of f.flies) expect(inside(b, { left: 0, top: 0, right: f.vw, bottom: f.vh }, 1), `t=${f.t.toFixed(0)} 화면 밖으로 나감 (${JSON.stringify(b)})`).toBe(true);
+    // 날아갈 줄이 열린 뒤 목록 보이는 범위 밖이면 그 국기는 날지 않음 — 동시에 날아간 복제본 수 ≤ 보이는 범위 안에 있는 국기 줄 수
+    const listNow = fr.filter((f) => f.list).at(-1)!.list!;
+    let visibleRows = 0;
+    for (const code of buttonFlags) {
+      const r = await page.locator(`[data-fly-to="${code}"]`).evaluate((e) => { const b = e.getBoundingClientRect(); return { left: b.left, top: b.top, right: b.right, bottom: b.bottom }; });
+      if (inside(r, listNow, 1)) visibleRows++;
+    }
+    const flown = Math.max(0, ...fr.map((f) => f.flies.length));
+    expect(flown, `날아간 국기 ${flown}개 · 목록 보이는 범위 안의 국기 줄 ${visibleRows}개 (보이지 않는 줄로는 날지 않아야 함)`).toBeLessThanOrEqual(visibleRows);
     for (const { f, b } of lastOf(fr)) {
       expect(f.list, "복제본이 있을 때 목록 상자").not.toBeNull();
       expect(inside(b, f.list!, 3), `앉은 자리가 목록 보이는 범위 밖 ${JSON.stringify(b)} / ${JSON.stringify(f.list)}`).toBe(true);
