@@ -18,8 +18,10 @@ import { PricesHeader } from "./prices-header";
 import { PriceView } from "./price-view";
 import { signalMaps } from "@/shared/signal/signal-maps";
 import { allRows } from "./bands/bands";
+import { SideProvider } from "./side/side-provider";
+import type { SideEntry } from "./side/side-view";
 
-export function PricePage({ levels, signals, builtAt = null }: { levels: Fetched<PriceLevels>; signals: Fetched<SignalList>; /** 빌드 시각 — 예산 카드 빈 상태 이름표 (작업 0346) */ builtAt?: string | null }) {
+export function PricePage({ levels, signals, builtAt = null, side = [] }: { levels: Fetched<PriceLevels>; signals: Fetched<SignalList>; /** 빌드 시각 — 예산 카드 빈 상태 이름표 (작업 0346) */ builtAt?: string | null; /** 목록 나라를 누르면 여는 사이드바 · 시트의 내용 (작업 0361) — 비면 링크 그대로 나라 페이지로 */ side?: SideEntry[] }) {
   const data = levels.ok ? travelBands(levels.data) : null;
   const { signalOf, percentileOf, latestOf } = signalMaps(signals);
   const rows = data ? allRows(data.bands) : [];
@@ -28,6 +30,7 @@ export function PricePage({ levels, signals, builtAt = null }: { levels: Fetched
   return (
     <>
       <SiteNav page="prices" />
+      <SideProvider entries={side}>
       <main id="main" tabIndex={-1} className="bg-surface text-fg">
         {/* 첫 면 — 파랑 띠는 그리드 첫 줄 높이만큼만 깔리고 예산 카드는 그 경계에 걸침 (넓은 화면은 카드를 원래 자리에서 36px 아래로 내려(translate · 자리는 그대로) 카드 위 = 제목 첫 줄 · 카드가 파랑 면 높이를 늘리지 않게 아래 여백을 음수로 · 파랑 면 끝 = 제목 묶음 끝 · 아래 구간은 카드가 파랑 밖으로 나온 만큼(약 108px) 위 여백을 늘림 · 작업 0220 → 0248 · 3번) (그라데이션 · 음수 여백 대신 칸 나눔 · 휴대폰은 카드를 위로 끌어올림) */}
         <div className="grid grid-cols-[minmax(1rem,1fr)_minmax(0,var(--container-page))_minmax(1rem,1fr)] sm:grid-cols-[minmax(2rem,1fr)_minmax(0,var(--container-page))_minmax(2rem,1fr)]">
@@ -41,7 +44,7 @@ export function PricePage({ levels, signals, builtAt = null }: { levels: Fetched
             </div>
           )}
         </div>
-        <div className="px-4 pt-14 pb-10 sm:px-8 sm:pt-16 lg:pt-[calc(7rem+4rem)]">
+        <div className="px-4 pt-14 pb-10 transition-[padding] duration-300 motion-reduce:transition-none sm:px-8 sm:pt-16 lg:pt-[calc(7rem+4rem)] lg:group-data-[push=true]/prices:pr-[calc(420px+2rem)]">
         <div className="mx-auto max-w-page">
           {data && data.bands.length > 0 ? (
             // 노선(정적 자 자리) + 세 칸 목록 — 주소의 ?currency= 는 브라우저에서 읽음(정적 사이트) — 읽기 전 · 검색 · AI 가 읽는 HTML 은 전체 목록 (작업 0193 · 0230)
@@ -71,6 +74,7 @@ export function PricePage({ levels, signals, builtAt = null }: { levels: Fetched
         </div>
         </div>
       </main>
+      </SideProvider>
       <PageFooter width="max-w-page">자료: 세계은행 물가 수준 · {RATE_SOURCE_LABEL} · <TextLink href="/about">소개 · 판단 기준</TextLink></PageFooter>
     </>
   );

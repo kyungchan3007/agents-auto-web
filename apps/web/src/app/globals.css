@@ -113,6 +113,13 @@ main:focus {
 @keyframes route-fade {
   from { opacity: 0; }
 }
+/* 여행 물가 사이드바에서 연 채로 다른 나라로 바뀔 때 내용이 옆으로 (작업 0361) */
+@keyframes side-swap-next {
+  from { opacity: 0; transform: translateX(28px); }
+}
+@keyframes side-swap-prev {
+  from { opacity: 0; transform: translateX(-28px); }
+}
 @keyframes route-pop {
   from { transform: scale(0.6) rotate(-25deg); opacity: 0; }
   to { transform: none; opacity: 1; }
