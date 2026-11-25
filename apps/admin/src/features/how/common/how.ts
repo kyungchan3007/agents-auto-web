@@ -176,7 +176,7 @@ export const HOW_NODES: HowNode[] = [
 export const HOW_STEPS: { node: NodeId; text: string }[] = [
   {
     "node": "human",
-    "text": "사람이 기획 · 설계와 디자인 방향을 정해 요청합니다. 예: \"여행 물가 스크롤은 휴대폰용으로 따로, 티 안 나게\""
+    "text": "사람이 기획 · 설계와 디자인 방향을 정해 요청합니다"
   },
   {
     "node": "desk",
