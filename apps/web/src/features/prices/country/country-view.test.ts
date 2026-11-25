@@ -17,7 +17,7 @@
 import type { AirfareCalendar } from "@hav/shared/airfare";
 import type { PriceLevels } from "@hav/shared/prices";
 import { describe, expect, it } from "vitest";
-import { compareCountries, countryFaq, countryPath, countryTargets, flightCard, oneLineAnswer } from "./country-view";
+import { compareCountries, countryFaq, countryPath, countryTargets, flightCard, moreCountriesText, oneLineAnswer } from "./country-view";
 
 const lv = (rows: [string, number][]): PriceLevels => ({ base: "KOR", rows: rows.map(([country, relative]) => ({ country, year: 2025, level: relative * 100, relative, source: "worldbank" })) });
 
@@ -189,5 +189,22 @@ describe("자주 묻는 질문 (시안 6-new · 처음 두 개 펼침 · 답은 
   it("항공권 문항 — 도시 달력이 없으면 지수의 떠나기 싼 달로 답", () => {
     const f = countryFaq({ ...base, flight: { kind: "timing", month: 11, big: "11월", say: "통계청 국제항공료 지수로 보면 1년 중 가장 낮은 달" } });
     expect(f.at(-1)?.a).toContain("11월");
+  });
+});
+
+// 작업 0355 — /prices/[code] 아래 이어 가는 버튼 글 (테스트 먼저 · 구현 전에는 FAIL 이 정상)
+// builder 가 만들 것 — country-view.ts 에 export function moreCountriesText(count: number): string
+//   "다른 나라 물가도 보기 · 39개 나라" (끝 화살표 › 는 부품이 꾸밈으로 붙임) · 나라 수는 받은 숫자 그대로(고정 숫자 아님)
+describe("다른 나라 물가도 보기 버튼 글 (작업 0355)", () => {
+  it("나라 수를 넣어 한 줄 — 받은 숫자 그대로 (고정 숫자를 쓰지 않음)", () => {
+    expect(moreCountriesText(39)).toBe("다른 나라 물가도 보기 · 39개 나라");
+    expect(moreCountriesText(12)).toBe("다른 나라 물가도 보기 · 12개 나라");
+  });
+
+  it("countryTargets 개수와 이어짐 — 목록이 달라지면 글도 달라짐", () => {
+    const a = countryTargets(lv([["JPN", 1.1], ["VNM", 0.5]]));
+    const b = countryTargets(lv([["JPN", 1.1], ["VNM", 0.5], ["THA", 0.6]]));
+    expect(moreCountriesText(a.length)).toBe("다른 나라 물가도 보기 · 2개 나라");
+    expect(moreCountriesText(b.length)).toBe("다른 나라 물가도 보기 · 3개 나라");
   });
 });
