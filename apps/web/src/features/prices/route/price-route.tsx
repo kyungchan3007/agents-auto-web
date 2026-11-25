@@ -10,14 +10,14 @@ import { countryPath } from "../country/country-view";
 import type { Signal } from "@hav/shared/signal";
 import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import { SectionTitle } from "@hav/ui/text/heading";
-import { type CSSProperties, Fragment } from "react";
+import type { CSSProperties } from "react";
 import { useCountTween, usePlaneFlip, usePriceRoute, useRouteTiles } from "./use-price-route";
 import { type PriceBand, rateBadgeText } from "../bands/bands";
 import { OutlineLink } from "@hav/ui/action/outline-link";
 import { routeScale } from "@hav/shared/route-tabs";
 import { type RouteBand, routeCardText } from "./price-route-view";
 import { RouteTabs } from "./route-tabs";
-import { TIER_REM, type UiStop, detailText, pinTiers, routeKeyOf, startOf, uiStops } from "./route-ui";
+import { TIER_REM, type UiStop, detailText, pinBackWidth, pinTiers, routeKeyOf, startOf, uiStops } from "./route-ui";
 import { useRouteTabs } from "./use-route-tabs";
 import { PriceRouteList } from "./price-route-list";
 import { rulerX } from "./ruler";
@@ -268,6 +268,18 @@ function Route({ stops, rt, extras, signalOf, percentileOf, latestYear }: { stop
                 style={{ left: `${x(s.value)}%`, borderColor: COLOR[s.band] }}
               />
             ))}
+            {/* 몰린 핀을 한 줄 밀어 낸 만큼 자까지 이어 주는 줄기 — 모든 핀 아래 층 · 핀 상자 밖이라 핀끼리 상자가 겹치지 않음 */}
+            {awayStops(stops).map((s) => (
+              (tiers[s.country] ?? 0) > 0 && (
+                <span key={`${routeKey}:lead:${s.country}`} aria-hidden className={`absolute w-[1.5px] -translate-x-1/2 bg-current opacity-45 ${s.side === "up" ? "bottom-[calc(var(--rh)-var(--tt)+2px)]" : "top-[calc(var(--tt)+24px)]"}`} style={{ left: `${x(s.value)}%`, color: COLOR[s.band], height: `${(tiers[s.country] ?? 0) * TIER_REM}rem` }} />
+              )
+            ))}
+            {/* 줄기가 지나가는 쪽의 자 가까운 핀 뒤에 바탕을 깔아 줄기가 라벨(숫자 · 국기) 위로 비치지 않게 (핀은 흐리게 그려져 자체 바탕으로는 가려지지 않음) */}
+            {awayStops(stops).map((s) => (
+              (tiers[s.country] ?? 0) === 0 && (s.side === "up" ? tierUp : tierDown) > 0 && (
+                <span key={`${routeKey}:back:${s.country}`} aria-hidden className={`absolute -translate-x-1/2 bg-surface ${s.side === "up" ? "bottom-[calc(var(--rh)-var(--tt)+2px)]" : "top-[calc(var(--tt)+24px)]"}`} style={{ left: `${x(s.value)}%`, width: `${pinBackWidth(s.name)}px`, height: `${TIER_REM - 1}rem` }} />
+              )
+            ))}
             {awayStops(stops).map((s) => {
                 const on = s.index === active;
                 const past = s.index < active;
@@ -279,12 +291,8 @@ function Route({ stops, rt, extras, signalOf, percentileOf, latestYear }: { stop
                 const stem = <span className="block h-[22px] w-[1.5px] bg-current opacity-45" />;
                 const tier = tiers[s.country] ?? 0;
                 return (
-                  <Fragment key={`${routeKey}:${s.country}`}>
-                  {tier > 0 && (
-                    // 몰린 핀을 한 줄 밀어 낸 만큼 자까지 이어 주는 줄기 (핀 상자 밖 · 핀끼리 상자가 겹치지 않게)
-                    <span aria-hidden className={`absolute w-[1.5px] -translate-x-1/2 bg-current opacity-45 ${up ? "bottom-[calc(var(--rh)-var(--tt)+2px)]" : "top-[calc(var(--tt)+24px)]"}`} style={{ left: `${x(s.value)}%`, color: col, height: `${tier * TIER_REM}rem` }} />
-                  )}
                   <div
+                    key={`${routeKey}:${s.country}`}
                     data-testid="route-pin"
                     data-country={s.country}
                     data-value={s.value}
@@ -309,7 +317,6 @@ function Route({ stops, rt, extras, signalOf, percentileOf, latestYear }: { stop
                       </>
                     )}
                   </div>
-                  </Fragment>
                 );
               })}
             <>
