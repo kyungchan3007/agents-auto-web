@@ -164,6 +164,7 @@
 | 0350 | 직구 합산과세: 같은 판매자에게 같은 날 산 물건 더하기 · 합계로 한도 판단 (Full · 이탈 줄이기 시안 7 · 고시 제68조 확인) | test → builder | PR | task/0350-import-combined | docs/domain/import-calc.md · features/import-calc · packages/shared domain |
 | 0355 | 시안 10-A · 10-B: 자주 묻는 질문 왼쪽 정렬 · '다른 나라 물가도 보기' 테두리 버튼(공통 부품) (Quick) | test → builder | 머지됨 (#417) | task/0355-faq-left-cta | packages/ui · features/prices/country · features/currencies/detail |
 | 0356 | 시안 10-C: 통화 상세 '다른 나라 통화 보기' 버튼 + 오른쪽 사이드바(휴대폰 시트) · 모션 A · 스크롤 1 잠금 (Quick) | test → builder | PR | task/0356-currency-sidebar | features/currencies · packages/ui outline |
+| 0358 | 11-25 GEO 측정 · #157 조사 댓글(나라 페이지 · FAQPage 비교) (Quick · 자료 · #420) | geo | PR | task/0358-geo-measure-1125 | apps/api/data/geo-answers/2026-11-25.json |
 | (후보) | 인스타 성과 — 릴스 · 스토리 게시물은 지표별 다시 부르기(종류가 지원 안 하는 지표 하나로 요청 전체 400 · geo 자문 11-23) | builder | 릴스 올릴 때 | — | apps/api/scripts/ig-insights.ts |
 | (후보) | Meta 광고 성과 읽기 — 노출 · 도달 · 클릭 · 지출(광고 계정 연결됨 11-23 · 광고 0개 · 0323 prd "나중에 포함") | geo → builder | 광고 대기 | — | — |
 | (후보) | 흔들리는 e2e 다음 묶음(11-23 test 확인) — currency-chips:248~251 · geo-bot-pages:55/66/96(재시도까지 실패) · home:101 · flights-window:199 · currency-chart:163 · admin:28 · home-bars:181 · axis-clear:29 · rename-compare:40 | test | 다음 작업 후보 | — | apps/web/e2e/** · apps/admin/e2e/** |
