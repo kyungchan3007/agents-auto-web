@@ -3,6 +3,7 @@ import { IBM_Plex_Sans_KR } from "next/font/google";
 import { NAVER_SITE_VERIFICATION, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/shared/site";
 import { AnalyticsScript } from "@/shared/seo/analytics-script";
 import { verificationOther } from "@/shared/seo/verification";
+import { heroScript } from "@/features/home/blackfriday/bf-period";
 import { outageActive } from "@/shared/outage/outage";
 import { OutageNotice } from "@/shared/outage/outage-notice";
 import "./globals.css";
@@ -31,7 +32,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ko" data-surface="light" className={sans.variable}>
+    <html lang="ko" data-surface="light" className={sans.variable} suppressHydrationWarning>
+      {/* 블랙프라이데이 기간(작업 0381) — 첫 그림 전에 지금 시각으로 html 의 data-hero(bf | default)를 정함 · 홈의 두 hero 중 하나만 보이게 (깜빡임 없음) */}
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: heroScript() }} />
+      </head>
       <body className="bg-surface text-fg">
         {/* 본문 바로가기 — 평소엔 숨김 · 첫 Tab 에서 보이고 누르면 main 으로 (작업 0213) */}
         <a

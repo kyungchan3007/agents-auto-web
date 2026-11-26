@@ -6,7 +6,9 @@ import type { FxLatest } from "@hav/shared/fx";
 import type { IndicatorSeries } from "@hav/shared/indicators";
 import type { SignalList } from "@hav/shared/signal";
 import { DestinationsSection } from "./destinations/destinations-section";
+import { BfHero } from "./blackfriday/bf-hero";
 import { HeroSection } from "./timing/hero-section";
+import type { CustomsRate } from "../import-calc/common/customs-rate";
 import { HomeFooter } from "./home-footer";
 import { TodayBoard } from "./today/today-board";
 import { YearBars } from "./timing/year-bars";
@@ -15,9 +17,9 @@ import { moreCurrenciesCount } from "./destinations/more-currencies";
 import { DESTINATIONS } from "./common/places";
 import { travelTiming } from "./timing/travel-timing";
 
-export type HomeData = { latest: Fetched<FxLatest>; signals: Fetched<SignalList>; airFare: Fetched<IndicatorSeries>; /** 나라 페이지가 만들어지는 나라 코드 (작업 0344 countryTargets · 0347) */ pageCodes?: readonly string[] };
+export type HomeData = { latest: Fetched<FxLatest>; signals: Fetched<SignalList>; airFare: Fetched<IndicatorSeries>; /** 나라 페이지가 만들어지는 나라 코드 (작업 0344 countryTargets · 0347) */ pageCodes?: readonly string[]; /** 직구 계산기와 같은 관세청 과세환율(달러) · 블프 hero 계산기가 씀 (작업 0381) */ customs?: Record<string, CustomsRate> | null };
 
-export function Home({ latest, signals, airFare, pageCodes = [] }: HomeData) {
+export function Home({ latest, signals, airFare, pageCodes = [], customs = null }: HomeData) {
   const rates = latest.ok ? latest.data.rates : [];
   const signalRows = signals.ok ? signals.data.signals : [];
   const windowDays = signals.ok ? signals.data.rule.windowDays : 90;
@@ -26,7 +28,11 @@ export function Home({ latest, signals, airFare, pageCodes = [] }: HomeData) {
     <>
       <SiteNav page="home" />
       <main id="main" tabIndex={-1}>
-      <HeroSection timing={timing} />
+      {/* 블랙프라이데이 기간(~2026-12-01 17:00 KST)에만 블프 hero 가 기본 hero 대신 보임 — 둘 다 그리고 html data-hero 로 하나만 (작업 0381) */}
+      <BfHero rates={rates} customs={customs} />
+      <div className="bf-default">
+        <HeroSection timing={timing} />
+      </div>
       <TodayBoard rates={rates} signals={signalRows} windowDays={windowDays} problem={!latest.ok ? latest.reason : null} pageCodes={pageCodes} />
       <YearBars timing={timing} />
       <DestinationsSection rows={destinationRows(signalRows, rates, DESTINATIONS as Destination[])} windowDays={windowDays} moreCount={moreCurrenciesCount(rates, DESTINATIONS)} />
