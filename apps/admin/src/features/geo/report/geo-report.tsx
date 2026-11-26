@@ -1,6 +1,6 @@
 "use client";
 
-// GEO 수치 (작업 0303 어드민 · 시안 Version 6) — 요약 숫자 4(안내판) → 주 그래프 · 봇 방문 → 이름 바꾼 날 전후 → 일반 질문 · 검색 노출 · 읽은 페이지 · 유입 → 봇별 읽은 페이지 → 측정 방법 · 읽는 법 · 한계
+// GEO 수치 (작업 0303 어드민 · 시안 Version 6) — 요약 숫자 4(안내판) → 주 그래프 · 봇 방문 → 이름 바꾼 날 전후 → 일반 질문 · 검색 노출 · 유입 → 읽은 페이지 · 봇별 읽은 페이지 → 측정 방법 · 읽는 법 · 한계
 import type { GeoReport as Report } from "@hav/shared/geo";
 import { Flap } from "@/shared/ui/flap/flap";
 import { Panel } from "@/shared/ui/panel/panel";
@@ -52,11 +52,11 @@ export function GeoReport({ build, asOf }: { build: Fetched<Report>; asOf: strin
         <RenameQuestions report={r} asOf={asOf} />
         <div className="adm-col">
           <GeoSearch report={r} />
-          <GeoPages report={r} />
           <GeoReferrals report={r} />
         </div>
       </div>
       <div data-testid="geo-grid">
+        <GeoPages report={r} />
         <GeoBotPages report={r} />
       </div>
       <Panel id="geo-method" testId="geo-method" title="측정 방법 · 읽는 법" meta={<a className="adm-link" href={methodHref(REPO_URL)} target="_blank" rel="noreferrer">{methodLinkText(r)} ↗</a>}>
