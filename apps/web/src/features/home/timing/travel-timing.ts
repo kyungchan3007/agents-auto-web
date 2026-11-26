@@ -18,14 +18,12 @@ export function travelTiming(points: IndexPoint[] | null | undefined): TravelTim
 export function travelTimingCopy(t: TravelTiming): { title: string | null; message: string } {
   if (t.kind === "preparing") return { title: null, message: "국제항공료 지수를 아직 받지 못했습니다" };
   const span = t.complete ? "1년 중" : "받은 달 중";
-  return {
-    title: `${t.cheapest}월에 떠나세요`,
-    message: `통계청 국제항공료 지수로 보면 ${t.cheapest}월이 ${span} 가장 낮고, ${t.priciest}월이 가장 높습니다.`,
-  };
+  // 작업 0380: 제목 끝에 마침표 · 한 줄만(가장 높은 달 · 통계청 문장은 뺌 · 출처는 꼬리표 HERO_GUIDE.tag 로 따로)
+  return { title: `${t.cheapest}월에 떠나세요.`, message: `항공료가 ${span} 가장 낮은 달입니다.` };
 }
 
-/** 큰 제목 "11월에 떠나세요" 를 월(노랑으로 칠함)과 나머지로 — travelTimingCopy 의 title 과 같은 글 · 자료가 없으면 null (작업 0217) */
+/** 큰 제목 "11월에 떠나세요." 를 월(노랑으로 칠함)과 나머지로 — travelTimingCopy 의 title 과 같은 글 · 자료가 없으면 null (작업 0217) */
 export function heroParts(t: TravelTiming): { month: string; rest: string } | null {
   if (t.kind !== "ready") return null;
-  return { month: `${t.cheapest}월`, rest: "에 떠나세요" };
+  return { month: `${t.cheapest}월`, rest: "에 떠나세요." };
 }
