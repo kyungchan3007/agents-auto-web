@@ -5,6 +5,8 @@ import { Panel, Stamp } from "@/shared/ui/panel/panel";
 import { countText } from "@/shared/format/count-text";
 import { ClickTable } from "./click-table";
 import { EngagementTable } from "./engagement-table";
+import { humanCells } from "./human-view";
+import { InstagramTable } from "./instagram-table";
 import { isEmptyTraffic } from "./traffic-view";
 import { useGa4Report } from "./use-ga4-report";
 
@@ -29,13 +31,19 @@ export function TrafficBody() {
     return (
       <Panel id="traffic-none" title="유입">
         <p data-testid="traffic-empty" className="adm-empty">
-          아직 받은 유입 값이 없습니다. GA4 는 보통 하루 뒤에 숫자가 들어옵니다 · 다음 수집 매일 04:50
+          아직 받은 유입 값이 없습니다. GA4 는 보통 하루 뒤에 숫자가 들어옵니다
+          · 다음 수집 매일 04:50
         </p>
       </Panel>
     );
   return (
     <>
-      <Panel id="traffic-daily" testId="traffic-daily" title="날짜별" meta={<Stamp>최근 날부터</Stamp>}>
+      <Panel
+        id="traffic-daily"
+        testId="traffic-daily"
+        title="날짜별"
+        meta={<Stamp>최근 날부터</Stamp>}
+      >
         <div className="adm-tw">
           <table>
             <thead>
@@ -44,30 +52,54 @@ export function TrafficBody() {
                 <th className="n">사용자</th>
                 <th className="n">세션</th>
                 <th className="n">페이지뷰</th>
+                <th className="n">참여 세션</th>
+                <th className="n">참여율</th>
+                <th className="n">사용자당 참여(초)</th>
               </tr>
             </thead>
             <tbody>
-              {r.daily.map((d) => (
-                <tr key={d.day} data-testid="traffic-daily-row" data-day={d.day}>
-                  <td data-col="day" className="mono">
-                    {d.day}
-                  </td>
-                  <td data-col="users" className="n">
-                    {countText(d.users)}
-                  </td>
-                  <td data-col="sessions" className="n">
-                    {countText(d.sessions)}
-                  </td>
-                  <td data-col="pageViews" className="n">
-                    {countText(d.pageViews)}
-                  </td>
-                </tr>
-              ))}
+              {r.daily.map((d) => {
+                const h = humanCells(r.human, d.day);
+                return (
+                  <tr
+                    key={d.day}
+                    data-testid="traffic-daily-row"
+                    data-day={d.day}
+                  >
+                    <td data-col="day" className="mono">
+                      {d.day}
+                    </td>
+                    <td data-col="users" className="n">
+                      {countText(d.users)}
+                    </td>
+                    <td data-col="sessions" className="n">
+                      {countText(d.sessions)}
+                    </td>
+                    <td data-col="pageViews" className="n">
+                      {countText(d.pageViews)}
+                    </td>
+                    <td data-col="engagedSessions" className="n">
+                      {h.engagedText}
+                    </td>
+                    <td data-col="engagedRate" className="n">
+                      {h.engagedRateText}
+                    </td>
+                    <td data-col="secondsPerUser" className="n">
+                      {h.secondsPerUserText}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       </Panel>
-      <Panel id="traffic-sources" testId="traffic-sources" title="유입 경로" meta={<Stamp>기간 합 · 세션 많은 순 · 위 20개</Stamp>}>
+      <Panel
+        id="traffic-sources"
+        testId="traffic-sources"
+        title="유입 경로"
+        meta={<Stamp>기간 합 · 세션 많은 순 · 위 20개</Stamp>}
+      >
         <div className="adm-tw">
           <table>
             <thead>
@@ -81,7 +113,10 @@ export function TrafficBody() {
             </thead>
             <tbody>
               {r.sources.map((s) => (
-                <tr key={`${s.source}/${s.medium}/${s.campaign}`} data-testid="traffic-source-row">
+                <tr
+                  key={`${s.source}/${s.medium}/${s.campaign}`}
+                  data-testid="traffic-source-row"
+                >
                   <td data-col="source" className="mono">
                     {s.source}
                   </td>
@@ -103,7 +138,13 @@ export function TrafficBody() {
           </table>
         </div>
       </Panel>
-      <Panel id="traffic-pages" testId="traffic-pages" title="많이 본 페이지" meta={<Stamp>기간 합 · 조회 많은 순 · 위 20개</Stamp>}>
+      <InstagramTable report={r} />
+      <Panel
+        id="traffic-pages"
+        testId="traffic-pages"
+        title="많이 본 페이지"
+        meta={<Stamp>기간 합 · 조회 많은 순 · 위 20개</Stamp>}
+      >
         <div className="adm-tw">
           <table>
             <thead>
