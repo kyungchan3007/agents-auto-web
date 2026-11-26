@@ -1,3 +1,4 @@
+// 작업 0375 — 팔로워 수: 계정 값 줄(ig_account_insights)에 지표 이름 followers_count 하나 더 · 응답 account 줄에 followers 칸(0 이상 정수 | null) · 받지 못하면 null(0 아님)
 // 작업 0323 — GET /ig 응답 만들기: D1 에서 읽은 행 → 날짜별 계정 값 · 게시물별 값 (순수 함수 · 테스트 먼저 · 구현 전에는 FAIL 이 정상)
 //   builder 가 만들 것
 //     packages/shared/src/contracts/ig.ts — export const IgReport (zod) · package.json exports "./ig"
@@ -24,22 +25,41 @@ describe("GET /ig 응답 — 계정 (작업 0323)", () => {
 
   it("날짜별 한 줄 · 최근 날부터 · 지표 이름은 화면용(profile_views → profileViews 등)", () => {
     const r = igReport([], [], [
-      ai("2026-11-22", "reach", 10), ai("2026-11-22", "views", 30), ai("2026-11-22", "profile_views", 2), ai("2026-11-22", "website_clicks", 1), ai("2026-11-22", "accounts_engaged", 4),
-      ai("2026-11-23", "reach", 15), ai("2026-11-23", "views", 50), ai("2026-11-23", "profile_views", 3), ai("2026-11-23", "website_clicks", 0), ai("2026-11-23", "accounts_engaged", 5),
+      ai("2026-11-22", "reach", 10), ai("2026-11-22", "views", 30), ai("2026-11-22", "profile_views", 2), ai("2026-11-22", "website_clicks", 1), ai("2026-11-22", "accounts_engaged", 4), ai("2026-11-22", "followers_count", 120),
+      ai("2026-11-23", "reach", 15), ai("2026-11-23", "views", 50), ai("2026-11-23", "profile_views", 3), ai("2026-11-23", "website_clicks", 0), ai("2026-11-23", "accounts_engaged", 5), ai("2026-11-23", "followers_count", 125),
     ]);
     expect(IgReport.parse(r)).toBeTruthy();
     expect(r.account.map((d) => d.day)).toEqual(["2026-11-23", "2026-11-22"]);
-    expect(r.account[0]).toEqual({ day: "2026-11-23", reach: 15, views: 50, profileViews: 3, websiteClicks: 0, accountsEngaged: 5 });
+    expect(r.account[0]).toEqual({ day: "2026-11-23", reach: 15, views: 50, profileViews: 3, websiteClicks: 0, accountsEngaged: 5, followers: 125 });
   });
 
   it("받지 못한 지표는 null · 받은 0 은 0 — 0 으로 채우지 않음", () => {
     const r = igReport([], [], [ai("2026-11-23", "reach", 0), ai("2026-11-23", "views", 8)]);
-    expect(r.account).toEqual([{ day: "2026-11-23", reach: 0, views: 8, profileViews: null, websiteClicks: null, accountsEngaged: null }]);
+    expect(r.account).toEqual([{ day: "2026-11-23", reach: 0, views: 8, profileViews: null, websiteClicks: null, accountsEngaged: null, followers: null }]);
   });
 
   it("목록에 없는 지표(follows_and_unfollows 등)는 응답에 싣지 않음", () => {
     const r = igReport([], [], [ai("2026-11-23", "reach", 1), ai("2026-11-23", "follows_and_unfollows", 9)]);
-    expect(Object.keys(r.account[0] ?? {}).sort()).toEqual(["accountsEngaged", "day", "profileViews", "reach", "views", "websiteClicks"]);
+    expect(Object.keys(r.account[0] ?? {}).sort()).toEqual(["accountsEngaged", "day", "followers", "profileViews", "reach", "views", "websiteClicks"]);
+  });
+});
+
+describe("GET /ig 응답 — 팔로워 수 (작업 0375)", () => {
+  it("followers_count 행 → 그 날 줄의 followers · 날짜마다 따로", () => {
+    const r = igReport([], [], [ai("2026-11-22", "followers_count", 120), ai("2026-11-23", "followers_count", 125)]);
+    expect(IgReport.parse(r)).toBeTruthy();
+    expect(r.account.map((d) => [d.day, d.followers])).toEqual([["2026-11-23", 125], ["2026-11-22", 120]]);
+  });
+
+  it("받은 0 은 0 · 그 날 followers_count 행이 없으면 null (다른 날 값으로 채우지 않음)", () => {
+    const r = igReport([], [], [ai("2026-11-22", "followers_count", 0), ai("2026-11-23", "reach", 5)]);
+    expect(r.account.find((d) => d.day === "2026-11-22")?.followers).toBe(0);
+    expect(r.account.find((d) => d.day === "2026-11-23")?.followers).toBeNull();
+  });
+
+  it("팔로워 수만 있는 날도 한 줄 · 다른 지표는 null", () => {
+    const r = igReport([], [], [ai("2026-11-24", "followers_count", 7)]);
+    expect(r.account).toEqual([{ day: "2026-11-24", reach: null, views: null, profileViews: null, websiteClicks: null, accountsEngaged: null, followers: 7 }]);
   });
 });
 

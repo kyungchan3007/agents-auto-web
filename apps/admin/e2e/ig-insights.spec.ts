@@ -3,7 +3,7 @@
 //   화면 약속 — /instagram 화면 안에서 (알리기 탭 /marketing 에는 인스타 유입가 없음):
 //     data-testid="ig-account"            계정 칸 — 가장 최근 날 값
 //       "ig-account-day"                    받은 날짜 글(YYYY-MM-DD)
-//       "ig-account-metric"[data-metric=reach|views|profileViews|websiteClicks|accountsEngaged]  지표마다 · 글 = 쉼표 숫자 · 받지 못한 값(null)은 글이 빈 칸(0 도 '-' 도 아님)
+//       "ig-account-metric"[data-metric=reach|views|profileViews|websiteClicks|accountsEngaged|followers]  지표마다 · 글 = 쉼표 숫자 · 받지 못한 값(null)은 글이 빈 칸(0 도 '-' 도 아님)
 //     data-testid="ig-media"              게시물 표 — 줄 data-testid="ig-media-row"[data-media-id]
 //       칸 data-col="postedAt"(게시 날짜 YYYY-MM-DD) · "link"(a[href=게시물 링크]) · "reach" · "likes" · "saved" · "shares" · "views"(쉼표 숫자 · null 은 빈 칸) · "day"(받은 날짜 · null 은 빈 칸)
 //     data-testid="ig-empty"              계정 · 게시물 모두 없을 때 — '아직 받은 성과 값이 없습니다'
@@ -13,8 +13,8 @@ import { hydrated } from "./helpers";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 
-const ACCOUNT_NEW = { day: "2026-11-23", reach: 1234, views: 5678, profileViews: 0, websiteClicks: null, accountsEngaged: 12 };
-const ACCOUNT_OLD = { day: "2026-11-22", reach: 99, views: 100, profileViews: 7, websiteClicks: 3, accountsEngaged: 1 };
+const ACCOUNT_NEW = { day: "2026-11-23", reach: 1234, views: 5678, profileViews: 0, websiteClicks: null, accountsEngaged: 12, followers: 1280 };
+const ACCOUNT_OLD = { day: "2026-11-22", reach: 99, views: 100, profileViews: 7, websiteClicks: 3, accountsEngaged: 1, followers: 1111 };
 const M1 = { mediaId: "1790001", postedAt: "2026-11-22T03:31:00+0000", permalink: "https://www.instagram.com/p/DgEa3g3j97X/", kind: "CAROUSEL_ALBUM", day: "2026-11-23", reach: 2500, likes: 31, saved: 0, shares: null, views: 12000 };
 const M2 = { mediaId: "1790002", postedAt: "2026-11-20T03:00:00+0000", permalink: "https://www.instagram.com/p/AAAA1111/", kind: "IMAGE", day: null, reach: null, likes: null, saved: null, shares: null, views: null };
 const REPORT = { account: [ACCOUNT_NEW, ACCOUNT_OLD], media: [M1, M2] };
@@ -36,6 +36,22 @@ test.describe("알리기 — 인스타 유입 (작업 0323)", () => {
     await expect(metric(page, "accountsEngaged")).toContainText("12");
     await expect(tid(page, "ig-account")).not.toContainText("2026-11-22");
     await expect(tid(page, "ig-account")).not.toContainText("99"); // 옛 날 도달
+  });
+
+  test("팔로워 수 칸 — 가장 최근 날 값(쉼표) · 옛 날 값은 안 보임 · 작업 0375", async ({ page }) => {
+    await open(page, REPORT);
+    await expect(metric(page, "followers")).toHaveCount(1);
+    await expect(metric(page, "followers")).toContainText("1,280");
+    await expect(tid(page, "ig-account")).not.toContainText("1,111");
+  });
+
+  test("팔로워 수를 받지 못한 날(null)은 빈 칸 · 받은 0 은 0 — 작업 0375", async ({ page }) => {
+    await open(page, { account: [{ ...ACCOUNT_NEW, followers: null }], media: [] });
+    await expect(metric(page, "followers")).toHaveCount(1);
+    expect(((await metric(page, "followers").innerText()) ?? "").replace(/\s+/g, ""), "받지 못한 값 칸에 숫자 · 대시가 없음").not.toMatch(/\d|[-–—]/);
+    await page.unroute("**/bff/ig*");
+    await open(page, { account: [{ ...ACCOUNT_NEW, followers: 0 }], media: [] });
+    await expect(metric(page, "followers")).toHaveText(/(^|\D)0(\D|$)/);
   });
 
   test("받은 0 은 0 으로 · 받지 못한 값(null)은 빈 칸 — 0 · '-' 로 채우지 않음", async ({ page }) => {
