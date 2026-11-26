@@ -140,7 +140,8 @@ describe("장식을 걷어 냄 (R9) — 등장 효과 · 오로라 글자 · 그
     // 0227: rolling-number.tsx 는 mask-image 가리개만 허용(위 코드) — 아래 두 줄 테스트가 그 예외를 확인
     const GRAPH_PARTS = ["line-chart.tsx", "month-bars.tsx", "ruler-chart.tsx"];
     // 작업 0250 — 그림자 예외(사용자 결정): 여행지 고르기 팝업(pick-trip.tsx) "팝업 그림자는 사용해야지 안그러면 구분이 안되니까" · 국기 옅은 테두리(flag.tsx · 0249 · 18번 · 흰 바탕에서 흰 부분이 사라지지 않게)
-    const SHADOW_OK = ["pick-trip.tsx", "flag.tsx"];
+    // 작업 0370 — 그림자 예외(사용자 요청): 사이드바 · 바텀 시트(side-panel.tsx)의 본문과 구분되는 경계 그림자 ("이거 경계 이거 구분해") · 요청 원문 .agents/specs/0370-side-morph/request.md
+    const SHADOW_OK = ["pick-trip.tsx", "flag.tsx", "side-panel.tsx"];
     const bad = sources(join(UI_SRC, "components"))
       .filter((f) => {
         if (GRAPH_PARTS.some((g) => f.endsWith(g))) return false;
