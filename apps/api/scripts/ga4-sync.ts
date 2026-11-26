@@ -5,6 +5,7 @@
 import { clickRows, clickSnapshot, clickSql } from "../src/features/ga4/clicks.ts";
 import { CLICK_EVENTS_SINCE } from "../../../packages/shared/src/domain/click-events.ts";
 import { engagementRows, engagementSnapshot, engagementSql, rangeEndingOn } from "../src/features/ga4/engagement.ts";
+import { breakdownRows, humanRows, humanSnapshot, humanSql } from "../src/features/ga4/human.ts";
 import { dailyRows, ga4Sql, pageRows, sourceRows } from "../src/features/ga4/report.ts";
 import { accessToken } from "../src/features/geo/gsc.ts";
 
@@ -57,5 +58,17 @@ try {
   process.stderr.write(`버튼 클릭 요청 실패 — ${e instanceof Error ? e.message : "알 수 없는 오류"}\n`);
 }
 
-process.stderr.write(`GA4 날짜 ${daily.length}줄 · 유입 경로 ${sources.length}줄 · 페이지 ${pages.length}줄 · 머무름 ${current ? `${current.pages.length}쪽` : "없음"} · 기준값 ${baseline ? `${baseline.pages.length}쪽` : "없음"} · 버튼 클릭 ${clicks ? `${clicks.events.length}종` : "없음"}\n`);
-process.stdout.write(`${[ga4Sql({ daily, sources, pages }), engagementSql(current, new Date().toISOString(), baseline), clickSql(clicks, new Date().toISOString())].filter(Boolean).join("\n")}\n`);
+// 사람 판별 값 (작업 0374) — 최근 28일 · 날짜별 · 기기 · 국가 보고서 셋 · 실패해도 나머지 수집은 계속(다음 날 다시)
+const HUMAN_METRICS = ["activeUsers", "sessions", "engagedSessions", "userEngagementDuration"];
+let human: ReturnType<typeof humanSnapshot> = null;
+try {
+  const days = humanRows(await report("사람 판별 날짜별", ["date"], HUMAN_METRICS));
+  const devices = breakdownRows(await report("사람 판별 기기", ["deviceCategory"], HUMAN_METRICS), "deviceCategory");
+  const countries = breakdownRows(await report("사람 판별 국가", ["country"], HUMAN_METRICS), "country");
+  human = humanSnapshot(days, devices, countries, rangeEndingOn(yesterday));
+} catch (e) {
+  process.stderr.write(`사람 판별 요청 실패 — ${e instanceof Error ? e.message : "알 수 없는 오류"}\n`);
+}
+
+process.stderr.write(`GA4 날짜 ${daily.length}줄 · 유입 경로 ${sources.length}줄 · 페이지 ${pages.length}줄 · 머무름 ${current ? `${current.pages.length}쪽` : "없음"} · 기준값 ${baseline ? `${baseline.pages.length}쪽` : "없음"} · 버튼 클릭 ${clicks ? `${clicks.events.length}종` : "없음"} · 사람 판별 ${human ? `${human.days.length}일` : "없음"}\n`);
+process.stdout.write(`${[ga4Sql({ daily, sources, pages }), engagementSql(current, new Date().toISOString(), baseline), clickSql(clicks, new Date().toISOString()), humanSql(human, new Date().toISOString())].filter(Boolean).join("\n")}\n`);
