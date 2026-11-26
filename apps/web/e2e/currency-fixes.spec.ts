@@ -80,6 +80,7 @@ const measureAnswer = (page: Page) =>
 
 test.describe("한 줄 답 상자 높이 고정 (작업 0366 · 1)", () => {
   test("모든 통화(문장이 가장 긴 통화 포함) — 상자 높이 · 문장 줄 수(넓은 화면 1줄 · 휴대폰 2줄) · 상자에서 1년 최저 · 최고 카드까지 거리가 같음", async ({ page }) => {
+    test.setTimeout(240_000); // 작업 0379: 통화를 모두 돌아다녀 CI 기본 30초 한도를 넘음(0366 · 넓은 화면 · 휴대폰 모두 30.4초 시간 초과)
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/currencies/USD");
     const codes = await listCodes(page);
