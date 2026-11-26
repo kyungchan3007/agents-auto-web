@@ -186,3 +186,4 @@
 | 0375 | 인스타 팔로워 수 수집 · 어드민 인스타 표 · 11-24 첫 캐러셀 빈 행 원인 (Quick · 어드민) | test → builder | 머지됨 (#444) · admin ff | task/0375-ig-followers | apps/api ig-insights · apps/admin instagram |
 | 0376 | 네이버 서치어드바이저 · Bing 웹마스터 숫자 자동 수집 가능 여부 조사 (조사만 · PR 없음) | geo | 끝 (조사 회신 11-26 · Bing 공식 API 있음 · 네이버 없음) | — | 없음 |
 | 0377 | 외부 주소 남기기 초안: 블로그 2편 · 커뮤니티 답글 5개 · 무료로 주소 남길 곳 목록 (초안만 · 게시는 사용자 · .tmp/marketing/outreach) | geo | 끝 (초안 네 파일 · 게시는 사용자) | task/0377-outreach-drafts | .tmp 결과물만 |
+| 0378 | 어드민 /geo 둘째 줄 배치: 읽은 페이지를 봇별 읽은 페이지 위로 · 왼쪽 아래 빈 공간 없애기 (Quick · 위치 · 어드민) | builder → test | 진행 | task/0378-geo-layout | apps/admin/src/features/geo/report/geo-report.tsx |
