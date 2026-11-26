@@ -179,5 +179,5 @@
 | (후보) | Meta 광고 성과 읽기 — 노출 · 도달 · 클릭 · 지출(광고 계정 연결됨 11-23 · 광고 0개 · 0323 prd "나중에 포함") | geo → builder | 광고 대기 | — | — |
 | (후보) | 흔들리는 e2e 다음 묶음(11-23 test 확인) — currency-chips:248~251 · geo-bot-pages:55/66/96(재시도까지 실패) · home:101 · flights-window:199 · currency-chart:163 · admin:28 · home-bars:181 · axis-clear:29 · rename-compare:40 | test | 다음 작업 후보 | — | apps/web/e2e/** · apps/admin/e2e/** |
 | 0370 | 사이드바 여는 모션 3안(면이 떠오르며 · outline 없앰) · 넓은 화면 왼쪽 · 시트 위쪽 경계 그림자 (Quick · 작업 종류 ② · develop 까지) | builder → test | 머지됨 (#439) | task/0370-side-morph | packages/ui side-panel · tokens.css |
-| 0371 | 11-26(목) 수집 점검 기록: 환율 12:00 회차 · 새벽 예약 셋 (Quick · 자료 · #438) | data | 진행 중 | task/0371-data-health-1126 | docs/data-health.md |
-| 0372 | 11-26 GEO 측정 · #157 조사 댓글 (Quick · 자료 · #438) | geo | PR | task/0372-geo-measure-1126 | apps/api/data/geo-answers/2026-11-26.json |
+| 0371 | 11-26(목) 수집 점검 기록: 환율 12:00 회차 · 새벽 예약 셋 (Quick · 자료 · #438) | data | PR | task/0371-data-health-1126 | docs/data-health.md |
+| 0372 | 11-26 GEO 측정 · #157 조사 댓글 (Quick · 자료 · #438) | geo | 머지됨 (#440) | task/0372-geo-measure-1126 | apps/api/data/geo-answers/2026-11-26.json |
