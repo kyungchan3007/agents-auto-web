@@ -5,7 +5,9 @@ const PAGES = ["/", "/currencies/USD", "/prices", "/flights", "/calc", "/about"]
 
 async function headings(page: Page) {
   return page.evaluate(() => {
-    const hs = [...document.querySelectorAll("h1,h2,h3,h4,h5,h6")].map((h) => ({ level: Number(h.tagName[1]), text: (h.textContent ?? "").trim().slice(0, 24) }));
+    // 작업 0382: 접근성 트리에 있는(보이는) 제목만 셈 — 블프 기간에는 홈에 hero 두 개를 그리고 CSS(display:none)로 하나만 보이게 해서 숨은 쪽 h1 은 화면 읽기에 나오지 않음
+    const visible = (el: Element) => (el as HTMLElement).checkVisibility({ checkVisibilityCSS: true });
+    const hs = [...document.querySelectorAll("h1,h2,h3,h4,h5,h6")].filter(visible).map((h) => ({ level: Number(h.tagName[1]), text: (h.textContent ?? "").trim().slice(0, 24) }));
     const labelled = [...document.querySelectorAll("[aria-labelledby]")].map((s) => {
       const t = document.getElementById(s.getAttribute("aria-labelledby") ?? "");
       return { id: s.getAttribute("aria-labelledby"), tag: t?.tagName ?? null };
