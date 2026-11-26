@@ -18,7 +18,7 @@ const p = (day: string, path: string, views: number) => ({ day, path, views });
 describe("GET /ga4 응답 — 날짜별 (작업 0324)", () => {
   it("빈 D1 이면 빈 목록 · 계약 모양", () => {
     const r = ga4Report([], [], []);
-    expect(r).toEqual({ daily: [], sources: [], pages: [], engagement: null, baseline: null, clicks: null });
+    expect(r).toEqual({ daily: [], sources: [], pages: [], engagement: null, baseline: null, clicks: null, human: null, instagram: null });
     expect(Ga4Report.parse(r)).toBeTruthy();
   });
 
