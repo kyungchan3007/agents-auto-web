@@ -139,7 +139,7 @@ test.describe("hero 입력창 · 칩 (작업 0380 · 새 문구) — 아래 카�
   test("입력창 자리 글 · 버튼 · 칩 넷(도쿄 · 방콕 · 다낭 · 파리)", async ({ page }) => {
     await page.goto("/");
     await expect(heroSearch(page)).toHaveAttribute("placeholder", "어디로 가세요? 도시 · 나라");
-    await expect(heroSearch(page), "카드 검색 칸(여행지 검색)과 이름이 달라야 화면 읽기 · 다른 검사가 헷갈리지 않음").toHaveAttribute("aria-label", "어디로 가세요");
+    await expect(heroSearch(page), "카드 검색 칸(여행지 검색)과 이름이 달라야 화면 읽기 · 다른 검사가 헷갈리지 않음").toHaveAttribute("aria-label", "어디로 가세요? 도시 · 나라");
     await expect(page.getByRole("combobox", { name: "여행지 검색" }), "이름이 '여행지 검색' 인 칸은 카드 안 하나뿐").toHaveCount(1);
     await expect(tid(page, "hero-go")).toHaveText("보기");
     await expect(tid(page, "hero-chip")).toHaveCount(4);
@@ -179,5 +179,24 @@ test.describe("hero 입력창 · 칩 (작업 0380 · 새 문구) — 아래 카�
     await expect(tid(page, "ticket").getByTestId("flap-board")).toHaveAttribute("aria-label", /내가 고른 여행지는 .*방콕/);
     await page.reload();
     await expect(tid(page, "ticket").getByTestId("flap-board")).toHaveAttribute("aria-label", /내가 고른 여행지는 .*방콕/);
+  });
+
+  test("입력창 · 보기 버튼 · 칩이 장식(탑승권 · 빛)에 가려지지 않음 — 누르는 자리의 맨 위 요소가 자기 자신 (휴대폰 폭 포함)", async ({ page }) => {
+    test.skip(test.info().project.name === "휴대폰", "뷰포트를 직접 정하므로 넓은 화면 프로젝트에서만");
+    for (const [w, h] of [[360, 780], [390, 844], [412, 915], [600, 900], [820, 1100], [1000, 800], [1440, 900]] as const) {
+      await page.setViewportSize({ width: w, height: h });
+      await page.goto("/");
+      await page.waitForTimeout(500);
+      const covered = await page.evaluate(() =>
+        [...document.querySelectorAll('[data-testid="hero-search"], [data-testid="hero-go"], [data-testid="hero-chip"]')]
+          .map((el) => {
+            const r = el.getBoundingClientRect();
+            const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+            return top && (top === el || el.contains(top)) ? null : `${el.getAttribute("data-testid")} ${el.textContent?.trim().slice(-3) ?? ""} ← ${top?.className ?? "없음"}`;
+          })
+          .filter(Boolean),
+      );
+      expect(covered, `${w}px 에서 가려진 것`).toEqual([]);
+    }
   });
 });
