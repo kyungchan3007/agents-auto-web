@@ -12,6 +12,8 @@
 - 0381(블프)이 먼저 들어감: home.tsx 의 자리 바꿈(BfHero + div.bf-default 안 HeroSection)과 html data-hero 스크립트는 그대로 두고, 기본 hero 는 .bf-default 안에서 바꾼다. 기존 홈 e2e 는 e2e/default-hero.ts(forceDefaultHero)로 기본 hero 를 봄 · 새 spec 도 같은 도우미를 씀.
 - 탑승권 · 꼬리표 환율 값은 홈이 받는 latest · signals 에서 lib 로 계산(0381 의 src/shared/customs 는 쓰지 않음).
 
+- hero 아래 탑승권 카드(TodayBoard · 그 안 TripSwitcher · 나라 페이지 링크)는 그대로 둔다(작업서 "hero 아래 구역 전부 그대로"). hero 의 입력창 · 칩은 같은 고르기 상태(use-picked-destination 등)를 써서, hero 에서 고르면 아래 카드도 같은 나라로 바뀐다. 검색 · 칩 동작 로직은 새로 만들지 않고 재사용. (애매: 시안에는 아래 카드가 안 보임 · 작업서 문구를 따름 · 사용자가 빼라고 하면 다음 작업)
+
 ## 대안 · 트레이드오프
 - 탑승권을 이미지로: 값이 실제 자료로 바뀌어야 해서 고르지 않음.
 
