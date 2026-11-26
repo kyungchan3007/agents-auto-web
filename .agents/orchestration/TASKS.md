@@ -188,3 +188,5 @@
 | 0377 | 외부 주소 남기기 초안: 블로그 2편 · 커뮤니티 답글 5개 · 무료로 주소 남길 곳 목록 (초안만 · 게시는 사용자 · .tmp/marketing/outreach) | geo | 끝 (초안 네 파일 · 게시는 사용자) | task/0377-outreach-drafts | .tmp 결과물만 |
 | 0378 | 어드민 /geo 둘째 줄 배치: 읽은 페이지를 봇별 읽은 페이지 위로 · 왼쪽 아래 빈 공간 없애기 (Quick · 위치 · 어드민) | builder → test | 머지됨 (#447) · admin ff | task/0378-geo-layout | apps/admin/src/features/geo/report/geo-report.tsx |
 | 0379 | main 반영 #448 전체 e2e 실패 5개 고치기(0366 한 줄 답 정규식 · 끝자리 0 생략 · 30초 한도 · 칩 움직임 줄이기 · calc @design) (Quick · 테스트) | test | 머지됨 (#449) · main 반영 #448 | task/0379-e2e-fix | apps/web/e2e/** 5개 |
+| 0380 | 첫 페이지 hero 새로: 기본 울트라마린 탑승권 · 문구 줄임 · 입력창 왼쪽 · 탑승권 모션 · 반응형 (Full · 운영 minor) | test → builder → test | 진행 | task/0380-hero-pass | apps/web/src/features/home/** · tokens.css · .changeset |
+| 0381 | 블랙프라이데이 hero(~12-01 17:00 KST): 검정 · $200 면세 계산기 · 감열지 영수증 한 번 찍기 (Full · 운영 minor) | test → builder → test | 대기(0380 뒤) | task/0381-hero-bf | apps/web/src/features/home/** · app head |
