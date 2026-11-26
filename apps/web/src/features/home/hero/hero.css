@@ -24,7 +24,7 @@
   font-size: clamp(2.5rem, 4.8vw, 3.875rem);
   font-weight: 800;
   line-height: 1.1;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.03em;
   color: var(--hav-fg);
 }
 .hp-h1-none {
@@ -45,7 +45,7 @@
   border: 1px solid var(--hav-hero-src-line);
   border-radius: 999px;
   color: var(--hav-fg-2);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   letter-spacing: 0.02em;
 }
 
@@ -77,12 +77,10 @@
 .hp-ask input::placeholder {
   color: var(--hav-pass-muted);
 }
-.hp-ask input:focus {
-  outline: none;
-}
-.hp-ask:focus-within {
-  outline: 3px solid var(--hav-sun);
-  outline-offset: 1px;
+.hp-ask input:focus-visible {
+  outline-color: var(--hav-pin-ink);
+  outline-offset: -4px;
+  border-radius: 10px;
 }
 .hp-ask button {
   margin: 6px;
@@ -163,7 +161,6 @@
 .hp-chips button:focus-visible,
 .hp-chips button[aria-pressed="true"] {
   border-color: var(--hav-sun);
-  outline: none;
 }
 
 /* 첫 등장 — 제목 → 한 줄 → 입력창 → 칩 (0.7초 · 0.07초 간격) */
