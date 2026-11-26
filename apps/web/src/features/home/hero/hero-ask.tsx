@@ -13,6 +13,7 @@ export function HeroAsk() {
       <div className="hp-ask-box hp-rise" data-i="2">
         <form
           className="hp-ask"
+          data-surface="light"
           role="search"
           onSubmit={(e) => {
             e.preventDefault();
