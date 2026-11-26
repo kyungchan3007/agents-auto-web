@@ -8,12 +8,13 @@ type Media = IgReport["media"][number];
 export const postedDay = (postedAt: string): string => postedAt.slice(0, 10);
 
 /** 계정 칸 — 지표 순서 · 이름 */
-export const ACCOUNT_CELLS: { key: "reach" | "views" | "profileViews" | "websiteClicks" | "accountsEngaged"; label: string }[] = [
+export const ACCOUNT_CELLS: { key: "reach" | "views" | "profileViews" | "websiteClicks" | "accountsEngaged" | "followers"; label: string }[] = [
   { key: "reach", label: "도달" },
   { key: "views", label: "조회" },
   { key: "profileViews", label: "프로필 방문" },
   { key: "websiteClicks", label: "웹사이트 클릭" },
   { key: "accountsEngaged", label: "반응한 계정" },
+  { key: "followers", label: "팔로워" },
 ];
 
 /** 게시물 표 칸 — 숫자 칸 순서 · 이름 */
