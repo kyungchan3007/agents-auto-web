@@ -182,6 +182,6 @@
 | 0371 | 11-26(목) 수집 점검 기록: 환율 12:00 회차 · 새벽 예약 셋 (Quick · 자료 · #438) | data | 머지됨 (#441) | task/0371-data-health-1126 | docs/data-health.md |
 | 0372 | 11-26 GEO 측정 · #157 조사 댓글 (Quick · 자료 · #438) | geo | 머지됨 (#440) | task/0372-geo-measure-1126 | apps/api/data/geo-answers/2026-11-26.json |
 | 0373 | data 점검 보완: 새벽 예약 지연 이슈 · 11-26 기록에 Actions 결과 · 과세환율 · 점검은 team.md data 목록 전체 (Quick · 자료 · #438) | data | 머지됨 (#443) | task/0373-data-role-1126 | docs/data-health.md |
-| 0374 | GA4 사람 판별 값(참여 세션 · 참여 시간 · 기기 · 국가) · 어드민 참여 세션 기준 사람 수 · 인스타 유입 따로(리퍼러 · utm) (Full · team_snapshots 키 · 어드민) | test → builder | 진행 중 | task/0374-ga4-human | apps/api ga4 · packages/shared · apps/admin traffic |
-| 0375 | 인스타 팔로워 수 수집 · 어드민 인스타 표 · 11-24 첫 캐러셀 빈 행 원인 (Quick · 어드민) | test → builder | 진행 중 | task/0375-ig-followers | apps/api ig-insights · apps/admin instagram |
+| 0374 | GA4 사람 판별 값(참여 세션 · 참여 시간 · 기기 · 국가) · 어드민 참여 세션 기준 사람 수 · 인스타 유입 따로(리퍼러 · utm) (Full · team_snapshots 키 · 어드민) | test → builder | PR | task/0374-ga4-human | apps/api ga4 · packages/shared · apps/admin traffic |
+| 0375 | 인스타 팔로워 수 수집 · 어드민 인스타 표 · 11-24 첫 캐러셀 빈 행 원인 (Quick · 어드민) | test → builder | 머지됨 (#444) · admin ff | task/0375-ig-followers | apps/api ig-insights · apps/admin instagram |
 | 0376 | 네이버 서치어드바이저 · Bing 웹마스터 숫자 자동 수집 가능 여부 조사 (조사만 · PR 없음) | geo | 끝 (조사 회신 11-26 · Bing 공식 API 있음 · 네이버 없음) | — | 없음 |
