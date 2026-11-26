@@ -1,0 +1,422 @@
+/* 블랙프라이데이 hero 스타일 (작업 0381) — 색 · 그림자는 모두 tokens.css 의 --hav-bf-* · 영수증 안 글자 · 여백은 em(카드 폭 cqw 가 글자 크기를 정함 · vw 쓰지 않음) */
+
+/* 기간 고르기 — html 의 data-hero 를 head 의 작은 인라인 스크립트가 첫 그림 전에 정함 · 값이 없으면(스크립트 꺼짐) 기본 hero 가 보임 */
+.bf-hero {
+  display: none;
+}
+html[data-hero="bf"] .bf-hero {
+  display: block;
+}
+html[data-hero="bf"] .bf-default {
+  display: none;
+}
+
+.bf-hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--hav-bf-bg);
+  color: var(--hav-bf-fg);
+  color-scheme: dark;
+}
+.bf-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(20px, 4vw, 56px);
+  max-width: var(--container-page);
+  margin-inline: auto;
+  padding: clamp(28px, 4.5vw, 56px) clamp(16px, 4vw, 40px);
+}
+.bf-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 34rem;
+  text-align: left;
+}
+.bf-badge {
+  align-self: flex-start;
+  margin-bottom: 18px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: var(--hav-sun);
+  color: var(--hav-bf-bg);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+.bf-h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5.2vw, 4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.bf-accent {
+  color: var(--hav-sun);
+}
+.bf-one {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin-top: 16px;
+  color: var(--hav-bf-fg-2);
+  font-size: 1.0625rem;
+}
+.bf-one p {
+  margin: 0;
+}
+.bf-tag {
+  padding: 3px 9px;
+  border: 1px solid var(--hav-bf-line);
+  border-radius: 999px;
+  color: var(--hav-bf-fg-2);
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+}
+
+/* 계산기 */
+.bf-calc {
+  margin-top: 26px;
+  max-width: 28.75rem;
+}
+.bf-row {
+  display: flex;
+  height: 60px;
+  border: 1.5px solid var(--hav-bf-line);
+  border-radius: 14px;
+  background: var(--hav-bf-field);
+}
+.bf-row:focus-within {
+  border-color: var(--hav-sun);
+}
+.bf-cur {
+  display: grid;
+  place-items: center;
+  padding: 0 6px 0 18px;
+  color: var(--hav-sun);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.bf-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--hav-bf-fg);
+  font: inherit;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.bf-row input::placeholder {
+  color: var(--hav-bf-placeholder);
+  font-weight: 500;
+}
+.bf-row input:focus {
+  outline: none;
+}
+.bf-row select {
+  max-width: 44%;
+  margin: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--hav-bf-kind);
+  color: var(--hav-bf-fg);
+  font: inherit;
+  font-size: 0.8125rem;
+}
+.bf-row select:focus-visible {
+  outline: 2px solid var(--hav-sun);
+  outline-offset: 1px;
+}
+.bf-out {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  min-height: 34px;
+  margin-top: 12px;
+}
+.bf-won {
+  font-size: 1.375rem;
+  font-weight: 700;
+}
+.bf-muted {
+  color: var(--hav-bf-muted);
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+.bf-verdict {
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: var(--hav-bf-ok-bg);
+  color: var(--hav-bf-ok);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+.bf-verdict[data-over="true"] {
+  background: var(--hav-bf-over-bg);
+  color: var(--hav-bf-over);
+}
+.bf-meter {
+  height: 8px;
+  margin-top: 12px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: var(--hav-bf-meter);
+}
+.bf-meter i {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--hav-bf-ok);
+  transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.3s;
+}
+.bf-meter[data-over="true"] i {
+  background: var(--hav-bf-over);
+}
+.bf-fine {
+  margin-top: 10px;
+  color: var(--hav-bf-muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+.bf-fine p {
+  margin: 0;
+}
+
+/* 영수증 — 카드 폭(cqw)이 글자 크기를 정하고 안은 모두 em */
+.bf-rcpt-wrap {
+  position: relative;
+  container-type: inline-size;
+  width: clamp(250px, 34vw, 340px);
+  justify-self: center;
+}
+.bf-rcpt {
+  position: relative;
+}
+.bf-rcpt-front {
+  z-index: 2;
+  transform: rotate(-3.5deg);
+  filter: var(--hav-bf-paper-shadow);
+}
+.bf-rcpt-back {
+  position: absolute;
+  top: -30px;
+  left: 10%;
+  z-index: 1;
+  width: 100%;
+  height: 12em;
+  overflow: hidden;
+  transform: rotate(5deg);
+  opacity: 0.55;
+  filter: var(--hav-bf-back-shadow);
+  font-size: max(9px, 3.8cqw);
+}
+.bf-paper {
+  position: relative;
+  padding: 1.7em 1.85em 2.3em;
+  background:
+    linear-gradient(90deg, rgb(0 0 0 / 0.05), rgb(0 0 0 / 0) 14%, rgb(0 0 0 / 0) 86%, rgb(0 0 0 / 0.06)),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+    var(--hav-bf-paper);
+  color: var(--hav-bf-ink);
+  font-family: var(--font-mono);
+  font-size: max(9px, 3.8cqw);
+  font-weight: 500;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  /* 위 · 아래 톱니 끝 */
+  mask:
+    radial-gradient(circle at 0.55em 0, transparent 0.46em, #000 0.5em) top / 1.08em 0.7em repeat-x,
+    radial-gradient(circle at 0.55em 0.7em, transparent 0.46em, #000 0.5em) bottom / 1.08em 0.7em repeat-x;
+  mask-composite: add;
+}
+.bf-rcpt-back .bf-paper {
+  mask: none;
+}
+.bf-hd {
+  display: grid;
+  gap: 2px;
+  margin-top: 0.45em;
+  text-align: center;
+}
+.bf-hd b {
+  font-size: 1.38em;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+}
+.bf-hd span {
+  color: var(--hav-bf-ink-muted);
+  font-size: 0.85em;
+}
+.bf-hd .bf-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5em;
+  margin-top: 0.8em;
+  color: var(--hav-bf-ink);
+}
+.bf-hd .bf-meta i {
+  font-style: normal;
+}
+.bf-rule {
+  margin: 0.8em 0;
+  border-top: 1.5px dashed var(--hav-bf-rule);
+}
+.bf-ln {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8em;
+  padding: 0.15em 0;
+  font-variant-numeric: tabular-nums;
+}
+.bf-ln > span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bf-ln > span:last-child {
+  white-space: nowrap;
+}
+.bf-sm {
+  color: var(--hav-bf-ink-2);
+  font-size: 0.92em;
+}
+.bf-tot {
+  margin: 0.25em 0 0.1em;
+  color: var(--hav-bf-ink-strong);
+  font-size: 1.7em;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.bf-new {
+  animation: bf-ink 0.7s ease-out both;
+}
+@keyframes bf-ink {
+  from {
+    opacity: 0;
+    filter: blur(1.5px);
+  }
+  to {
+    opacity: 1;
+    filter: none;
+  }
+}
+.bf-lim {
+  height: 0.5em;
+  margin: 0.6em 0 0.45em;
+  overflow: hidden;
+  border-radius: 2px;
+  background: repeating-linear-gradient(90deg, var(--hav-bf-dash) 0 0.46em, transparent 0.46em 0.62em);
+}
+.bf-lim i {
+  display: block;
+  height: 100%;
+  background: var(--hav-bf-ink);
+}
+.bf-lim i[data-over="true"] {
+  background: var(--hav-bf-red);
+}
+.bf-st {
+  color: var(--hav-bf-ink);
+  font-weight: 700;
+}
+.bf-st[data-over="true"] {
+  color: var(--hav-bf-red);
+}
+.bf-bc {
+  display: flex;
+  align-items: stretch;
+  height: 3.5em;
+  margin: 0.9em 0.6em 0.3em;
+  overflow: hidden;
+}
+.bf-bc i {
+  display: block;
+  flex: none;
+  background: var(--hav-bf-ink);
+}
+.bf-bcn {
+  color: var(--hav-bf-ink-2);
+  font-size: 0.85em;
+  letter-spacing: 0.3em;
+  text-align: center;
+}
+.bf-thanks {
+  margin-top: 0.7em;
+  color: var(--hav-bf-ink-3);
+  font-size: 0.78em;
+  text-align: center;
+}
+/* 도장 — 바코드 오른쪽 빈자리 · 합계가 바뀔 때마다 다시 찍힘(key 가 바뀌어 처음부터) */
+.bf-stamp {
+  position: absolute;
+  right: 1.5em;
+  bottom: 5.6em;
+  padding: 0.3em 0.75em 0.2em;
+  border: 0.2em solid currentcolor;
+  border-radius: 0.35em;
+  color: var(--hav-bf-green);
+  font-family: var(--font-display);
+  font-size: 1.85em;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  mix-blend-mode: multiply;
+  opacity: 0;
+  transform: rotate(-14deg) scale(1);
+}
+.bf-stamp[data-kind="과세"] {
+  color: var(--hav-bf-red);
+}
+.bf-stamp[data-on="true"] {
+  opacity: 0.85;
+  animation: bf-stamp 0.45s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+@keyframes bf-stamp {
+  from {
+    opacity: 0;
+    transform: rotate(-14deg) scale(1.8);
+  }
+  to {
+    opacity: 0.85;
+    transform: rotate(-14deg) scale(1);
+  }
+}
+
+/* 899 이하 — 영수증을 계산기 아래 가운데 */
+@media (max-width: 899px) {
+  .bf-inner {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+  .bf-copy {
+    width: 100%;
+  }
+  .bf-rcpt-wrap {
+    width: min(300px, 80vw);
+    margin-block: 10px 6px;
+  }
+  .bf-rcpt-back {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bf-new,
+  .bf-stamp[data-on="true"] {
+    animation: none;
+  }
+  .bf-meter i {
+    transition: none;
+  }
+}
