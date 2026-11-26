@@ -178,6 +178,8 @@ test.describe("새 홈 — 도착지별 환전 타이밍 (작업 0217)", () => {
   test("움직임 줄이기 — 금액이 처음부터 최종 값 · 동그라미도 처음부터 제자리", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
+    // 작업 0382: 자바스크립트가 붙으며(하이드레이션) 요소가 교체되는 동안 evaluate 하면 'Element is not attached to the DOM' 이 간헐로 남 — 붙은 뒤에 잼
+    await page.waitForLoadState("networkidle");
     const rate = tid(page, "dest-rate").first();
     await rate.scrollIntoViewIfNeeded();
     const final = (await rate.getAttribute("data-final"))!;
