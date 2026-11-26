@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 const doc = readFileSync(join(ROOT, "docs/domain/import-calc.md"), "utf8");
-const rules = readFileSync(join(ROOT, "apps/web/src/features/import-calc/calculator/rules.ts"), "utf8");
+const rules = readFileSync(join(ROOT, "apps/web/src/shared/customs/rules.ts"), "utf8");
 
 describe("합산과세 출처 기록 (제68조)", () => {
   it("규칙 문서 — 고시 이름 · 제68조 · 고시 번호 · 출처 주소 · 확인한 날", () => {
