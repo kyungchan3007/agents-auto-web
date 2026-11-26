@@ -1,6 +1,11 @@
 // 밝은 화면 하나만 — 작업 0173 추가 요청 (사용자 "피그마 시안대로 하나만") · 실행은 lead 가 PR 직전에 (빌드한 사이트를 읽음)
 // 기기가 다크 모드여도 바탕은 항상 흰색(#FFFFFF · 작업 0216 사용자 결정 · 예전 하늘 종이 #EAF4F2) · 시안의 어두운 구간(바다 띠 #2438A8)은 그대로
 import { expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 test.use({ colorScheme: "dark" }); // 두 프로젝트(넓은 화면 · 휴대폰) 모두 기기 다크 모드로 엶
 

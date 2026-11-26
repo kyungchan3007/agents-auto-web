@@ -4,6 +4,11 @@
 //   제외(작업서): /geo · /log · 글자판(안내판 숫자: flap-board · hero-board · status-board · window-flap · flap-row · flap-cell · 로딩 판) · 통화 상세의 큰 환율 숫자(big-rate) · 카운트 숫자(count-up · rolling-number 는 큰 숫자 부품)
 //   기준값 12px 에서 0.1px 까지는 소수 반올림으로 보고 봐줌(11.9 이상)
 import { type Page, expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const MIN = 11.9;
 const PAGES = ["/", "/flights", "/prices", "/currencies/USD", "/calc", "/about"];

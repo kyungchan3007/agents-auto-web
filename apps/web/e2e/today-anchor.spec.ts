@@ -5,6 +5,11 @@
 //   세 경로(다른 페이지에서 메뉴 · 홈에서 메뉴 · 주소로 바로) × 1280 · 390 — 화면 크기는 여기서 정함(기기 프로젝트는 하나만 돌려 중복 실행을 피함)
 import { type Page, expect, test } from "@playwright/test";
 import { hydrated, openMenuIfCollapsed } from "./helpers";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const SIZES = [
   { name: "1280", viewport: { width: 1280, height: 800 } },

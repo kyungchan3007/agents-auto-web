@@ -4,6 +4,11 @@
 //   모바일 쌓임 순서(Figma 설명)는 "휴대폰" 프로젝트에서만 · 2단 배치(입력 왼쪽 · 결과 오른쪽 등)는 "넓은 화면" 프로젝트에서만
 import { type Locator, type Page, expect, test } from "@playwright/test";
 import { hydrated, openMenuIfCollapsed } from "./helpers";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const box = async (loc: Locator) => {
   const b = await loc.first().boundingBox();

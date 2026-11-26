@@ -2,6 +2,11 @@
 //   견본: /design 의 "움직임" 구간 — data-testid="count-up"(data-final) · "slide-in" · "motion-sample-*"
 import { type Page, expect, test } from "@playwright/test";
 import { openMenuIfCollapsed } from "./helpers";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const BLUE = "rgb(36, 56, 168)";
 const WHITE = "rgb(255, 255, 255)";
@@ -104,6 +109,7 @@ test.describe("카운트업 (작업 0216)", () => {
   test("자바스크립트를 꺼도 최종 값이 보임", async ({ browser, baseURL }) => {
     const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL });
     const page = await ctx.newPage();
+    await forceDefaultHero(page);
     await page.goto("/design");
     await expect(page.getByTestId("motion-sample-count").getByTestId("count-up")).toHaveText("1,338.8원");
     await ctx.close();
@@ -147,6 +153,7 @@ test.describe("들어오기 (작업 0216)", () => {
   test("자바스크립트를 꺼도 보임", async ({ browser, baseURL }) => {
     const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL });
     const page = await ctx.newPage();
+    await forceDefaultHero(page);
     await page.goto("/design");
     await expect(slide(page)).toBeVisible();
     expect(await slide(page).evaluate((el) => getComputedStyle(el).opacity)).toBe("1");

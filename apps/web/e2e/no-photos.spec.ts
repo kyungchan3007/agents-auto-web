@@ -2,6 +2,11 @@
 // 모든 화면: /images/photos 요청 0 · 깨진 이미지 0 · 사진 구간(photo-header) 없음 · 가로 넘침 없음 · 콘솔 오류 없음
 // /about: 사진 없는 머리 (흰 면 · 라벨 · 큰 제목) · 공유 미리보기는 1200×630 PNG
 import { expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const PATHS = ["/", "/flights", "/prices", "/currencies/USD", "/calc", "/about"]; // 어드민은 apps/admin/e2e/basics.spec.ts (작업 0312)
 

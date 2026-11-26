@@ -4,6 +4,11 @@
 //   3 환전   : 환전 목록이 화면에 들어오면 카드가 위에서부터 차례로 나타남 + 금액 카운트업 · 동그라미 이동이 같이 시작 · 한 번만 · 움직임 줄이기면 처음부터 최종 값
 //   표시(기존): "home-hero" · "ticket" · "flap-board" · "ticket-evidence"(97% 줄) · "trip-switcher" · "pick-chip" · combobox "여행지 검색" · "dest-list" · "dest-row" · "dest-rate"(data-final) · "dest-dot"(data-position)
 import { type Page, expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const isPhoneProject = (page: Page) => page.context().browser() !== null && (page.viewportSize()?.width ?? 0) < 640 && test.info().project.name === "휴대폰";
@@ -311,6 +316,7 @@ test.describe("도착지별 환전 타이밍 — 움직임 줄이기 · 자바�
   test("자바스크립트를 꺼도 카드가 처음부터 보임 (내용이 먼저 — 투명으로 시작하지 않음)", async ({ browser, baseURL }) => {
     const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL });
     const page = await ctx.newPage();
+    await forceDefaultHero(page);
     await page.goto("/");
     const ops = await tid(page, "dest-row").evaluateAll((rows) =>
       rows.map((r) => {

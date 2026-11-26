@@ -4,6 +4,11 @@
 //   한 글자로 끊은 낱말 "쌈" · "비쌈" · "쌉니다" 와 "가장 싼 달 · 날 · 요일 · 출발" 은 홈 · 통화 상세 · 소개 · 여행 물가 · 여행 타이밍에 남지 않음(0276 홈 · 판정 · 소개 · 창밖 + 0277 여행 물가 · 항공료)
 //   "가로로 넘치지 않는다"는 사용자 조건 — 문구가 길어진 홈 휴대폰 제목 · 말풍선 폭 · 판정 줄에서 확인
 import { type Page, expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 /** 낱말 하나로 끊은 "쌈" · "비쌈" (한글 앞뒤가 없는 경우) */

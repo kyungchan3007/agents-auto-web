@@ -11,6 +11,11 @@
 //     empty_next           막다른 화면 '그동안 볼 수 있는 것' 링크 — 환율 없는 고정 자료 빌드 전용이라 empty-states.spec.ts 에 있음
 import { type Page, expect, test } from "@playwright/test";
 import { PROD_LAUNCH, expectClean, names, prodUrl, recordPreview, recordProd, sent } from "./click-track";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 // 브라우저 시작 옵션은 파일 맨 위에서만 줄 수 있음(describe 안은 불가) — flapfx.com 이름만 127.0.0.1 로 풀리므로 미리보기 검사(127.0.0.1)에는 영향 없음
 test.use({ launchOptions: PROD_LAUNCH });
