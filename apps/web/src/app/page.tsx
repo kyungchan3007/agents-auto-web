@@ -13,11 +13,14 @@ export const metadata: Metadata = pageMeta({ path: "/", title: "Flapfx — 환�
 //   받는 것: 오늘 환율 · 신호 · 국제항공료 지수 5년치 · 물가 수준 (인트로 환전소의 "물가는 한국 100 기준" 한 줄이 씀 · 작업 0185) — 1년 USD 기록 · 1개월 변화는 받지 않음 (빌드 때 D1 읽기도 줄어듦 · 작업 0169)
 //   인트로는 홈 본문 뒤에 붙는 덮는 층 — 서버 HTML 에는 아무것도 그리지 않고 브라우저에서 폭 700 초과일 때만 열림 (홈 HTML 은 인트로 없이도 같음)
 export default async function Page() {
-  const [latest, signals, airFare, levels] = await Promise.all([api.latest(), api.signals(), api.indicator("kosis-cpi:air-fare", 60), api.priceLevels()]);
+  const [latest, signals, airFare, levels, usdCustoms] = await Promise.all([api.latest(), api.signals(), api.indicator("kosis-cpi:air-fare", 60), api.priceLevels(), api.indicator("kcs-import:USD", 1)]);
+  // 관세청 과세환율 달러 한 주 — 블프 hero 계산기(작업 0381) · 못 받으면 수출입은행 환율 + 예상 금액
+  const usdPoint = usdCustoms.ok ? usdCustoms.data.points.at(-1) : undefined;
+  const customs = usdPoint ? { USD: { perUnit: usdPoint.value, weekStart: usdPoint.period } } : null;
   return (
     <>
       <JsonLd data={siteLd()} />
-      <Home latest={mustHave(latest, "오늘 환율")} signals={signals} airFare={airFare} pageCodes={countryTargets(levels.ok ? levels.data : null)} />
+      <Home latest={mustHave(latest, "오늘 환율")} signals={signals} airFare={airFare} pageCodes={countryTargets(levels.ok ? levels.data : null)} customs={customs} />
       <IntroGate data={introDataOf({ latest, signals, airFare, levels })} />
     </>
   );
