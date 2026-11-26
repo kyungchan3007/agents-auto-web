@@ -22,4 +22,5 @@
 - [ ] develop 머지 뒤 main 반영 PR #448 전체 e2e 통과
 
 ## 허점
--
+- 0366 은 develop PR(e2e 없음)로만 가서 바뀐 문장 · 새 테스트가 main 전체 e2e 에서 처음 드러남. 화면 문장을 바꾸는 작업은 그 문장을 보는 spec 을 같은 PR 에서 고쳐야 함.
+- ④ currency-chips:192 · ⑤ calc-design:70 은 재실행에서 재시도 뒤 통과(흔들림 · calc-chart:136 도). 훅이 바꾸지 않은 spec 로컬 실행을 막아 원인은 확인하지 못함. 고치지 않음.
