@@ -105,6 +105,20 @@
   /* 국기 둘레 옅은 선 — 남색 22% (작업 0249 · 18번) */
   --hav-flag-edge: rgb(22 36 110 / 0.22);
   /* 블랙프라이데이 hero(작업 0381) — 검정 바탕 · 해 노랑 포인트 · 감열지 영수증 */
+  /* 첫 화면 탑승권 hero(작업 0380) — 바다 띠 위 흰 탑승권 · 칩 · 꼬리표 */
+  --hav-pass-muted: #8a92b3;
+  --hav-pass-city: #5b6690;
+  --hav-pass-dash: #c6d0ee;
+  --hav-pass-glow: rgb(157 192 255 / 0.38);
+  --hav-pass-route: rgb(244 249 248 / 0.38);
+  --hav-pass-shadow: 0 30px 60px rgb(8 14 60 / 0.35);
+  --hav-tag-bg: rgb(255 255 255 / 0.96);
+  --hav-tag-shadow: 0 10px 24px rgb(8 14 60 / 0.25);
+  --hav-ask-shadow: 0 14px 34px rgb(10 18 70 / 0.35);
+  --hav-hero-chip: rgb(255 255 255 / 0.1);
+  --hav-hero-chip-line: rgb(255 255 255 / 0.28);
+  --hav-hero-src-line: rgb(255 255 255 / 0.3);
+  --hav-stub-bar: rgb(255 255 255 / 0.18);
   --hav-bf-bg: #0b0b10;
   --hav-bf-fg: #f5f6fb;
   --hav-bf-fg-2: #a9adc2;
