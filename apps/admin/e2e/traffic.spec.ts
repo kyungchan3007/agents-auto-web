@@ -6,6 +6,9 @@
 //     data-testid="traffic-pages"     많이 본 페이지 표 — 줄 "traffic-page-row" · 칸 data-col="path" · "views"
 //     data-testid="traffic-empty"     날짜별 · 유입 경로 · 페이지가 모두 없을 때 — '아직 받은 유입 값이 없습니다'
 //     data-testid="traffic-error"     /bff/ga4 가 실패했을 때 — '유입 값을 받지 못했습니다' · 화면의 나머지(제목 · 어드민 메뉴)는 그대로
+//   작업 0374 — 사람 판별 · 인스타 유입 (응답 모양은 apps/api/src/features/ga4/human.test.ts · instagram.test.ts 의 Ga4Report human · instagram):
+//     날짜별 표 칸 추가 — data-col="engagedSessions"(참여 세션 쉼표) · "engagedRate"(소수 한 자리 %) · "secondsPerUser"(사용자당 참여 시간 초) · 자료가 없거나 받지 못한 값은 칸이 있고 글이 빈 칸(0 도 '-' 도 아님)
+//     data-testid="traffic-instagram"  인스타 유입 표 — 줄 "traffic-instagram-row"[data-kind=link|utm] · 칸 data-col="label"("인스타(링크)" · "인스타(utm)") · "sessions" · "users" · 응답의 instagram 이 null 이면 이 표가 없음
 //   어드민 메뉴: "유입"(/traffic · 단축키 5) — 메뉴가 일곱이 되는 것은 인스타 유입(/instagram · 6)와 함께(ig-insights.spec.ts) · 기존 메뉴 개수 검사(admin.spec.ts)는 구현 뒤 맞춤
 import { type Page, expect, test } from "@playwright/test";
 import { hydrated } from "./helpers";
@@ -37,6 +40,18 @@ async function open(page: Page, body: object, status = 200) {
 }
 const cell = (page: Page, table: string, rowId: string, nth: number, col: string) => tid(page, table).locator(`[data-testid="${rowId}"]`).nth(nth).locator(`[data-col="${col}"]`);
 const text = async (page: Page, table: string, rowId: string, nth: number, col: string) => ((await cell(page, table, rowId, nth, col).innerText()) ?? "").replace(/\s+/g, " ").trim();
+
+const HUMAN = {
+  from: "2026-11-03",
+  to: "2026-11-30",
+  days: [
+    { day: "2026-11-23", users: 1234, sessions: 1500, engagedSessions: 900, engagementSeconds: 12340 },
+    { day: "2026-11-22", users: 0, sessions: 0, engagedSessions: null, engagementSeconds: null },
+  ],
+  devices: [{ name: "mobile", users: 1000, sessions: 1200, engagedSessions: 700 }],
+  countries: [{ name: "South Korea", users: 1100, sessions: 1400, engagedSessions: 850 }],
+};
+const INSTAGRAM = { link: { sessions: 3210, users: 3000 }, utm: { sessions: 12, users: 10 } };
 
 test.describe("어드민 유입 화면 — GA4 (작업 0324)", () => {
   test("메뉴에 '유입'(/traffic) — 지금 화면 표시 · h1 하나 · 섹션 제목(h2)", async ({ page }) => {
@@ -135,5 +150,52 @@ test.describe("어드민 유입 화면 — GA4 (작업 0324)", () => {
     await expect(tid(page, "traffic-sources").locator('[data-testid="traffic-source-row"]')).toHaveCount(20);
     await expect(tid(page, "traffic-pages").locator('[data-testid="traffic-page-row"]')).toHaveCount(20);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), "가로 넘침").toBeLessThanOrEqual(0);
+  });
+});
+
+test.describe("어드민 유입 화면 — 사람 판별 · 인스타 유입 (작업 0374)", () => {
+  test("날짜별 표에 참여 세션 · 참여율 · 사용자당 참여 시간 — 사용자 · 세션 칸은 그대로", async ({ page }) => {
+    await open(page, { ...REPORT, human: HUMAN, instagram: INSTAGRAM });
+    await expect(cell(page, "traffic-daily", "traffic-daily-row", 0, "users")).toContainText("1,234");
+    await expect(cell(page, "traffic-daily", "traffic-daily-row", 0, "sessions")).toContainText("1,500");
+    expect(await text(page, "traffic-daily", "traffic-daily-row", 0, "engagedSessions")).toBe("900");
+    expect(await text(page, "traffic-daily", "traffic-daily-row", 0, "engagedRate")).toBe("60.0%");
+    expect(await text(page, "traffic-daily", "traffic-daily-row", 0, "secondsPerUser")).toBe("10.0");
+  });
+
+  test("받지 못한 날(참여 값 null · 세션 0)은 칸은 있고 글이 빈 칸 — 0 · '-' · NaN 이 없음", async ({ page }) => {
+    await open(page, { ...REPORT, human: HUMAN, instagram: INSTAGRAM });
+    for (const col of ["engagedSessions", "engagedRate", "secondsPerUser"]) {
+      await expect(cell(page, "traffic-daily", "traffic-daily-row", 1, col)).toHaveCount(1);
+      expect(await text(page, "traffic-daily", "traffic-daily-row", 1, col), `받지 못한 날 ${col}`).toBe("");
+    }
+  });
+
+  test("첫 수집 전(human 없음)에는 참여 칸이 모두 빈 칸 · 나머지 표는 그대로 · 인스타 표도 없음", async ({ page }) => {
+    await open(page, REPORT);
+    for (const col of ["engagedSessions", "engagedRate", "secondsPerUser"]) {
+      await expect(cell(page, "traffic-daily", "traffic-daily-row", 0, col)).toHaveCount(1);
+      expect(await text(page, "traffic-daily", "traffic-daily-row", 0, col)).toBe("");
+    }
+    await expect(cell(page, "traffic-daily", "traffic-daily-row", 0, "users")).toContainText("1,234");
+    await expect(tid(page, "traffic-instagram")).toHaveCount(0);
+  });
+
+  test("인스타 유입 표 — 링크(리퍼러)와 utm 두 줄 · 세션 · 사용자(쉼표)", async ({ page }) => {
+    await open(page, { ...REPORT, human: HUMAN, instagram: INSTAGRAM });
+    const rows = tid(page, "traffic-instagram").locator('[data-testid="traffic-instagram-row"]');
+    await expect(rows).toHaveCount(2);
+    expect(await rows.evaluateAll((els) => els.map((e) => e.getAttribute("data-kind")))).toEqual(["link", "utm"]);
+    expect(await text(page, "traffic-instagram", "traffic-instagram-row", 0, "label")).toBe("인스타(링크)");
+    expect(await text(page, "traffic-instagram", "traffic-instagram-row", 0, "sessions")).toBe("3,210");
+    expect(await text(page, "traffic-instagram", "traffic-instagram-row", 0, "users")).toBe("3,000");
+    expect(await text(page, "traffic-instagram", "traffic-instagram-row", 1, "label")).toBe("인스타(utm)");
+    expect(await text(page, "traffic-instagram", "traffic-instagram-row", 1, "sessions")).toBe("12");
+  });
+
+  test("인스타 유입 받은 0 은 0 으로 보임 · 가로 넘침 0", async ({ page }) => {
+    await open(page, { ...REPORT, human: HUMAN, instagram: { link: { sessions: 0, users: 0 }, utm: { sessions: 0, users: 0 } } });
+    for (const n of [0, 1]) for (const col of ["sessions", "users"]) expect(await text(page, "traffic-instagram", "traffic-instagram-row", n, col)).toBe("0");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
   });
 });
