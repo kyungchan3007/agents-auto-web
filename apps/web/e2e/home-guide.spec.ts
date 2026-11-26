@@ -16,7 +16,6 @@ import { type Page, expect, test } from "@playwright/test";
 import { forceDefaultHero } from "./default-hero";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
-const isPhoneProject = (page: Page) => page.context().browser() !== null && (page.viewportSize()?.width ?? 0) < 640 && test.info().project.name === "휴대폰";
 const search = (page: Page) => page.getByRole("combobox", { name: "여행지 검색" }); // 아래 탑승권 카드의 검색 칸(그대로)
 const heroSearch = (page: Page) => tid(page, "hero-search");
 const box = async (loc: ReturnType<Page["locator"]>, name: string) => {
@@ -24,22 +23,6 @@ const box = async (loc: ReturnType<Page["locator"]>, name: string) => {
   if (!b) throw new Error(`${name} 가 화면에 없음`);
   return b;
 };
-// 큰 화면 높이 구간(hero-section.tsx 주석: 880 이하 · 881~1000 · 1001~1180 · 1181 이상) — 기존 home-fix-0217 의 노트북 높이들
-const SCREENS = [
-  [1280, 720],
-  [1366, 768],
-  [1440, 900],
-  [1920, 950],
-  [2560, 1440],
-  // 구간 경계(880 | 881 · 1000 | 1001 · 1180 | 1181) — 구간마다 여백을 줄인 값이 경계에서도 맞는지 (작업 0347)
-  [1280, 880],
-  [1280, 881],
-  [1280, 1000],
-  [1280, 1001],
-  [1280, 1180],
-  [1280, 1181],
-] as const;
-
 test.beforeEach(async ({ page }) => {
   await forceDefaultHero(page);
   await page.addInitScript(() => localStorage.setItem("flapfx:intro-off", "1"));
