@@ -21,3 +21,5 @@
 - [ ] develop 머지 뒤 #455 전체 e2e 통과 · main 머지 · 릴리스 없음
 
 ## 허점
+- 0380 에서 test 가 바꾼 홈 spec 만 로컬로 돌려, 사이트 공통 규칙 spec(초점 고리 · 글꼴 · 12px)은 main 전체 e2e 에서야 걸림. 새 화면을 만드는 작업은 sdd 에 공통 규칙(초점 고리 · 큰 제목 자간 · 12px)을 먼저 적고 builder 가 구현 전에 볼 것.
+- 공통 고리 색은 data-surface 를 따름 · 어두운 hero 안의 흰 칸은 data-surface=light 로 표시해야 파랑 고리.
