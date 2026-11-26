@@ -69,6 +69,8 @@ test.describe("직구 계산 디자인 (작업 0208)", () => {
 
   test("넓은 화면 — 과세환율 칸은 기록이 2주 미만이면 짧음 · 수입물가 그래프 높이(시안 F: 넓은 화면 380px · 휴대폰 300px — 약간의 여유를 둠) @design", async ({ page }) => {
     await page.goto("/calc");
+    // 그래프는 붙기 전에는 폭 기본값(720)으로 넓은 화면 높이(400)로 그려지고 붙은 뒤 실제 폭으로 휴대폰 높이가 됨 — 자리 잡을 때까지 기다린 뒤 잼
+    await expect.poll(async () => (await box(tid(page, "import-chart"))).height, { timeout: 10_000 }).toBeLessThan(isPhone(page) ? 340 : 461);
     const chart = await box(tid(page, "import-chart"));
     if (isPhone(page)) {
       expect(chart.height).toBeGreaterThanOrEqual(260);
