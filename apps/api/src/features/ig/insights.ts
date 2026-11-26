@@ -25,6 +25,21 @@ export function accountRows(day: string, apiJson: unknown): AccountRow[] {
   });
 }
 
+/** GET /{IG_USER_ID}?fields=followers_count 응답 → 계정 행 한 줄 — 계정 insights 지표가 아니라 계정 필드라 따로 읽음 · 0 이상 숫자만(받은 0 은 0) · 아니면 행 없음 */
+export function followersRows(day: string, apiJson: unknown): AccountRow[] {
+  const value = isRecord(apiJson) ? num(apiJson.followers_count) : null;
+  return value !== null && value >= 0 ? [{ day, metric: "followers_count", value }] : [];
+}
+
+/** 게시물 성과 읽기 — 먼저 지표를 한꺼번에 부르고, 한 지표가 지원되지 않아 요청 전체가 오류(값 없음)면 지표 하나씩 다시 불러 받은 값만 모음 */
+export async function fetchMediaRows(day: string, mediaId: string, metrics: string[], get: (metricCsv: string) => Promise<unknown>): Promise<MediaRow[]> {
+  const all = mediaRows(day, mediaId, await get(metrics.join(",")));
+  if (all.length > 0 || metrics.length < 2) return all;
+  const out: MediaRow[] = [];
+  for (const m of metrics) out.push(...mediaRows(day, mediaId, await get(m)));
+  return out;
+}
+
 const q = (s: string) => `'${s.replace(/'/g, "''")}'`;
 const finite = (r: { value: number }) => Number.isFinite(r.value);
 
