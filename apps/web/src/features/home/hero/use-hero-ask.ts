@@ -5,7 +5,7 @@
 import type { DestinationHit } from "@hav/shared/destination-search";
 import type { KeyboardEvent } from "react";
 import { useTripSwitcher } from "@/shared/trip/use-trip-switcher";
-import { useHeroDeckValue } from "./hero-deck-context";
+import { useHeroDeckValue } from "./use-hero-deck-context";
 import { heroChips } from "./hero-pass";
 
 export function useHeroAsk() {

@@ -2,7 +2,7 @@
 
 // hero 오른쪽 탑승권 묶음 (작업 0380) — 그리기만 · 장식이라 화면 읽기에서는 빠짐(aria-hidden) · 글자 · 여백은 모두 em 이고 묶음 폭(cqw)이 글자 크기를 정함 · 값은 passCards · fxTags 가 정함
 import { type FxTag, type PassCard, deckSlot } from "./hero-pass";
-import { useHeroDeckValue } from "./hero-deck-context";
+import { useHeroDeckValue } from "./use-hero-deck-context";
 import { usePlaneLoop } from "./use-plane-loop";
 
 const LOOP = "M-40,400 C80,470 150,300 250,250 S470,250 520,140 S520,-20 400,20 S240,140 330,190 S560,190 640,90";
