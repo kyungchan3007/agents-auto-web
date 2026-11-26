@@ -20,10 +20,14 @@ const day = (d: string, users: number, sessions: number, engagedSessions: number
 
 describe("humanCells — 날짜별 참여 칸 (작업 0374)", () => {
   it("참여 세션(쉼표) · 참여율(소수 한 자리 %) · 사용자당 참여 시간(초, 소수 한 자리)", () => {
-    const h = human([day("2026-11-25", 374, 380, 1520, 4675)]);
-    expect(humanCells(h, "2026-11-25")).toEqual({ engagedText: "1,520", engagedRateText: "400.0%", secondsPerUserText: "12.5" });
+    const h = human([day("2026-11-25", 374, 380, 152, 4675)]);
+    expect(humanCells(h, "2026-11-25")).toEqual({ engagedText: "152", engagedRateText: "40.0%", secondsPerUserText: "12.5" });
     const h2 = human([day("2026-11-24", 116, 200, 120, 580)]);
     expect(humanCells(h2, "2026-11-24")).toEqual({ engagedText: "120", engagedRateText: "60.0%", secondsPerUserText: "5.0" });
+  });
+
+  it("참여 세션이 천 단위를 넘으면 쉼표", () => {
+    expect(humanCells(human([day("2026-11-25", 3000, 4000, 2500, 30000)]), "2026-11-25").engagedText).toBe("2,500");
   });
 
   it("받은 0 은 0 — 참여 세션 0 · 참여율 0.0% · 참여 시간 0.0", () => {
