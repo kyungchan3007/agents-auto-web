@@ -18,9 +18,9 @@
 10. 반응형: 넓은 화면 오른쪽 · 899 이하 계산기 아래 · 기본 hero 와 같은 전 폭 검사.
 
 ## 범위 밖
-- 기본 hero(작업 0380) · 새 세금 규칙 · main 반영(사용자가 말할 때).
+- 기본 hero(작업 0380) · 새 세금 규칙 · 릴리스(.changeset · 버전 커밋 · GitHub 릴리스).
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS
 - [ ] 새 테스트: 기간 경계(끝 1초 전 블프 · 끝 시각부터 기본) · 계산기(한도 안/밖 · 틀린 입력) · 새 문구
-- [ ] develop 머지 즉시 claude-desktop 에 알림
+- [ ] develop 머지 즉시 claude-desktop 에 알림 · 바로 main 반영 PR · 전체 e2e 통과 시 main 머지 · .changeset · 릴리스 없음(사용자 추가 지시)

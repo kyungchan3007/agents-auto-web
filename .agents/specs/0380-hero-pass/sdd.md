@@ -15,7 +15,6 @@
 ## 파일 계획
 - apps/web/src/features/home/** (hero · destinations · 새 탑승권 부품 · 훅 · lib)
 - packages/ui/src/tokens.css (새 색 · 그림자 토큰이 필요하면)
-- .changeset/*.md (minor)
 - *.test.ts · apps/web/e2e/** · .agents/e2e-map.json (test)
 - .agents/specs/0380-hero-pass/** · .agents/orchestration/TASKS.md
 
