@@ -58,8 +58,8 @@ describe("홈 구성 — 순서 · 구간", () => {
     expect(HOME_UI).toContain("도착지별 환전 타이밍");
   });
 
-  it("여행 타이밍 라벨 · 12달 막대 · 안내판 · 도착지 목록 컴포넌트를 씀 (지구 · 3D 비행 경로는 없앰 · 작업 0217)", () => {
-    expect(HOME_UI).toContain("여행 타이밍");
+  it("12달 막대 · 안내판 · 도착지 목록 컴포넌트를 씀 (지구 · 3D 비행 경로는 없앰 · 작업 0217 · 제목 위 라벨 '여행 타이밍'은 작업 0380 시안대로 뺌)", () => {
+    expect(HOME_UI).not.toContain("여행 타이밍"); // 새 hero 에는 제목 위 라벨이 없음
     expect(HOME_UI).toMatch(/\bMonthBars\b/); // 그래프 2D(시안 F): 12달 막대는 공통 부품 MonthBars — 표시 data-testid="year-bars" 는 그 부품 안
     expect(readFileSync(join(__dirname, "../../../../packages/ui/src/components/data/month-bars.tsx"), "utf8")).toMatch(/data-testid="year-bars"/);
     expect(HOME_UI).not.toMatch(/data-testid="plane-route"|data-testid="travel-graph"/);
