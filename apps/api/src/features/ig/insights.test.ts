@@ -1,3 +1,7 @@
+// 작업 0375 — builder 가 insights.ts 에 더할 것
+//   export function followersRows(day: string, apiJson: unknown): AccountRow[]   — GET /{IG_USER_ID}?fields=followers_count 응답 { followers_count: 숫자, id } → [{ day, metric: "followers_count", value }] · 숫자가 아니면 [] (지어내지 않음 · 0 은 값)
+//   export async function fetchMediaRows(day: string, mediaId: string, metrics: string[], get: (metricCsv: string) => Promise<unknown>): Promise<MediaRow[]>
+//     — 먼저 지표를 한꺼번에(쉼표로 이어) 부름 · 한 지표가 지원되지 않아 요청 전체가 오류(값 없음)면 지표 하나씩 다시 불러 받은 값만 모음(빈 행 원인 후보: 캐러셀 400)
 // 작업 0323 — 인스타 성과 가져오기: 응답 → 행 · SQL · 토큰 지우기 (순수 함수 · 테스트 먼저 · 구현 전에는 FAIL 이 정상)
 //   builder 가 만들 것 — apps/api/src/features/ig/insights.ts
 //     export type MediaRow = { day: string; mediaId: string; metric: string; value: number }
@@ -8,7 +12,7 @@
 //     export function scrubToken(text: string, token: string): string
 //   원칙(prd): 숫자는 받은 값만 · 받지 못한 지표는 0 이 아니라 행이 없음 · 받은 0 은 0 · 토큰은 어디에도 남지 않음
 import { describe, expect, it } from "vitest";
-import { type AccountRow, type MediaRow, accountRows, insightsSql, mediaRows, scrubToken } from "./insights";
+import { type AccountRow, type MediaRow, accountRows, fetchMediaRows, followersRows, insightsSql, mediaRows, scrubToken } from "./insights";
 
 const DAY = "2026-11-23";
 /** 게시물 성과 응답 모양(Graph API insights): data[] 마다 name · values[{ value }] */
@@ -141,5 +145,68 @@ describe("scrubToken — 오류 문구에서 토큰 지우기 (작업 0323)", ()
   it("토큰이 없으면 글 그대로 · 빈 토큰이면 아무것도 바꾸지 않음(글을 망가뜨리지 않음)", () => {
     expect(scrubToken("HTTP 400 Bad Request", T)).toBe("HTTP 400 Bad Request");
     expect(scrubToken("HTTP 400 Bad Request", "")).toBe("HTTP 400 Bad Request");
+  });
+});
+
+describe("followersRows — 계정 팔로워 수 → 계정 값 줄 (작업 0375)", () => {
+  it("followers_count 하나 → 계정 행 한 줄(날짜 · 지표 이름 followers_count · 값) · 게시물 번호 없음", () => {
+    const rows = followersRows(DAY, { followers_count: 128, id: "1784" });
+    expect(rows).toEqual([{ day: DAY, metric: "followers_count", value: 128 }]);
+    expect("mediaId" in (rows[0] ?? {})).toBe(false);
+  });
+
+  it("받은 0 은 0 으로 남김", () => {
+    expect(followersRows(DAY, { followers_count: 0 })).toEqual([{ day: DAY, metric: "followers_count", value: 0 }]);
+  });
+
+  it("받지 못하면 행이 없음 — 오류 응답 · 값 없음 · 숫자가 아님 · 무한대 · 알 수 없는 모양 (던지지 않음)", () => {
+    expect(followersRows(DAY, { error: { message: "(#100) Tried accessing nonexisting field", code: 100 } })).toEqual([]);
+    for (const bad of [null, undefined, "x", 42, [], {}, { followers_count: null }, { followers_count: "많음" }, { followers_count: Number.POSITIVE_INFINITY }, { followers_count: -1 }])
+      expect(followersRows(DAY, bad), JSON.stringify(bad)).toEqual([]);
+  });
+
+  it("SQL 로는 같은 날 다시 넣으면 덮어씀(ig_account_insights · 스키마 변경 없음)", () => {
+    const sql = insightsSql(followersRows(DAY, { followers_count: 128 }));
+    expect(sql).toMatch(/INSERT INTO ig_account_insights \(day, metric, value\) VALUES \('2026-11-23', 'followers_count', 128\) ON CONFLICT/);
+  });
+});
+
+describe("fetchMediaRows — 지원하지 않는 지표가 있어도 나머지 값은 남김 (작업 0375)", () => {
+  const METRICS = ["reach", "likes", "saved", "shares", "views"];
+  /** 캐러셀: views 는 지원하지 않아 그 지표가 들어간 요청은 통째로 오류(400) · 그 지표 없이 부르면 값이 옴 */
+  const carousel = (calls: string[]) => async (csv: string): Promise<unknown> => {
+    calls.push(csv);
+    const ms = csv.split(",");
+    if (ms.includes("views")) return { error: { message: "(#100) metric[4] must be one of the following values: reach, likes, saved, shares", code: 100 } };
+    return mediaApi(Object.fromEntries(ms.map((m, i) => [m, 10 + i])));
+  };
+
+  it("모두 지원하면 한 번만 부름 · 행은 mediaRows 와 같음", async () => {
+    const calls: string[] = [];
+    const get = async (csv: string) => { calls.push(csv); return mediaApi({ reach: 120, likes: 9, saved: 3, shares: 2, views: 300 }); };
+    const rows = await fetchMediaRows(DAY, "1790001", METRICS, get);
+    expect(calls).toEqual(["reach,likes,saved,shares,views"]);
+    expect(rows).toEqual(mediaRows(DAY, "1790001", mediaApi({ reach: 120, likes: 9, saved: 3, shares: 2, views: 300 })));
+  });
+
+  it("한 지표 때문에 전체가 오류면 지표 하나씩 다시 불러 받은 값은 남김 · 지원 안 하는 지표만 행이 없음 (0 으로 채우지 않음)", async () => {
+    const calls: string[] = [];
+    const rows = await fetchMediaRows(DAY, "1790001", METRICS, carousel(calls));
+    expect(Object.fromEntries(rows.map((r) => [r.metric, r.value]))).toEqual({ reach: 10, likes: 11, saved: 12, shares: 13 });
+    expect(rows.every((r) => r.day === DAY && r.mediaId === "1790001")).toBe(true);
+    expect(rows.find((r) => r.metric === "views")).toBeUndefined();
+    expect(calls[0]).toBe("reach,likes,saved,shares,views"); // 먼저 한꺼번에
+    for (const m of METRICS) expect(calls, `다시 부름 ${m}`).toContain(m);
+  });
+
+  it("모든 지표가 실패하면 행 없음 · 던지지 않음 (get 이 null 을 돌려줘도)", async () => {
+    expect(await fetchMediaRows(DAY, "1790001", METRICS, async () => null)).toEqual([]);
+    expect(await fetchMediaRows(DAY, "1790001", METRICS, async () => ({ error: { code: 10 } }))).toEqual([]);
+  });
+
+  it("받은 0 은 0 으로 남김 (다시 부른 경우에도)", async () => {
+    const get = async (csv: string) => (csv.includes(",") ? { error: { code: 100 } } : mediaApi({ [csv]: 0 }));
+    const rows = await fetchMediaRows(DAY, "1790001", ["reach", "likes"], get);
+    expect(rows.map((r) => [r.metric, r.value])).toEqual([["reach", 0], ["likes", 0]]);
   });
 });
