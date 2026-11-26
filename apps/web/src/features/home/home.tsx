@@ -31,7 +31,7 @@ export function Home({ latest, signals, airFare, pageCodes = [], customs = null 
       {/* 블랙프라이데이 기간(~2026-12-01 17:00 KST)에만 블프 hero 가 기본 hero 대신 보임 — 둘 다 그리고 html data-hero 로 하나만 (작업 0381) */}
       <BfHero rates={rates} customs={customs} />
       <div className="bf-default">
-        <HeroSection timing={timing} />
+        <HeroSection timing={timing} rates={rates} signals={signalRows} windowDays={windowDays} />
       </div>
       <TodayBoard rates={rates} signals={signalRows} windowDays={windowDays} problem={!latest.ok ? latest.reason : null} pageCodes={pageCodes} />
       <YearBars timing={timing} />
