@@ -24,3 +24,5 @@
 - .agents/specs/0381-hero-bf/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- apps/web/src/app/page.tsx: 블프 계산기가 직구 계산과 같은 관세청 과세환율(달러)을 써야 해서 첫 페이지가 kcs-import:USD 한 주를 더 받음(IMP-06).
+- apps/web/e2e/default-hero.ts · 기존 홈 spec 29개: 기간 안에는 기본 hero 가 숨겨져 기존 spec 이 실패하므로 html data-hero 를 default 로 고정하는 도우미를 beforeEach 에 붙임(시계 고정은 날짜 계산이 밀려 쓰지 않음). 기간이 끝나 블프 코드를 지울 때 함께 지움.
