@@ -1,5 +1,5 @@
 // 블랙프라이데이 hero 문구 (작업 0381) — 사용자가 정한 글 그대로 · "$200" 은 직구 계산기 rules 의 미국 한도에서(IMP-03 · 값이 바뀌면 문구도 따라감) · 긴 줄표 없음
-import { DUTY_FREE_USD } from "../../import-calc/calculator/rules";
+import { DUTY_FREE_USD } from "@/shared/customs/rules";
 
 const LIMIT = `$${DUTY_FREE_USD["us-list"]}`;
 

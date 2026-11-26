@@ -8,7 +8,7 @@ import type { SignalList } from "@hav/shared/signal";
 import { DestinationsSection } from "./destinations/destinations-section";
 import { BfHero } from "./blackfriday/bf-hero";
 import { HeroSection } from "./timing/hero-section";
-import type { CustomsRate } from "../import-calc/common/customs-rate";
+import type { CustomsRate } from "@/shared/customs/customs-rate";
 import { HomeFooter } from "./home-footer";
 import { TodayBoard } from "./today/today-board";
 import { YearBars } from "./timing/year-bars";

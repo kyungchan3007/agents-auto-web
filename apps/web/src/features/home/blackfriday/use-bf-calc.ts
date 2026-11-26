@@ -4,8 +4,8 @@
 import type { FxRate } from "@hav/shared/fx";
 import { kstDate } from "@hav/shared/date";
 import { type ChangeEvent, useState } from "react";
-import type { Route } from "../../import-calc/calculator/rules";
-import { type CustomsRate, pickRate } from "../../import-calc/common/customs-rate";
+import type { Route } from "@/shared/customs/rules";
+import { type CustomsRate, pickRate } from "@/shared/customs/customs-rate";
 import { type BfPicked, bfCalc } from "./bf-calc";
 
 export function useBfCalc(rates: FxRate[], customs: Record<string, CustomsRate> | null) {

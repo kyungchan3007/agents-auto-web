@@ -1,8 +1,8 @@
 // 블랙프라이데이 hero 계산기 · 영수증 줄 (작업 0381) — 달러 금액 → 원화 · 면세 한도 안 · 밖 · 한도 막대 · 순수 함수
 //   한도는 직구 계산기 rules.ts 한 곳(IMP-03) · 금액 읽기 · 안내 글은 calc.ts 와 같음 · 새 세금 규칙 없음 · 입력값은 보내지 않고 저장하지 않음(IMP-01) · 결과는 예상(IMP-04) · 틀린 입력은 결과 대신 이유(IMP-05)
 //   환율은 pickRate 의 결과를 그대로 받음(이번 주 과세환율이 있으면 그것 · 없으면 수출입은행 + 예상 금액 · IMP-06) · 받지 못한 환율은 지어내지 않음
-import { parseAmount } from "../../import-calc/calculator/calc";
-import { DUTY_FREE_USD, type Route } from "../../import-calc/calculator/rules";
+import { parseAmount } from "@/shared/customs/parse-amount";
+import { DUTY_FREE_USD, type Route } from "@/shared/customs/rules";
 
 export type BfPicked = { rate: { baseRate: number; unit: number }; source: { kind: "customs"; weekStart: string; label: string } | { kind: "bank"; label: string } };
 
