@@ -7,8 +7,8 @@ export type IgMediaInsightRow = { day: string; mediaId: string; metric: string; 
 export type IgAccountInsightRow = { day: string; metric: string; value: number };
 
 /** 계정 지표 이름(D1) → 화면용 이름 */
-type AccountKey = "reach" | "views" | "profileViews" | "websiteClicks" | "accountsEngaged";
-const ACCOUNT_METRICS: Record<string, AccountKey | undefined> = { reach: "reach", views: "views", profile_views: "profileViews", website_clicks: "websiteClicks", accounts_engaged: "accountsEngaged" };
+type AccountKey = "reach" | "views" | "profileViews" | "websiteClicks" | "accountsEngaged" | "followers";
+const ACCOUNT_METRICS: Record<string, AccountKey | undefined> = { reach: "reach", views: "views", profile_views: "profileViews", website_clicks: "websiteClicks", accounts_engaged: "accountsEngaged", followers_count: "followers" };
 const MEDIA_METRICS = ["reach", "likes", "saved", "shares", "views"] as const;
 type MediaMetric = (typeof MEDIA_METRICS)[number];
 const isMediaMetric = (m: string): m is MediaMetric => (MEDIA_METRICS as readonly string[]).includes(m);
@@ -18,7 +18,7 @@ function accountLines(rows: IgAccountInsightRow[]): IgReport["account"] {
   for (const r of rows) {
     const key = ACCOUNT_METRICS[r.metric];
     if (!key) continue;
-    const line = byDay.get(r.day) ?? { day: r.day, reach: null, views: null, profileViews: null, websiteClicks: null, accountsEngaged: null };
+    const line = byDay.get(r.day) ?? { day: r.day, reach: null, views: null, profileViews: null, websiteClicks: null, accountsEngaged: null, followers: null };
     line[key] = r.value;
     byDay.set(r.day, line);
   }
