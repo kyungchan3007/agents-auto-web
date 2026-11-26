@@ -55,7 +55,7 @@ export function GeoReport({ build, asOf }: { build: Fetched<Report>; asOf: strin
           <GeoReferrals report={r} />
         </div>
       </div>
-      <div data-testid="geo-grid">
+      <div data-testid="geo-grid" className="adm-col">
         <GeoPages report={r} />
         <GeoBotPages report={r} />
       </div>
