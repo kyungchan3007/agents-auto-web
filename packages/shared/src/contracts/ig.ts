@@ -5,7 +5,7 @@ import { IsoDate } from "../utils/date";
 const Count = z.number().int().nonnegative().nullable();
 
 /** 계정 — 날짜별 한 줄 · 최근 날부터 */
-const IgAccountDay = z.object({ day: IsoDate, reach: Count, views: Count, profileViews: Count, websiteClicks: Count, accountsEngaged: Count });
+const IgAccountDay = z.object({ day: IsoDate, reach: Count, views: Count, profileViews: Count, websiteClicks: Count, accountsEngaged: Count, followers: Count });
 
 /** 게시물 — 게시 최근 순 · 지표마다 가장 최근 날 값 · day = 그 게시물에서 값을 받은 가장 최근 날(없으면 null) */
 const IgMediaLine = z.object({
