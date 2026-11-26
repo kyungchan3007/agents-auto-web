@@ -104,6 +104,32 @@
   --hav-flap-cell: #1f3190;
   /* 국기 둘레 옅은 선 — 남색 22% (작업 0249 · 18번) */
   --hav-flag-edge: rgb(22 36 110 / 0.22);
+  /* 블랙프라이데이 hero(작업 0381) — 검정 바탕 · 해 노랑 포인트 · 감열지 영수증 */
+  --hav-bf-bg: #0b0b10;
+  --hav-bf-fg: #f5f6fb;
+  --hav-bf-fg-2: #a9adc2;
+  --hav-bf-muted: #7d8199;
+  --hav-bf-placeholder: #5c6078;
+  --hav-bf-field: #16171f;
+  --hav-bf-line: #2a2c38;
+  --hav-bf-kind: #23242e;
+  --hav-bf-meter: #1d1e27;
+  --hav-bf-ok: #7fd6a4;
+  --hav-bf-over: #ff8a76;
+  --hav-bf-ok-bg: rgb(127 214 164 / 0.14);
+  --hav-bf-over-bg: rgb(255 120 100 / 0.14);
+  --hav-bf-paper: #f7f4ec;
+  --hav-bf-ink: #262422;
+  --hav-bf-ink-strong: #1b1a18;
+  --hav-bf-ink-2: #4f4a43;
+  --hav-bf-ink-3: #8a8478;
+  --hav-bf-ink-muted: #6b665e;
+  --hav-bf-rule: #b9b2a3;
+  --hav-bf-dash: #d9d3c5;
+  --hav-bf-red: #c4412c;
+  --hav-bf-green: #1f8a57;
+  --hav-bf-paper-shadow: drop-shadow(0 1px 1px rgb(0 0 0 / 0.4)) drop-shadow(0 26px 34px rgb(0 0 0 / 0.55));
+  --hav-bf-back-shadow: drop-shadow(0 20px 28px rgb(0 0 0 / 0.5)) brightness(0.7);
   /* 사이드바 여닫는 움직임의 면 색 — 시작 요소 자리 옅은 남색(줄 hover 바탕) · 중간에 떠오른 면 (작업 0370) */
   --hav-lift-rest: #eef0f9;
   --hav-lift-mid: #f6f7fc;
