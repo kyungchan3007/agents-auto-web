@@ -21,4 +21,5 @@
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋의 CI gate)
 - [ ] test 반응형 검사 320~1600px 20px 간격: 겹침 · 화면 밖 · 가로 스크롤 0 · 탑승권 안 글자 넘침 0(넓은 글꼴 포함)
-- [ ] .changeset minor
+- [ ] .changeset 없음 · 운영 버전 커밋 · GitHub 릴리스 없음(사용자 추가 지시)
+- [ ] develop 머지 뒤 바로 main 반영 PR · 전체 e2e 통과 시 main 머지

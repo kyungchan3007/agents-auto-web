@@ -13,12 +13,13 @@
 - 빌드 시각으로 고르기: 12-01 17:00 에 빌드가 없으면 안 바뀜 · 고르지 않음.
 - 클라이언트에서만 교체: 첫 그림 깜빡임 · 고르지 않음.
 
+- 블프를 먼저 내므로 지금 hero 위에 기간 동안만 블프 hero 를 대신 보이게 한다(0380 기본 hero 와 독립). 0380 은 나중에 같은 자리 바꿈 구조에 기본 hero 를 넣는다.
+
 ## 파일 계획
 - apps/web/src/features/home/** (블프 hero · 영수증 · 계산기 · 기간 판정 · 훅 · lib)
 - apps/web/src/app/layout.tsx 또는 page head (기간 판정 인라인 스크립트가 필요하면 · 보호 파일이면 멈춤)
 - apps/web/src/features/import-calc/calculator/rules.ts (재사용 · 바꾸지 않음이 원칙)
 - packages/ui/src/tokens.css (필요하면)
-- .changeset/*.md (minor)
 - *.test.ts · apps/web/e2e/** · .agents/e2e-map.json (test)
 - .agents/specs/0381-hero-bf/** · .agents/orchestration/TASKS.md
 
