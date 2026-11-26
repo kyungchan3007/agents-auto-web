@@ -25,7 +25,7 @@ export function HeroAsk() {
             type="search"
             autoComplete="off"
             spellCheck={false}
-            aria-label="여행지 검색"
+            aria-label={HERO_GUIDE.placeholder}
             aria-autocomplete="list"
             aria-expanded={a.expanded}
             aria-controls={a.expanded ? a.ids.list : undefined}
@@ -35,12 +35,12 @@ export function HeroAsk() {
             onChange={a.onChange}
             onKeyDown={a.onKey}
           />
-          <button type="submit" data-testid="hero-search-go">
+          <button type="submit" data-testid="hero-go">
             {HERO_GUIDE.button}
           </button>
         </form>
         {a.expanded && (
-          <ul id={a.ids.list} role="listbox" aria-label="여행지 제안" className="hp-list">
+          <ul id={a.ids.list} role="listbox" aria-label="도시 · 나라 제안" className="hp-list">
             {a.hits.map((hit, i) => (
               <li
                 key={`${hit.country}-${hit.city}`}
@@ -63,8 +63,8 @@ export function HeroAsk() {
           </p>
         )}
       </div>
-      <p className="hp-hint hp-rise" data-i="2">{HERO_GUIDE.hint}</p>
-      <ul aria-label="자주 가는 곳" className="hp-chips hp-rise" data-i="3">
+      <p data-testid="hero-sub" className="hp-hint hp-rise" data-i="2">{HERO_GUIDE.hint}</p>
+      <ul aria-label="자주 찾는 곳" className="hp-chips hp-rise" data-i="3">
         {a.chips.map((hit) => (
           <li key={`${hit.country}-${hit.city}`}>
             <button type="button" data-testid="hero-chip" aria-pressed={a.isPicked(hit)} onClick={() => a.pick(hit)}>
