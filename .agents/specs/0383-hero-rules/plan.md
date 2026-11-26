@@ -13,6 +13,8 @@
 - .agents/specs/0383-hero-rules/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- apps/web/src/features/home/hero/hero-ask.tsx: hero 가 data-surface=dark 라 공통 고리 색이 흰색 → 흰 입력 칸 안에서 안 보이고 규칙(밝은 면 파랑)에 어긋남. 입력 칸 묶음에 data-surface="light" 속성만 더함(로직 없음).
+- apps/web/e2e/calc-design.spec.ts: 4번은 테스트 문제(그래프가 붙기 전 기본 폭 720 으로 그려진 높이를 잼) · 자리 잡을 때까지 기다린 뒤 잼.
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋 CI gate)
