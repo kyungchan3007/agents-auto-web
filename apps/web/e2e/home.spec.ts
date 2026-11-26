@@ -9,21 +9,21 @@ test.beforeEach(async ({ page }) => {
   await forceDefaultHero(page);
 });
 
-test("홈 구간 순서 — 여행 타이밍 → 오늘 환율(바다 띠) → 도착지별 환전 타이밍", async ({ page }) => {
+test("홈 구간 순서 — hero(N월에 떠나세요.) → 오늘 환율(바다 띠) → 도착지별 환전 타이밍", async ({ page }) => {
   await page.goto("/");
   const y = async (loc: ReturnType<typeof page.locator>) => (await loc.boundingBox())?.y ?? Number.NaN;
-  // 메뉴의 "여행 타이밍" 링크는 휴대폰에서 접혀 있어 위치가 없음 — 머리글 밖(본문)의 라벨을 찾음
-  const timing = await y(page.locator('*:text-is("여행 타이밍"):not(header *)').first());
+  // 작업 0380: 제목 위 작은 라벨 "여행 타이밍" 은 새 hero 에 없음 — hero 자체의 위치로 비교
+  const timing = await y(page.locator('[data-testid="home-hero"]'));
   const today = await y(page.locator("#board"));
   const dest = await y(page.locator("#today"));
   expect(timing, "여행 타이밍").toBeLessThan(today);
   expect(today, "오늘 환율").toBeLessThan(dest);
 });
 
-test("여행 타이밍 — 지수가 없으면 '아직 받지 못했습니다' · 12달 막대 없음 / 있으면 'N월에 떠나세요' · 12달 막대 (3D 비행기는 홈에 없음 · 작업 0217)", async ({ page }) => {
+test("여행 타이밍 — 지수가 없으면 '아직 받지 못했습니다' · 12달 막대 없음 / 있으면 'N월에 떠나세요.' · 12달 막대 (3D 비행기는 홈에 없음 · 작업 0217)", async ({ page }) => {
   await page.goto("/");
   const none = page.getByText("국제항공료 지수를 아직 받지 못했습니다");
-  const title = page.getByText(/^\d+월에 떠나세요$/);
+  const title = page.getByText(/^\d+월에 떠나세요\.$/);
   await expect(none.or(title)).toBeVisible(); // 둘 중 하나는 반드시
   if (await none.isVisible()) {
     await expect(page.locator('[data-testid="year-bars"]')).toHaveCount(0);
@@ -174,20 +174,4 @@ test("도착지 목록 아래 '다른 통화 N개 모두 보기 ›' — 누르�
   await link.click();
   await expect(page).toHaveURL(/\/currencies\/?$/);
 });
-
-// 작업 0351 — 사용자 디자인 결정 '제목 위 라벨 유지': 노트북 높이(1280×720 포함)에서도 큰 제목 위 '여행 타이밍' 라벨이 보임 (0347 이 낮은 화면에서 숨겼던 것을 되돌림)
-for (const [width, height] of [
-  [1280, 720],
-  [1366, 768],
-  [1440, 900],
-  [1920, 1080],
-] as const) {
-  test(`홈 제목 위 라벨 '여행 타이밍' — ${width}×${height} 에서도 보임`, async ({ page }) => {
-    await page.setViewportSize({ width, height });
-    await page.goto("/");
-    const label = page.locator('*:text-is("여행 타이밍"):not(header *)').first();
-    await expect(label).toBeVisible();
-    const [l, h1] = await Promise.all([label.boundingBox(), page.getByRole("heading", { level: 1 }).boundingBox()]);
-    expect(l!.y + l!.height, "라벨은 큰 제목 위").toBeLessThanOrEqual(h1!.y + 2);
-  });
-}
+// 작업 0380: 제목 위 라벨 '여행 타이밍' 은 새 hero(시안)에 없어 라벨 위치 검사(작업 0351)는 지움

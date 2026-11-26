@@ -1,6 +1,5 @@
 // 작업 0217 미리보기 뒤 고칠 것 1~3 — 테스트 먼저 (request.md 맨 아래 '미리보기 뒤 고칠 것')
-//   1 여백   : 설명 문장 아래 ~ 탑승권 카드 위 간격 = 시안 B/home.html 실측값 (±4px)
-//   2 높이   : 노트북 높이에서도 첫 화면(viewport 높이) 안에 안내판 · 97% 줄 · 국기 칩 · 검색 칸의 아래 끝이 들어옴 · 가로 넘침 0 · 휴대폰 390 배치는 그대로
+//   1 · 2 (작업 0380 에 hero 새 모양 기준으로 다시 씀): 노트북 높이에서도 첫 화면 안에 hero 의 한 줄 · 입력창 · 작은 줄 · 칩이 들어옴 · 가로 넘침 0
 //   3 환전   : 환전 목록이 화면에 들어오면 카드가 위에서부터 차례로 나타남 + 금액 카운트업 · 동그라미 이동이 같이 시작 · 한 번만 · 움직임 줄이기면 처음부터 최종 값
 //   표시(기존): "home-hero" · "ticket" · "flap-board" · "ticket-evidence"(97% 줄) · "trip-switcher" · "pick-chip" · combobox "여행지 검색" · "dest-list" · "dest-row" · "dest-rate"(data-final) · "dest-dot"(data-position)
 import { type Page, expect, test } from "@playwright/test";
@@ -13,34 +12,10 @@ test.beforeEach(async ({ page }) => {
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const isPhoneProject = (page: Page) => page.context().browser() !== null && (page.viewportSize()?.width ?? 0) < 640 && test.info().project.name === "휴대폰";
 
-// ── 1 여백 ─────────────────────────────────────────────────────────────────────
-// 시안 .tmp/redesign-1118/B/home.html 을 크롬으로 열어 잰 값 (설명 문장 .lede 아래 끝 → 탑승권 .ticket 위 끝)
-//   1280 폭: hero padding-bottom 300 − ticket-wrap margin-top 250 = 50px (lede 아래 526.9 → 카드 위 576.9)
-//   390 폭 : hero padding-bottom 230 − ticket-wrap margin-top 190 = 40px (lede 아래 384.6 → 카드 위 424.6)
-const SAMPLE_GAP = { 1280: 50, 390: 40 } as const;
-
-test.describe("홈 여백 — 설명 문장 ↔ 탑승권 카드 (시안 B 실측값)", () => {
-  for (const [width, height] of [
-    [1280, 1300], // 높이 규칙(2)이 걸리지 않을 만큼 큰 높이(구현의 가장 큰 구간 1180px 위) — 순수 폭 기준 값
-    [390, 844],
-  ] as const) {
-    test(`${width}px — 마지막 줄(작은 줄) 아래 끝 ~ 카드 위 끝 = 8 ~ 54px (작업 0347 · 예전 시안 B ${SAMPLE_GAP[width]}px)`, async ({ page }) => {
-      test.skip(isPhoneProject(page), "뷰포트를 직접 정하므로 넓은 화면 프로젝트에서만");
-      await page.setViewportSize({ width, height });
-      await page.goto("/");
-      await page.waitForTimeout(400);
-      const lede = await tid(page, "home-hero").locator("p").last().boundingBox();
-      const card = await tid(page, "ticket").boundingBox();
-      if (!lede || !card) throw new Error("설명 문장 또는 카드가 화면에 없음");
-      const gap = card.y - (lede.y + lede.height);
-      // 작업 0347: 설명 문장 아래에 안내 문장 · 작은 줄이 끼어 마지막 p 는 작은 줄(가입 없이 무료) — 시안 B 의 50px · 40px 대신 8 ~ 54px (시안 9-C 는 작은 줄 바로 아래 카드)
-      expect(gap, `작은 줄 ↔ 카드 간격 ${gap.toFixed(1)}px (시안 B ${SAMPLE_GAP[width]}px 였음)`).toBeGreaterThanOrEqual(8);
-      expect(gap, `작은 줄 ↔ 카드 간격 ${gap.toFixed(1)}px`).toBeLessThanOrEqual(54);
-    });
-  }
-});
-
-// ── 2 화면 높이 ────────────────────────────────────────────────────────────────
+// ── 1 · 2 첫 화면 (작업 0380 · hero 새 모양) ───────────────────────────────────────
+// 옛 검사(설명 문장 ↔ 탑승권 카드 간격 · 카드 안판 · 97% 줄이 첫 화면 안 · 휴대폰 위 여백 48px)는 hero 가 글 왼쪽 · 탑승권 오른쪽 · 높이 약 560px 로 바뀌어 맞지 않음.
+// 모양 · 위치 · 크기는 새 테스트 없음(작업 종류 ②) — 여기서는 첫 화면에 hero 의 글 · 입력창 · 칩이 들어오고 가로로 넘치지 않는지만 본다.
+//   표시: hero-lede · hero-sub · hero-search(입력창) · hero-chip(칩 넷) — 자세한 문구는 home-guide.spec.ts
 const SCREENS = [
   [1280, 720],
   [1366, 768],
@@ -49,9 +24,9 @@ const SCREENS = [
   [2560, 1440],
 ] as const;
 
-test.describe("홈 첫 화면 높이 — 안내판 · 97% 줄 · 국기 칩 · 검색 칸이 첫 화면 안", () => {
+test.describe("홈 첫 화면 — hero 글 · 입력창 · 칩이 첫 화면 안 · 가로 넘침 0", () => {
   for (const [width, height] of SCREENS) {
-    test(`${width}×${height} — 네 가지 모두 아래 끝이 화면 높이 안 · 가로 넘침 0 · 큰 제목이 남아 있음`, async ({ page }) => {
+    test(`${width}×${height} — 한 줄 · 입력창 · 작은 줄 · 칩 아래 끝이 화면 높이 안 · 가로 넘침 0 · 큰 제목이 남아 있음`, async ({ page }) => {
       test.skip(isPhoneProject(page), "뷰포트를 직접 정하므로 넓은 화면 프로젝트에서만");
       await page.setViewportSize({ width, height });
       await page.goto("/");
@@ -59,59 +34,35 @@ test.describe("홈 첫 화면 높이 — 안내판 · 97% 줄 · 국기 칩 · �
       await page.waitForTimeout(500);
       expect(await page.evaluate(() => window.scrollY), "스크롤 전 첫 화면").toBe(0);
       const bottom = async (loc: ReturnType<typeof tid>, name: string) => {
-        const b = await loc.boundingBox();
+        const b = await loc.first().boundingBox();
         if (!b) throw new Error(`${name} 가 화면에 없음`);
         return b.y + b.height;
       };
-      const board = await bottom(tid(page, "ticket").getByTestId("flap-board"), "안내판");
-      const evidence = await bottom(tid(page, "ticket-evidence"), "97% 줄");
-      const chips = tid(page, "trip-switcher").getByTestId("pick-chip");
-      const lastChip = await bottom(chips.last(), "마지막 국기 칩");
-      const search = await bottom(page.getByRole("combobox", { name: "여행지 검색" }), "검색 칸");
-      expect(board, "안내판 아래 끝").toBeLessThanOrEqual(height);
-      expect(evidence, "97% 줄 아래 끝").toBeLessThanOrEqual(height);
-      expect(lastChip, "마지막 국기 칩 아래 끝").toBeLessThanOrEqual(height);
-      expect(search, `검색 칸 아래 끝 (${search.toFixed(0)}px / ${height}px)`).toBeLessThanOrEqual(height);
-      // 가로 넘침 0
-      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-      expect(overflow, "가로 넘침").toBeLessThanOrEqual(0);
-      // 큰 제목은 줄이되 없애지 않음 · 설명 문장과 카드가 겹치지 않음
+      expect(await bottom(tid(page, "hero-lede"), "한 줄"), "한 줄 아래 끝").toBeLessThanOrEqual(height);
+      expect(await bottom(tid(page, "hero-search"), "입력창"), "입력창 아래 끝").toBeLessThanOrEqual(height);
+      expect(await bottom(tid(page, "hero-sub"), "작은 줄"), "작은 줄 아래 끝").toBeLessThanOrEqual(height);
+      expect(await bottom(tid(page, "hero-chip").last(), "마지막 칩"), "마지막 칩 아래 끝").toBeLessThanOrEqual(height);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), "가로 넘침").toBeLessThanOrEqual(0);
       const h1 = page.getByRole("heading", { level: 1 });
       await expect(h1).toBeVisible();
       expect(await h1.evaluate((el) => parseFloat(getComputedStyle(el).fontSize)), "큰 제목 글자 크기").toBeGreaterThanOrEqual(40);
-      const lede = (await tid(page, "home-hero").locator("p").last().boundingBox())!;
-      const card = (await tid(page, "ticket").boundingBox())!;
-      expect(card.y - (lede.y + lede.height), "설명 문장과 카드 사이").toBeGreaterThanOrEqual(8);
-      expect(card.y - (lede.y + lede.height), "시안(50px)보다 넓어지지 않음").toBeLessThanOrEqual(54);
     });
   }
 
-  test("휴대폰 390 — 높이가 달라도 큰 제목 크기 · 위 여백이 같고 휴대폰 값(56px · 48px — 작업 0275: 글자 크기 11단계로 58 → 56)이며 가로 넘침 0", async ({ page }) => {
+  test("휴대폰 390 — 높이가 달라도 가로 넘침 0 · 큰 제목 · 입력창이 화면 폭 안", async ({ page }) => {
     test.skip(isPhoneProject(page), "뷰포트를 직접 정하므로 넓은 화면 프로젝트에서만");
-    const seen: { h: number; font: number; padTop: number; gap: number }[] = [];
     for (const height of [568, 667, 844, 1200]) {
       await page.setViewportSize({ width: 390, height });
       await page.goto("/");
       await page.waitForTimeout(300);
       const m = await page.evaluate(() => {
-        const hero = document.querySelector('[data-testid="home-hero"]') as HTMLElement;
-        const h1 = hero.querySelector("h1") as HTMLElement;
-        const lede = [...hero.querySelectorAll("p")].pop() as HTMLElement;
-        const ticket = document.querySelector('[data-testid="ticket"]') as HTMLElement;
-        return {
-          font: parseFloat(getComputedStyle(h1).fontSize),
-          padTop: parseFloat(getComputedStyle(hero).paddingTop),
-          gap: ticket.getBoundingClientRect().top - lede.getBoundingClientRect().bottom,
-          overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-        };
+        const input = document.querySelector('[data-testid="hero-search"]') as HTMLElement;
+        const r = input.getBoundingClientRect();
+        return { right: r.right, left: r.left, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth };
       });
       expect(m.overflow, `${height} 가로 넘침`).toBeLessThanOrEqual(0);
-      seen.push({ h: height, font: m.font, padTop: m.padTop, gap: m.gap });
-    }
-    for (const s of seen) {
-      expect(Math.abs(s.font - 56), `${s.h}: 큰 제목 ${s.font}px`).toBeLessThanOrEqual(1.5); // 작업 0275: 첫 제목 최소 57.6 → 56(글자 크기 11단계) · 예전 시안 .mega 58px
-      expect(Math.abs(s.padTop - 48), `${s.h}: 위 여백 ${s.padTop}px`).toBeLessThanOrEqual(1); // 시안 휴대폰 .hero padding-top 48px
-      expect(Math.abs(s.gap - seen[0].gap), `${s.h}: 설명 ↔ 카드 간격이 높이에 따라 변함`).toBeLessThanOrEqual(1);
+      expect(m.left, `${height} 입력창 왼쪽`).toBeGreaterThanOrEqual(0);
+      expect(m.right, `${height} 입력창 오른쪽`).toBeLessThanOrEqual(390);
     }
   });
 });
