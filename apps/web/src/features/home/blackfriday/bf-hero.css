@@ -16,7 +16,6 @@ html[data-hero="bf"] .bf-default {
   overflow: hidden;
   background: var(--hav-bf-bg);
   color: var(--hav-bf-fg);
-  color-scheme: dark;
 }
 .bf-inner {
   display: grid;

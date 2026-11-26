@@ -3,11 +3,12 @@
 // 블랙프라이데이 hero (작업 0381 · 시안 .tmp/hero 의 '블랙프라이데이') — 왼쪽 문구 · 계산기 · 오른쪽 감열지 영수증 · 기간 동안만 기본 hero 대신 보임(bf-hero.css 가 html data-hero 로 하나만 보이게 함)
 //   그리기만 — 계산은 bf-calc · 기간은 bf-period · 모션은 use-bf-receipt · 입력값은 보내지 않고 저장하지 않음(IMP-01)
 import type { FxRate } from "@hav/shared/fx";
-import { ROUTE_LABEL } from "../../import-calc/calculator/rules";
-import type { CustomsRate } from "../../import-calc/common/customs-rate";
+import { ROUTE_LABEL } from "@/shared/customs/rules";
+import type { CustomsRate } from "@/shared/customs/customs-rate";
 import { BF_COPY } from "./bf-copy";
-import { rateLine } from "./bf-calc";
+import { heroDraw, TITLE_REST } from "./bf-hero-view";
 import { BfReceipt } from "./bf-receipt-view";
+import { receiptDraw } from "./bf-receipt";
 import "./bf-hero.css";
 import { useBfCalc } from "./use-bf-calc";
 import { useBfPeriod } from "./use-bf-period";
@@ -18,6 +19,7 @@ export function BfHero({ rates, customs }: { rates: FxRate[]; customs: Record<st
   const calc = useBfCalc(rates, customs);
   const receipt = useBfReceipt();
   const r = calc.result;
+  const draw = heroDraw(r, calc.perUsd);
   return (
     <section data-testid="bf-hero" aria-labelledby="bf-title" className="bf-hero">
       <div className="bf-inner">
@@ -29,7 +31,7 @@ export function BfHero({ rates, customs }: { rates: FxRate[]; customs: Record<st
             <span data-testid="bf-accent" className="bf-accent">
               {BF_COPY.accent}
             </span>
-            {BF_COPY.titleLines[0].slice(BF_COPY.accent.length)}
+            {TITLE_REST}
             <br />
             {BF_COPY.titleLines[1]}
           </h1>
@@ -72,20 +74,20 @@ export function BfHero({ rates, customs }: { rates: FxRate[]; customs: Record<st
                 </>
               )}
             </div>
-            <div data-testid="bf-bar" className="bf-meter" data-over={String(r.kind === "ok" && r.over)}>
-              <i style={{ width: `${r.kind === "ok" ? Math.min(100, r.ratio * 100) : 0}%` }} />
+            <div data-testid="bf-bar" className="bf-meter" data-over={String(draw.barOver)}>
+              <i style={{ width: `${draw.barPct}%` }} />
             </div>
             <div className="bf-fine">
-              {r.kind === "ok" && (
+              {draw.source !== "" && (
                 <p data-testid="bf-source" className="bf-source">
-                  {rateLine(calc.perUsd, r.sourceLabel)}
+                  {draw.source}
                 </p>
               )}
               <p data-testid="bf-note">{BF_COPY.note}</p>
             </div>
           </div>
         </div>
-        <BfReceipt view={receipt} perUsd={calc.perUsd} />
+        <BfReceipt draw={receiptDraw(receipt, calc.perUsd)} />
       </div>
     </section>
   );
