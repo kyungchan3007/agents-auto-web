@@ -3,6 +3,8 @@
 import type { Ga4Report } from "@hav/shared/ga4";
 import { parseClicks } from "./clicks";
 import { parseEngagement } from "./engagement";
+import { parseHuman } from "./human";
+import { instagramVisits } from "./instagram";
 import type { Ga4DailyRow, Ga4PageRow, Ga4SourceRow } from "./report";
 
 const TOP = 20;
@@ -37,6 +39,11 @@ const clicksOf = (snapshots: { key: string; body: string }[]) => {
   return row ? parseClicks(row.body) : null;
 };
 
+const humanOf = (snapshots: { key: string; body: string }[]) => {
+  const row = snapshots.find((s) => s.key === "ga4-human");
+  return row ? parseHuman(row.body) : null;
+};
+
 export const ga4Report = (daily: Ga4DailyRow[], sources: Ga4SourceRow[], pages: Ga4PageRow[], snapshots: { key: string; body: string }[] = []): Ga4Report => ({
   daily: daily.map((d) => ({ day: d.day, users: d.users, sessions: d.sessions, pageViews: d.pageViews })).sort((a, b) => cmp(b.day, a.day)),
   sources: sourcesTop(sources),
@@ -44,4 +51,6 @@ export const ga4Report = (daily: Ga4DailyRow[], sources: Ga4SourceRow[], pages: 
   engagement: snapshotOf(snapshots, "ga4-page-engagement"),
   baseline: snapshotOf(snapshots, "ga4-page-engagement-baseline"),
   clicks: clicksOf(snapshots),
+  human: humanOf(snapshots),
+  instagram: instagramVisits(sources),
 });
