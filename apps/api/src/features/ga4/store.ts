@@ -24,7 +24,7 @@ export async function ga4Rows(d1: D1Database, since: string): Promise<{ daily: G
  */
 export async function engagementSnapshots(d1: D1Database): Promise<{ key: string; body: string }[]> {
   try {
-    const rows = await drizzle(d1).select().from(teamSnapshots).where(inArray(teamSnapshots.key, ["ga4-page-engagement", "ga4-page-engagement-baseline", "ga4-click-events"]));
+    const rows = await drizzle(d1).select().from(teamSnapshots).where(inArray(teamSnapshots.key, ["ga4-page-engagement", "ga4-page-engagement-baseline", "ga4-click-events", "ga4-human"]));
     return rows.map((r) => ({ key: r.key, body: r.body }));
   } catch {
     return [];
