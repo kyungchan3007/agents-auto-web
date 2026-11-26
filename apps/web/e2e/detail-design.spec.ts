@@ -32,8 +32,14 @@ test.describe("통화 상세 (작업 0212)", () => {
       (await tid(page, "route-max").getByTestId("count-up").getAttribute("data-final")) ?? "",
       (await tid(page, "route-avg").innerText()).replace("1년 평균", ""),
     ];
-    const digits = values.map((v) => v.match(/\.(\d+)/)?.[1].length ?? 0);
-    expect(new Set(digits).size, values.join(" | ")).toBe(1);
+    // 작업 0379: 끝자리 0 은 생략(작업 0287) — 평균이 1,444.0 이면 '1,444' 로 보임. 자릿수가 다른 값은 가장 긴 자릿수로 맞췄을 때 끝이 0 인 경우만 허용
+    const nums = values.map((v) => ({ text: v, num: Number(v.replace(/[^\d.]/g, "")), digits: v.match(/\.(\d+)/)?.[1].length ?? 0 }));
+    const max = Math.max(...nums.map((n) => n.digits));
+    for (const n of nums) {
+      if (n.digits === max) continue;
+      const padded = n.num.toFixed(max);
+      expect(padded.endsWith("0".repeat(max - n.digits)), `${values.join(" | ")} — '${n.text}' 은 끝자리 0 생략이어야 함`).toBe(true);
+    }
   });
 
   // 작업 0260 — 판정 알약 · 조용한 글자('최근 90일 …')는 표에서 없어짐: "휴대폰 줄의 판정 표시가 칸 안에 있음" 검사는 currency-table.spec.ts 의 "휴대폰 — … 가로로 넘치지 않음"(이름 · 환율 · 내린 폭이 줄 안)으로 옮김

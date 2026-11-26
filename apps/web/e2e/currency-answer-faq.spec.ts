@@ -21,7 +21,8 @@ test.describe("통화 상세 정적 HTML — 서버 첫 그림 (작업 0345)", (
   test("/currencies/JPY — 한 줄 답 · 질문 넷 · FAQPage 가 자바스크립트 없이 들어 있음", async ({ page }) => {
     const h = await html(page, "/currencies/JPY");
     expect(h).toMatch(/한 줄 답 · \d{4}-\d{2}-\d{2} 기준/);
-    expect(h).toMatch(/100엔은 [\d,.]+원으로, 1년 평균\([\d,.]+원\)(보다 \d+% (낮고|높고)|과 거의 같고) 1년 최저\([\d,.]+원\)(와 [\d.]+% 차이입니다|와 같은 값입니다)\./);
+    // 작업 0379: 작업 0366 이 한 줄 답을 오늘 값 · 1년 평균 비교로 줄임(1년 최저는 자주 묻는 질문 첫 답에) — 새 문장 모양
+    expect(h).toMatch(/100엔은 [\d,.]+원으로, 1년 평균 [\d,.]+원(보다 \d+% (낮|높)습니다|과 거의 같습니다)\./);
     const faq = ld(h).find((d) => d["@type"] === "FAQPage");
     expect(faq, "FAQPage 구조화 자료").toBeTruthy();
     expect(faq!.mainEntity!.map((q) => q.name)).toEqual(["엔화 지금 싼 편인가요?", "10만 엔은 원화로 얼마인가요?", "일본 물가는 한국보다 비싼가요?", "오늘 환율은 언제 바뀌나요?"]);
