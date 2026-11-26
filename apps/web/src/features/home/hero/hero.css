@@ -193,6 +193,7 @@
 /* 탑승권 묶음 — 묶음 폭(cqw)이 안 글자 크기를 정함 */
 .hp-passes {
   position: relative;
+  pointer-events: none;
   container-type: inline-size;
   width: 100%;
   aspect-ratio: 1 / 0.78;
@@ -200,6 +201,7 @@
 }
 .hp-glow {
   position: absolute;
+  pointer-events: none;
   inset: -18% -14% -10% -6%;
   border-radius: 50%;
   background: radial-gradient(closest-side, var(--hav-pass-glow), transparent);
@@ -281,7 +283,7 @@
   background: var(--hav-foam);
   box-shadow: var(--hav-pass-shadow);
   color: var(--hav-pin-ink);
-  font-size: max(9px, 2cqw);
+  font-size: 2cqw;
   transform-style: preserve-3d;
   transition:
     transform 0.9s cubic-bezier(0.6, 0, 0.2, 1),
@@ -345,7 +347,8 @@
 }
 .hp-code {
   font-family: var(--font-display);
-  font-size: 4.4em;
+  font-size: max(14px, 4.4em);
+  white-space: nowrap;
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.02em;
@@ -367,13 +370,14 @@
   right: -2px;
   transform: translateY(-55%);
   color: var(--hav-pin-cheap);
-  font-size: 1.8em;
+  font-size: max(10px, 1.8em);
 }
 .hp-fx {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 0.5em 6%;
+  gap: 0.6em 6%;
+  min-width: 0;
 }
 .hp-fx small {
   display: block;
@@ -383,7 +387,8 @@
   letter-spacing: 0.06em;
 }
 .hp-fx b {
-  font-size: 1.9em;
+  font-size: max(9px, 1.9em);
+  white-space: nowrap;
 }
 .hp-fx b i {
   color: var(--hav-pass-city);
@@ -412,7 +417,7 @@
 .hp-big {
   color: var(--hav-sun);
   font-family: var(--font-display);
-  font-size: 3.4em;
+  font-size: max(14px, 3.4em);
   font-weight: 700;
   line-height: 1;
 }
@@ -435,6 +440,17 @@
   background: var(--hav-sun);
 }
 
+/* 좁은 묶음(휴대폰) — 카드를 더 높게 해서 아래 줄(환율 · 떠나기 좋은 때)이 카드 안에 들어오게 */
+@container (max-width: 420px) {
+  .hp-pass {
+    top: 14%;
+    height: 78%;
+  }
+  .hp-m {
+    padding-block: 5% 4%;
+  }
+}
+
 /* 900 ~ 1199 — 나란히 · 글 칸 최대 47vw · 탑승권 40vw */
 @media (min-width: 900px) and (max-width: 1199px) {
   .hp-inner {
@@ -453,6 +469,7 @@
   .hp-passes {
     width: 100%;
     max-width: 520px;
+    aspect-ratio: 1 / 0.92;
     margin: 10px auto 0;
   }
   .hp-h1 {
