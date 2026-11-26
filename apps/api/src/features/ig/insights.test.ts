@@ -178,7 +178,7 @@ describe("fetchMediaRows — 지원하지 않는 지표가 있어도 나머지 �
     calls.push(csv);
     const ms = csv.split(",");
     if (ms.includes("views")) return { error: { message: "(#100) metric[4] must be one of the following values: reach, likes, saved, shares", code: 100 } };
-    return mediaApi(Object.fromEntries(ms.map((m, i) => [m, 10 + i])));
+    return mediaApi(Object.fromEntries(ms.map((m) => [m, 10 + METRICS.indexOf(m)])));
   };
 
   it("모두 지원하면 한 번만 부름 · 행은 mediaRows 와 같음", async () => {
