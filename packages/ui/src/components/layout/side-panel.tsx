@@ -29,9 +29,9 @@ type Props = {
 };
 
 const LAYOUT = {
-  auto: "max-sm:inset-x-0 max-sm:bottom-0 max-sm:h-(--sheet-h) max-sm:rounded-t-[1.5rem] sm:top-0 sm:right-0 sm:h-dvh sm:w-(--side-w)",
-  side: "top-0 right-0 h-dvh w-(--side-w)",
-  sheet: "inset-x-0 bottom-0 h-(--sheet-h) rounded-t-[1.5rem]",
+  auto: "max-sm:inset-x-0 max-sm:bottom-0 max-sm:h-(--sheet-h) max-sm:rounded-t-[1.5rem] max-sm:shadow-sheet-edge sm:top-0 sm:right-0 sm:h-dvh sm:w-(--side-w) sm:shadow-side-edge",
+  side: "top-0 right-0 h-dvh w-(--side-w) shadow-side-edge",
+  sheet: "inset-x-0 bottom-0 h-(--sheet-h) rounded-t-[1.5rem] shadow-sheet-edge",
 } as const;
 
 export function SidePanel({ panelRef, backdropRef, onClose, onKeyDown, labelledBy, backdrop = true, testId, backdropTestId, width = 440, sheetHeight = 85, layout = "auto", modal = true, closed = false, children }: Props) {
