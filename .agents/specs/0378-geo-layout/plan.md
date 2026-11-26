@@ -14,6 +14,7 @@
 - .agents/specs/0378-geo-layout/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- 없음. geo-grid 에 adm-col 을 더함(옮긴 패널 사이 간격 20px · 같은 파일).
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋의 CI gate)
@@ -22,4 +23,4 @@
 - [ ] 그다음 develop → main 반영 PR (운영 반영 2026-11-26)
 
 ## 허점
--
+- 어드민 미리보기를 팀이 열 수 없어(토큰 · 다른 브랜치 빌드 끔) 운영 자료 높이로 빈 공간이 줄었는지는 재지 못함. 순서 · 간격 20px · 가로 넘침 0 은 로컬 빌드 + 가짜 자료로 1440 · 1024 · 375 확인.
