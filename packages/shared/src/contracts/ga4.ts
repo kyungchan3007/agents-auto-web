@@ -23,6 +23,20 @@ export const ClickEvents = z.object({
 });
 export type ClickEvents = z.infer<typeof ClickEvents>;
 
+/** 사람 판별 값 (작업 0374) — 최근 28일 · 참여 세션 · 참여 시간은 받지 못하면 null · devices · countries 는 세션 많은 위 5개 */
+const HumanGroup = z.object({ name: z.string(), users: Count, sessions: Count, engagedSessions: Count.nullable() });
+export const HumanReport = z.object({
+  from: IsoDate,
+  to: IsoDate,
+  days: z.array(z.object({ day: IsoDate, users: Count, sessions: Count, engagedSessions: Count.nullable(), engagementSeconds: z.number().nonnegative().nullable() })),
+  devices: z.array(HumanGroup),
+  countries: z.array(HumanGroup),
+});
+export type HumanReport = z.infer<typeof HumanReport>;
+
+/** 인스타 유입 (작업 0374) — link = 리퍼러(instagram.com · l.instagram.com) · utm = utm_source=instagram · 받지 못하면 null */
+const Visits = z.object({ sessions: Count, users: Count });
+
 export const Ga4Report = z.object({
   /** 날짜별 · 최근 날부터 */
   daily: z.array(z.object({ day: IsoDate, users: Count, sessions: Count, pageViews: Count })),
@@ -36,5 +50,9 @@ export const Ga4Report = z.object({
   baseline: PageEngagement.nullable().default(null),
   /** 버튼 클릭 · 없으면 null · 예전 응답에는 없어서 기본값 (작업 0359) */
   clicks: ClickEvents.nullable().default(null),
+  /** 사람 판별 값 · 없으면 null · 예전 응답에는 없어서 기본값 (작업 0374) */
+  human: HumanReport.nullable().default(null),
+  /** 인스타 유입 · 없으면 null · 예전 응답에는 없어서 기본값 (작업 0374) */
+  instagram: z.object({ link: Visits, utm: Visits }).nullable().default(null),
 });
 export type Ga4Report = z.infer<typeof Ga4Report>;
