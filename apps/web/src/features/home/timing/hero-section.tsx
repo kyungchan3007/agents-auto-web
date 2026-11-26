@@ -1,44 +1,49 @@
-// 새 홈 첫 면 — 메뉴와 한 면으로 이어지는 파랑 · 가운데 큰 제목 "N월에 떠나세요"(월만 노랑) · 설명 한 줄 (작업 0217 · 시안 B)
-// 여백(작업 0217 · 미리보기 뒤 고칠 것 1 · 2): 설명 문장 ↔ 탑승권 카드 = 시안 B/home.html(.hero 아래 300 − 카드 위로 250 = 50px · 휴대폰 230 − 190 = 40px)
-//   화면 높이(작업 0217 · 고칠 것 2): 폭 lg(1024) 이상에서 높이 구간마다 큰 제목 글자 · 위아래 여백만 줄여 노트북 높이에서도 안내판 · 97% 줄 · 국기 칩 · 검색 칸이 첫 화면 안
-//     구간 = 880 이하 · 881~1000 · 1001~1180 (겹치지 않게) · 1181 이상은 시안 그대로 · 폭 기준 배치(휴대폰 · 태블릿)는 그대로
-// 작업 0347: 설명 문장 아래에 안내 문장 · 작은 줄(약 60px)이 끼어 구간마다 위 · 아래 여백 · 큰 제목 글자를 더 줄이고(제목 위 "여행 타이밍" 라벨은 사용자 디자인 결정이라 두고 다른 여백 · 큰 제목을 줄임) 큰 제목은 40px 아래로 내려가지 않음
-// 자료는 지금 그대로(travelTiming · travelTimingCopy · heroParts) — 지수가 없으면 큰 제목 대신 "아직 받지 못했습니다" (달을 지어내지 않음) · 사진 없음
-import { Eyebrow } from "@hav/ui/text/heading";
+// 첫 화면 hero (작업 0380 · 시안 '기본 · 울트라마린 탑승권') — 왼쪽: 큰 제목 "N월에 떠나세요."(월만 노랑) · 한 줄 + 꼬리표 · 입력창 · 칩 / 오른쪽: 탑승권 세 장 · 노선 · 비행기 · 꼬리표
+//   자료는 지금 그대로(travelTiming · travelTimingCopy · heroParts) — 지수가 없으면 큰 제목 대신 "아직 받지 못했습니다" (달을 지어내지 않음) · 탑승권 값은 홈이 받는 환율 · 신호에서만(없으면 빈 칸)
+//   반응형: 1200 이상 글 왼쪽 · 탑승권 오른쪽 · 900~1199 나란히 · 899 이하 탑승권이 글 아래 가운데 (hero.css) · 노란 원(해 · 달) 없음
+import type { RateRow, SignalRow } from "../common/destinations";
+import { HeroAsk } from "../hero/hero-ask";
+import { HeroDeckProvider } from "../hero/hero-deck";
+import { heroPassView } from "../hero/hero-pass";
+import { HeroPasses } from "../hero/hero-passes";
+import "../hero/hero.css";
 import { HERO_GUIDE } from "./hero-guide";
 import { type TravelTiming, heroParts, travelTimingCopy } from "./travel-timing";
 
-export function HeroSection({ timing }: { timing: TravelTiming }) {
+export function HeroSection({ timing, rates = [], signals = [], windowDays = 90 }: { timing: TravelTiming; rates?: RateRow[]; signals?: SignalRow[]; windowDays?: number }) {
   const copy = travelTimingCopy(timing);
   const parts = heroParts(timing);
+  const view = heroPassView(rates, signals, windowDays, parts?.month ?? "");
   return (
-    <section data-testid="home-hero" data-surface="dark" aria-labelledby="timing-title" className="bg-surface px-4 pt-12 pb-10 text-center text-fg sm:px-8 sm:pt-16 sm:pb-[50px] lg:[@media(max-height:880px)]:pt-1.5 lg:[@media(max-height:880px)]:pb-2.5 lg:[@media(min-height:881px)_and_(max-height:1000px)]:pt-3 lg:[@media(min-height:881px)_and_(max-height:1000px)]:pb-4 lg:[@media(min-height:1001px)_and_(max-height:1180px)]:pt-5 lg:[@media(min-height:1001px)_and_(max-height:1180px)]:pb-8">
-      <div className="mx-auto max-w-page">
-        <Eyebrow className="text-fg-2!">여행 타이밍</Eyebrow>
-        {parts ? (
-          <>
-            <h1 id="timing-title" className="mt-5 font-display text-[clamp(3.5rem,11vw,9.4rem)] leading-[0.98] font-extrabold tracking-display text-fg lg:[@media(max-height:880px)]:mt-1 lg:[@media(max-height:880px)]:text-[clamp(2.75rem,min(11vw,6.2vh),9.4rem)] lg:[@media(min-height:881px)_and_(max-height:1000px)]:mt-2 lg:[@media(min-height:881px)_and_(max-height:1000px)]:text-[clamp(3.5rem,min(11vw,8vh),9.4rem)] lg:[@media(min-height:1001px)_and_(max-height:1180px)]:mt-3 lg:[@media(min-height:1001px)_and_(max-height:1180px)]:text-[clamp(3.5rem,min(11vw,10vh),9.4rem)]">
-              <span data-testid="hero-month" className="text-sun">
-                {parts.month}
-              </span>
-              에 <br />
-              떠나세요
-            </h1>
-            <p className="mx-auto mt-7 max-w-[38em] text-body text-fg-2 sm:text-[1.125rem] lg:[@media(max-height:880px)]:mt-1 lg:[@media(min-height:881px)_and_(max-height:1000px)]:mt-3 lg:[@media(min-height:1001px)_and_(max-height:1180px)]:mt-4">{copy.message}</p>
-            {/* 안내 문장 + 작은 줄 (작업 0347 · 시안 9-C) — 구간별로 위 여백만 줄임 · 서버 첫 그림에 들어감 */}
-            <p data-testid="hero-guide" className="mx-auto mt-4 max-w-[40em] text-balance text-[1rem] font-bold text-fg sm:text-[1.0625rem] lg:max-w-none lg:text-pretty lg:[@media(max-height:880px)]:mt-1 lg:[@media(min-height:881px)_and_(max-height:1000px)]:mt-2">
-              {HERO_GUIDE.lead}
-            </p>
-            <p data-testid="hero-free" className="mt-1 text-[0.8125rem] text-fg-2">
-              {HERO_GUIDE.free}
-            </p>
-          </>
-        ) : (
-          <h1 id="timing-title" className="mt-5 font-display text-title font-extrabold tracking-display text-fg-2">
-            {copy.message}
-          </h1>
-        )}
-      </div>
+    <section data-testid="home-hero" data-surface="dark" aria-labelledby="timing-title" className="hp-hero bg-surface text-fg">
+      <HeroDeckProvider>
+        <div className="hp-inner">
+          <div className="hp-copy">
+            {parts ? (
+              <>
+                <h1 id="timing-title" className="hp-h1 hp-rise" data-i="0">
+                  <span data-testid="hero-month" className="text-sun">
+                    {parts.month}
+                  </span>
+                  {parts.rest}
+                </h1>
+                <p className="hp-one hp-rise" data-i="1">
+                  <span data-testid="hero-lede">{copy.message}</span>
+                  <span data-testid="hero-tag" className="hp-src">
+                    {HERO_GUIDE.tag}
+                  </span>
+                </p>
+              </>
+            ) : (
+              <h1 id="timing-title" className="hp-h1 hp-h1-none">
+                {copy.message}
+              </h1>
+            )}
+            <HeroAsk />
+          </div>
+          <HeroPasses cards={view.cards} tags={view.tags} monthLabel={view.monthLabel} />
+        </div>
+      </HeroDeckProvider>
     </section>
   );
 }

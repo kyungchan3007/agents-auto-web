@@ -1,0 +1,475 @@
+/* 첫 화면 hero 스타일 (작업 0380 · 시안 '기본 · 울트라마린 탑승권') — 색 · 그림자는 모두 tokens.css 토큰 · 탑승권 안 글자 · 여백은 em 이고 묶음 폭(cqw)이 글자 크기를 정함(vw 쓰지 않음) · 노란 원(해 · 달) 없음 */
+
+.hp-hero {
+  position: relative;
+  overflow: hidden;
+}
+.hp-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, min(44vw, 560px));
+  align-items: center;
+  gap: clamp(16px, 3vw, 48px);
+  max-width: var(--container-page);
+  min-height: 560px;
+  margin-inline: auto;
+  padding: clamp(24px, 4vw, 48px) clamp(16px, 4vw, 40px);
+}
+.hp-copy {
+  min-width: 0;
+  text-align: left;
+}
+.hp-h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 4.8vw, 3.875rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  color: var(--hav-fg);
+}
+.hp-h1-none {
+  font-size: var(--text-title, 2rem);
+  color: var(--hav-fg-2);
+}
+.hp-one {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin: 14px 0 0;
+  color: var(--hav-fg-2);
+  font-size: 1.125rem;
+}
+.hp-src {
+  padding: 3px 9px;
+  border: 1px solid var(--hav-hero-src-line);
+  border-radius: 999px;
+  color: var(--hav-fg-2);
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+}
+
+/* 입력창 · 칩 */
+.hp-ask-wrap {
+  margin-top: 26px;
+  max-width: 28.75rem;
+}
+.hp-ask-box {
+  position: relative;
+}
+.hp-ask {
+  display: flex;
+  height: 58px;
+  border-radius: 14px;
+  background: var(--hav-foam);
+  box-shadow: var(--hav-ask-shadow);
+}
+.hp-ask input {
+  flex: 1;
+  min-width: 0;
+  padding: 0 18px;
+  border: 0;
+  background: transparent;
+  color: var(--hav-pin-ink);
+  font: inherit;
+  font-size: 1rem;
+}
+.hp-ask input::placeholder {
+  color: var(--hav-pass-muted);
+}
+.hp-ask input:focus {
+  outline: none;
+}
+.hp-ask:focus-within {
+  outline: 3px solid var(--hav-sun);
+  outline-offset: 1px;
+}
+.hp-ask button {
+  margin: 6px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--hav-sun);
+  color: var(--hav-pin-ink);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.hp-ask button:focus-visible {
+  outline: 2px solid var(--hav-pin-ink);
+  outline-offset: 2px;
+}
+.hp-list {
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  z-index: 20;
+  max-height: 16rem;
+  margin: 4px 0 0;
+  padding: 0;
+  overflow-y: auto;
+  border: 2px solid var(--hav-pin-ink);
+  border-radius: 10px;
+  background: var(--hav-foam);
+  color: var(--hav-pin-ink);
+  list-style: none;
+}
+.hp-list li {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--hav-pass-dash);
+  cursor: pointer;
+}
+.hp-list li:last-child {
+  border-bottom: 0;
+}
+.hp-list li[data-active="true"] {
+  background: var(--hav-surface-2);
+}
+.hp-empty {
+  margin: 8px 0 0;
+  color: var(--hav-fg-2);
+  font-size: 0.875rem;
+}
+.hp-hint {
+  margin: 10px 0 0 4px;
+  color: var(--hav-fg-2);
+  font-size: 0.8125rem;
+}
+.hp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.hp-chips button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--hav-hero-chip-line);
+  border-radius: 999px;
+  background: var(--hav-hero-chip);
+  color: var(--hav-fg);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.hp-chips button:hover,
+.hp-chips button:focus-visible,
+.hp-chips button[aria-pressed="true"] {
+  border-color: var(--hav-sun);
+  outline: none;
+}
+
+/* 첫 등장 — 제목 → 한 줄 → 입력창 → 칩 (0.7초 · 0.07초 간격) */
+.hp-rise {
+  animation: hp-rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.hp-rise[data-i="1"] {
+  animation-delay: 0.07s;
+}
+.hp-rise[data-i="2"] {
+  animation-delay: 0.14s;
+}
+.hp-rise[data-i="3"] {
+  animation-delay: 0.21s;
+}
+@keyframes hp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 탑승권 묶음 — 묶음 폭(cqw)이 안 글자 크기를 정함 */
+.hp-passes {
+  position: relative;
+  container-type: inline-size;
+  width: 100%;
+  aspect-ratio: 1 / 0.78;
+  perspective: 1400px;
+}
+.hp-glow {
+  position: absolute;
+  inset: -18% -14% -10% -6%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--hav-pass-glow), transparent);
+}
+.hp-route {
+  position: absolute;
+  inset: -12% -10% -6% -14%;
+  width: 124%;
+  height: 118%;
+  overflow: visible;
+}
+.hp-route path:first-child {
+  fill: none;
+  stroke: var(--hav-pass-route);
+  stroke-width: 1.6;
+  stroke-dasharray: 2 9;
+  stroke-linecap: round;
+}
+.hp-plane {
+  fill: var(--hav-fg);
+}
+.hp-tag {
+  position: absolute;
+  z-index: 5;
+  padding: 0.6em 1.1em;
+  border-radius: 999px;
+  background: var(--hav-tag-bg);
+  box-shadow: var(--hav-tag-shadow);
+  color: var(--hav-pin-ink);
+  font-size: max(9px, 2.2cqw);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  animation: hp-tagbob 5s ease-in-out infinite;
+}
+.hp-tag b {
+  color: var(--hav-pin-cheap);
+}
+.hp-tag[data-tag="t1"] {
+  top: 8%;
+  left: -2%;
+}
+.hp-tag[data-tag="t2"] {
+  top: 2%;
+  right: -1%;
+  animation-delay: -1.6s;
+}
+.hp-tag[data-tag="t3"] {
+  right: 4%;
+  bottom: 2%;
+  animation-delay: -3.2s;
+}
+@keyframes hp-tagbob {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.hp-float {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  animation: hp-bob 6s ease-in-out infinite;
+}
+@keyframes hp-bob {
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.hp-pass {
+  position: absolute;
+  top: 22%;
+  right: 4%;
+  left: 0;
+  display: grid;
+  grid-template-columns: 1fr 30%;
+  height: 62%;
+  overflow: hidden;
+  border-radius: 2em;
+  background: var(--hav-foam);
+  box-shadow: var(--hav-pass-shadow);
+  color: var(--hav-pin-ink);
+  font-size: max(9px, 2cqw);
+  transform-style: preserve-3d;
+  transition:
+    transform 0.9s cubic-bezier(0.6, 0, 0.2, 1),
+    opacity 0.9s;
+  will-change: transform;
+}
+.hp-pass[data-s="0"] {
+  z-index: 3;
+  transform: translate3d(0, 0, 0) rotateZ(-4deg) rotateY(-10deg);
+}
+.hp-pass[data-s="1"] {
+  z-index: 2;
+  transform: translate3d(5%, -9%, -60px) rotateZ(3deg) rotateY(-10deg);
+  filter: brightness(0.92);
+}
+.hp-pass[data-s="2"] {
+  z-index: 1;
+  transform: translate3d(9%, -17%, -120px) rotateZ(8deg) rotateY(-10deg);
+  filter: brightness(0.84);
+}
+.hp-pass[data-s="out"] {
+  z-index: 4;
+  opacity: 0;
+  transform: translate3d(-30%, 60%, 80px) rotateZ(-24deg) rotateY(-10deg);
+}
+.hp-pass[data-s="in"] {
+  z-index: 0;
+  opacity: 0;
+  transform: translate3d(14%, -26%, -180px) rotateZ(12deg) rotateY(-10deg);
+  transition: none;
+}
+.hp-m {
+  display: grid;
+  align-content: space-between;
+  min-width: 0;
+  padding: 6.5% 7% 6%;
+}
+.hp-lbl {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5em;
+  color: var(--hav-pin-cheap);
+  font-size: max(9px, 1em);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.08em;
+}
+.hp-lbl span:last-child {
+  color: var(--hav-pass-muted);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.hp-rt {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 4%;
+}
+.hp-right {
+  text-align: right;
+}
+.hp-code {
+  font-family: var(--font-display);
+  font-size: 4.4em;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.hp-city {
+  margin-top: 0.35em;
+  color: var(--hav-pass-city);
+  font-size: max(9px, 1.1em);
+}
+.hp-line {
+  position: relative;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--hav-pass-dash) 0 7px, transparent 7px 12px);
+}
+.hp-line::after {
+  content: "✈";
+  position: absolute;
+  top: 50%;
+  right: -2px;
+  transform: translateY(-55%);
+  color: var(--hav-pin-cheap);
+  font-size: 1.8em;
+}
+.hp-fx {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5em 6%;
+}
+.hp-fx small {
+  display: block;
+  margin-bottom: 0.4em;
+  color: var(--hav-pass-muted);
+  font-size: max(9px, 0.9em);
+  letter-spacing: 0.06em;
+}
+.hp-fx b {
+  font-size: 1.9em;
+}
+.hp-fx b i {
+  color: var(--hav-pass-city);
+  font-size: 0.7em;
+  font-style: normal;
+  font-weight: 500;
+}
+.hp-stub {
+  position: relative;
+  display: grid;
+  align-content: space-between;
+  min-width: 0;
+  padding: 14% 12%;
+  border-radius: 0 2em 2em 0;
+  background: var(--hav-pin-ink);
+  color: var(--hav-fg);
+}
+.hp-stub::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: -1px;
+  border-left: 2px dashed var(--hav-pass-dash);
+}
+.hp-big {
+  color: var(--hav-sun);
+  font-family: var(--font-display);
+  font-size: 3.4em;
+  font-weight: 700;
+  line-height: 1;
+}
+.hp-stub p {
+  margin: 0.5em 0 0;
+  color: var(--hav-fg-2);
+  font-size: max(9px, 1em);
+  line-height: 1.4;
+}
+.hp-bar {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 9px;
+  background: var(--hav-stub-bar);
+}
+.hp-bar i {
+  display: block;
+  height: 6px;
+  border-radius: 9px;
+  background: var(--hav-sun);
+}
+
+/* 900 ~ 1199 — 나란히 · 글 칸 최대 47vw · 탑승권 40vw */
+@media (min-width: 900px) and (max-width: 1199px) {
+  .hp-inner {
+    grid-template-columns: minmax(0, 47vw) minmax(0, 40vw);
+    justify-content: space-between;
+  }
+}
+
+/* 899 이하 — 탑승권을 글 아래 가운데 (최대 520px) */
+@media (max-width: 899px) {
+  .hp-inner {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    padding-block: 28px 20px;
+  }
+  .hp-passes {
+    width: 100%;
+    max-width: 520px;
+    margin: 10px auto 0;
+  }
+  .hp-h1 {
+    font-size: 2.25rem;
+  }
+  .hp-ask-wrap {
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hp-rise,
+  .hp-tag,
+  .hp-float {
+    animation: none;
+  }
+  .hp-pass {
+    transition: none;
+  }
+}
