@@ -1,6 +1,6 @@
 // 블랙프라이데이 hero 영수증 시간표 (작업 0381) — 흐른 시간 → 보이는 줄 수 · 카운트업 중인 합계 · 도장 (순수 함수 · 시간은 use-bf-receipt 가 잼)
 //   0.5초 뒤부터 0.85초 간격으로 한 줄씩 · 줄마다 합계가 0.7초 카운트업 · 카운트업이 끝날 때마다 그때 합계로 도장을 다시 찍음 · 한 번만(반복 없음)
-import { DUTY_FREE_USD } from "../../import-calc/calculator/rules";
+import { DUTY_FREE_USD } from "@/shared/customs/rules";
 import { BF_ITEMS, receiptSteps } from "./bf-calc";
 
 export const FIRST_MS = 500;
@@ -39,3 +39,39 @@ export function receiptAt(elapsedMs: number): ReceiptView {
 export const usdText = (n: number): string => `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 /** 원화 환산 글 · 환율이 없으면 빈 글 */
 export const krwText = (usd: number, perUsd: number | null): string => (perUsd === null ? "" : `${Math.round(usd * perUsd).toLocaleString("ko-KR")}원`);
+
+/** 영수증 그림에 쓸 글 · 값 — 그리기는 bf-receipt-view.tsx · 계산은 모두 여기 */
+export type ReceiptDraw = {
+  items: { name: string; usdText: string; fresh: boolean }[];
+  subText: string;
+  limitText: string;
+  krw: string;
+  barPct: number;
+  over: boolean;
+  statusLabel: string;
+  statusText: string;
+  bars: { width: string; gap: string }[];
+  stampText: string;
+  stampOn: boolean;
+  stampKind: string;
+  stampKey: number;
+};
+
+export function receiptDraw(view: ReceiptView, perUsd: number | null): ReceiptDraw {
+  const over = view.usd > RECEIPT_LIMIT_USD;
+  return {
+    items: BF_ITEMS.slice(0, view.lines).map((it, i) => ({ name: it.name, usdText: usdText(it.usd), fresh: i === view.lines - 1 })),
+    subText: usdText(view.usd),
+    limitText: usdText(RECEIPT_LIMIT_USD),
+    krw: krwText(view.usd, perUsd),
+    barPct: Math.min(100, (view.usd / RECEIPT_LIMIT_USD) * 100),
+    over,
+    statusLabel: over ? "한도 초과" : "한도까지",
+    statusText: usdText(Math.abs(RECEIPT_LIMIT_USD - view.usd)),
+    bars: BARCODE.map((w, i) => ({ width: `${w * 0.13}em`, gap: `${(i % 3 === 0 ? 2 : 1) * 0.07}em` })),
+    stampText: view.stamp ?? "",
+    stampOn: view.stamp !== null,
+    stampKind: view.stamp ?? "",
+    stampKey: view.stamped,
+  };
+}
