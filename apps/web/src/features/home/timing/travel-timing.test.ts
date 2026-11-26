@@ -13,9 +13,10 @@
 //     - years = 평균에 쓴 같은 달 값의 최대 개수 (1~3) · complete = 1~12월 모두 값이 있음
 //   export function travelTimingCopy(t: TravelTiming): { title: string | null; message: string }
 //     - preparing: title null · message "국제항공료 지수를 아직 받지 못했습니다"
-//     - ready: title `${cheapest}월에 떠나세요`
-//       message complete: `통계청 국제항공료 지수로 보면 ${cheapest}월이 1년 중 가장 낮고, ${priciest}월이 가장 높습니다.` (작업 0185: '최근 N년 같은 달 평균으로 비교했습니다.' 문장은 뺌 — 사용자 "필요없을 거 같아")
+//     - ready: title `${cheapest}월에 떠나세요.` (작업 0380: 끝에 마침표)
+//       message complete: `항공료가 1년 중 가장 낮은 달입니다.` (작업 0380: 가장 높은 달 문장을 뺌 · 출처는 꼬리표 HERO_GUIDE.tag 로 따로)
 //       message complete 가 아니면 "1년 중" 대신 "받은 달 중" (없는 달을 비교한 척하지 않음)
+//   heroParts(t): ready 면 { month: "N월", rest: "에 떠나세요." } (작업 0380)
 import { describe, expect, it } from "vitest";
 import { type IndexPoint, travelTiming, travelTimingCopy } from "./travel-timing";
 
@@ -112,27 +113,36 @@ describe("travelTimingCopy — 문구는 받은 값으로만", () => {
     expect(travelTimingCopy({ kind: "preparing" })).toEqual({ title: null, message: "국제항공료 지수를 아직 받지 못했습니다" });
   });
 
-  it("3년치 → 'N월에 떠나세요' + 설명 한 줄", () => {
+  it("3년치 → 'N월에 떠나세요.' + 한 줄 (작업 0380 · 가장 높은 달 · 통계청 문장은 뺌)", () => {
     expect(travelTimingCopy(travelTiming(THREE_YEARS))).toEqual({
-      title: "4월에 떠나세요",
-      message: "통계청 국제항공료 지수로 보면 4월이 1년 중 가장 낮고, 8월이 가장 높습니다.",
+      title: "4월에 떠나세요.",
+      message: "항공료가 1년 중 가장 낮은 달입니다.",
     });
   });
 
-  it("몇 년치여도 '같은 달 평균으로 비교했습니다' 문장이 없음 (작업 0185)", () => {
-    for (const pts of [THREE_YEARS, series("2024-11", "2026-10", SHAPE)]) {
+  it("뺀 문구가 없음 — 가장 높은 달 · 통계청 지수 문장 · 같은 달 평균 설명 (작업 0185 · 0380)", () => {
+    for (const pts of [THREE_YEARS, series("2024-11", "2026-10", SHAPE), series("2026-05", "2026-10", SHAPE)]) {
       const m = travelTimingCopy(travelTiming(pts)).message;
+      expect(m).not.toMatch(/가장 높/);
+      expect(m).not.toContain("통계청");
       expect(m).not.toMatch(/같은 달 평균/);
       expect(m).not.toMatch(/비교했습니다/);
       expect(m).not.toMatch(/최근 \d+년/);
     }
-    expect(travelTimingCopy(travelTiming(series("2024-11", "2026-10", SHAPE))).message).toMatch(/가장 낮고, \d+월이 가장 높습니다\.$/);
+    expect(travelTimingCopy(travelTiming(series("2024-11", "2026-10", SHAPE))).message).toBe("항공료가 1년 중 가장 낮은 달입니다.");
   });
 
   it("일부 달만 → '1년 중' 대신 '받은 달 중'", () => {
     const c = travelTimingCopy(travelTiming(series("2026-05", "2026-10", SHAPE)));
-    expect(c.title).toBe("5월에 떠나세요");
-    expect(c.message).toContain("받은 달 중 가장 낮고");
+    expect(c.title).toBe("5월에 떠나세요.");
+    expect(c.message).toBe("항공료가 받은 달 중 가장 낮은 달입니다.");
     expect(c.message).not.toContain("1년 중");
+  });
+
+  it("지수가 없으면 지금처럼 '아직 받지 못했습니다' (달을 지어내지 않음 · 작업 0380 요구 3)", () => {
+    const c = travelTimingCopy(travelTiming(null));
+    expect(c.title).toBeNull();
+    expect(c.message).toBe("국제항공료 지수를 아직 받지 못했습니다");
+    expect(c.message).not.toMatch(/\d+월/);
   });
 });
