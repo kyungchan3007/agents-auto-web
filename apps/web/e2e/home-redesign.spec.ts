@@ -19,17 +19,21 @@ const box = async (page: Page, id: string, n = 0) => {
 const bg = (page: Page, id: string) => tid(page, id).first().evaluate((el) => getComputedStyle(el).backgroundColor);
 
 test.describe("새 홈 — 첫 화면 (작업 0217)", () => {
-  test("메뉴와 한 면으로 이어지는 파랑 · 큰 제목 'N월에 떠나세요' (월만 노랑) · 설명 한 줄", async ({ page }) => {
+  test("메뉴와 한 면으로 이어지는 파랑 · 큰 제목 'N월에 떠나세요.' (월만 노랑) · 한 줄 + 출처 꼬리표 (작업 0380 새 문구)", async ({ page }) => {
     await page.goto("/");
     const header = await page.getByRole("banner").boundingBox();
     const hero = await box(page, "home-hero");
     expect(await bg(page, "home-hero")).toBe(BLUE);
     expect(Math.abs(hero.y - (header!.y + header!.height))).toBeLessThanOrEqual(1);
     const h1 = page.getByRole("heading", { level: 1 });
-    await expect(h1).toHaveText(/^\d+월에 떠나세요$/);
+    await expect(h1).toHaveText(/^\d+월에 떠나세요\.$/);
     expect(await tid(page, "hero-month").evaluate((el) => getComputedStyle(el).color)).toBe(SUN);
     await expect(tid(page, "hero-month")).toHaveText(/^\d+월$/);
-    await expect(tid(page, "home-hero")).toContainText("통계청 국제항공료 지수로 보면");
+    // 작업 0380: 한 줄 "항공료가 {1년 중 | 받은 달 중} 가장 낮은 달입니다." + 꼬리표 · 가장 높은 달 · 지수 최저/최고 긴 문장은 뺌
+    await expect(tid(page, "hero-lede")).toHaveText(/^항공료가 (1년|받은 달) 중 가장 낮은 달입니다\.$/);
+    await expect(tid(page, "hero-tag")).toHaveText("통계청 국제항공료 지수");
+    await expect(tid(page, "home-hero")).not.toContainText("통계청 국제항공료 지수로 보면");
+    await expect(tid(page, "home-hero")).not.toContainText("가장 높습니다");
   });
 
   test("탑승권 카드가 파랑 면과 하늘 면 경계에 걸침 · 글자판은 카드 안 · 아래에 판정 한 줄 · 막대 · 고르기 버튼", async ({ page }) => {
