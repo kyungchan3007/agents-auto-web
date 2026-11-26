@@ -16,7 +16,7 @@ import { type Page, expect, test } from "@playwright/test";
 import { forceDefaultHero } from "./default-hero";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
-const search = (page: Page) => page.getByRole("combobox", { name: "여행지 검색" }); // 아래 탑승권 카드의 검색 칸(그대로)
+const search = (page: Page) => tid(page, "ticket").getByRole("combobox", { name: "여행지 검색" }); // 아래 탑승권 카드의 검색 칸(그대로)
 const heroSearch = (page: Page) => tid(page, "hero-search");
 const box = async (loc: ReturnType<Page["locator"]>, name: string) => {
   const b = await loc.first().boundingBox();
@@ -139,6 +139,8 @@ test.describe("hero 입력창 · 칩 (작업 0380 · 새 문구) — 아래 카�
   test("입력창 자리 글 · 버튼 · 칩 넷(도쿄 · 방콕 · 다낭 · 파리)", async ({ page }) => {
     await page.goto("/");
     await expect(heroSearch(page)).toHaveAttribute("placeholder", "어디로 가세요? 도시 · 나라");
+    await expect(heroSearch(page), "카드 검색 칸(여행지 검색)과 이름이 달라야 화면 읽기 · 다른 검사가 헷갈리지 않음").toHaveAttribute("aria-label", "어디로 가세요");
+    await expect(page.getByRole("combobox", { name: "여행지 검색" }), "이름이 '여행지 검색' 인 칸은 카드 안 하나뿐").toHaveCount(1);
     await expect(tid(page, "hero-go")).toHaveText("보기");
     await expect(tid(page, "hero-chip")).toHaveCount(4);
     const names = await tid(page, "hero-chip").allInnerTexts();
