@@ -78,7 +78,6 @@
   color: var(--hav-pass-muted);
 }
 .hp-ask input:focus-visible {
-  outline-color: var(--hav-pin-ink);
   outline-offset: -4px;
   border-radius: 10px;
 }
@@ -93,10 +92,6 @@
   font-size: 0.9375rem;
   font-weight: 700;
   cursor: pointer;
-}
-.hp-ask button:focus-visible {
-  outline: 2px solid var(--hav-pin-ink);
-  outline-offset: 2px;
 }
 .hp-list {
   position: absolute;
