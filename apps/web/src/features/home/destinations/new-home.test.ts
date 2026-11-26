@@ -4,7 +4,7 @@
 //   year-bars.ts      export type YearBar = { month: number; heightPct: number | null; tone: "high" | "low" | "mid" | "none" }
 //                     export function yearBars(t: TravelTiming): YearBar[]     // ready 가 아니면 [] · 항상 12개(1~12월) · 값 없는 달은 { heightPct: null, tone: "none" }
 //                       가장 비싼 달(t.priciest)=high · 가장 싼 달(t.cheapest)=low · 나머지 값 있는 달=mid · 높이는 가장 싼 달 20% ~ 가장 비싼 달 92% 사이 선형 (모두 같은 값이면 56%)
-//   travel-timing.ts  export function heroParts(t: TravelTiming): { month: string; rest: string } | null   // ready 면 { month: "11월", rest: "에 떠나세요" } · 아니면 null (travelTimingCopy 의 title 과 같은 글)
+//   travel-timing.ts  export function heroParts(t: TravelTiming): { month: string; rest: string } | null   // ready 면 { month: "11월", rest: "에 떠나세요." } · 아니면 null (travelTimingCopy 의 title 과 같은 글)
 //   dest-motion.ts    export function dotPosition(final: number, progress: number): number   // 막대 위 동그라미 위치 0~1 — 카운트업과 같은 시작 비율(최종의 85%)에서 최종 위치로 progress(0~1)만큼 · progress 1 이면 정확히 final · 범위 밖 progress 는 자름
 //   destinations.ts   DestinationRowData 에 rateValue: number | null (baseRate 그대로) · rateDigits: 0 | 1 (baseRate ≥ 100 이면 0 · 아니면 1) — formatCount(rateValue, rateDigits) + "원" 이 rateText 와 같음 · 환율이 없으면 null · 0
 //   today-board.ts · picked.ts   반환값에 percentile: number | null (판 아래 막대 길이 · 백분위 0~1) — 가장 싼 곳은 found.percentile · 없으면 null / 고른 나라는 그 통화 신호의 percentile · 없으면 null
@@ -73,7 +73,7 @@ describe("heroParts — 큰 제목 (월만 노랑)", () => {
   it("ready 면 월과 나머지", () => {
     const t = travelTiming(FULL);
     if (t.kind !== "ready") throw new Error("ready 여야 함");
-    expect(heroParts(t)).toEqual({ month: `${t.cheapest}월`, rest: "에 떠나세요" });
+    expect(heroParts(t)).toEqual({ month: `${t.cheapest}월`, rest: "에 떠나세요." });
   });
   it("자료가 없으면 null", () => {
     expect(heroParts({ kind: "preparing" })).toBeNull();
