@@ -190,3 +190,4 @@
 | 0379 | main 반영 #448 전체 e2e 실패 5개 고치기(0366 한 줄 답 정규식 · 끝자리 0 생략 · 30초 한도 · 칩 움직임 줄이기 · calc @design) (Quick · 테스트) | test | 머지됨 (#449) · main 반영 #448 | task/0379-e2e-fix | apps/web/e2e/** 5개 |
 | 0380 | 첫 페이지 hero 새로: 기본 울트라마린 탑승권 · 문구 줄임 · 입력창 왼쪽 · 탑승권 모션 · 반응형 (Full · 릴리스 없음 · 바로 main) | test → builder → test | 대기(0381 뒤) | task/0380-hero-pass | apps/web/src/features/home/** · tokens.css |
 | 0381 | 블랙프라이데이 hero(~12-01 17:00 KST): 검정 · $200 면세 계산기 · 감열지 영수증 한 번 찍기 (Full · 릴리스 없음 · 바로 main · 먼저) | test → builder → test | 머지됨 (#451) · main 반영 | task/0381-hero-bf | apps/web/src/features/home/** · app head |
+| 0382 | 블프 main 반영 #452 e2e 실패 2개(홈 h1 둘 · 움직임 줄이기 DOM 분리) (Quick · 테스트) | test (→ builder) | 진행 | task/0382-bf-e2e | apps/web/e2e/{a11y,home-redesign}.spec.ts |
