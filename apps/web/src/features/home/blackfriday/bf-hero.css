@@ -236,7 +236,8 @@ html[data-hero="bf"] .bf-default {
   /* 위 · 아래 톱니 끝 */
   mask:
     radial-gradient(circle at 0.55em 0, transparent 0.46em, #000 0.5em) top / 1.08em 0.7em repeat-x,
-    radial-gradient(circle at 0.55em 0.7em, transparent 0.46em, #000 0.5em) bottom / 1.08em 0.7em repeat-x;
+    radial-gradient(circle at 0.55em 0.7em, transparent 0.46em, #000 0.5em) bottom / 1.08em 0.7em repeat-x,
+    linear-gradient(#000, #000) center / 100% calc(100% - 1.4em) no-repeat;
   mask-composite: add;
 }
 .bf-rcpt-back .bf-paper {
@@ -255,7 +256,7 @@ html[data-hero="bf"] .bf-default {
 }
 .bf-hd span {
   color: var(--hav-bf-ink-muted);
-  font-size: 0.85em;
+  font-size: max(9px, 0.85em);
 }
 .bf-hd .bf-meta {
   display: flex;
@@ -289,7 +290,7 @@ html[data-hero="bf"] .bf-default {
 }
 .bf-sm {
   color: var(--hav-bf-ink-2);
-  font-size: 0.92em;
+  font-size: max(9px, 0.92em);
 }
 .bf-tot {
   margin: 0.25em 0 0.1em;
@@ -333,11 +334,18 @@ html[data-hero="bf"] .bf-default {
 .bf-st[data-over="true"] {
   color: var(--hav-bf-red);
 }
+.bf-bcrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6em;
+  margin: 0.9em 0.3em 0.3em;
+}
 .bf-bc {
   display: flex;
+  flex: none;
   align-items: stretch;
   height: 3.5em;
-  margin: 0.9em 0.6em 0.3em;
   overflow: hidden;
 }
 .bf-bc i {
@@ -347,21 +355,23 @@ html[data-hero="bf"] .bf-default {
 }
 .bf-bcn {
   color: var(--hav-bf-ink-2);
-  font-size: 0.85em;
+  font-size: max(9px, 0.85em);
   letter-spacing: 0.3em;
   text-align: center;
 }
 .bf-thanks {
   margin-top: 0.7em;
   color: var(--hav-bf-ink-3);
-  font-size: 0.78em;
+  font-size: max(9px, 0.78em);
   text-align: center;
 }
-/* 도장 — 바코드 오른쪽 빈자리 · 합계가 바뀔 때마다 다시 찍힘(key 가 바뀌어 처음부터) */
+/* 도장 — 바코드 오른쪽 빈자리(바코드와 같은 줄) · 합계가 바뀔 때마다 다시 찍힘(key 가 바뀌어 처음부터) */
 .bf-stamp {
-  position: absolute;
-  right: 1.5em;
-  bottom: 5.6em;
+  flex: none;
+  min-width: 3.6em;
+  min-height: 2.2em;
+  margin-right: 0.3em;
+  text-align: center;
   padding: 0.3em 0.75em 0.2em;
   border: 0.2em solid currentcolor;
   border-radius: 0.35em;
