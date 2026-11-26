@@ -104,6 +104,9 @@
   --hav-flap-cell: #1f3190;
   /* 국기 둘레 옅은 선 — 남색 22% (작업 0249 · 18번) */
   --hav-flag-edge: rgb(22 36 110 / 0.22);
+  /* 사이드바 여닫는 움직임의 면 색 — 시작 요소 자리 옅은 남색(줄 hover 바탕) · 중간에 떠오른 면 (작업 0370) */
+  --hav-lift-rest: #eef0f9;
+  --hav-lift-mid: #f6f7fc;
 }
 
 @theme inline {

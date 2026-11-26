@@ -16,8 +16,9 @@ const OPEN_MS = 680;
 const CLOSE_MS = 560;
 
 /** 늘어나는 상자의 겉모습(작업 0370) — 선 없이 바탕과 그림자만: 시작 요소 자리에서는 옅은 남색(줄 hover 바탕) · 중간에 떠오른 그림자 · 끝은 열린 뒤 고정 값(흰 바탕 + 경계 그림자) */
-const LIFT_REST = { backgroundColor: "#eef0f9", boxShadow: "0 0 0 rgba(22,36,110,0)" };
-const LIFT_MID = { backgroundColor: "#f6f7fc", boxShadow: "0 22px 48px rgba(22,36,110,.2)" };
+const token = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const liftRest = () => ({ backgroundColor: token("--hav-lift-rest"), boxShadow: "none" });
+const liftMid = () => ({ backgroundColor: token("--hav-lift-mid"), boxShadow: token("--shadow-panel-lift") });
 /** 열린 뒤 패널이 실제로 가진 바탕 · 그림자 (움직임 끝 값과 같아 툭 바뀌지 않음) */
 const settled = (panel: HTMLElement) => {
   const cs = getComputedStyle(panel);
@@ -104,7 +105,7 @@ export function playOpen(els: MotionEls, label = ""): void {
   panel.appendChild(ghost);
   ghost.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: "forwards" }).onfinish = () => ghost.remove();
 
-  panel.animate([{ ...frame(b, getComputedStyle(btn).borderRadius), ...LIFT_REST }, { ...LIFT_MID, offset: 0.45 }, { ...frame(final, radius), ...settled(panel) }], { duration: OPEN_MS, easing: MORPH });
+  panel.animate([{ ...frame(b, getComputedStyle(btn).borderRadius), ...liftRest() }, { ...liftMid(), offset: 0.45 }, { ...frame(final, radius), ...settled(panel) }], { duration: OPEN_MS, easing: MORPH });
   head?.animate([{ opacity: 0, transform: "translateY(-6px)" }, { opacity: 1, transform: "none" }], { duration: 260, delay: 560, fill: "backwards", easing: EASE });
   if (!list) return;
   [...list.children].forEach((row, i) => row.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 280, delay: 600 + i * 28, fill: "backwards", easing: EASE }));
@@ -162,7 +163,7 @@ export function playClose(els: MotionEls): Promise<void> {
 
   head?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, fill: "forwards" });
   if (list) [...list.children].forEach((row) => row.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, fill: "forwards" }));
-  const main = panel.animate([{ ...frame(final, radius), ...settled(panel) }, { ...LIFT_MID, offset: 0.55 }, { ...frame(b, btnRadius), ...LIFT_REST }], { duration: CLOSE_MS, delay: 120, easing: MORPH, fill: "forwards" });
+  const main = panel.animate([{ ...frame(final, radius), ...settled(panel) }, { ...liftMid(), offset: 0.55 }, { ...frame(b, btnRadius), ...liftRest() }], { duration: CLOSE_MS, delay: 120, easing: MORPH, fill: "forwards" });
   return main.finished.then(
     () => {
       clones.forEach((c) => c.remove());
