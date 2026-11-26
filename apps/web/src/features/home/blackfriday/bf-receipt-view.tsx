@@ -67,17 +67,19 @@ export function BfReceipt({ view, perUsd }: { view: ReceiptView; perUsd: number 
             <span>{usdText(rest)}</span>
           </div>
           <div className="bf-rule" />
-          <div className="bf-bc">
-            {BARCODE.map((w, i) => (
-              <i key={i} style={{ width: `${w * 0.22}em`, marginRight: `${(i % 3 === 0 ? 2 : 1) * 0.12}em` }} />
-            ))}
+          <div className="bf-bcrow">
+            <div className="bf-bc">
+              {BARCODE.map((w, i) => (
+                <i key={i} style={{ width: `${w * 0.13}em`, marginRight: `${(i % 3 === 0 ? 2 : 1) * 0.07}em` }} />
+              ))}
+            </div>
+            <div key={view.stamped} data-testid="bf-receipt-stamp" className="bf-stamp" data-on={String(view.stamp !== null)} data-kind={view.stamp ?? ""}>
+              {view.stamp ?? ""}
+            </div>
           </div>
           <div className="bf-bcn">1127 FLAPFX</div>
           <div data-testid="bf-receipt-note" className="bf-thanks">
             {BF_COPY.receiptNote}
-          </div>
-          <div key={view.stamped} data-testid="bf-receipt-stamp" className="bf-stamp" data-on={String(view.stamp !== null)} data-kind={view.stamp ?? ""}>
-            {view.stamp ?? ""}
           </div>
         </div>
       </div>
