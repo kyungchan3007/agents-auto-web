@@ -2,6 +2,11 @@
 //   표시: data-testid="home-hero"(파랑 첫 면) · "hero-month"(노랑 월) · "ticket-band"(경계에 걸치는 파랑 띠) · "ticket"(카드) · "ticket-evidence" · "ticket-bar"
 //        "year-bars"(role=img) · "year-bar"(data-tone high|low|mid|none) · "year-link" · "dest-list"(흰 판) · "dest-row" · "dest-rate"(data-final) · "dest-dot"(data-position) · "dest-flag"
 import { type Page, expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const BLUE = "rgb(36, 56, 168)";
 const SUN = "rgb(247, 197, 72)";
@@ -237,6 +242,7 @@ test.describe("새 홈 — 도착지별 환전 타이밍 (작업 0217)", () => {
   test("자바스크립트를 꺼도 금액 · 막대 · 12달 막대가 보임", async ({ browser, baseURL }) => {
     const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL });
     const page = await ctx.newPage();
+    await forceDefaultHero(page);
     await page.goto("/");
     await expect(tid(page, "dest-rate").first()).toHaveText(/^[\d,.]+원$/);
     await expect(tid(page, "year-bar")).toHaveCount(12);

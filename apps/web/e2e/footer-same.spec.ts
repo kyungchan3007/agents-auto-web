@@ -4,6 +4,11 @@
 //   작업 0299: 환율 출처는 공용 상수 '한국수출입은행 · Frankfurter(수출입은행 값을 받지 못한 날)' 로 다섯 페이지 바닥 띠가 같음(옛 '(예비: Frankfurter)' 괄호와 다름)
 //   각 페이지의 출처 문장 자체는 그대로 · 소개의 바닥 띠("모든 숫자의 출처는 각 화면 아래에 적습니다")도 그대로
 import { type Page, expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const PAGES: [string, string][] = [
   ["홈", "/"],

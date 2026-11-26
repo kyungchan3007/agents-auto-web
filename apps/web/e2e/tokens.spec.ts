@@ -1,5 +1,10 @@
 // 작업 0215 (#254) — (빌드 CSS 는 #ffffff 를 #fff 로 줄여 씀) 그림자 · 색을 토큰으로 옮겨도 화면 값은 그대로 (계산된 스타일이 예전과 같음)
 import { expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 test("홈 출발 안내판 그림자 — 토큰 shadow-board 가 예전 값(0 10px 24px · 남색 25%)과 같음 @design", async ({ page }) => {
   await page.goto("/");

@@ -3,6 +3,11 @@
 //   판정: 그래프가 다 그려진 뒤(data-state=done) 눈금 묶음(chart-axis) 안 모든 글자의 실제 투명도(자기 · 위 요소 곱, 그림 뿌리까지) 가 1
 //   흰 말풍선 글 · 강조 색 이름표 · 그리는 도중의 나타남(reveal) 투명도는 대상 아님(끝나면 1)
 import { type Page, expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const CASES: { name: string; path: string; chart: string }[] = [
   { name: "홈 12달 막대(왼쪽 눈금)", path: "/", chart: "year-bars" },

@@ -6,6 +6,11 @@
 //   보이는 크기 = 요소 자신의 상자(::after 제외)가 작업서가 잰 값 ± 2px 안(키우지 않음)
 //   제외(작업서 · lead): 여행 타이밍 창밖 달 버튼(window-month) · /geo · /log — 범례 탭 3개는 사용자 결정("4px 늘려서 맞춤")으로 대상에 넣음
 import { type Locator, type Page, expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const VIEW = { width: 390, height: 844 };
 const MIN = 43.5; // 0.5px 간격으로 잰 값이라 44 에서 0.5 까지 허용

@@ -5,6 +5,11 @@
 //   마우스 · 손가락으로 누를 때는 고리가 없어야 함(:focus-visible 아님)
 //   제외: /geo · /log(대상 아님) · 보이지 않는 입력(라벨이 고리를 그림: [data-ring-host])
 import { type Page, expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const BLUE = "rgb(36, 56, 168)";
 const NAVY = "rgb(22, 36, 110)";

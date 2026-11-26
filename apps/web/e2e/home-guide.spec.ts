@@ -7,6 +7,7 @@
 //   기존 표시 그대로: home-hero · hero-month · ticket · ticket-evidence · trip-switcher · pick-chip · combobox "여행지 검색" · option
 //   기존 home-fix-0217.spec.ts 는 이 작업에서 고침: 설명 문장 ↔ 카드 간격(시안 B 50px · 40px)은 안내 줄이 끼어 마지막 p(작은 줄) ↔ 카드로 8 ~ 54px
 import { type Page, expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const isPhoneProject = (page: Page) => page.context().browser() !== null && (page.viewportSize()?.width ?? 0) < 640 && test.info().project.name === "휴대폰";
@@ -33,6 +34,7 @@ const SCREENS = [
 ] as const;
 
 test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
   await page.addInitScript(() => localStorage.setItem("flapfx:intro-off", "1"));
 });
 

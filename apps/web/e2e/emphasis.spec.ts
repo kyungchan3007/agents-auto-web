@@ -2,6 +2,11 @@
 // 하늘 종이 위: 글자색 그대로 + 해 노랑(#F7C548) 형광펜 띠 · 비쌈 뜻은 주홍(#C13A22) 글자 · 바다 띠 · 울트라마린 막 위는 해 노랑 글자
 //   표시: data-testid="emph" · data-tone · data-bg — packages/ui text/emph.tsx
 import { type Page, expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const SUN = "rgb(247, 197, 72)"; // #F7C548
 const VERMILION = "rgb(193, 58, 34)"; // #C13A22

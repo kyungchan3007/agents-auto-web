@@ -2,6 +2,11 @@
 // 표시: data-testid="flap-board"(판 · role=img · aria-label) · "flap-row"(data-tone dest|money) · "flap-cell"(칸 · aria-hidden) · #board (작업 0177 수정: 3D 지구 없음 · 판은 하늘 종이 위)
 // 값은 날마다 · 자료 유무에 따라 달라서 두 경우(값 있음 · 없음 "----") 모두 맞게 봄
 import { expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const INK = "rgb(22, 36, 110)"; // #16246E 판
 const CELL = "rgb(31, 49, 144)"; // #1f3190 칸 (작업 0216 · 시안 B)
@@ -105,6 +110,7 @@ test.describe("접근성 · 움직임", () => {
   test("움직임 줄이기 — 바로 최종 글자 (넘어가는 중간 글자 없음)", async ({ browser }) => {
     const ctx = await browser.newContext({ reducedMotion: "reduce", viewport: { width: 1440, height: 900 } });
     const page = await ctx.newPage();
+    await forceDefaultHero(page);
     await page.goto("/");
     // 로드 직후(0.2초) 이미 최종 글자 — 판 글자를 모아 라벨과 맞춤
     await page.waitForTimeout(200);
@@ -118,6 +124,7 @@ test.describe("접근성 · 움직임", () => {
   test("한 번만 — 처음에 넘어가며 맞춰진 뒤 2.5초 안에 끝나고 다시 바뀌지 않음", async ({ browser }) => {
     const ctx = await browser.newContext({ reducedMotion: "no-preference", viewport: { width: 1440, height: 900 } });
     const page = await ctx.newPage();
+    await forceDefaultHero(page);
     await page.goto("/");
     await page.waitForTimeout(2600); // 1~2초 + 여유
     const settled = await board(page).locator('[data-testid="flap-row"]').allTextContents();
@@ -130,6 +137,7 @@ test.describe("접근성 · 움직임", () => {
 test("긴 금액(1,234.56원 같은 긴 글)도 칸이 판을 넘치지 않음 — /design 이 아니라 실제 홈에서 칸 폭 · 판 폭만 확인 (375)", async ({ browser }) => {
   const ctx = await browser.newContext({ viewport: { width: 375, height: 800 } });
   const page = await ctx.newPage();
+    await forceDefaultHero(page);
   await page.goto("/");
   await page.waitForLoadState("networkidle");
   await settle(page);

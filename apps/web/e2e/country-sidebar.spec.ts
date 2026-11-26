@@ -16,6 +16,11 @@
 //   0360 노선 카드 "{나라} 자세히 보기 ›"(route-card-detail)도 이 사이드바를 엶 — 0360 이 합쳐진 뒤에만 돌아감(없으면 건너뜀)
 import { type Locator, type Page, expect, test } from "@playwright/test";
 import { hydrated } from "./helpers";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const links = (page: Page) => tid(page, "price-bands").locator('[data-testid="price-band-link"]');
@@ -68,6 +73,7 @@ test.describe("HTML 은 지금처럼 링크 (작업 0361)", () => {
   test("자바스크립트를 꺼도 링크를 누르면 나라 페이지로 감", async ({ browser, baseURL }) => {
     const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL });
     const page = await ctx.newPage();
+    await forceDefaultHero(page);
     await page.goto("/prices");
     const first = links(page).first();
     const href = await first.getAttribute("href");

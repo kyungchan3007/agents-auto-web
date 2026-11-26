@@ -12,6 +12,11 @@
 //   끝 상태 = reduced-motion(= 지금 운영) 로 연 같은 쪽의 카드와 같음 — 높이 · 모서리 · 줄 글 · 줄 위치
 //   빌드 시점 값만 씀 — 줄이 없는 환경에서는 건너뜀(줄은 지금 화면에도 있음 · 알약이 없어서 건너뛰지 않음)
 import { type Page, expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 640;
@@ -272,6 +277,7 @@ test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 ·
     const vp = page.viewportSize()!;
     const ctx = await browser.newContext({ viewport: vp, reducedMotion: "reduce", baseURL, storageState: { cookies: [], origins: [{ origin: new URL(baseURL ?? "http://127.0.0.1:4399").origin, localStorage: [{ name: "flapfx:intro-off", value: "1" }] }] } });
     const ref = await ctx.newPage();
+    await forceDefaultHero(ref);
     await ref.goto("/");
     await ref.waitForLoadState("networkidle");
     await ref.waitForTimeout(400);
@@ -400,6 +406,7 @@ test.describe("홈 도착지 카드 — 요약 알약 → 펼침 (작업 0228 ·
   test("자바스크립트를 꺼도 처음부터 최종 카드 — 알약 없음 · 줄이 보임", async ({ browser, baseURL }) => {
     const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL });
     const page = await ctx.newPage();
+    await forceDefaultHero(page);
     await page.goto("/");
     test.skip(!(await hasRows(page)), "도착지 자료 없음");
     await expect(tid(page, "dest-pill").filter({ visible: true })).toHaveCount(0); // 서버 그림의 알약은 DOM 에 있어도 보이지 않음

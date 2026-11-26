@@ -13,6 +13,11 @@
 //   움직임: 처음부터 닫힌 채 시작 → 화면에 보이면 바로(0.6초 안) 올라감 · 닫히는 모습은 보이면 안 됨(다른 페이지에서 클라이언트 이동으로 와도) · '다시 보기'를 누를 때만 닫혔다 열림 → 1월부터 12월까지 지나 가장 싼 달에서 멈춤
 //   자료 없음(지수를 못 받음)이면 구역이 없음 · 건너뜀(자료 조건) — 구현이 없어서 건너뛰지 않음(hero 의 flights-ticket 은 지금 화면에도 있음)
 import { type Page, expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 640;
@@ -257,6 +262,7 @@ test.describe("여행 타이밍 — 창밖으로 보는 12달 (작업 0229 · �
   test("자바스크립트를 꺼도 — 창이 열린 모양 · 값 · 달 버튼이 보임 (닫힌 채 안 남음)", async ({ browser, baseURL }) => {
     const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport: { width: 1280, height: 3000 } });
     const page = await ctx.newPage();
+    await forceDefaultHero(page);
     await page.goto("/flights");
     test.skip((await tid(page, "window-section").count()) === 0 && (await tid(page, "flights-ticket").count()) === 0, "지수 자료 없음");
     const info = await page.evaluate(() => {

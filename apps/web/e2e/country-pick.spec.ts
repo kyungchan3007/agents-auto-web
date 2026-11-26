@@ -1,6 +1,11 @@
 // 작업 0201 (#233) — 여행지 고르기 시트 · 여행 물가 머리 (휴대폰 + 넓은 화면) · 작업 0222: 사진이 없어져 파일 이름을 country-pick 으로, 사진 줄은 지움
 // 인트로는 config 의 storageState 로 꺼져 있음 — 시트로 고른 값은 localStorage("flapfx:picked") 에 저장되어 새로고침해도 유지
 import { type Page, expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 // 작업 0217 지적: 홈은 버튼 · 시트 없이 카드 안 칩 · 검색으로 바로 바꿈 — 시트(dialog)는 여행 물가 "다른 나라 보기"(pick-trip-other)에만 남음
 const open = (page: Page) => page.getByTestId("pick-trip-other").first();

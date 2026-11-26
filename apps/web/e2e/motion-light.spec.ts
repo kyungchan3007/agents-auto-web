@@ -5,6 +5,11 @@
 //   제외: 창밖 덮개 · 물가 노선 고정 스크롤(이번 대상 아님)
 //   값 의존(출발일 달력 막대 · 비행기)은 출발일 자료가 있는 빌드에서만 돎(AIRFARE_FIXTURE=1 고정 자료 빌드 · 그 밖은 건너뜀)
 import { type Page, expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 /** 등장 움직임이 끝나기를 기다림 */
@@ -93,6 +98,7 @@ test.describe("움직임 가볍게 (작업 0281)", () => {
   test("JavaScript 를 끄고도 — 홈 도착지 카드 · 통화 상세 숫자가 최종 값으로 보임", async ({ browser, baseURL }) => {
     const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport: { width: 1280, height: 900 } });
     const page = await ctx.newPage();
+    await forceDefaultHero(page);
     await page.goto("/");
     if ((await tid(page, "dest-list").count()) > 0) {
       await expect(tid(page, "dest-row").first()).toBeVisible();

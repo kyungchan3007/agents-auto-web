@@ -8,6 +8,11 @@
 //   홈: "picked-pass"(왼쪽 아래 '탑승권 보기' 버튼) · 안내판은 홈의 flap-board(aria-label)
 // 인트로를 끄는 법(끄기 스위치): localStorage["flapfx:intro-off"] = "1" — playwright.config 의 storageState 로 다른 e2e 는 기본 꺼 둠 · 이 파일만 켬
 import { expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 test.use({ storageState: { cookies: [], origins: [] } }); // 이 파일은 인트로를 켠 채로
 
@@ -160,6 +165,7 @@ test.describe("데스크톱 인트로", () => {
     test.setTimeout(150_000);
     const ctx = await browser.newContext({ reducedMotion: "reduce", viewport: DESKTOP, storageState: { cookies: [], origins: [] } });
     const page = await ctx.newPage();
+    await forceDefaultHero(page);
     await openIntro(page);
     await page.evaluate(() => {
       const w = window as unknown as { __tint: boolean };

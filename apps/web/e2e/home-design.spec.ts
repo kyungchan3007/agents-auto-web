@@ -1,5 +1,10 @@
 // 작업 0210 (#249) → 작업 0217 — 홈 첫 화면 검사 (새 디자인: 큰 제목 · 탑승권 카드 · 12달 막대 라벨 대비) · 옛 사진 머리 · 선 그래프 · 휴대폰 간격 검사는 새 홈에 없는 모양이라 뺌
 import { type Locator, type Page, expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 640;
 const box = async (loc: Locator) => {

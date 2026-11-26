@@ -2,6 +2,11 @@
 //   2026-10-30 320px 에서 위 메뉴 뒤 둘이 잘려 안 보였는데 넓은 화면 e2e 로는 못 잡았음 (작업 0109)
 //   운영 사이트를 열기만 함 — 빌드하지 않아 D1 을 읽지 않음
 import { expect, test } from "@playwright/test";
+import { forceDefaultHero } from "../e2e/default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const PAGES = ["/", "/currencies", "/currencies/USD", "/prices", "/flights", "/calc", "/about"]; // 어드민 화면은 apps/admin (작업 0312)
 const WIDTHS = [320, 375, 768, 1280];

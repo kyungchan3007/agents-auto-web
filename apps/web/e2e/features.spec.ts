@@ -1,6 +1,11 @@
 // 오늘(2026-10-30) 만든 기능이 실제 브라우저에서 도는지 — 값은 날마다 바뀌어서 동작 · 모양만 봄 (작업 0101)
 import { type Page, expect, test } from "@playwright/test";
 import { openMenuIfCollapsed } from "./helpers";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 /** 페이지 오류 · 하이드레이션 어긋남 모으기 */
 function watchErrors(page: Page) {

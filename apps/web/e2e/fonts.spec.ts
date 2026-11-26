@@ -1,6 +1,11 @@
 // 큰 제목 · 큰 숫자 글꼴 Pretendard 800 — 작업 0176 · 실행은 lead 가 PR 직전에 (빌드한 사이트를 읽음)
 // 사용자 "너무 뚱뚱해서 보기 힘들다 … A안 Pretendard 800" · 레이아웃 깨짐 확인: 375 · 1440 에서 홈 · 통화 · 직구 · 여행 물가
 import { expect, test } from "@playwright/test";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 const PAGES = ["/", "/currencies/USD", "/calc", "/prices"];
 

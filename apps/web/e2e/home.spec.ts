@@ -3,6 +3,11 @@
 //   builder 가 다는 표시: id="board"(탑승권 카드) · id="today"(도착지별 환전 타이밍 · 작업 0233)  · data-testid="travel-graph" · data-testid="plane-route"
 import { expect, test } from "@playwright/test";
 import { openMenuIfCollapsed } from "./helpers";
+import { forceDefaultHero } from "./default-hero";
+
+test.beforeEach(async ({ page }) => {
+  await forceDefaultHero(page);
+});
 
 test("홈 구간 순서 — 여행 타이밍 → 오늘 환율(바다 띠) → 도착지별 환전 타이밍", async ({ page }) => {
   await page.goto("/");
