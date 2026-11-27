@@ -206,4 +206,5 @@
 | 0395 | #470 남은 실패: 글꼴 로딩으로 390 hero 높이 48px 바뀜 · tap-44 흔들림 (Quick) | test → builder | 머지됨 (#472) · main 반영 #470 | task/0395-font-shift | apps/web/src/features/home/{hero,blackfriday,carousel}/*.css |
 | 0396 | 나라 물가 요약 칸(글래스 · 0393 숫자 칸 공통화) · 환율 없음 안내를 방문자 말로 (Full · develop 머지까지) | test ∥ builder → test | 머지됨 (#473) | task/0396-country-summary | apps/web/src/shared/facts/** · features/{home/hero,prices/country}/** · packages/shared/src/domain/fx-schedule.ts · 쓰는 화면 |
 | 0397 | 나라 물가 '오늘 기준 한 줄 답' 상자 지우기 (Quick · develop 머지까지) | builder → test | 머지됨 (#474) | task/0397-no-oneline | apps/web/src/features/prices/country/** |
-| 0398 | 반응형 전수 점검 · 여백 · 정렬(전 페이지 320~1600 · 나라 물가 두 칸 · 블프 장 · 빈 공간 · 동적 변화) (Full · 급함 · develop 머지까지) | test ∥ builder | PR 열림 | task/0398-resp-audit | e2e/resp-audit.spec.ts · features/{prices/country,home}/** · 점검에서 나온 곳 |
+| 0398 | 반응형 전수 점검 · 여백 · 정렬(전 페이지 320~1600 · 나라 물가 두 칸 · 블프 장 · 빈 공간 · 동적 변화) (Full · 급함 · develop 머지까지) | test ∥ builder | 머지됨 (#475) | task/0398-resp-audit | e2e/resp-audit.spec.ts · features/{prices/country,home}/** · 점검에서 나온 곳 |
+| 0399 | 흐르는 환율 띠: 홈 hero 아래 · 홈 밖 페이지는 화면 바닥 고정(어두운 유리) (Quick · develop 머지까지) | test ∥ builder → test | 진행 | task/0399-rate-ticker | apps/web/src/shared/ticker/** · home/{carousel,home.tsx} · 페이지 바닥 여백 |
