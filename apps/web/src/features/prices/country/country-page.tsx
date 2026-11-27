@@ -15,6 +15,7 @@ import { allRows } from "../bands/bands";
 import { BudgetPlanner } from "../budget/budget-planner";
 import { CompareList } from "./compare-list";
 import { CountryFaq } from "./country-faq";
+import { countryFacts } from "./country-facts";
 import { CountryHeader } from "./country-header";
 import type { CountryView } from "./country-model";
 import { NextCards } from "./next-cards";
@@ -29,7 +30,7 @@ export function CountryPage({ view, levels, signals, builtAt = null }: { view: C
         <div className="grid grid-cols-[minmax(1rem,1fr)_minmax(0,var(--container-page))_minmax(1rem,1fr)] sm:grid-cols-[minmax(2rem,1fr)_minmax(0,var(--container-page))_minmax(2rem,1fr)]">
           <div aria-hidden className="col-span-3 col-start-1 row-start-1 bg-pin-cheap" />
           <div className="col-start-2 row-start-1 pt-10 pb-32 sm:pt-14 lg:pr-[calc(28.25rem+3.5rem)] lg:pb-10">
-            <CountryHeader v={view} />
+            <CountryHeader v={view} facts={countryFacts(view.code, levels, signals)} />
           </div>
           <div className="relative z-10 col-start-2 row-start-2 -mt-24 pb-2 lg:row-start-1 lg:mt-[3.25rem] lg:mb-10 lg:ml-auto lg:w-[28.25rem] lg:self-start lg:pb-0">
             <BudgetPlanner rows={rows} latestOf={latestOf} initial={view.code} builtAt={builtAt} />

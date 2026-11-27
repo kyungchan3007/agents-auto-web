@@ -4,9 +4,13 @@
 // 큰 제목의 강조(EmphText · 카운트업)가 브라우저 부품이라 'use client' — 서버 첫 그림에도 문장이 그대로 들어감(prices-header.tsx 와 같음)
 import { EmphText } from "@hav/ui/text/emph";
 import Link from "next/link";
+import { FactsCard } from "@/shared/facts/facts-card";
+import type { Facts } from "@/shared/facts/facts";
 import type { CountryView } from "./country-model";
 
-export function CountryHeader({ v }: { v: CountryView }) {
+const FACT_IDS = { root: "country-facts", title: "country-facts-title", mine: "country-facts-mine", rate: "country-fact-rate", tenk: "country-fact-tenk", price: "country-fact-price", bar: "country-fact-bar", position: "country-fact-position", link: "country-fact-link", none: "country-fact-none" };
+
+export function CountryHeader({ v, facts }: { v: CountryView; facts: Facts }) {
   return (
     <div data-surface="dark" className="text-fg">
       <nav data-testid="country-crumb" aria-label="경로" className="mb-3 text-small text-fg-2">
@@ -20,6 +24,7 @@ export function CountryHeader({ v }: { v: CountryView }) {
         <EmphText text={v.title} bg="sea" underline countUp />
       </h1>
       <p className="mt-6 max-w-[36em] text-body text-fg-2 sm:text-[1.125rem]">세계은행 {v.year}년 나라별 물가 수준(한국 = 100)과 오늘 그 나라 통화 신호를 함께 봅니다.</p>
+      <FactsCard facts={facts} ids={FACT_IDS} label={`${v.name} 오늘 숫자`} noRate="message" reserveLink={false} className="mt-6 max-w-[32.5rem]" />
       {v.oneLine && (
         <div data-testid="country-oneline" className="mt-6 max-w-[40rem] rounded-[1rem] border border-line bg-card px-5 py-4">
           <p className="text-[0.8125rem] text-fg-2">{v.oneLine.label}</p>
