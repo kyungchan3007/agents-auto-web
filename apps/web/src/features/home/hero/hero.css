@@ -548,157 +548,11 @@
   cursor: pointer;
 }
 
-/* 칩 아래 숫자 칸 — 글래스(사용자 확정 값 그대로) · 높이는 값이 없어도 같음 */
-.hp-facts {
-  position: relative;
+/* 첫 페이지 숫자 칸을 놓는 자리 (칩 아래) */
+.hp-facts-place {
   z-index: 1;
   max-width: 28.75rem;
   margin: 22px 0 0;
-  padding: 16px 18px 14px;
-  border: 1px solid transparent;
-  border-radius: 13px;
-  background: var(--hav-glass-bg);
-  box-shadow: var(--hav-glass-shadow);
-  -webkit-backdrop-filter: blur(4px) saturate(157%);
-  backdrop-filter: blur(4px) saturate(157%);
-  color: var(--hav-fg);
-  text-align: left;
-}
-.hp-facts-hd {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 28px;
-  font-size: 0.9375rem;
-  font-weight: 700;
-}
-.hp-facts-title {
-  flex: 1 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.hp-facts-hd small,
-.hp-facts-tag {
-  flex: none;
-  white-space: nowrap;
-}
-.hp-facts-hd small {
-  color: var(--hav-glass-fg-2);
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-.hp-facts-tag {
-  margin-left: auto;
-  line-height: 1.2;
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: var(--hav-sun);
-  color: var(--hav-pin-ink);
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-.hp-facts-st {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 12px;
-}
-.hp-facts-st small,
-.hp-facts-t {
-  color: var(--hav-glass-fg-2);
-  font-size: 0.75rem;
-}
-.hp-facts-st small {
-  display: block;
-}
-.hp-facts-st b {
-  display: block;
-  margin-top: 3px;
-  font-size: clamp(15px, 4vw, 20px);
-  min-height: calc(1.25em + 0.9375rem);
-  font-weight: 800;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-}
-.hp-facts-st b i {
-  display: block;
-  color: var(--hav-glass-fg-2);
-  font-size: 0.75rem;
-  font-style: normal;
-  font-weight: 600;
-  letter-spacing: 0;
-}
-.hp-facts-y {
-  color: var(--hav-sun);
-}
-.hp-facts-rng {
-  margin-top: 14px;
-}
-.hp-facts-t {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  min-height: 1.5em;
-  white-space: nowrap;
-}
-.hp-facts-bar {
-  position: relative;
-  height: 6px;
-  margin: 8px 0 0;
-  border-radius: 9px;
-  background: var(--hav-glass-track);
-}
-.hp-facts-bar i {
-  position: absolute;
-  top: 50%;
-  width: 14px;
-  height: 14px;
-  margin-left: -7px;
-  border: 2px solid var(--hav-pin-ink);
-  border-radius: 50%;
-  background: var(--hav-sun);
-  box-shadow:
-    0 0 0 4px var(--hav-glass-dot-halo),
-    var(--hav-glass-dot-shadow);
-  transform: translateY(-50%);
-}
-.hp-facts-ft {
-  display: grid;
-  gap: 6px;
-  margin-top: 20px;
-  font-size: 0.8125rem;
-}
-.hp-facts-ft span {
-  display: block;
-  min-height: 3em;
-  color: var(--hav-glass-fg-2);
-  font-size: 0.75rem;
-  line-height: 1.5;
-}
-.hp-facts-ft a {
-  color: var(--hav-fg);
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.hp-facts-ft div {
-  min-height: 1.5em;
-}
-@media (max-width: 480px) {
-  .hp-facts-ft div {
-    min-height: 3em;
-  }
-}
-@media (max-width: 380px) {
-  .hp-facts-st {
-    gap: 6px;
-  }
-  .hp-facts-st b {
-    font-size: 15px;
-  }
 }
 
 /* 899 이하 — 두 hero 의 글 칸을 탑승권과 같은 가운데 기둥으로(최대 600 · 좌우 22px · 안전 영역) (작업 0393) */
@@ -711,7 +565,7 @@
     max-width: 600px;
     margin-inline: auto;
   }
-  .hp-facts {
+  .hp-facts-place {
     max-width: none;
   }
 }
