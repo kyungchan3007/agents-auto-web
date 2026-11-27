@@ -33,8 +33,8 @@ describe("예전 hero · 울트라마린 전체 띠 없음 (B1 · 작업 0384)",
     expect(ui).not.toMatch(/id="board"/);
   });
 
-  it("홈 화면 코드에 data-surface=\"dark\" · \"elevated\"(전체 띠)가 없음 — 새 hero 첫 면(hero-section)만 예외", () => {
-    for (const f of HOME_COMPONENTS.filter((x) => !x.endsWith("hero-section.tsx"))) expect(read(f), f).not.toMatch(/data-surface="(dark|elevated)"/);
+  it("홈 화면 코드에 data-surface=\"dark\" · \"elevated\"(전체 띠)가 없음 — 새 hero 첫 면(hero-section) · 그 위의 캐러셀(hero-carousel · 작업 0385)만 예외", () => {
+    for (const f of HOME_COMPONENTS.filter((x) => !x.endsWith("hero-section.tsx") && !x.endsWith("carousel/hero-carousel.tsx"))) expect(read(f), f).not.toMatch(/data-surface="(dark|elevated)"/);
   });
 });
 
