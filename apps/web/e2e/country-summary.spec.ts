@@ -130,9 +130,9 @@ test.describe("높이 · 위치 고정", () => {
   });
 });
 
-// 두 칸 배치는 1024px 부터(lg) — 1023 이하는 설명 아래로 흐름. 지금(작업 전) 1124 · 1280 · 1440 모두 요약 칸 자리가 비어 왼쪽 글 끝과 카드 끝 차이가 약 360px
-//   왼쪽 빈 공간 = 카드 아래 끝 − 요약 칸 아래 끝(양수일 때) · 일본은 결과 카드가 짧아 칸이 카드보다 조금 길 수 있음(오른쪽 여유 ≤ 140px)
-test.describe("왼쪽 아래 빈 공간 (1024 · 1124 · 1280 · 1440)", () => {
+// 두 칸 배치는 1024px 부터(lg) — 1023 이하는 설명 아래로 흐름(그대로). 작업 전 1124 · 1280 · 1440 은 왼쪽 글 끝과 카드 끝 차이가 약 360px
+//   builder 가 두 칸 줄 높이를 맞춤(오른쪽 카드 stretch) → 요약 칸 아래 끝 = 카드 아래 끝(±2px) · 카드 안 입력 위치는 나라를 바꿔도 같음
+test.describe("두 칸 아래 끝 (1024 · 1124 · 1280 · 1440)", () => {
   test.beforeEach(({ isMobile }) => {
     test.skip(isMobile, "폭을 직접 맞춰 재는 검사 — 넓은 화면 프로젝트에서만");
   });
@@ -141,7 +141,7 @@ test.describe("왼쪽 아래 빈 공간 (1024 · 1124 · 1280 · 1440)", () => {
     ["VNM", "베트남"],
   ] as const) {
     for (const w of [1024, 1124, 1280, 1440]) {
-      test(`${name} ${w}px — 요약 칸이 설명 아래 왼쪽 · 왼쪽 빈 공간 ≤ 40px · 칸이 카드보다 길어도 ≤ 140px · 가로 스크롤 없음`, async ({ page }) => {
+      test(`${name} ${w}px — 요약 칸이 설명 아래 왼쪽 · 요약 칸 아래 끝 = 카드 아래 끝(±2px) · 가로 스크롤 없음`, async ({ page }) => {
         await page.setViewportSize({ width: w, height: 900 });
         await page.goto(`/prices/${code}`);
         await hydrated(tid(page, "budget"));
@@ -151,12 +151,35 @@ test.describe("왼쪽 아래 빈 공간 (1024 · 1124 · 1280 · 1440)", () => {
         expect(facts.y, "요약 칸은 제목 아래").toBeGreaterThanOrEqual(h1.y + h1.height - 1);
         expect(facts.x + facts.width, "왼쪽 칸 — 카드와 가로로 겹치지 않음").toBeLessThanOrEqual(card.x + 1);
         const gap = card.y + card.height - (facts.y + facts.height);
-        expect(gap, `왼쪽 빈 공간(카드 아래 끝 − 요약 칸 아래 끝)=${Math.round(gap)}px`).toBeLessThanOrEqual(40);
-        expect(-gap, `요약 칸이 카드보다 긴 만큼=${Math.round(-gap)}px`).toBeLessThanOrEqual(140);
+        expect(Math.abs(gap), `두 칸 아래 끝 차이(카드 − 요약 칸)=${Math.round(gap)}px`).toBeLessThanOrEqual(2);
         expect(await hScroll(page)).toBeLessThanOrEqual(0);
       });
     }
   }
+
+  test("나라 바꿈 전후(일본 → 태국 → 마카오) — 카드 안 입력 · 두 칸 아래 끝 · 아래 구역 위치 같음", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/prices/JPN");
+    await hydrated(tid(page, "budget"));
+    const read = async () => ({
+      daily: (await docBox(page.getByLabel("한국에서 하루 쓰는 돈 (원)"), "daily")).y,
+      select: (await docBox(tid(page, "budget").getByLabel("나라"), "select")).y,
+      cardBottom: (await docBox(tid(page, "budget"), "card")).y + (await docBox(tid(page, "budget"), "card")).height,
+      factsBottom: (await docBox(tid(page, "country-facts"), "facts")).y + (await docBox(tid(page, "country-facts"), "facts")).height,
+      next: (await docBox(tid(page, "next-card"), "next")).y,
+    });
+    const before = await read();
+    for (const label of ["태국", "마카오"]) {
+      await tid(page, "budget").getByLabel("나라").selectOption({ label });
+      await page.evaluate(() => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r()))));
+      const after = await read();
+      expect(Math.abs(after.daily - before.daily), `${label}: 입력 위치`).toBeLessThanOrEqual(1);
+      expect(Math.abs(after.select - before.select), `${label}: 나라 칸 위치`).toBeLessThanOrEqual(1);
+      expect(Math.abs(after.next - before.next), `${label}: 아래 구역 위치`).toBeLessThanOrEqual(1);
+      expect(Math.abs(after.cardBottom - after.factsBottom), `${label}: 두 칸 아래 끝`).toBeLessThanOrEqual(2);
+    }
+  });
+
   test("900px(한 칸 배치) — 요약 칸이 설명 아래 · 예산 카드와 겹치지 않음", async ({ page }) => {
     await page.setViewportSize({ width: 900, height: 900 });
     await page.goto("/prices/JPN");
