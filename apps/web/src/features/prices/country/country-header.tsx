@@ -1,6 +1,6 @@
 "use client";
 
-// 나라 페이지 첫 면 왼쪽 (작업 0344 · 시안 1-new) — 제목 위 경로 · 큰 제목 · 오늘 기준 한 줄 답 상자 (통화가 없는 나라는 상자 없음)
+// 나라 페이지 첫 면 왼쪽 (작업 0344 · 시안 1-new) — 제목 위 경로 · 큰 제목 · 오늘 숫자 요약 칸 (한 줄 답 상자는 작업 0397 에서 지움)
 // 큰 제목의 강조(EmphText · 카운트업)가 브라우저 부품이라 'use client' — 서버 첫 그림에도 문장이 그대로 들어감(prices-header.tsx 와 같음)
 import { EmphText } from "@hav/ui/text/emph";
 import Link from "next/link";
@@ -23,13 +23,6 @@ export function CountryHeader({ v, facts }: { v: CountryView; facts: Facts }) {
       </h1>
       <p className="mt-6 max-w-[36em] text-body text-fg-2 sm:text-[1.125rem]">세계은행 {v.year}년 나라별 물가 수준(한국 = 100)과 오늘 그 나라 통화 신호를 함께 봅니다.</p>
       <FactsCard id="country" facts={facts} label={`${v.name} 오늘 숫자`} className="mt-6 max-w-[32.5rem]" />
-      {v.oneLine && (
-        <div data-testid="country-oneline" className="mt-6 max-w-[40rem] rounded-[1rem] border border-line bg-card px-5 py-4">
-          <p className="text-[0.8125rem] text-fg-2">{v.oneLine.label}</p>
-          <p className="mt-1 text-[1.125rem] font-bold text-fg sm:text-[1.25rem]">{v.oneLine.text}</p>
-          {v.oneLine.note && <p className="mt-1 text-small text-fg-2">{v.oneLine.note}</p>}
-        </div>
-      )}
     </div>
   );
 }
