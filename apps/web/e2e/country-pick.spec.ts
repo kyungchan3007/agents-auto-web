@@ -7,22 +7,21 @@ test.beforeEach(async ({ page }) => {
   await forceDefaultHero(page);
 });
 
-// 작업 0217 지적: 홈은 버튼 · 시트 없이 카드 안 칩 · 검색으로 바로 바꿈 — 시트(dialog)는 여행 물가 "다른 나라 보기"(pick-trip-other)에만 남음
+// 작업 0217 지적: 홈은 버튼 · 시트 없이 칩 · 검색으로 바로 바꿈(작업 0384: 예전 카드가 없어져 hero 입력창 · 칩) — 시트(dialog)는 여행 물가 "다른 나라 보기"(pick-trip-other)에만 남음
 const open = (page: Page) => page.getByTestId("pick-trip-other").first();
-const switcher = (page: Page) => page.getByTestId("trip-switcher");
+const stored = (page: Page) => page.evaluate(() => JSON.parse(localStorage.getItem("flapfx:picked") ?? "null")); // 작업 0384: 예전 카드(#board)가 없어져 고른 값은 저장 값으로 확인
 const savePicked = (page: Page, country = "JPN", city = "도쿄") => page.addInitScript(([c, t]) => localStorage.setItem("flapfx:picked", JSON.stringify({ v: 1, country: c, city: t, budget: 0 })), [country, city]);
 const dialog = (page: Page) => page.getByRole("dialog", { name: "어디로 떠나세요?" });
-// 홈 — 카드 안 검색 칸에 쓰고 첫 후보를 고름 (시트 없음)
+// 홈 — hero 입력창에 쓰고 첫 후보를 고름 (시트 없음)
 const choose = async (page: Page, query: string, _optionText?: string) => {
-  const box = switcher(page).getByRole("combobox", { name: "여행지 검색" });
-  await box.fill(query);
-  await switcher(page).getByRole("option").first().click();
+  await page.getByTestId("hero-search").fill(query);
+  await page.getByRole("option").first().click();
 };
 
 test.describe("여행지 고르기 시트 (작업 0201)", () => {
-  test("안 고른 첫 화면 — 지금 물가 문장 · 버튼이 보임", async ({ page }) => {
+  test("안 고른 첫 화면 — 지금 물가 문장 · hero 입력창이 보임", async ({ page }) => {
     await page.goto("/");
-    await expect(switcher(page)).toBeVisible();
+    await expect(page.getByTestId("hero-search")).toBeVisible();
     await expect(page.getByTestId("pick-trip-open")).toHaveCount(0);
     await page.goto("/prices");
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/한국보다 물가가 \d+% 낮습니다/);
@@ -57,26 +56,26 @@ test.describe("여행지 고르기 시트 (작업 0201)", () => {
     }
   });
 
-  test("도쿄 고르기 → 안내판이 바뀜 · 새로고침해도 유지", async ({ page }) => {
+  test("도쿄 고르기 → 고른 여행지로 저장 · 새로고침해도 유지", async ({ page }) => {
     await page.goto("/");
     await choose(page, "도쿄", "도쿄");
-    await expect(page.locator("#board")).toContainText(/도쿄/);
+    expect(await stored(page)).toMatchObject({ country: "JPN", city: "도쿄" });
     await page.reload();
-    await expect(page.locator("#board")).toContainText(/도쿄/);
+    expect(await stored(page)).toMatchObject({ country: "JPN", city: "도쿄" });
   });
 
   test("칩으로 고르기 — 방콕", async ({ page }) => {
     await page.goto("/");
-    await switcher(page).getByTestId("pick-chip").filter({ hasText: "방콕" }).click(); // 시트 없이 카드 안 칩 (작업 0217 지적)
-    await expect(page.locator("#board")).toContainText(/방콕/);
+    await page.getByTestId("hero-chip").filter({ hasText: "방콕" }).click(); // 시트 없이 hero 칩
+    expect(await stored(page)).toMatchObject({ city: "방콕" });
   });
 
-  test("유로 나라(파리) · 환율 없는 나라(두바이)도 안내판이 그 도시로 바뀜", async ({ page }) => {
+  test("유로 나라(파리) · 환율 없는 나라(두바이)도 그 도시로 저장됨", async ({ page }) => {
     await page.goto("/");
     await choose(page, "파리", "파리");
-    await expect(page.locator("#board")).toContainText(/파리/);
+    expect(await stored(page)).toMatchObject({ city: "파리" });
     await choose(page, "두바이", "두바이");
-    await expect(page.locator("#board")).toContainText(/두바이/);
+    expect(await stored(page)).toMatchObject({ city: "두바이" });
   });
 
   test("여행 물가 — 고른 나라 문장 · '다른 나라 보기' 로 바꿈", async ({ page }) => {
@@ -97,10 +96,10 @@ test.describe("여행지 고르기 시트 (작업 0201)", () => {
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/한국보다 물가가/);
   });
 
-  test("망가진 저장 값 · 모르는 나라는 무시 — 지금 안내판(여행 물가)", async ({ page }) => {
+  test("망가진 저장 값 · 모르는 나라는 무시 — 홈은 그대로 열리고 여행 물가도 지금 문장", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem("flapfx:picked", '{"v":1,"country":"XXX","city":"없음","budget":0}'));
     await page.goto("/");
-    await expect(page.locator("#board")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
+    await expect(page.getByTestId("home-hero")).toBeVisible();
     await page.goto("/prices");
   });
 });

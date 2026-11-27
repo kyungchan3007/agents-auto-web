@@ -50,22 +50,13 @@ async function worstContrast(page: Page, loc: Locator): Promise<number> {
 }
 
 test.describe("홈 첫 화면 디자인 (작업 0210 → 0217 새 디자인)", () => {
-  test("1280×800 첫 화면 안에 큰 제목과 설명이 들어오고 · 탑승권 카드 위쪽이 보임", async ({ page }) => {
+  test("1280×800 첫 화면 안에 큰 제목이 들어옴", async ({ page }) => {
     test.skip(isPhone(page), "넓은 화면 전용");
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/");
     await page.waitForTimeout(400);
     const h1 = await box(page.getByRole("heading", { level: 1 }));
     expect(h1.y + h1.height, "큰 제목 아래 끝").toBeLessThanOrEqual(800);
-    const card = await box(page.getByTestId("ticket"));
-    expect(card.y, "탑승권 카드가 첫 화면 안에서 시작").toBeLessThan(800);
-  });
-
-  test("'이번 주 가장 싸게 갈 수 있는 곳' 은 제목(h2) 시맨틱 그대로 · 구간 이름으로 쓰임", async ({ page }) => {
-    await page.goto("/");
-    const label = page.locator("#today-title");
-    expect(await label.evaluate((el) => el.tagName)).toBe("H2");
-    await expect(page.locator("#board")).toHaveAttribute("aria-labelledby", "today-title");
   });
 
   test("12달 막대 각주 · '가장 저렴한 달 / 가장 비싼 달' 라벨 글자 대비 4.5:1 이상 (작업 0276)", async ({ page }) => {

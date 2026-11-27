@@ -1,7 +1,7 @@
 // 작업 0217 미리보기 뒤 고칠 것 1~3 — 테스트 먼저 (request.md 맨 아래 '미리보기 뒤 고칠 것')
 //   1 · 2 (작업 0380 에 hero 새 모양 기준으로 다시 씀): 노트북 높이에서도 첫 화면 안에 hero 의 한 줄 · 입력창 · 작은 줄 · 칩이 들어옴 · 가로 넘침 0
 //   3 환전   : 환전 목록이 화면에 들어오면 카드가 위에서부터 차례로 나타남 + 금액 카운트업 · 동그라미 이동이 같이 시작 · 한 번만 · 움직임 줄이기면 처음부터 최종 값
-//   표시(기존): "home-hero" · "ticket" · "flap-board" · "ticket-evidence"(97% 줄) · "trip-switcher" · "pick-chip" · combobox "여행지 검색" · "dest-list" · "dest-row" · "dest-rate"(data-final) · "dest-dot"(data-position)
+//   표시(기존): "home-hero" · "dest-list" · "dest-row" · "dest-rate"(data-final) · "dest-dot"(data-position)
 import { type Page, expect, test } from "@playwright/test";
 import { forceDefaultHero } from "./default-hero";
 

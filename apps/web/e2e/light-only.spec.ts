@@ -10,8 +10,6 @@ test.beforeEach(async ({ page }) => {
 test.use({ colorScheme: "dark" }); // 두 프로젝트(넓은 화면 · 휴대폰) 모두 기기 다크 모드로 엶
 
 const SKY = "rgb(255, 255, 255)"; // 흰 바탕 #FFFFFF (작업 0216 · 이름은 예전 그대로)
-const SEA = "rgb(36, 56, 168)"; // #2438A8 (예전 울트라마린 띠 · #board 바탕이 이 색이면 안 됨)
-const INK = "rgb(22, 36, 110)"; // #16246E 안내판
 
 for (const path of ["/", "/currencies/USD", "/flights", "/prices", "/calc", "/about"]) { // 어드민은 apps/admin/e2e/basics.spec.ts (작업 0312)
   test(`${path} — 기기 다크 모드여도 바탕은 흰색 · color-scheme 은 light @design`, async ({ page }) => {
@@ -25,14 +23,6 @@ for (const path of ["/", "/currencies/USD", "/flights", "/prices", "/calc", "/ab
     expect(scheme).toBe("light");
   });
 }
-
-test("홈 — 다크 모드에서도 오늘 환율 구간은 하늘 종이 위(전체 띠 없음) · 짙은 남색은 안내판에만 (작업 0177) @design", async ({ page }) => {
-  await page.goto("/");
-  const band = await page.locator("#board").evaluate((el) => getComputedStyle(el).backgroundColor);
-  expect(band).not.toBe(SEA);
-  const board = await page.locator('[data-testid="flap-board"]').evaluate((el) => getComputedStyle(el).backgroundColor);
-  expect(board).toBe(INK);
-});
 
 test("주소창 색(theme-color) — 흰색 하나 (다크 모드에서도 같은 값) @design", async ({ page }) => {
   await page.goto("/");

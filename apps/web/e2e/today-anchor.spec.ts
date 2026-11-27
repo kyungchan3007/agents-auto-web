@@ -1,6 +1,6 @@
 // 작업 0233 (패치 · 버그) — 메뉴 "오늘 환율"(/#today)이 "도착지별 환전 타이밍" 구역으로 가야 함 · 테스트 먼저
 //   요청 원문: .agents/specs/0233-today-anchor/request.md · 계획: plan.md
-//   DOM 계약: 구역 id="today"(라벨 "오늘 환율" · 제목 #destinations-title "도착지별 환전 타이밍") · 탑승권 카드는 id="board" · 고정 메뉴 높이만큼 스크롤 여백
+//   DOM 계약: 구역 id="today"(라벨 "오늘 환율" · 제목 #destinations-title "도착지별 환전 타이밍") · 고정 메뉴 높이만큼 스크롤 여백
 //   도착한 뒤: 제목이 화면 안 · 고정 메뉴(banner) 아래 · 메뉴 바로 아래(구도: 사용자 그림 2) · 카드가 접힌 알약이 아니라 펼친 상태 · 도착 위치가 밀리지 않음
 //   세 경로(다른 페이지에서 메뉴 · 홈에서 메뉴 · 주소로 바로) × 1280 · 390 — 화면 크기는 여기서 정함(기기 프로젝트는 하나만 돌려 중복 실행을 피함)
 import { type Page, expect, test } from "@playwright/test";
@@ -72,7 +72,6 @@ for (const size of SIZES) {
         const sec = await page.locator("#today").boundingBox();
         expect(sec!.y, "#today 구역 맨 위가 메뉴 아래").toBeGreaterThanOrEqual(navBottom - 1);
         await expect(page.locator("#today").getByRole("heading", { name: "도착지별 환전 타이밍" })).toBeInViewport();
-        await expect(page.locator("#board")).not.toBeInViewport({ ratio: 0.5 });
 
         // 알약으로 접힌 채 남지 않음 — 펼친 상태(final) · 보이는 알약 없음
         const list = page.locator('[data-testid="dest-list"]');
@@ -104,11 +103,10 @@ for (const size of SIZES) {
   });
 }
 
-test("옛 주소 /#today 와 메뉴 링크 주소는 그대로 /#today · 탑승권은 #board", async ({ page }, testInfo) => {
+test("옛 주소 /#today 와 메뉴 링크 주소는 그대로 /#today · 예전 탑승권(#board)은 없음", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "넓은 화면", "한 번만 실행");
   await page.goto("/");
-  await expect(page.locator("#board")).toHaveCount(1);
-  await expect(page.locator("#board")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
+  await expect(page.locator("#board")).toHaveCount(0);
   await expect(page.locator("#today")).toHaveCount(1);
   await expect(page.locator("#destinations")).toHaveCount(0);
   await expect(menuLink(page)).toHaveAttribute("href", "/#today");

@@ -5,7 +5,7 @@
 //   data-testid="intro"(덮개 · role=dialog) · "intro-skip"(건너뛰기) · "intro-step"(글 '1 / 5 · 터미널 입구') · "intro-search"(입력 · aria-label '나라나 도시') · "intro-chip"(칩 버튼)
 //   "intro-frow"(출발 안내판 줄 · data-text = 그 줄의 최종 글 — 칸이 넘어가는 중에도 같은 값) · "intro-budget"(예산 입력) · "intro-out"(환산 결과 · 환율이 없으면 없음) · "intro-next"(다음 · 게이트로)
 //   "intro-back"(이전 · 2~4단계) · "intro-boardbtn"(탑승하기) · "intro-hint"(4단계 스크롤 안내)
-//   홈: "picked-pass"(왼쪽 아래 '탑승권 보기' 버튼) · 안내판은 홈의 flap-board(aria-label)
+//   홈: 작업 0384 로 예전 hero(탑승권 카드 · picked-pass · 안내판)는 없어짐 — 인트로 뒤 홈은 새 hero(home-hero)가 보이는지와 저장 값(flapfx:picked)만 봄
 // 인트로를 끄는 법(끄기 스위치): localStorage["flapfx:intro-off"] = "1" — playwright.config 의 storageState 로 다른 e2e 는 기본 꺼 둠 · 이 파일만 켬
 import { expect, test } from "@playwright/test";
 import { forceDefaultHero } from "./default-hero";
@@ -19,7 +19,6 @@ test.use({ storageState: { cookies: [], origins: [] } }); // 이 파일은 인�
 const DESKTOP = { width: 1440, height: 900 };
 const intro = (page: import("@playwright/test").Page) => page.getByTestId("intro");
 const step = (page: import("@playwright/test").Page) => page.getByTestId("intro-step");
-const board = (page: import("@playwright/test").Page) => page.locator('#board [data-testid="flap-board"]');
 const PICKED = "flapfx:picked";
 
 /** 인트로가 닫힌 뒤 홈이 원래대로 — 페이지 잠금(html overflow hidden) 없음 · 휠로 아래로 내려감 (작업 0186) */
@@ -84,11 +83,7 @@ test.describe("데스크톱 인트로", () => {
 
     // 5단계 — 자동 창문 전환 → 인트로가 사라지고 홈
     await expect(intro(page)).toHaveCount(0, { timeout: 60_000 });
-    await expect(board(page)).toBeVisible();
-    await expect(board(page)).toHaveAttribute("aria-label", /파리/);
-    await expect(page.locator("#board")).toContainText("내가 고른 여행지 · 오늘 환율");
-    await expect(page.getByTestId("picked-pass")).toContainText("탑승권 보기");
-    await expect(page.getByTestId("picked-pass")).toContainText("파리");
+    await expect(page.getByTestId("home-hero")).toBeVisible();
     const saved = await page.evaluate((k) => localStorage.getItem(k), PICKED);
     expect(JSON.parse(saved ?? "null")).toMatchObject({ v: 1, country: "FRA", city: "파리", budget: 2_000_000 });
     // 작업 0186 — 인트로가 끝난 뒤 홈이 원래대로 스크롤됨 (잠금 · 휠 가로채기가 남으면 안 됨)
@@ -153,10 +148,9 @@ test.describe("데스크톱 인트로", () => {
     expect(Math.abs((end.logo?.x ?? -99) - home.x)).toBeLessThanOrEqual(2);
     expect(Math.abs((end.logo?.y ?? -99) - home.y)).toBeLessThanOrEqual(2);
     expect(Math.abs((end.logo?.w ?? -99) - home.w)).toBeLessThanOrEqual(2);
-    // 새 홈 — 파랑 첫 면 · 제목 · 탑승권 카드 · 고른 여행지가 안내판에 이어짐
+    // 새 홈 — 첫 면(hero)이 보임 · 예전 탑승권 카드는 없음(작업 0384)
     await expect(page.getByTestId("home-hero")).toBeVisible();
-    await expect(page.getByTestId("ticket")).toBeVisible();
-    await expect(board(page)).toHaveAttribute("aria-label", /파리/);
+    await expect(page.getByTestId("ticket")).toHaveCount(0);
     expect(photos, "창밖 · 나라 사진 요청").toEqual([]);
     expect(errors).toEqual([]);
   });
@@ -190,7 +184,6 @@ test.describe("데스크톱 인트로", () => {
     }
     await expect(intro(page)).toHaveCount(0, { timeout: 60_000 });
     await expect(page.getByTestId("home-hero")).toBeVisible();
-    await expect(board(page)).toHaveAttribute("aria-label", /파리/);
     expect(await page.evaluate(() => (window as unknown as { __tint: boolean }).__tint), "끝 장면(파랑 면 · 로고)이 한 번도 안 그려짐").toBe(false);
     await ctx.close();
   });
@@ -244,13 +237,11 @@ test.describe("데스크톱 인트로", () => {
     expect(Math.abs(after.rel - before.rel), "카드 안에서 입력칸 위치 그대로").toBeLessThanOrEqual(1);
   });
 
-  test("건너뛰기 — 1단계에서 누르면 바로 홈 · 안내판은 지금 그대로 · 고른 값 저장 없음", async ({ page }) => {
+  test("건너뛰기 — 1단계에서 누르면 바로 홈 · 고른 값 저장 없음", async ({ page }) => {
     await openIntro(page);
     await page.getByTestId("intro-skip").click();
     await expect(intro(page)).toHaveCount(0, { timeout: 10_000 });
-    await expect(page.locator("#board")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
-    await expect(page.locator("#board")).not.toContainText("내가 고른 여행지");
-    await expect(page.getByTestId("picked-pass")).toHaveCount(0);
+    await expect(page.getByTestId("home-hero")).toBeVisible();
     expect(await page.evaluate((k) => localStorage.getItem(k), PICKED)).toBeNull();
   });
 
@@ -263,25 +254,24 @@ test.describe("데스크톱 인트로", () => {
     await expect(step(page)).toHaveText("4 / 5 · 이륙", { timeout: 20_000 });
     await page.getByTestId("intro-skip").click();
     await expect(intro(page)).toHaveCount(0, { timeout: 10_000 });
-    await expect(page.locator("#board")).toBeVisible();
+    await expect(page.getByTestId("home-hero")).toBeVisible();
   });
 
-  test("매번 보여 줌 — 다시 들어오면 인트로가 또 뜨고, 저번에 고른 나라는 홈 안내판에 들어 있음", async ({ page }) => {
+  test("매번 보여 줌 — 다시 들어오면 인트로가 또 뜨고, 저번에 고른 나라는 저장 값에 그대로 있음", async ({ page }) => {
     await page.addInitScript(([k, v]) => localStorage.setItem(k, v), [PICKED, JSON.stringify({ v: 1, country: "JPN", city: "도쿄", budget: 500000 })] as const);
     await openIntro(page);
     await page.getByTestId("intro-skip").click();
     await expect(intro(page)).toHaveCount(0, { timeout: 10_000 });
-    await expect(page.locator("#board")).toContainText("내가 고른 여행지 · 오늘 환율");
-    await expect(board(page)).toHaveAttribute("aria-label", /도쿄/);
-    await expect(page.getByTestId("picked-pass")).toContainText("도쿄");
+    await expect(page.getByTestId("home-hero")).toBeVisible();
+    expect(JSON.parse((await page.evaluate((k) => localStorage.getItem(k), PICKED)) ?? "null")).toMatchObject({ country: "JPN", city: "도쿄" });
   });
 
-  test("망가진 저장 값은 무시 — 안내판은 지금 그대로", async ({ page }) => {
+  test("망가진 저장 값은 무시 — 홈은 지금 그대로", async ({ page }) => {
     await page.addInitScript((k) => localStorage.setItem(k, "{oops"), PICKED);
     await openIntro(page);
     await page.getByTestId("intro-skip").click();
     await expect(intro(page)).toHaveCount(0, { timeout: 10_000 });
-    await expect(page.locator("#board")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
+    await expect(page.getByTestId("home-hero")).toBeVisible();
   });
 
   test("접근성 — 덮개는 dialog · 건너뛰기에 접근 이름 · 판 글자는 화면 읽기에서 숨김", async ({ page }) => {
@@ -394,17 +384,11 @@ test.describe("하나씩 다 눌러 보기 (작업 0186)", () => {
     await openIntro(page);
     await page.getByTestId("intro-skip").click();
     await expect(intro(page)).toHaveCount(0, { timeout: 10_000 });
-    // 탑승권 보기 — 누르면 열리고 다시 누르면 닫힘 · 그동안 홈 스크롤 정상
-    const pass = page.getByTestId("picked-pass");
-    await expect(pass).toContainText("파리");
-    await pass.click();
-    await page.waitForTimeout(400);
-    await pass.click();
     await expectHomeScrolls(page);
     // 홈의 보이는 버튼을 하나씩 — 눌러도 인트로가 다시 뜨지 않고 홈이 스크롤됨
-    const count = await page.locator("main button:visible, #board button:visible").count();
+    const count = await page.locator("main button:visible").count();
     for (let i = 0; i < count; i++) {
-      const b = page.locator("main button:visible, #board button:visible").nth(i);
+      const b = page.locator("main button:visible").nth(i);
       if (!(await b.isVisible())) continue;
       await b.scrollIntoViewIfNeeded();
       await b.click({ trial: false }).catch(() => {});
@@ -422,8 +406,7 @@ test.describe("인트로가 없는 경우", () => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
     await expect(intro(page)).toHaveCount(0);
-    await expect(board(page)).toBeVisible();
-    await expect(page.locator("#board")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
+    await expect(page.getByTestId("home-hero")).toBeVisible();
   });
 
   test("경계 — 폭 700 은 인트로 없음 · 폭 701 은 있음", async ({ page }) => {
@@ -442,7 +425,7 @@ test.describe("인트로가 없는 경우", () => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
     await expect(intro(page)).toHaveCount(0);
-    await expect(board(page)).toBeVisible();
+    await expect(page.getByTestId("home-hero")).toBeVisible();
   });
 
   test("홈 HTML(서버 렌더 결과)에는 인트로가 없음 — 검색 · AI 답변 측정이 읽는 내용은 지금과 같음", async ({ request }) => {
@@ -451,8 +434,7 @@ test.describe("인트로가 없는 경우", () => {
     expect(html).not.toContain('data-testid="intro-skip"');
     expect(html).not.toContain("models/intro");
     expect(html).not.toContain("내가 고른 여행지");
-    expect(html).toContain("이번 주 가장 싸게 갈 수 있는 곳");
-    expect(html).toContain('id="board"');
+    expect(html).not.toContain('id="board"');
     expect(html).toContain('id="today"');
     expect(html).not.toContain("같은 달 평균으로 비교했습니다");
   });
@@ -496,7 +478,7 @@ test.describe("로딩 화면 (작업 0194)", () => {
     await page.getByTestId("intro-skip").click();
     await expect(intro(page)).toHaveCount(0, { timeout: 10_000 });
     await expect(loading(page)).toHaveCount(0);
-    await expect(board(page)).toBeVisible();
+    await expect(page.getByTestId("home-hero")).toBeVisible();
     await expectHomeScrolls(page);
   });
 
