@@ -54,9 +54,9 @@ export function CurrencyDetail({ code, rate, signal, history, levels = null }: D
                 {name}({code}) 환율
               </span>
             </SwitchFade>
-            <span className="mt-1 block text-[clamp(3.25rem,9vw,6.5rem)] leading-[1.05] text-figure tabular-nums">
+            <span className="mt-1 flex flex-wrap items-baseline text-[clamp(3.25rem,9vw,6.5rem)] leading-[1.05] text-figure tabular-nums">
               <BigRateNumber code={code} value={big.value} digits={big.digits} suffix={t.unit === "원" ? "원" : ""} />
-              {t.unit !== "원" && <span className="ml-1 text-city"> {t.unit}</span>}
+              {t.unit !== "원" && <span className="ml-1 text-city whitespace-nowrap"> {t.unit}</span>}
             </span>
           </h1>
 
