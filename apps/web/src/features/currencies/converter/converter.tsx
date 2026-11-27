@@ -31,7 +31,7 @@ export function Converter({ code, rate }: { code: string; rate: FxRate }) {
         <div data-testid="converter-board" aria-live="polite" className="mt-4 flex">
           <ResultBoard amount={boardAmount(invalid, foreign, result)} label={shown} from={from?.won ?? null} />
         </div>
-        <div className="mt-4 grid grid-cols-4 gap-2" role="group" aria-label="빠른 금액">
+        <div className="mt-4 grid grid-cols-2 gap-2 min-[22.5rem]:grid-cols-4" role="group" aria-label="빠른 금액">
           {presets("foreign", rate).map((p) => (
             <button
               key={p}
