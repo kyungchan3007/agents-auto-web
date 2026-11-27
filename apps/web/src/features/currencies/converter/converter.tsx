@@ -28,7 +28,7 @@ export function Converter({ code, rate }: { code: string; rate: FxRate }) {
           <span className="sr-only">{code} 금액</span>
           <UnitInput unit={code} inputMode="decimal" autoComplete="off" value={value("foreign")} onChange={edit("foreign")} onFocus={(e) => e.target.select()} className="h-14 text-xl font-semibold" aria-describedby="converter-note" />
         </label>
-        <div data-testid="converter-board" aria-live="polite" className="mt-4 flex">
+        <div data-testid="converter-board" aria-live="polite" className="mt-4 flex max-lg:justify-center">
           <ResultBoard amount={boardAmount(invalid, foreign, result)} label={shown} from={from?.won ?? null} />
         </div>
         <div className="mt-4 grid grid-cols-2 gap-2 min-[22.5rem]:grid-cols-4" role="group" aria-label="빠른 금액">
