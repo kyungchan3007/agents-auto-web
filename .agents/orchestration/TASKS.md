@@ -196,7 +196,7 @@
 | 0385 | 첫 페이지 hero 캐러셀(블프 1장 → 기본 2장) · 입력하면 자동 넘김 끔 · 블프 입력 숫자만 · 블프 장 반응형 (Full · 릴리스 없음 · develop 머지 뒤 바로 main ff) | test ∥ builder → test | 머지됨 (#458) · main ff | task/0385-hero-carousel | apps/web/src/features/home/{home.tsx,carousel/**,blackfriday/**,hero/hero.css} · tokens.css |
 | 0386 | 첫 페이지 헤더 색을 캐러셀 장(블프 검정 · 기본 울트라마린)에 맞춤 (Quick · 릴리스 없음 · develop 머지 뒤 바로 main ff) | builder → test | 머지됨 (#459) · main ff | task/0386-nav-color | apps/web/src/features/home/carousel/** · e2e/home-carousel.spec.ts |
 | 0387 | 사이트 점검 화면(503 · 켜기 · 끄기 명령 · 운영에 켜지 않음) (Quick · develop 머지까지) | builder → test | 머지됨 (#461) | task/0387-maintenance | apps/web/maintenance/** · package.json(scripts) · docs/maintenance.md |
-| 0388 | 데이터가 깨진 빌드는 배포하지 않음(빌드 끝 환율 검사 · 운영 빌드만 실패 · 알림 · 다시 빌드는 워크플로 초안) (Quick · develop 머지까지) | builder → test | PR 열림 | task/0388-build-guard | apps/web/scripts/check-build-data.* · apps/web/package.json · docs/data-health.md |
-| 0389 | 블프 hero 높이 고정(영수증 자리 처음부터 최종 크기) · 통관 select 를 '미국 · 목록통관' 고정 글자로 (Quick · develop 머지까지) | builder → test | 진행 | task/0389-bf-fixed | apps/web/src/features/home/blackfriday/** · e2e/{home-bf,home-carousel}.spec.ts |
-| 0390 | 11-27 수집 점검 기록(환율 12:00 · 새벽 예약 · 빌드 자료 검사) | data · dev-data@hav | 진행 | task/0390-data-health-1127 | docs/data-health.md |
-| 0391 | 11-27 GEO 측정 · #157 조사 댓글 | geo · dev-geo@hav | 진행 | task/0391-geo-measure-1127 | apps/api/data/geo-answers/2026-11-27.json |
+| 0388 | 데이터가 깨진 빌드는 배포하지 않음(빌드 끝 환율 검사 · 운영 빌드만 실패 · 알림 · 다시 빌드는 워크플로 초안) (Quick · develop 머지까지) | builder → test | 머지됨 (#462) | task/0388-build-guard | apps/web/scripts/check-build-data.* · apps/web/package.json · docs/data-health.md |
+| 0389 | 블프 hero 높이 고정(영수증 자리 처음부터 최종 크기) · 통관 select 를 '미국 · 목록통관' 고정 글자로 (Quick · develop 머지까지) | builder → test | PR 열림 | task/0389-bf-fixed | apps/web/src/features/home/blackfriday/** · e2e/{home-bf,home-carousel}.spec.ts |
+| 0390 | 11-27 수집 점검 기록(환율 12:00 · 새벽 예약 · 빌드 자료 검사) | data · dev-data@hav | 머지됨 (#466) | task/0390-data-health-1127 | docs/data-health.md |
+| 0391 | 11-27 GEO 측정 · #157 조사 댓글 | geo · dev-geo@hav | 머지됨 (#465) | task/0391-geo-measure-1127 | apps/api/data/geo-answers/2026-11-27.json |
