@@ -182,12 +182,13 @@ test.describe("알약 · 양옆 버튼 · 밀기", () => {
     await open(page);
     const box = await tid(page, "hero-carousel").boundingBox();
     const y = (box?.y ?? 0) + 120;
+    const cdp = await page.context().newCDPSession(page);
     const drag = async (from: number, to: number) => {
-      await page.mouse.move(from, y);
-      await page.mouse.down();
-      await page.mouse.move((from + to) / 2, y, { steps: 4 });
-      await page.mouse.move(to, y, { steps: 4 });
-      await page.mouse.up();
+      // 손가락으로 미는 것 — 터치 이벤트(touchstart → touchmove → touchend)
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: from, y }] });
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: (from + to) / 2, y }] });
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: to, y }] });
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
     };
     await drag(60, 20); // 왼쪽으로 40px — 넘기지 않음
     expect(await slideOf(page)).toBe("bf");
@@ -203,7 +204,7 @@ test.describe("접근성 — h1 하나 · 안 보이는 장은 inert", () => {
     await open(page);
     for (const s of ["bf", "sea"] as const) {
       await tab(page, s).click();
-      expect(await visibleH1(page), `${s} 장에서 보이는 h1`).toBe(1);
+      await expect.poll(() => visibleH1(page), { message: `${s} 장에서 보이는 h1(넘김 0.35초 뒤)`, timeout: 3_000 }).toBe(1);
       const other = page.locator(`[data-testid="hero-slide"][data-slide="${s === "bf" ? "sea" : "bf"}"]`);
       await expect(other).toHaveAttribute("inert", "");
       await expect(other).toHaveAttribute("aria-hidden", "true");
@@ -248,18 +249,7 @@ test.describe("숫자만 — 블프 입력칸", () => {
     await open(page);
     const box = tid(page, "bf-amount");
     await box.click();
-    await box.evaluate((el) => {
-      const input = el as HTMLInputElement;
-      input.focus();
-      const dt = new DataTransfer();
-      dt.setData("text/plain", "ab99cd");
-      input.dispatchEvent(new ClipboardEvent("paste", { clipboardData: dt, bubbles: true, cancelable: true }));
-      // 붙여넣기를 막지 않는 구현이면 값이 그대로 들어가 input 이벤트가 오므로, 값이 안 바뀐 경우를 위해 한 번 더 값을 넣고 이벤트를 보냄
-      if (input.value !== "99") {
-        input.value = "ab99cd";
-        input.dispatchEvent(new Event("input", { bubbles: true }));
-      }
-    });
+    await page.keyboard.insertText("ab99cd"); // 붙여넣기처럼 글을 한꺼번에 넣음(beforeinput · input 이벤트)
     await expect(box).toHaveValue("99");
   });
 
@@ -355,8 +345,8 @@ test.describe("기간 뒤 — 기본 hero 한 장 · 캐러셀 버튼 없음", (
     await expect(page.getByRole("tab")).toHaveCount(0); // 접근성 트리에도 알약이 없음
   });
 
-  test("기간 뒤에는 위아래로 움직이는 것 없음 — 20초가 아니라 8초 지켜봐도 기본 장 그대로", async ({ page }) => {
-    test.skip(({ viewport }) => (viewport?.width ?? 0) < 700, "넓은 화면에서만");
+  test("기간 뒤에는 위아래로 움직이는 것 없음 — 8초 지켜봐도 기본 장 그대로 · 높이 같음", async ({ page }) => {
+    test.skip((page.viewportSize()?.width ?? 0) < 700, "넓은 화면에서만");
     test.setTimeout(30_000);
     await open(page, AFTER);
     const before = await heroH(page);
