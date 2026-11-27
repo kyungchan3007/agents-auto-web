@@ -7,7 +7,7 @@ import { SLIDE_LABEL, SLIDE_MS, SLIDES, type SlideId } from "./carousel";
 import "./carousel.css";
 import { useHeroCarousel } from "./use-hero-carousel";
 
-export function HeroCarousel({ slides }: { slides: Record<SlideId, ReactNode> }) {
+export function HeroCarousel({ slides, ticker = null }: { slides: Record<SlideId, ReactNode>; /** 맨 아래 흐르는 환율 띠 (작업 0399 · 서버에서 만든 요소) */ ticker?: ReactNode }) {
   const c = useHeroCarousel();
   return (
     <div data-testid="hero-carousel" data-surface="dark" data-slide={c.active} data-auto={c.auto ? "on" : "off"} data-held={String(c.held)} className="hc" {...c.bind}>
@@ -35,6 +35,7 @@ export function HeroCarousel({ slides }: { slides: Record<SlideId, ReactNode> })
           ›
         </button>
       </div>
+      {ticker}
     </div>
   );
 }

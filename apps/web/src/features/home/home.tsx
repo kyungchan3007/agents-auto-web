@@ -12,6 +12,8 @@ import { HeroCarousel } from "./carousel/hero-carousel";
 import { HeroSection } from "./timing/hero-section";
 import type { CustomsRate } from "@/shared/customs/customs-rate";
 import { HomeFooter } from "./home-footer";
+import { RateTicker } from "@/shared/ticker/rate-ticker";
+import { tickerDate, tickerItems } from "@/shared/ticker/ticker";
 import { YearBars } from "./timing/year-bars";
 import { type Destination, destinationRows } from "./common/destinations";
 import { moreCurrenciesCount } from "./destinations/more-currencies";
@@ -31,6 +33,7 @@ export function Home({ latest, signals, airFare, customs = null, levels = null, 
       <main id="main" tabIndex={-1}>
       {/* hero 캐러셀(작업 0385) — 두 장을 서버에서 만들어 넘겨 캐러셀 상태가 바뀌어도 hero 안은 다시 그려지지 않음 · 블프 기간(~2026-12-01 17:00 KST)이 끝나면 html data-hero 로 여행 타이밍 한 장만 보임 (작업 0381) */}
       <HeroCarousel
+        ticker={<RateTicker items={tickerItems(rates, signalRows)} date={tickerDate(latest.ok ? latest.data.date : null)} variant="hero" />}
         slides={{
           bf: <BfHero rates={rates} customs={customs} />,
           sea: <HeroSection timing={timing} rates={rates} signals={signalRows} windowDays={windowDays} levels={levels} pageCodes={pageCodes} />,
