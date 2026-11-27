@@ -132,9 +132,10 @@ describe("pickFacts — 숫자 칸 값", () => {
     expect(f.rateText).toBe("9.41원");
   });
 
-  it("통화 단위가 큰 값: 1루피 · 1바트 · 1동 처럼 항상 \"1 + 통화 이름\" (100엔당 아님)", () => {
+  it("통화 단위가 큰 값: 1루피아 · 1바트 처럼 항상 \"1 + 통화 이름\" (100엔당 아님) · 작업 0396: 수출입은행이 주지 않는 동(VND)은 환율 목록에 있어도 값 없음(null)", () => {
     expect(pickFacts(hit("THA", "방콕", "태국"), RATES, SIGNALS, LEVELS).perText).toBe("1바트");
-    expect(pickFacts(hit("VNM", "다낭", "베트남"), RATES, SIGNALS, LEVELS).perText).toBe("1동");
+    expect(pickFacts(hit("IDN", "발리", "인도네시아"), RATES, SIGNALS, LEVELS).perText).toBe("1루피아");
+    expect(pickFacts(hit("VNM", "다낭", "베트남"), RATES, SIGNALS, LEVELS).perText).toBeNull();
   });
 });
 

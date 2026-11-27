@@ -25,7 +25,6 @@ describe("코드 자리 (작업 0126 · 0137 · 0312)", () => {
       "customs/parse-amount.ts",
       "customs/rules.ts",
       "facts/facts-card.tsx",
-      "facts/facts.css",
       "facts/facts.ts",
       "nav/nav-links.ts",
       "nav/site-nav.tsx",
