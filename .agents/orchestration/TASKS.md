@@ -200,3 +200,4 @@
 | 0389 | 블프 hero 높이 고정(영수증 자리 처음부터 최종 크기) · 통관 select 를 '미국 · 목록통관' 고정 글자로 (Quick · develop 머지까지) | builder → test | PR 열림 | task/0389-bf-fixed | apps/web/src/features/home/blackfriday/** · e2e/{home-bf,home-carousel}.spec.ts |
 | 0390 | 11-27 수집 점검 기록(환율 12:00 · 새벽 예약 · 빌드 자료 검사) | data · dev-data@hav | 머지됨 (#466) | task/0390-data-health-1127 | docs/data-health.md |
 | 0391 | 11-27 GEO 측정 · #157 조사 댓글 | geo · dev-geo@hav | 머지됨 (#465) | task/0391-geo-measure-1127 | apps/api/data/geo-answers/2026-11-27.json |
+| 0392 | 11-27 블프 당일 캐러셀 알리기 묶음 기록 | geo · dev-geo@hav | 진행 | task/0392-marketing-1127 | docs/marketing/2026-11-27/** |
