@@ -9,8 +9,9 @@
 //     hero-progress  고른 알약 안 노란 줄 (자동 넘김이 off 면 없음)
 //   기존 표시: home-hero(sea 장) · bf-hero(블프 장) · hero-search · hero-chip · bf-amount · bf-route · bf-receipt …
 //   모양 · 위치 · 크기(겹침 · 화면 밖 · 가로 스크롤 · 높이 같음 · 넓은 글꼴)는 별도 측정(.tmp/wt-0385-test) · 여기서는 높이 같음만 세 폭에서 한 번 확인
+//   작업 0386: 첫 페이지 헤더(banner) 색이 지금 장 hero 바탕을 따라감 — 블프 장 검정 · 여행 타이밍 장 울트라마린 · 0.5초 함께 바뀜 · 움직임 줄이기면 바로 · 첫 그림부터(자바스크립트가 붙기 전) 검정 · 기간 뒤 울트라마린 · 다른 페이지 그대로 · 글자 · 초점 고리 대비
 //   시간: 시계는 page.clock.install 로 블프 기간 안(2026-11-27 낮)에 두고 흐르게 둠 — 실제 시간으로 9초 · 7초를 기다림
-import { type Page, expect, test } from "@playwright/test";
+import { type Locator, type Page, expect, test } from "@playwright/test";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const IN_BF = "2026-11-27T12:00:00+09:00";
@@ -353,5 +354,131 @@ test.describe("기간 뒤 — 기본 hero 한 장 · 캐러셀 버튼 없음", (
     await page.waitForTimeout(8_000);
     await expect(tid(page, "home-hero")).toBeVisible();
     expect(await heroH(page)).toBe(before);
+  });
+});
+
+// ── 작업 0386 — 헤더 색이 캐러셀 장을 따라감 ──
+const BLUE = "rgb(36, 56, 168)";
+const header = (page: Page) => page.getByRole("banner");
+const rgbOf = (c: string) => (c.match(/\d+(\.\d+)?/g) ?? ["0", "0", "0"]).slice(0, 3).map(Number);
+const lum = ([r, g, b]: number[]) => {
+  const f = (v: number) => ((v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+};
+const contrast = (a: string, b: string) => {
+  const [x, y] = [lum(rgbOf(a)), lum(rgbOf(b))];
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+};
+const bgOf = (loc: Locator) => loc.evaluate((el) => getComputedStyle(el).backgroundColor);
+const near = (a: string, b: string, tol = 14) => rgbOf(a).every((v, i) => Math.abs(v - rgbOf(b)[i]) <= tol);
+/** hero 바탕 = 지금 장의 바탕 (캐러셀 바깥 요소의 바탕) */
+const heroBg = (page: Page) => bgOf(tid(page, "hero-carousel"));
+
+test.describe("헤더 색 — 지금 장 hero 바탕을 따라감 (작업 0386)", () => {
+  test("블프 장: 헤더 바탕 = hero 바탕(검정 · 울트라마린이 아님)", async ({ page }) => {
+    await open(page);
+    await page.waitForTimeout(700);
+    const h = await bgOf(header(page));
+    const hero = await heroBg(page);
+    expect(h, "헤더가 검정 계열").not.toBe(BLUE);
+    expect(near(h, hero, 2), `헤더 ${h} · hero ${hero}`).toBe(true);
+    expect(lum(rgbOf(h)), "아주 어두운 바탕").toBeLessThan(0.02);
+  });
+
+  test("여행 타이밍 장으로 넘기면 헤더 · hero 둘 다 울트라마린 · 다시 블프로 오면 둘 다 검정", async ({ page }) => {
+    await open(page);
+    await tab(page, "sea").click();
+    await expect.poll(() => bgOf(header(page)), { timeout: 3_000 }).toBe(BLUE);
+    await expect.poll(() => heroBg(page), { timeout: 3_000 }).toBe(BLUE);
+    await tab(page, "bf").click();
+    await expect.poll(async () => lum(rgbOf(await bgOf(header(page)))), { timeout: 3_000 }).toBeLessThan(0.02);
+    expect(near(await bgOf(header(page)), await heroBg(page), 2)).toBe(true);
+  });
+
+  test("넘어가는 0.5초 동안 헤더와 hero 가 같이 바뀜 (중간에도 색 차이가 작음)", async ({ page }) => {
+    test.skip((page.viewportSize()?.width ?? 0) < 700, "넓은 화면에서만");
+    await open(page);
+    await page.waitForTimeout(600);
+    await tab(page, "sea").click();
+    const gaps: number[] = [];
+    for (let i = 0; i < 6; i++) {
+      const [h, hero] = [rgbOf(await bgOf(header(page))), rgbOf(await heroBg(page))];
+      gaps.push(Math.max(...h.map((v, k) => Math.abs(v - hero[k]))));
+      await page.waitForTimeout(90);
+    }
+    expect(Math.max(...gaps), `헤더 · hero 색 차이 ${gaps.join(" · ")}`).toBeLessThanOrEqual(40);
+  });
+
+  test("움직임 줄이기 — 장을 넘기면 헤더 색도 바로 바뀜(전환 없음)", async ({ page }) => {
+    await open(page, IN_BF, true);
+    await page.waitForTimeout(300);
+    await tab(page, "sea").click();
+    await page.waitForTimeout(120);
+    expect(await bgOf(header(page))).toBe(BLUE);
+    await tab(page, "bf").click();
+    await page.waitForTimeout(120);
+    expect(lum(rgbOf(await bgOf(header(page))))).toBeLessThan(0.02);
+  });
+
+  test("자바스크립트가 붙기 전 첫 그림부터 헤더 검정 (앱 스크립트를 막고 봄)", async ({ page }) => {
+    await page.route("**/_next/static/**/*.js", (route) => route.abort());
+    await page.clock.install({ time: new Date(IN_BF) });
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await expect(page.locator("html")).toHaveAttribute("data-hero", "bf"); // 머리 안 작은 스크립트가 이미 정함
+    expect(await page.evaluate(() => (document.querySelector('[data-testid="hero-slide"]') as HTMLElement | null)?.dataset.active ?? "ssr"), "아직 붙지 않음(서버 첫 그림)").not.toBe("");
+    const h = await bgOf(header(page));
+    expect(h, "첫 그림의 헤더 바탕").not.toBe(BLUE);
+    expect(lum(rgbOf(h)), "검정 계열").toBeLessThan(0.02);
+  });
+
+  test("다른 페이지(/flights · /prices · /calc · /currencies/USD) 헤더는 늘 울트라마린 — 블프 기간에도 그대로", async ({ page }) => {
+    await page.clock.install({ time: new Date(IN_BF) });
+    for (const path of ["/flights", "/prices", "/calc", "/currencies/USD"]) {
+      await page.goto(path);
+      await page.waitForLoadState("networkidle");
+      expect(await bgOf(header(page)), `${path} 헤더`).toBe(BLUE);
+    }
+  });
+
+  test("기간 뒤(12-02) 첫 페이지 헤더는 울트라마린 · hero 도 울트라마린", async ({ page }) => {
+    await open(page, AFTER);
+    await page.waitForTimeout(700);
+    expect(await bgOf(header(page))).toBe(BLUE);
+    expect(await heroBg(page)).toBe(BLUE);
+  });
+
+  test("헤더 글자 · 초점 고리가 두 바탕 위에서 읽힘 — 글자 대비 4.5:1 · 고리 대비 3:1 이상", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await open(page);
+    for (const s of ["bf", "sea"] as const) {
+      await tab(page, s).click();
+      await page.waitForTimeout(800);
+      await page.evaluate(() => window.scrollTo(0, 0));
+      const bg = await bgOf(header(page));
+      const links = header(page).getByRole("link");
+      const n = await links.count();
+      expect(n, "헤더 링크").toBeGreaterThan(2);
+      for (let i = 0; i < n; i++) {
+        const el = links.nth(i);
+        if (!(await el.isVisible())) continue;
+        const color = await el.evaluate((e) => getComputedStyle(e).color);
+        // 로고(노란 fx 가 섞인 그림 글자)는 큰 글자 기준 3:1
+        const isLogo = (await el.getAttribute("href")) === "/";
+        expect(contrast(color, bg), `${s} 장 헤더 링크 ${i} 글자 ${color} / 바탕 ${bg}`).toBeGreaterThanOrEqual(isLogo ? 3 : 4.5);
+      }
+      // 초점 고리 — 헤더 첫 링크에 Tab 으로 닿았을 때 고리 색 대비
+      await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+      await page.keyboard.press("Tab");
+      const ring = await page.evaluate(async () => {
+        const el = document.activeElement as HTMLElement | null;
+        if (!el || !el.closest("header")) return null;
+        await new Promise((res) => requestAnimationFrame(() => requestAnimationFrame(res)));
+        const cs = getComputedStyle(el);
+        return { style: cs.outlineStyle, color: cs.outlineColor };
+      });
+      expect(ring, `${s} 장에서 첫 Tab 이 헤더 안`).not.toBeNull();
+      expect(ring?.style).not.toBe("none");
+      expect(contrast(ring?.color ?? "rgb(0,0,0)", bg), `${s} 장 고리 ${ring?.color} / 바탕 ${bg}`).toBeGreaterThanOrEqual(3);
+    }
   });
 });
