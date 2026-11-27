@@ -25,8 +25,8 @@ test.describe("나라 페이지 정적 HTML — 서버 첫 그림 (작업 0344)"
   test("/prices/JPN — 제목 문장 · 메타 · FAQPage 가 자바스크립트 없이 들어 있음", async ({ page }) => {
     const h = await html(page, "/prices/JPN");
     expect(h).toMatch(/<h1[^>]*>[\s\S]*?일본은 한국보다 물가가 \d+% (높습니다|낮습니다)|<h1[^>]*>[\s\S]*?일본은 한국과 물가가 비슷합니다/);
-    expect(h).not.toContain("오늘 기준 한 줄 답"); // 작업 0397: 상자를 지움
-    expect(h).not.toContain('data-testid="country-oneline"');
+    expect(h.includes("오늘 기준 한 줄 답"), "HTML(RSC 자료 포함)에 한 줄 답 글이 남음: CountryView.oneLine 을 클라이언트 부품에 넘기지 않기").toBe(false); // 작업 0397: 상자를 지움
+    expect(h.includes('data-testid="country-oneline"')).toBe(false);
     expect(h).toMatch(/<title>[^<]*일본[^<]*<\/title>/);
     expect(h).toMatch(/<meta name="description" content="[^"]{20,}"/);
     expect(h).toMatch(/<link rel="canonical" href="https?:\/\/[^"]+\/prices\/JPN\/?"/);
@@ -42,8 +42,8 @@ test.describe("나라 페이지 정적 HTML — 서버 첫 그림 (작업 0344)"
   test("/prices/MAC — 마카오(통화 없음): 제목 문장은 있고 한 줄 답 상자 없음 · 환전 문항은 없음", async ({ page }) => {
     const h = await html(page, "/prices/MAC");
     expect(h).toMatch(/마카오(는|은) 한국/);
-    expect(h).not.toContain('data-testid="country-oneline"');
-    expect(h).not.toContain("오늘 기준 한 줄 답");
+    expect(h.includes('data-testid="country-oneline"')).toBe(false);
+    expect(h.includes("오늘 기준 한 줄 답"), "HTML(RSC 자료 포함)에 한 줄 답 글이 남음: CountryView.oneLine 을 클라이언트 부품에 넘기지 않기").toBe(false);
     const faq = ldTypes(h).find((d) => d["@type"] === "FAQPage");
     expect(faq?.mainEntity?.some((q) => q.name.includes("환전"))).toBeFalsy();
   });

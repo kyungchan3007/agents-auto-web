@@ -240,8 +240,8 @@ test.describe("한 줄 답 상자 없음 (작업 0397)", () => {
   for (const code of ["JPN", "VNM", "MAC"]) {
     test(`${code} — 화면 · 서버 첫 그림에 '오늘 기준 한 줄 답' · country-oneline 없음 · 머리 구역 겹침 · 가로 스크롤 없음`, async ({ page }) => {
       const h = await (await page.request.get(`/prices/${code}`)).text();
-      expect(h).not.toContain("오늘 기준 한 줄 답");
-      expect(h).not.toContain('data-testid="country-oneline"');
+      expect(h.includes("오늘 기준 한 줄 답"), "HTML(RSC 자료 포함)에 한 줄 답 글이 남음: CountryView.oneLine 을 클라이언트 부품에 넘기지 않기").toBe(false);
+      expect(h.includes('data-testid="country-oneline"')).toBe(false);
       await page.goto(`/prices/${code}`);
       await expect(tid(page, "country-oneline")).toHaveCount(0);
       await expect(page.getByText("오늘 기준 한 줄 답")).toHaveCount(0);
