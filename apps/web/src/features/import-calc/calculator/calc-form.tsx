@@ -24,7 +24,7 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
       <form data-testid="calc-input" className="flex flex-col gap-5 rounded-[1.5rem] border border-line bg-card px-6 py-7 shadow-ticket lg:justify-between" onSubmit={(e) => e.preventDefault()} aria-label="직구 계산 입력">
         <fieldset className="m-0 min-w-0 border-0 p-0">
           <legend className="mb-3.5 block p-0 text-[0.9375rem] font-bold text-fg">물건</legend>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2">
         <Field label="통화" htmlFor="currency">
           <Select id="currency" value={input.currency} onChange={set("currency")}>
             {codes.map((c) => (
@@ -88,7 +88,7 @@ export function CalcForm({ form }: { form: ReturnType<typeof useCalcForm> }) {
         <div aria-hidden className="h-px shrink-0 bg-line" />
         <fieldset className="m-0 min-w-0 border-0 p-0">
           <legend className="mb-3.5 block p-0 text-[0.9375rem] font-bold text-fg">더 정확하게 (선택)</legend>
-          <div className="@container grid gap-4 sm:grid-cols-2">
+          <div className="@container grid gap-4 lg:grid-cols-2">
         <Field label="국제 배송비" hint="한도를 넘을 때만 세금에 더합니다" htmlFor="shipping" error={err("shipping")} reserve>
           <Input id="shipping" inputMode="decimal" autoComplete="off" value={input.shipping} onChange={set("shipping")} placeholder="모르면 비워 두세요" />
         </Field>
