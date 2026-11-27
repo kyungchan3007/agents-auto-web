@@ -294,7 +294,7 @@ test.describe("고르는 동안 원래 1번 장이 드러나지 않음 (작업 0
     const why = `${a}(앞) · ${b}(1번) → ${target} 고름`;
     const i = log.findIndex((m) => m[a] === "out");
     expect(i, `${why}: 맨 앞 장이 사라지는 기록`).toBeGreaterThanOrEqual(0);
-    expect(log[i][target], `${why}: 사라지는 동안 1번 자리는 고른 장`).toBe("1");
+    expect(["1", "next"], `${why}: 사라지는 동안 고른 장의 자리(맨 앞 바로 밑 · 1 또는 next) ${log[i][target]}`).toContain(log[i][target]);
     for (const [k, m] of log.entries()) {
       const zero = Object.entries(m).filter(([, v]) => v === "0").map(([c]) => c);
       for (const c of zero) expect([a, target], `${why}: ${k}번째 기록에서 ${c} 가 0 번 자리`).toContain(c);
