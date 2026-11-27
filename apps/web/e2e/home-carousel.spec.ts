@@ -369,6 +369,19 @@ const contrast = (a: string, b: string) => {
   const [x, y] = [lum(rgbOf(a)), lum(rgbOf(b))];
   return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
 };
+/** 글자 · 고리 색이 oklab · 투명도 섞인 값이어도 바탕 위에 올린 실제 색(rgb)으로 바꿈 */
+const onBg = (page: Page, color: string, bg: string) =>
+  page.evaluate(([c, b]) => {
+    const cv = document.createElement("canvas");
+    cv.width = cv.height = 1;
+    const ctx = cv.getContext("2d") as CanvasRenderingContext2D;
+    ctx.fillStyle = b;
+    ctx.fillRect(0, 0, 1, 1);
+    ctx.fillStyle = c;
+    ctx.fillRect(0, 0, 1, 1);
+    const [r, g, bl] = ctx.getImageData(0, 0, 1, 1).data;
+    return `rgb(${r}, ${g}, ${bl})`;
+  }, [color, bg]);
 const bgOf = (loc: Locator) => loc.evaluate((el) => getComputedStyle(el).backgroundColor);
 const near = (a: string, b: string, tol = 14) => rgbOf(a).every((v, i) => Math.abs(v - rgbOf(b)[i]) <= tol);
 /** hero 바탕 = 지금 장의 바탕 (캐러셀 바깥 요소의 바탕) */
@@ -392,7 +405,7 @@ test.describe("헤더 색 — 지금 장 hero 바탕을 따라감 (작업 0386)"
     await expect.poll(() => heroBg(page), { timeout: 3_000 }).toBe(BLUE);
     await tab(page, "bf").click();
     await expect.poll(async () => lum(rgbOf(await bgOf(header(page)))), { timeout: 3_000 }).toBeLessThan(0.02);
-    expect(near(await bgOf(header(page)), await heroBg(page), 2)).toBe(true);
+    await expect.poll(async () => near(await bgOf(header(page)), await heroBg(page), 2), { timeout: 3_000 }).toBe(true); // 전환이 끝나면 같은 색
   });
 
   test("넘어가는 0.5초 동안 헤더와 hero 가 같이 바뀜 (중간에도 색 차이가 작음)", async ({ page }) => {
@@ -464,11 +477,11 @@ test.describe("헤더 색 — 지금 장 hero 바탕을 따라감 (작업 0386)"
         const color = await el.evaluate((e) => getComputedStyle(e).color);
         // 로고(노란 fx 가 섞인 그림 글자)는 큰 글자 기준 3:1
         const isLogo = (await el.getAttribute("href")) === "/";
-        expect(contrast(color, bg), `${s} 장 헤더 링크 ${i} 글자 ${color} / 바탕 ${bg}`).toBeGreaterThanOrEqual(isLogo ? 3 : 4.5);
+        expect(contrast(await onBg(page, color, bg), bg), `${s} 장 헤더 링크 ${i} 글자 ${color} / 바탕 ${bg}`).toBeGreaterThanOrEqual(isLogo ? 3 : 4.5);
       }
-      // 초점 고리 — 헤더 첫 링크에 Tab 으로 닿았을 때 고리 색 대비
-      await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
-      await page.keyboard.press("Tab");
+      // 초점 고리 — 헤더 링크에 키보드로 초점이 갔을 때 고리 색 대비
+      await page.keyboard.press("Shift"); // 키보드 조작이 마지막이어야 :focus-visible 고리가 그려짐
+      await header(page).getByRole("link").nth(1).focus();
       const ring = await page.evaluate(async () => {
         const el = document.activeElement as HTMLElement | null;
         if (!el || !el.closest("header")) return null;
@@ -476,9 +489,9 @@ test.describe("헤더 색 — 지금 장 hero 바탕을 따라감 (작업 0386)"
         const cs = getComputedStyle(el);
         return { style: cs.outlineStyle, color: cs.outlineColor };
       });
-      expect(ring, `${s} 장에서 첫 Tab 이 헤더 안`).not.toBeNull();
+      expect(ring, `${s} 장에서 헤더 링크에 키보드 초점`).not.toBeNull();
       expect(ring?.style).not.toBe("none");
-      expect(contrast(ring?.color ?? "rgb(0,0,0)", bg), `${s} 장 고리 ${ring?.color} / 바탕 ${bg}`).toBeGreaterThanOrEqual(3);
+      expect(contrast(await onBg(page, ring?.color ?? "rgb(0,0,0)", bg), bg), `${s} 장 고리 ${ring?.color} / 바탕 ${bg}`).toBeGreaterThanOrEqual(3);
     }
   });
 });
