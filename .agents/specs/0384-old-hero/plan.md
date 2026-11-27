@@ -13,6 +13,7 @@
 - .agents/specs/0384-old-hero/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- e2e country-pick · emphasis · light-only · today-anchor · focus-ring · tap-44: 같은 이유(지운 카드 · 홈 도시 칩을 검사)로 깨져 카드 부분만 빼거나 hero 칩으로 바꿈 · flap-board · pass-auto-hide spec 은 카드 전용이라 삭제하고 .agents/e2e-map.json 연결표에서도 뺌.
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋 CI gate)
@@ -20,3 +21,5 @@
 
 ## 허점
 - main 전에 전체 e2e 를 돌리지 않음(사용자 지시) · 홈 e2e 여러 개에서 카드 검사를 빼므로 test 가 로컬에서 바꾼 spec 을 모두 확인.
+- 홈 카드의 나라 링크가 없어져 클릭 이벤트 home_country_link 는 홈에서 보낼 곳이 없음 · 이벤트 표(packages/shared) · click-events.test 에는 남김(계약 정리는 따로). home_search_pick 은 hero 입력창에서 그대로 나감.
+- hero 칩 높이 40px(44 미만 · 검사 실패 아님 · 참고).
