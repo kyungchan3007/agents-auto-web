@@ -134,10 +134,20 @@
   font-size: 0.75rem;
   text-align: right;
 }
+/* 못 찾음 — 제안 목록과 같은 자리 · 겹침(흐름에서 뺌 · hero 높이가 늘었다 줄지 않음 · 작업 0393) */
 .hp-empty {
-  margin: 8px 0 0;
-  color: var(--hav-fg-2);
-  font-size: 0.875rem;
+  position: absolute;
+  inset-inline: 0;
+  top: calc(100% + 8px);
+  z-index: 30;
+  margin: 0;
+  padding: 12px 16px;
+  border: 2px solid var(--hav-pin-ink);
+  border-radius: 14px;
+  background: var(--hav-foam);
+  box-shadow: var(--hav-list-shadow);
+  color: var(--hav-pin-ink);
+  font-size: 0.9375rem;
 }
 .hp-hint {
   margin: 10px 0 0 4px;
@@ -345,6 +355,9 @@
   line-height: 1;
   letter-spacing: 0.08em;
 }
+.hp-lbl span {
+  white-space: nowrap;
+}
 .hp-lbl span:last-child {
   color: var(--hav-pass-muted);
   font-weight: 500;
@@ -512,10 +525,14 @@
 .hp-go {
   display: flex;
   gap: 6px 14px;
+  min-height: calc(max(12px, 2.4cqw) * 1.5 + 1.6cqw);
   margin-top: 1.6cqw;
   padding-top: 1.6cqw;
-  border-top: 1px dashed var(--hav-pass-dash);
+  border-top: 1px dashed transparent;
   white-space: nowrap;
+}
+.hp-go[data-on="true"] {
+  border-top-color: var(--hav-pass-dash);
 }
 .hp-go a {
   position: relative;
@@ -549,11 +566,23 @@
 }
 .hp-facts-hd {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
-  min-height: 1.4em;
+  height: 28px;
   font-size: 0.9375rem;
   font-weight: 700;
+}
+.hp-facts-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hp-facts-hd small,
+.hp-facts-tag {
+  flex: none;
+  white-space: nowrap;
 }
 .hp-facts-hd small {
   color: var(--hav-glass-fg-2);
@@ -562,6 +591,7 @@
 }
 .hp-facts-tag {
   margin-left: auto;
+  line-height: 1.2;
   padding: 3px 8px;
   border-radius: 999px;
   background: var(--hav-sun);
@@ -587,10 +617,11 @@
   display: block;
   margin-top: 3px;
   font-size: clamp(15px, 4vw, 20px);
+  min-height: calc(1.25em + 0.9375rem);
   font-weight: 800;
   line-height: 1.25;
   letter-spacing: -0.02em;
-  word-break: keep-all;
+  white-space: nowrap;
 }
 .hp-facts-st b i {
   display: block;
@@ -610,6 +641,8 @@
   display: flex;
   justify-content: space-between;
   gap: 8px;
+  min-height: 1.5em;
+  white-space: nowrap;
 }
 .hp-facts-bar {
   position: relative;
@@ -633,22 +666,31 @@
   transform: translateY(-50%);
 }
 .hp-facts-ft {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 26px;
+  display: grid;
+  gap: 6px;
+  margin-top: 20px;
   font-size: 0.8125rem;
 }
 .hp-facts-ft span {
+  display: block;
+  min-height: 3em;
   color: var(--hav-glass-fg-2);
   font-size: 0.75rem;
+  line-height: 1.5;
 }
 .hp-facts-ft a {
   color: var(--hav-fg);
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 3px;
-  white-space: nowrap;
+}
+.hp-facts-ft div {
+  min-height: 1.5em;
+}
+@media (max-width: 480px) {
+  .hp-facts-ft div {
+    min-height: 3em;
+  }
 }
 @media (max-width: 380px) {
   .hp-facts-st {
