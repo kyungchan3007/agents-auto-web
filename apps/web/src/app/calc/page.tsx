@@ -1,4 +1,3 @@
-import { buildTimeIso } from "@hav/shared/fx-schedule";
 import type { Metadata } from "next";
 import { CalcPage } from "@/features/import-calc/calc-page";
 import type { CustomsRate } from "@/features/import-calc/common/customs-rate";
@@ -24,7 +23,7 @@ export default async function Page() {
   return (
     <>
       <JsonLd data={breadcrumbLd([{ name: "직구 계산기", path: "/calc" }])} />
-      <CalcPage latest={latest} customs={customs} trend={trend.ok ? trend.data.points : null} usdDays={usd.ok ? usd.data.rates : null} importPrice={price.ok ? price.data.points : null} builtAt={buildTimeIso()} />
+      <CalcPage latest={latest} customs={customs} trend={trend.ok ? trend.data.points : null} usdDays={usd.ok ? usd.data.rates : null} importPrice={price.ok ? price.data.points : null} />
     </>
   );
 }
