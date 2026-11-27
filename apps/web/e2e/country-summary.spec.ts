@@ -249,6 +249,12 @@ test.describe("한 줄 답 상자 없음 (작업 0397)", () => {
       expect(await hScroll(page)).toBeLessThanOrEqual(0);
     });
   }
+  test("/prices 목록 — HTML 전체(스크립트 데이터 포함)에 '오늘 기준 한 줄 답' 글자 없음", async ({ page }) => {
+    const h = await (await page.request.get("/prices")).text();
+    expect(h.includes("오늘 기준 한 줄 답"), "/prices HTML(RSC 자료 포함)에 한 줄 답 글이 남음").toBe(false);
+    expect(h.includes("country-side-answer")).toBe(false);
+  });
+
   test.describe("폭별 머리 구역", () => {
     test.beforeEach(({ isMobile }) => {
       test.skip(isMobile, "폭을 직접 맞춰 재는 검사 — 넓은 화면 프로젝트에서만");
