@@ -142,20 +142,28 @@ export function auditDom(): Violation[] {
     }
   }
 
-  // c — 899 이하: 같은 가운데 기둥 — 줄을 혼자 차지하는 덩어리(옆에 형제가 없는 블록)의 좌우 여백 차 > 2
+  // c — 899 이하: 기둥(구역 · 컨테이너)이 가운데이고, 상자 덩어리(카드 · 전광판 · 입력 · 버튼 줄 · 그림 · 표)는 기둥 폭을 채우거나 가운데 (lead 결정: 글 p · h1 · 인라인이 기둥 안에서 왼쪽 정렬인 것은 쏠림 아님)
   if (W <= 899) {
-    const blockTags = new Set(["DIV", "SECTION", "ARTICLE", "FORM", "UL", "OL", "LI", "P", "H1", "H2", "H3", "NAV", "FIGURE", "IMG", "INPUT", "SELECT", "BUTTON", "A", "TABLE", "CANVAS", "DETAILS"]);
-    const bad = new Set<Element>();
-    const marginDiff = (e: Element): number => {
-      const r = e.getBoundingClientRect();
-      return r.left - (W - r.right);
+    const boxTags = new Set(["INPUT", "SELECT", "TEXTAREA", "IMG", "CANVAS", "TABLE", "BUTTON", "SVG"]);
+    const isBox = (e: Element): boolean => {
+      if (boxTags.has(e.tagName.toUpperCase())) return true;
+      const cs = getComputedStyle(e);
+      const border = ["Top", "Right", "Bottom", "Left"].some((d) => parseFloat(cs.getPropertyValue(`border-${d.toLowerCase()}-width`)) > 0 && cs.getPropertyValue(`border-${d.toLowerCase()}-style`) !== "none");
+      const bg = !/rgba\(0, 0, 0, 0\)|transparent/.test(cs.backgroundColor) || cs.backgroundImage !== "none";
+      return border || bg || cs.boxShadow !== "none";
     };
+    const boxes = all.filter((e) => e.tagName !== "BODY" && e.tagName !== "MAIN" && e.tagName !== "HTML" && isBox(e));
+    const boxSet = new Set(boxes);
+    const containerTags = new Set(["DIV", "SECTION", "ARTICLE", "FORM", "UL", "OL", "NAV", "DETAILS", "FIGURE"]);
+    const hasBoxInside = (e: Element): boolean => boxes.some((x) => x !== e && e.contains(x));
+    const bad = new Set<Element>();
     for (const e of all) {
-      if (!blockTags.has(e.tagName)) continue;
+      const asBox = boxSet.has(e);
+      if (!asBox && !(containerTags.has(e.tagName) && hasBoxInside(e))) continue;
       const s = getComputedStyle(e);
-      if (!(s.display === "block" || s.display === "flex" || s.display === "grid" || s.display === "list-item" || s.display === "table" || s.display === "flow-root")) continue;
+      if (!(s.display === "block" || s.display === "flex" || s.display === "grid" || s.display === "list-item" || s.display === "table" || s.display === "flow-root" || s.display === "inline-flex" || s.display === "inline-block")) continue;
       const r = e.getBoundingClientRect();
-      if (r.width < W * 0.3 || r.height < 40 || r.width >= W - 1) continue;
+      if (r.width < W * 0.3 || r.height < 24 || r.width >= W - 1) continue;
       if (s.position === "absolute" || s.position === "fixed" || fixedAncestor(e)) continue;
       let scroller = false;
       for (let n: Element | null = e.parentElement; n && n !== document.body; n = n.parentElement) {
@@ -163,17 +171,19 @@ export function auditDom(): Violation[] {
         if (o === "auto" || o === "scroll") scroller = true;
       }
       if (scroller) continue;
-      // 옆에 형제가 있으면(같은 줄) 한 줄 배치가 아님
+      // 옆에 형제가 있으면(같은 줄 · 위 세 단계 안) 한 줄 배치가 아님
       let beside = false;
       for (let n: Element = e, up = 0; up < 3 && n.parentElement && !beside; n = n.parentElement, up++) {
         const nr = n.getBoundingClientRect();
         const sib = [...n.parentElement.children].filter((k) => k !== n && shown(k));
-        beside = sib.some((k) => { const kr = k.getBoundingClientRect(); return kr.top < nr.bottom - 1 && kr.bottom > nr.top + 1 && kr.width > 20 && (kr.left >= nr.right - 1 || kr.right <= nr.left + 1); });
+        beside = sib.some((k) => {
+          const kr = k.getBoundingClientRect();
+          return kr.top < nr.bottom - 1 && kr.bottom > nr.top + 1 && kr.width > 20 && (kr.left >= nr.right - 1 || kr.right <= nr.left + 1);
+        });
       }
       if (beside) continue;
-      const d = marginDiff(e);
+      const d = r.left - (W - r.right);
       if (Math.abs(d) <= 2) continue;
-      // 바깥 덩어리가 이미 어긋났으면 안쪽은 같은 문제라 따로 세지 않음
       let anc = false;
       for (let n = e.parentElement; n && n !== document.body; n = n.parentElement) if (bad.has(n)) anc = true;
       if (anc) continue;
