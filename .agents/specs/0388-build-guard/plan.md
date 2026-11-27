@@ -24,3 +24,7 @@
 - [ ] develop 머지까지 · 운영 Worker 건드리지 않음 · 릴리스 없음
 
 ## 허점
+- 빌드가 fetch-cache 의 옛 응답(revalidate 1년)을 다시 써서 사이트가 어제 환율로 만들어지는 문제를 이 작업 중 찾음(로컬 재현). Workers Builds 가 .next/cache 를 되살리는지는 저장소에서 확인 못 함 · 빌드 시작 때 fetch-cache 를 지워 어느 쪽이든 새로 받게 함.
+- 실패 알림(rebuild-site 결과 확인) · 05:30 UTC 다시 빌드는 .github/workflows 보호 파일이라 docs 초안만 · Cloudflare 빌드 실패 알림은 사용자가 대시보드에서.
+- 검사할 기록이 없으면(fetch-cache 비었음) 운영도 경고만이라 검사가 빠진 채 배포될 수 있음 · 운영 빌드에서는 '주의' 한 줄로 눈에 띄게.
+- 첫 빌드에서 /signal 목록 받기가 한 번 실패해 경고가 난 적 있음(신호는 경고만 · 빌드 통과).
