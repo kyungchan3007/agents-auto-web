@@ -23,7 +23,7 @@ export function CountryHeader({ v, facts }: { v: CountryView; facts: Facts }) {
       </h1>
       <p className="mt-6 max-w-[36em] text-body text-fg-2 sm:text-[1.125rem]">세계은행 {v.year}년 나라별 물가 수준(한국 = 100)과 오늘 그 나라 통화 신호를 함께 봅니다.</p>
       <div aria-hidden className="lg:flex-1" />
-      <FactsCard id="country" facts={facts} label={`${v.name} 오늘 숫자`} className="mt-6 max-w-[32.5rem]" />
+      <FactsCard id="country" facts={facts} label={`${v.name} 오늘 숫자`} className="mt-6 lg:max-w-[32.5rem]" />
     </div>
   );
 }

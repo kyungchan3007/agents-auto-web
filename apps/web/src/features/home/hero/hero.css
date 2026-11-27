@@ -2,10 +2,15 @@
 
 .hp-hero {
   position: relative;
+  display: flex;
+  flex: 1 1 auto; /* 캐러셀에서 짧은 장도 칸 높이를 채우고 안 내용은 세로 가운데 (작업 0398) */
+  flex-direction: column;
+  justify-content: center;
   overflow: hidden;
 }
 .hp-inner {
   display: grid;
+  width: 100%;
   grid-template-columns: minmax(0, 1fr) minmax(0, min(44vw, 560px));
   align-items: center;
   gap: clamp(16px, 3vw, 48px);
