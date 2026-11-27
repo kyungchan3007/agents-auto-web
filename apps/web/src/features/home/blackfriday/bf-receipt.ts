@@ -1,4 +1,5 @@
 // 블랙프라이데이 hero 영수증 시간표 (작업 0381) — 흐른 시간 → 보이는 줄 수 · 카운트업 중인 합계 · 도장 (순수 함수 · 시간은 use-bf-receipt 가 잼)
+//   영수증 자리는 처음부터 다 찍힌 최종 크기로 잡고(줄은 모두 그려 두고 아직 안 찍힌 줄만 보이지 않게) 모션은 그 안에서만 — hero 높이가 변하지 않음 (작업 0389)
 //   0.5초 뒤부터 0.85초 간격으로 한 줄씩 · 줄마다 합계가 0.7초 카운트업 · 카운트업이 끝날 때마다 그때 합계로 도장을 다시 찍음 · 한 번만(반복 없음)
 import { DUTY_FREE_USD } from "@/shared/customs/rules";
 import { BF_ITEMS, receiptSteps } from "./bf-calc";
@@ -42,7 +43,8 @@ export const krwText = (usd: number, perUsd: number | null): string => (perUsd =
 
 /** 영수증 그림에 쓸 글 · 값 — 그리기는 bf-receipt-view.tsx · 계산은 모두 여기 */
 export type ReceiptDraw = {
-  items: { name: string; usdText: string; fresh: boolean }[];
+  /** 줄은 처음부터 모두 자리를 차지함(레이아웃 높이 변화 0) — shown 이 아닌 줄은 보이지 않을 뿐 */
+  items: { name: string; usdText: string; shown: boolean; fresh: boolean }[];
   subText: string;
   limitText: string;
   krw: string;
@@ -60,7 +62,7 @@ export type ReceiptDraw = {
 export function receiptDraw(view: ReceiptView, perUsd: number | null): ReceiptDraw {
   const over = view.usd > RECEIPT_LIMIT_USD;
   return {
-    items: BF_ITEMS.slice(0, view.lines).map((it, i) => ({ name: it.name, usdText: usdText(it.usd), fresh: i === view.lines - 1 })),
+    items: BF_ITEMS.map((it, i) => ({ name: it.name, usdText: usdText(it.usd), shown: i < view.lines, fresh: i === view.lines - 1 })),
     subText: usdText(view.usd),
     limitText: usdText(RECEIPT_LIMIT_USD),
     krw: krwText(view.usd, perUsd),
