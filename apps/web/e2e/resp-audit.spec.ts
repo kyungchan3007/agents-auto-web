@@ -128,10 +128,20 @@ for (const v of VARIANTS.filter((x) => !ONLY || ONLY.test(x.name))) {
 for (const v of VARIANTS.filter((x) => !ONLY || ONLY.test(x.name))) {
   test(`${v.name} · e 스크롤로 들어올 때 높이 · 구역 위치 변화 없음 (390 · 768 · 1280)`, async ({ page }) => {
     test.setTimeout(180_000);
-    await load(page, v, false);
+    await page.addInitScript(() => {
+      try {
+        localStorage.setItem("flapfx:intro-off", "1");
+      } catch {}
+    });
+    await v.prep?.(page);
     const rows: string[] = [];
     for (const w of [390, 768, 1280]) {
+      // 폭마다 그 폭에서 새로 열어 잼(폭을 바꾸며 다시 맞추는 지연 흐름과 섞이지 않게 · 사용자는 한 폭에서 열어 스크롤함)
       await page.setViewportSize({ width: w, height: 900 });
+      await page.goto(v.path, { waitUntil: "load" });
+      await page.waitForLoadState("networkidle").catch(() => {});
+      await page.waitForTimeout(800);
+      if (v.after) await v.after(page);
       await page.evaluate(() => window.scrollTo(0, 0));
       await settle(page);
       const snap = () =>
