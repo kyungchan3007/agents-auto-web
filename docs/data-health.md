@@ -251,3 +251,40 @@ SerpApi 이번 달 예상 사용량(코드상 계산):
 - 과세환율 이력이 1줄뿐인 이유(처음부터 한 주씩만 받는지, 이전 주가 지워졌는지)는 코드를 읽지 않고는 알 수 없습니다. 수집 코드 설명 요청이 필요하면 따로 전달합니다.
 - `ensure-fx.yml` · `rebuild-site.yml` 의 예약 시각(UTC 03:10 ~ 08:40 · 03:30)과 실제 실행 시각(UTC 10:51 ~ 12:18)이 다릅니다. GitHub 예약 지연으로 보이나 확인하지 못했습니다.
 - SerpApi 계정의 실제 남은 횟수는 없음.
+
+## 빌드 자료 검사 (작업 0388)
+
+깨진 자료("아직 받지 못했습니다" 화면)가 운영에 나가지 않게, 사이트 빌드 끝에 검사를 붙였습니다. `apps/web` 의 `build` 가 `next build` 뒤에 `scripts/check-build-data.ts` 를 부릅니다.
+
+- 기준은 빌드가 실제로 받은 값(Next 가 저장한 응답, `apps/web/.next/cache/fetch-cache`)입니다. 새로 받아 덮어 보지 않고, 지금 API `/fx/latest` 의 기준일 한 줄만 읽어 비교합니다.
+- 실패(운영 빌드에서만 빌드를 멈춤): 오늘 환율을 받지 못함 · 통화 0개 · 기준일이 없음 · 빌드가 받은 기준일이 지금 API 기준일보다 오래됨. 주말 · 공휴일은 API 가 준 날짜끼리 비교하므로 직전 영업일이면 통과합니다.
+- 경고만: 신호 · 국제항공료 지수가 비었거나 받지 못함. 받은 기록 폴더를 읽지 못해 검사 자체를 못 한 경우, 지금 API 기준일을 읽지 못한 경우.
+- 운영 빌드는 Workers Builds 의 `WORKERS_CI=1` · `WORKERS_CI_BRANCH=main`(옛 Pages 는 `CF_PAGES=1` · `CF_PAGES_BRANCH=main`)입니다. 브랜치 미리보기 · 로컬 · CI gate 빌드는 경고만 하므로 막히지 않습니다. 같은 기준을 `@hav/shared/api` 의 `mustHave` 도 씁니다.
+- 실패한 빌드는 배포되지 않아 어제 정상 화면이 그대로 남습니다. 빌드 출력의 `[빌드 자료 검사]` 줄이 Workers Builds 빌드 기록에 남습니다.
+- 판정 함수: `apps/web/scripts/check-build-data-lib.ts` 의 `judgeBuildData` (단위 테스트 대상).
+
+### 막힌 날 확인
+
+1. Cloudflare 대시보드 → Workers & Pages → `agents-auto-web` → Deployments(빌드 기록)에서 실패한 빌드의 `[빌드 자료 검사]` 줄을 봅니다.
+2. 이유가 "기준일이 오래됐습니다" 이면 그날 환율 수집이 아직 안 끝난 것입니다. 공개 API 로 확인합니다: `curl -s https://tripfx-api.developfff.workers.dev/fx/latest | head -c 200` (date 와 통화 수).
+3. 수집이 채워지는 순간 API 가 사이트 다시 빌드 후크를 불러 자동으로 다시 만들어집니다(평일 12:00 예약 · `ensure-fx` 보충 03~08 UTC 10 · 40분). 오래 막혀 있으면 수집 상태(위 "자료별 기준")를 먼저 점검합니다.
+4. 사이트는 어제 정상 화면 그대로 떠 있으므로 급하지 않습니다. 급해서 검사를 건너뛰어야 하면 그 빌드만 사람이 승인해 처리합니다(검사를 끄는 환경 변수는 두지 않았습니다).
+
+### Cloudflare 빌드 실패 알림 (사람이 설정)
+
+대시보드 → Notifications → Add → 이벤트 "Workers Builds"(빌드 실패)를 골라 이메일로 받도록 만듭니다. 무료이고 이 저장소에는 비밀값이 들어가지 않습니다. 설정은 사람이 합니다.
+
+### rebuild-site 워크플로 초안 (사람 승인 필요)
+
+`.github/workflows/**` 는 보호 파일이라 이번에 고치지 않았습니다. 사람이 승인하면 `rebuild-site.yml` 에 아래 두 가지를 더합니다.
+
+- 배포 후크를 부른 뒤 결과를 확인해 실패하면 Actions 요약(또는 기록 이슈 댓글)에 적기: 후크 호출 응답 코드와, 몇 분 뒤 운영 `sitemap.xml` 응답이 200 인지.
+- 05:30 UTC 에 한 번 더 다시 만들기(수집 보충이 끝난 뒤 한 번 더 시도):
+
+```yaml
+on:
+  schedule:
+    - cron: "30 5 * * 1-5"   # 평일 05:30 UTC 한 번 더
+```
+
+- 필요한 권한: 후크 주소는 이미 있는 Secret(`PAGES_DEPLOY_HOOK`)을 그대로 씁니다. 이슈 댓글을 남기려면 `permissions: issues: write` 가 추가로 필요합니다.
