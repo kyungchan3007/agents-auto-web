@@ -84,20 +84,15 @@ function Row({ row, f, motion }: { row: DestinationRowData; f: PillFrame; motion
 }
 
 export function DestinationTable({ rows, windowDays = 90 }: { rows: DestinationRowData[]; windowDays?: number }) {
-  const { ref, state, t, full, boot } = useDestinationsPill<HTMLDivElement>(rows.length);
+  const { ref, state, t, boot } = useDestinationsPill<HTMLDivElement>(rows.length);
   const motion = state !== "final";
-  // 접힘 · 펼침 중 카드 틀 — 높이 · 모서리가 알약(--pill-h · 반지름 = 높이의 절반)에서 끝(full · 24px)으로 (끝에는 인라인 값 없음)
-  const g = state === "pill" ? 0 : pillFrame(t, 0).grow;
-  const style = motion
-    ? { height: `calc(var(--pill-h) + (${full}px - var(--pill-h)) * ${g})`, borderRadius: `calc(var(--pill-h) / 2 + (24px - var(--pill-h) / 2) * ${g})`, overflow: "hidden" as const }
-    : undefined;
+  // 카드 틀은 처음부터 끝 높이로 자리를 잡음(작업 0398 · 화면에 들어올 때 435 → 984px 늘어나 아래가 밀리던 것을 없앰) — 접힘 · 펼침은 알약 글 · 줄의 투명도와 이동만
   return (
     <div
       ref={ref}
       data-testid="dest-list"
       data-state={state}
       data-boot={boot ? "" : undefined}
-      style={style}
       className="relative mt-8 divide-y divide-line rounded-[1.5rem] border-2 border-line bg-card px-5 py-2 [--pill-h:4.75rem] sm:px-8 sm:[--pill-h:4.5rem]"
     >
       {(state !== "final" || boot) && <DestinationsPill rows={rows} windowDays={windowDays} fade={state === "expanding" ? pillFrame(t, 0).pill : 1} />}
