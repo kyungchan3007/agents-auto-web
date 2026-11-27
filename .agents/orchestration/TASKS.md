@@ -203,4 +203,5 @@
 | 0392 | 11-27 블프 당일 캐러셀 알리기 묶음 기록 | geo · dev-geo@hav | 머지됨 (#468) | task/0392-marketing-1127 | docs/marketing/2026-11-27/** |
 | 0393 | 기본 hero 고른 곳 탑승권 · 숫자 칸(글래스) · 제안 목록 · 두 hero 가운데 정렬 (Full · develop 머지까지) | test ∥ builder → test | 머지됨 (#469) | task/0393-hero-pick | apps/web/src/app/page.tsx · apps/web/src/features/home/{home.tsx,timing/hero-section.tsx,hero/**,blackfriday/bf-hero.css} |
 | 0394 | main 반영 #470 전체 e2e 실패 17 고치기(첫 페이지 hero 뒤 테스트 · 규칙) (Quick) | test → builder | 머지됨 (#471) | task/0394-main-e2e | apps/web/e2e/* · 필요하면 home/hero/** |
-| 0395 | #470 남은 실패: 글꼴 로딩으로 390 hero 높이 48px 바뀜 · tap-44 흔들림 (Quick) | test → builder | PR 열림 | task/0395-font-shift | apps/web/src/features/home/{hero,blackfriday,carousel}/*.css |
+| 0395 | #470 남은 실패: 글꼴 로딩으로 390 hero 높이 48px 바뀜 · tap-44 흔들림 (Quick) | test → builder | 머지됨 (#472) · main 반영 #470 | task/0395-font-shift | apps/web/src/features/home/{hero,blackfriday,carousel}/*.css |
+| 0396 | 나라 물가 요약 칸(글래스 · 0393 숫자 칸 공통화) · 환율 없음 안내를 방문자 말로 (Full · develop 머지까지) | test ∥ builder → test | 진행 | task/0396-country-summary | apps/web/src/shared/facts/** · features/{home/hero,prices/country}/** · packages/shared/src/domain/fx-schedule.ts · 쓰는 화면 |

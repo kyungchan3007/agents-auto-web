@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>나라 물가 여백</title>
+<style>
+:root { --bg: #f4f6fb; --fg: #16246e; --fg2: #4a5a8c; --card: #fff; --line: #d6deee; --accent: #2438a8; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #0f1430; --fg: #eef1ff; --fg2: #aab3d8; --card: #171d40; --line: #2a3263; --accent: #8fa6ff; } }
+:root[data-theme="dark"] { --bg: #0f1430; --fg: #eef1ff; --fg2: #aab3d8; --card: #171d40; --line: #2a3263; --accent: #8fa6ff; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.6 Pretendard, "Apple SD Gothic Neo", system-ui, sans-serif; }
+main { max-width: 1240px; margin: 0 auto; padding: 28px 16px 64px; }
+h1 { font-size: 24px; margin: 0 0 6px; letter-spacing: -.02em; }
+p.lead { margin: 0 0 18px; color: var(--fg2); }
+.seg { display: inline-flex; gap: 6px; margin-bottom: 18px; }
+.seg button { border: 1px solid var(--line); background: var(--card); color: var(--fg); border-radius: 999px; padding: 6px 14px; font: inherit; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 18px; }
+section h2 { font-size: 17px; margin: 0 0 4px; }
+section p { margin: 0 0 12px; color: var(--fg2); font-size: 14px; }
+img { display: block; width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<main>
+  <h1>나라 물가 페이지 왼쪽 아래 여백</h1>
+  <p class="lead">베트남 물가 페이지(develop 미리보기)를 같은 구도로 찍었습니다. 왼쪽 글이 예산 카드보다 짧아 왼쪽 아래가 비는 문제입니다.</p>
+  <div class="seg" role="group" aria-label="화면 폭">
+    <button type="button" data-w="1124" aria-pressed="true">1124px (보내 주신 폭)</button>
+    <button type="button" data-w="1440" aria-pressed="false">1440px</button>
+  </div>
+  <section><h2>지금</h2><p>왼쪽 글은 위에 붙어 있고, 그 아래 약 360px 이 비어 있습니다.</p><img data-k="now" src="now-1124.png" alt="지금 화면"></section>
+  <section><h2>A · 왼쪽 글을 세로 가운데로</h2><p>글 내용은 그대로이고, 예산 카드 높이에 맞춰 가운데로 내려옵니다. 위아래로 여백이 나뉩니다.</p><img data-k="a" src="a-1124.png" alt="A 안"></section>
+  <section><h2>B · 빈 곳에 그 나라 오늘 요약</h2><p>첫 페이지 숫자 칸과 같은 글래스 칸(오늘 환율 · 1만원이면 · 물가 · 90일 위치)을 설명 아래에 둡니다. 숫자는 시안 예시 값입니다.</p><img data-k="b" src="b-1124.png" alt="B 안"></section>
+</main>
+<script>
+document.querySelector(".seg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  document.querySelectorAll(".seg button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  document.querySelectorAll("img[data-k]").forEach(i => i.src = `${i.dataset.k}-${b.dataset.w}.png`);
+});
+</script>
+</body>
+</html>
