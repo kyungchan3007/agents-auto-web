@@ -16,6 +16,12 @@ const box = async (loc: Locator, name: string) => {
   if (!b) throw new Error(`${name} 가 화면에 없음`);
   return b;
 };
+// 문서 기준 위치(스크롤과 무관) — 입력을 채우면 화면이 스크롤되어 뷰포트 기준 y 가 바뀜
+const docBox = async (loc: Locator, name: string) => {
+  const b = await box(loc, name);
+  const sy = await loc.first().page().evaluate(() => window.scrollY);
+  return { ...b, y: b.y + sy };
+};
 const hScroll = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 const BAD = [/한국수출입은행이/, /30분마다/, /사이트를 새로 만들/, /자료 없음 · /, /\d{4}-\d{2}-\d{2} \d{2}:\d{2} 확인/];
 
@@ -91,9 +97,9 @@ test.describe("높이 · 위치 고정", () => {
     await page.goto("/prices/JPN");
     await hydrated(tid(page, "budget"));
     const read = async () => ({
-      budget: (await box(tid(page, "budget"), "budget")).y + (await box(tid(page, "budget"), "budget")).height,
-      facts: await box(tid(page, "country-facts"), "facts"),
-      next: (await box(tid(page, "next-card"), "next-card")).y,
+      budget: (await docBox(tid(page, "budget"), "budget")).y + (await docBox(tid(page, "budget"), "budget")).height,
+      facts: await docBox(tid(page, "country-facts"), "facts"),
+      next: (await docBox(tid(page, "next-card"), "next-card")).y,
     });
     const before = await read();
     const nextBefore = before.next;
@@ -111,14 +117,14 @@ test.describe("높이 · 위치 고정", () => {
 
   test("베트남 — 입력 전후 요약 칸 · 아래 구역 위치 같음 · 하이드레이션 전후도 같음", async ({ page }) => {
     await page.goto("/prices/VNM");
-    const nextEarly = (await box(tid(page, "next-card"), "next-card")).y;
-    const factsEarly = await box(tid(page, "country-facts"), "facts");
+    const nextEarly = (await docBox(tid(page, "next-card"), "next-card")).y;
+    const factsEarly = await docBox(tid(page, "country-facts"), "facts");
     await hydrated(tid(page, "budget"));
     await page.getByLabel("한국에서 하루 쓰는 돈 (원)").fill("300,000");
     await page.getByLabel("일수").fill("9");
     await page.evaluate(() => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r()))));
-    expect(Math.abs((await box(tid(page, "next-card"), "next-card")).y - nextEarly), "아래 구역 위치").toBeLessThanOrEqual(1);
-    const f = await box(tid(page, "country-facts"), "facts");
+    expect(Math.abs((await docBox(tid(page, "next-card"), "next-card")).y - nextEarly), "아래 구역 위치").toBeLessThanOrEqual(1);
+    const f = await docBox(tid(page, "country-facts"), "facts");
     expect(Math.abs(f.y - factsEarly.y)).toBeLessThanOrEqual(1);
     expect(Math.abs(f.height - factsEarly.height)).toBeLessThanOrEqual(1);
   });
