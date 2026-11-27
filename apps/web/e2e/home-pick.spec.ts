@@ -246,6 +246,37 @@ test.describe("고르는 동안 원래 1번 장이 드러나지 않음 (작업 0
   const CHIPS = ["도쿄", "방콕", "다낭", "파리"];
   const perms = <T,>(a: T[]): T[][] => (a.length <= 1 ? [a] : a.flatMap((x, i) => perms([...a.slice(0, i), ...a.slice(i + 1)]).map((r) => [x, ...r])));
 
+  type Sample = { out: boolean; zero: string[]; stack: { city: string; op: number }[] };
+  /** 50ms 마다 탑승권 묶음 가운데를 찍음 — 그 점에 겹친 장을 위에서 아래로(elementsFromPoint) · 보이는 정도(opacity) · 자리 */
+  const startSampler = (page: Page) =>
+    page.evaluate(() => {
+      const w = window as unknown as { __samp: Sample[]; __sampId: number };
+      if (!document.getElementById("__hit")) {
+        const st = document.createElement("style");
+        st.id = "__hit";
+        st.textContent = ".hp-passes, .hp-pass { pointer-events: auto !important; }"; // 장식 묶음은 평소 클릭을 통과시킴 — 검사 때만 찍히게
+        document.head.append(st);
+      }
+      w.__samp = [];
+      w.__sampId = window.setInterval(() => {
+        const f = document.querySelector(".hp-float")?.getBoundingClientRect();
+        if (!f) return;
+        const all = Array.from(document.querySelectorAll('[data-testid="hero-pass"]')) as HTMLElement[];
+        const stack = document
+          .elementsFromPoint(f.left + f.width / 2, f.top + f.height / 2)
+          .map((e) => e.closest('[data-testid="hero-pass"]') as HTMLElement | null)
+          .filter((e, i, a): e is HTMLElement => !!e && a.indexOf(e) === i)
+          .map((e) => ({ city: e.getAttribute("data-city") ?? "", op: Number.parseFloat(getComputedStyle(e).opacity) }));
+        w.__samp.push({ out: all.some((e) => e.getAttribute("data-s") === "out"), zero: all.filter((e) => e.getAttribute("data-s") === "0").map((e) => e.getAttribute("data-city") ?? ""), stack });
+      }, 50);
+    });
+  const stopSampler = (page: Page) =>
+    page.evaluate(() => {
+      const w = window as unknown as { __samp: Sample[]; __sampId: number };
+      clearInterval(w.__sampId);
+      return w.__samp;
+    });
+
   /** 한 번 고르고 · 끝난 뒤 기록을 검사 */
   const pickAndCheck = async (page: Page, target: string, doPick: () => Promise<void>) => {
     await settle(page);
@@ -253,10 +284,12 @@ test.describe("고르는 동안 원래 1번 장이 드러나지 않음 (작업 0
     if (a === target) return;
     const b = await page.locator('[data-testid="hero-pass"][data-s="1"]').getAttribute("data-city");
     await resetOuts(page);
+    await startSampler(page);
     await doPick();
     await expect.poll(() => frontCity(page), { timeout: 4000 }).toBe(target);
     await settle(page);
     await page.waitForTimeout(300);
+    const samples = await stopSampler(page);
     const log = await snaps(page);
     const why = `${a}(앞) · ${b}(1번) → ${target} 고름`;
     const i = log.findIndex((m) => m[a] === "out");
@@ -267,6 +300,14 @@ test.describe("고르는 동안 원래 1번 장이 드러나지 않음 (작업 0
       for (const c of zero) expect([a, target], `${why}: ${k}번째 기록에서 ${c} 가 0 번 자리`).toContain(c);
     }
     expect(log.at(-1)?.[target], `${why}: 끝나면 고른 장이 0`).toBe("0");
+    // 실제 화면: 사라지는 동안(out 이 있는 표본) 맨 앞(A)을 뺀 보이는 장 중 가장 위는 늘 고른 장 · 0번 자리에는 A 나 고른 장만
+    const during = samples.filter((m) => m.out);
+    expect(during.length, `${why}: 사라지는 동안 찍은 표본`).toBeGreaterThanOrEqual(4);
+    for (const [k, m] of during.entries()) {
+      const top = m.stack.filter((x) => x.city !== a && x.op > 0.05)[0];
+      expect(top?.city, `${why}: 사라지는 ${k}번째 표본(${k * 50}ms 쯤) 맨 앞 아래 가장 위 장 ${JSON.stringify(m.stack)}`).toBe(target);
+    }
+    for (const m of samples) for (const c of m.zero) expect([a, target], `${why}: 0번 자리에 ${c}`).toContain(c);
   };
 
   test("네 칩의 모든 순서(24가지) — 매 선택마다 B 가 0 이 되는 순간 없음 · 사라지는 동안 1번은 고른 장", async ({ page }, info) => {
