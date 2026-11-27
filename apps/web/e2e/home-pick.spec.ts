@@ -335,3 +335,56 @@ test.describe("고르는 동안 원래 1번 장이 드러나지 않음 (작업 0
     ] as const) await pickAndCheck(page, city, q ? viaSearch(q) : () => chip(page, city).click());
   });
 });
+
+// 추가 지시 3 — 입력 · 클릭 · 응답으로 높이 · 위치가 변하지 않음: '찾는 여행지가 없습니다' 는 흐름에 끼지 않고 목록 자리에 겹쳐 뜸
+test.describe("입력 · 목록 · 고르기로 hero 높이 · 위치 변화 0 (작업 0393 추가 3)", () => {
+  const layout = async (page: Page) => {
+    const r = async (sel: string) => (await box(page.locator(sel), sel));
+    const car = await r('[data-testid="hero-carousel"]');
+    const hero = await r('[data-testid="home-hero"]');
+    const chips = await r("ul.hp-chips");
+    const facts = await r('[data-testid="hero-facts"]');
+    const ask = await r("form.hp-ask");
+    return { carH: car.height, heroH: hero.height, chipsTop: chips.y, factsTop: facts.y, askTop: ask.y, askH: ask.height };
+  };
+  const same = (a: Record<string, number>, b: Record<string, number>, why: string) => {
+    for (const k of Object.keys(a)) expect(Math.abs(a[k] - b[k]), `${why}: ${k} ${a[k]} → ${b[k]}`).toBeLessThanOrEqual(0.5);
+  };
+
+  test("'zzz' 입력 → 못 찾음 표시 · 목록 열림 · 닫힘 · 지움 · 고르기 전후 모두 높이 · 칩 · 숫자 칸 위치 같음 (±0.5px)", async ({ page }) => {
+    await page.goto("/");
+    await settle(page);
+    await chip(page, "도쿄").click(); // 고른 뒤 상태에서 시작(자동 넘김이 끼어들지 않게)
+    await expect.poll(() => frontCity(page), { timeout: 4000 }).toBe("도쿄");
+    await settle(page);
+    await page.waitForTimeout(500);
+    const input = tid(page, "hero-search");
+    const base = await layout(page);
+
+    await input.fill("zzz");
+    await expect(page.getByText("찾는 여행지가 없습니다")).toBeVisible();
+    same(base, await layout(page), "'zzz' 입력(못 찾음 표시)");
+
+    await input.fill("도");
+    await expect(page.getByRole("listbox", { name: "도시 · 나라 제안" })).toBeVisible();
+    same(base, await layout(page), "제안 목록 열림");
+
+    await input.press("Escape");
+    await input.fill("");
+    await expect(page.getByRole("listbox", { name: "도시 · 나라 제안" })).toHaveCount(0);
+    await expect(page.getByText("찾는 여행지가 없습니다")).toHaveCount(0);
+    same(base, await layout(page), "목록 닫힘 · 입력 지움");
+
+    // 못 찾음 표시도 입력창 아래에 겹쳐 뜸 — 입력창 · 칩과 겹쳐 가리지 않을 필요는 없지만 칩 위치는 그대로(위에서 확인)
+    await chip(page, "방콕").click();
+    await expect(tid(page, "hero-facts-title")).toHaveText("태국 방콕");
+    await settle(page);
+    same(base, await layout(page), "고른 뒤(방콕)");
+
+    await input.fill("뉴델리");
+    await input.press("Enter");
+    await expect(tid(page, "hero-facts-title")).toHaveText("인도 뉴델리");
+    await settle(page);
+    same(base, await layout(page), "덱 밖 도시를 고른 뒤(뉴델리)");
+  });
+});
