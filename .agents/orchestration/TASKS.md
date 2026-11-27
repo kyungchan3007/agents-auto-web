@@ -201,3 +201,4 @@
 | 0390 | 11-27 수집 점검 기록(환율 12:00 · 새벽 예약 · 빌드 자료 검사) | data · dev-data@hav | 머지됨 (#466) | task/0390-data-health-1127 | docs/data-health.md |
 | 0391 | 11-27 GEO 측정 · #157 조사 댓글 | geo · dev-geo@hav | 머지됨 (#465) | task/0391-geo-measure-1127 | apps/api/data/geo-answers/2026-11-27.json |
 | 0392 | 11-27 블프 당일 캐러셀 알리기 묶음 기록 | geo · dev-geo@hav | 진행 | task/0392-marketing-1127 | docs/marketing/2026-11-27/** |
+| 0393 | 기본 hero 고른 곳 탑승권 · 숫자 칸(글래스) · 제안 목록 · 두 hero 가운데 정렬 (Full · develop 머지까지) | test ∥ builder → test | 진행 | task/0393-hero-pick | apps/web/src/app/page.tsx · apps/web/src/features/home/{home.tsx,timing/hero-section.tsx,hero/**,blackfriday/bf-hero.css} |
