@@ -5,7 +5,7 @@ import type { FaqItem } from "./country-view";
 export function CountryFaq({ name, year, items }: { name: string; year: number; items: FaqItem[] }) {
   if (items.length === 0) return null;
   return (
-    <section aria-labelledby="country-faq" className="mt-16 max-w-[44rem]">
+    <section aria-labelledby="country-faq" className="mt-16 max-w-[44rem] max-lg:max-w-none">
       <h2 id="country-faq" className="font-display text-[1.75rem] leading-tight font-extrabold tracking-display text-fg sm:text-[2.25rem]">
         {name} 여행 물가, 자주 묻는 질문
       </h2>

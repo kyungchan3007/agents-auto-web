@@ -13,7 +13,7 @@ export function CompareList({ v }: { v: CountryView }) {
       <p className="mt-1 text-small text-fg-2">
         {v.name} 물가({v.index})를 기준으로 비교합니다 · 누르면 그 나라 페이지로 갑니다
       </p>
-      <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="mt-4 grid gap-3 sm:grid-cols-2 sm:max-lg:[&>li:last-child:nth-child(odd)]:col-span-2 lg:grid-cols-4">
         {v.compare.map((c) => (
           <li key={c.country}>
             <Link data-testid="compare-link" data-track="country_compare" href={countryPath(c.country)} className="tap-44 flex h-full flex-wrap items-baseline justify-between gap-x-3 rounded-[0.75rem] border border-line bg-card px-4 py-3 text-fg hover:border-fg">
