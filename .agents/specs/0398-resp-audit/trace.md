@@ -8,3 +8,4 @@
 
 ## 허점
 -
+- 글꼴(Pretendard 800)이 오기 전 첫 그림(약 100ms 안)에 큰 제목 줄 수가 대체 글꼴 폭 때문에 달라져 구역 높이가 한 번 바뀜(/prices 768 −51px · 0395 CI hero 첫 프레임과 같은 종류). 줄 수 예약 → 빈 띠 · 대체 글꼴 size-adjust → 기기마다 값 다름 · font-display optional → 느린 접속에서 브랜드 글꼴 사라짐이라 이번엔 고치지 않음 · 점검(e)은 document.fonts.ready 뒤 값끼리 비교.
