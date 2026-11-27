@@ -24,6 +24,19 @@ const props = {
 };
 const html = (p: Parameters<typeof DataEmpty>[0] = props) => renderToStaticMarkup(createElement(DataEmpty, p));
 
+// 작업 0396: checked(이름표) · reason(이유 문단)은 선택 — 없으면 그리지 않음. 방문자 말 안내는 제목 + 링크만 (개발자 문단 · "자료 없음 · 확인" 제거)
+describe("DataEmpty — 작업 0396 (이름표 · 이유 없이)", () => {
+  const lean = { title: "베트남 환율은 아직 제공되지 않습니다", links: [{ label: "통화 둘러보기", href: "/currencies" }] };
+  it("title · links 만으로 그려짐 · 이름표 · 이유 문단 없음 · 링크 제목은 남음", () => {
+    const h = renderToStaticMarkup(createElement(DataEmpty, lean));
+    expect(h).toContain("베트남 환율은 아직 제공되지 않습니다");
+    expect(h).toContain("그동안 볼 수 있는 것");
+    expect(h).toContain('href="/currencies"');
+    expect(h).not.toContain("자료 없음");
+    expect(h).not.toContain("undefined");
+  });
+});
+
 describe("DataEmpty", () => {
   it("흰 카드 표시 · 이름표 · 제목 · 이유 · '그동안 볼 수 있는 것' 제목", () => {
     const h = html();

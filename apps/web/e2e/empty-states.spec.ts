@@ -14,7 +14,7 @@ test.use({ launchOptions: PROD_LAUNCH });
 
 const FIXTURE = process.env.EMPTY_FIXTURE === "1";
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
-const CHECKED = /^자료 없음 · \d{4}-\d{2}-\d{2} \d{2}:\d{2} 확인$/;
+const NO_DEV = [/한국수출입은행이/, /30분마다/, /사이트를 새로 만들/, /자료 없음 · /, /\d{4}-\d{2}-\d{2} \d{2}:\d{2} 확인/]; // 작업 0396: 개발자 말투 · 이름표 없음
 
 test.beforeEach(() => {
   test.skip(!FIXTURE, "환율을 못 받는 고정 자료 빌드(EMPTY_FIXTURE=1 · e2e/fixture-api.mjs FIXTURE_NO_FX=1)에서만 돎");
@@ -29,9 +29,8 @@ test.describe("/calc 환율을 못 받은 날 (작업 0346 · 시안 3-new)", ()
     const card = tid(page, "data-empty");
     await expect(card).toBeVisible();
     await expect(card).toHaveAttribute("data-surface", "light");
-    await expect(card.getByText(CHECKED)).toBeVisible();
+    for (const re of NO_DEV) expect(await card.innerText(), String(re)).not.toMatch(re);
     await expect(card).toContainText("오늘 환율을 아직 받지 못해 계산을 잠시 멈췄습니다");
-    await expect(card).toContainText("평일 낮 12시부터 30분마다 다시 받고, 받으면 사이트를 새로 만들어 계산이 다시 열립니다");
     await expect(card).toContainText("그동안 볼 수 있는 것");
     const links = card.getByRole("link");
     await expect(links).toHaveCount(3);
@@ -86,10 +85,9 @@ test.describe("통화 상세 값을 못 받은 날 (작업 0346)", () => {
     const card = tid(page, "data-empty");
     await expect(card).toBeVisible();
     await expect(card).toHaveAttribute("data-surface", "light");
-    await expect(card.getByText(CHECKED)).toBeVisible();
+    for (const re of NO_DEV) expect(await card.innerText(), String(re)).not.toMatch(re);
     await expect(card).toContainText("달러");
     await expect(card).toContainText("받지 못했습니다");
-    await expect(card).toContainText("30분마다");
     const links = card.getByRole("link");
     expect(await links.evaluateAll((as) => as.map((a) => a.getAttribute("href")))).toEqual(["/currencies", "/prices", "/calc"]);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
@@ -106,10 +104,8 @@ test.describe("여행 물가 예산 카드 — 환율을 못 받은 나라 (작�
       const card = budget.locator('[data-testid="data-empty"]');
       await expect(card).toBeVisible();
       await expect(card).toHaveAttribute("data-surface", "light");
-      await expect(card.getByText(CHECKED)).toBeVisible();
-      await expect(card).toContainText("일본");
-      await expect(card).toContainText("받지 못했습니다");
-      await expect(card).toContainText("30분마다");
+      for (const re of NO_DEV) expect(await card.innerText(), String(re)).not.toMatch(re);
+      await expect(card).toHaveText(/오늘 환율을 아직 받지 못했습니다/); // 작업 0396: 주는 통화(엔)인데 값이 늦음 — 나라 이름 없는 제목
       expect(await card.getByRole("link").evaluateAll((as) => as.map((a) => a.getAttribute("href")))).toEqual(["/currencies", "/calc"]);
       await expect(tid(page, "budget-total"), "금액 칸은 숨음 (지어내지 않음)").toHaveCount(0);
       await expect(tid(page, "budget-day")).toHaveCount(0);
