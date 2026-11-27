@@ -45,6 +45,14 @@ html:not([data-hero="bf"]) .hc-slide[data-slide="sea"] {
   visibility: visible;
 }
 
+/* 첫 페이지에서만 상단 메뉴 바탕을 지금 장 hero 바탕과 같게 (작업 0386) — 블프 기간(head 스크립트의 html data-hero)이고 장이 여행 타이밍이 아니면 검정 · JS 전(data-slide 없음)에도 검정 · 기간 뒤 · 다른 페이지는 그대로 */
+html:has([data-testid="hero-carousel"]) header[data-surface="dark"] {
+  transition: background-color 0.5s;
+}
+html[data-hero="bf"]:has([data-testid="hero-carousel"]):not([data-slide="sea"]) header[data-surface="dark"] {
+  background: var(--hav-bf-bg);
+}
+
 /* 알약 · ‹ › */
 .hc-nav {
   position: absolute;
@@ -152,7 +160,8 @@ html:not([data-hero="bf"]) .hc-slide[data-slide="sea"] {
 
 @media (prefers-reduced-motion: reduce) {
   .hc,
-  .hc-slide {
+  .hc-slide,
+  html:has([data-testid="hero-carousel"]) header[data-surface="dark"] {
     transition: none;
   }
   .hc-fill {

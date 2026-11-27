@@ -47,6 +47,13 @@ export function useHeroCarousel() {
     };
   }, [auto, held, shown, show]);
 
+  // 지금 장을 html 에 알림(장이 바뀔 때만) — 상단 메뉴 바탕을 hero 와 같은 색으로 CSS 가 칠함 (작업 0386 · 메뉴와 React 상태를 나누지 않음)
+  useEffect(() => {
+    const root = document.documentElement;
+    root.setAttribute("data-slide", active);
+    return () => root.removeAttribute("data-slide");
+  }, [active]);
+
   const hold = useCallback(() => setHeld(hover.current || focused.current), []);
 
   const bind = {
