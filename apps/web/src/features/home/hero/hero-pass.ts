@@ -83,11 +83,13 @@ export function fxTags(rates: RateRow[]): FxTag[] {
 /** 칩 — 도쿄 · 방콕 · 다낭 · 파리 (기존 여행지 고르기와 같은 항목 · 같은 저장 값) */
 export const heroChips = (): DestinationHit[] => HERO_GUIDE.chips.flatMap((name) => POPULAR_DESTINATIONS.filter((h) => h.city === name));
 
-export type Slot = "0" | "1" | "2" | "out" | "in";
-/** 탑승권 한 장의 자리 — 앞 세 장은 0 · 1 · 2 · 넘어가는 중인 맨 앞은 out · 나머지는 in(보이지 않게 뒤에 대기) */
-export function deckSlot(order: string[], leaving: boolean, id: string): Slot {
+export type Slot = "0" | "1" | "2" | "out" | "in" | "next";
+/** 탑승권 한 장의 자리 — 앞 세 장은 0 · 1 · 2 · 넘어가는 중인 맨 앞은 out · 나머지는 in(보이지 않게 뒤에 대기)
+ *  to: 사용자가 고른 장 — 넘기는 동안 맨 앞과 같은 모양으로 전환 없이 바로 그 밑에 둠(next · 원래 1번 장이 비치지 않게) */
+export function deckSlot(order: string[], leaving: boolean, id: string, to: string | null = null): Slot {
   const i = order.indexOf(id);
   if (i === 0 && leaving) return "out";
+  if (leaving && to === id) return "next";
   return i === 0 ? "0" : i === 1 ? "1" : i === 2 ? "2" : "in";
 }
 

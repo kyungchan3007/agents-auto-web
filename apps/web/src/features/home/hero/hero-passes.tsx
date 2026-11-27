@@ -26,7 +26,7 @@ export function HeroPasses({ tags, monthLabel }: { tags: FxTag[]; monthLabel: st
       ))}
       <div className="hp-float">
         {deck.cards.map((c) => (
-          <article key={c.id} data-testid="hero-pass" data-city={c.city} className="hp-pass" data-s={deckSlot(deck.order, deck.leaving, c.id)}>
+          <article key={c.id} data-testid="hero-pass" data-city={c.city} className="hp-pass" data-s={deckSlot(deck.order, deck.leaving, c.id, deck.to)}>
             <div className="hp-m">
               <div className="hp-lbl" aria-hidden="true" data-mine={String(c.id === deck.pickedId)}>
                 <span>FLAPFX 탑승권</span>
