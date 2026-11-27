@@ -259,8 +259,14 @@ test.describe("고르는 동안 원래 1번 장이 드러나지 않음 (작업 0
       }
       w.__samp = [];
       w.__sampId = window.setInterval(() => {
-        const f = document.querySelector(".hp-float")?.getBoundingClientRect();
+        let f = document.querySelector(".hp-float")?.getBoundingClientRect();
         if (!f) return;
+        const cy = f.top + f.height / 2;
+        if (cy < 0 || cy > innerHeight) {
+          // 휴대폰은 탑승권이 화면 아래에 있음 — 가운데가 화면 안에 오게 스크롤(화면 밖 점은 elementsFromPoint 가 빈 값을 줌)
+          window.scrollBy(0, cy - innerHeight / 2);
+          f = document.querySelector(".hp-float")?.getBoundingClientRect() ?? f;
+        }
         const all = Array.from(document.querySelectorAll('[data-testid="hero-pass"]')) as HTMLElement[];
         const stack = document
           .elementsFromPoint(f.left + f.width / 2, f.top + f.height / 2)
