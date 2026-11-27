@@ -503,11 +503,31 @@ test.describe("높이 고정 — 첫 화면부터 영수증이 다 찍힐 때까
       test.setTimeout(40_000);
       await page.setViewportSize({ width: w, height: h });
       await page.addInitScript(() => {
-        const w = window as unknown as { __hh: number[]; __below: number[] };
+        const w = window as unknown as { __hh: number[]; __below: number[]; __diag: string[] };
         w.__hh = [];
         w.__below = [];
+        w.__diag = [];
         const t0 = performance.now();
+        // 작업 0395 진단: 높이가 바뀌면 그때 상태(html data-hero · 글꼴 상태 · 알약 줄 표시/높이 · 장별 높이 · carousel.css 적용 여부)를 남겨 실패 메시지에 붙임
+        const diag = () => {
+          const h = (sel: string) => {
+            const e = document.querySelector(sel);
+            return e ? Math.round(e.getBoundingClientRect().height * 10) / 10 : "없음";
+          };
+          const nav = document.querySelector(".hc-nav");
+          const st = [
+            `data-hero=${document.documentElement.getAttribute("data-hero") ?? "없음"}`,
+            `글꼴=${document.fonts.status}(${[...document.fonts].filter((f) => f.status === "loaded").length}개)`,
+            `hero=${h('[data-testid="hero-carousel"]')}`,
+            `알약줄=${nav ? `${getComputedStyle(nav).display}/${h(".hc-nav")}` : "없음"}`,
+            `bf장=${h('[data-testid="hero-slide"][data-slide="bf"]')}`,
+            `sea장=${h('[data-testid="hero-slide"][data-slide="sea"]')}`,
+            `stack=${document.querySelector(".hc-stack") ? getComputedStyle(document.querySelector(".hc-stack") as Element).display : "없음"}`,
+          ].join(" ");
+          if (w.__diag.length === 0 || w.__diag[w.__diag.length - 1].slice(w.__diag[w.__diag.length - 1].indexOf(" ") + 1) !== st) w.__diag.push(`${Math.round(performance.now() - t0)}ms ${st}`);
+        };
         const tick = () => {
+          diag();
           const car = document.querySelector('[data-testid="hero-carousel"]');
           const below = document.querySelector('[data-testid="year-bars"]')?.closest("section") ?? null; // hero 바로 아래 구역(12달 막대)
           if (car) w.__hh.push(Math.round(car.getBoundingClientRect().height * 10) / 10);
@@ -520,12 +540,13 @@ test.describe("높이 고정 — 첫 화면부터 영수증이 다 찍힐 때까
       await page.goto("/", { waitUntil: "commit" });
       await page.waitForTimeout(7_300);
       const r = await page.evaluate(() => {
-        const w = window as unknown as { __hh: number[]; __below: number[] };
-        return { hh: w.__hh, below: w.__below };
+        const w = window as unknown as { __hh: number[]; __below: number[]; __diag: string[] };
+        return { hh: w.__hh, below: w.__below, diag: w.__diag };
       });
+      const why = `\n첫 프레임부터 상태 변화(처음 8번):\n${r.diag.slice(0, 8).join("\n")}`;
       expect(r.hh.length, "잰 횟수").toBeGreaterThan(30);
-      expect(Math.max(...r.hh) - Math.min(...r.hh), `hero 높이 ${[...new Set(r.hh)].join(" · ")}`).toBeLessThanOrEqual(1);
-      expect(Math.max(...r.below) - Math.min(...r.below), `아래 구역 위치 ${[...new Set(r.below)].join(" · ")}`).toBeLessThanOrEqual(1);
+      expect(Math.max(...r.hh) - Math.min(...r.hh), `hero 높이 ${[...new Set(r.hh)].join(" · ")}${why}`).toBeLessThanOrEqual(1);
+      expect(Math.max(...r.below) - Math.min(...r.below), `아래 구역 위치 ${[...new Set(r.below)].join(" · ")}${why}`).toBeLessThanOrEqual(1);
     });
   }
 
