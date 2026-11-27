@@ -10,7 +10,9 @@ import { type Violation, auditDom } from "./resp-audit-check";
 
 const LIST = process.env.RESP_AUDIT_LIST === "1";
 const OUT = resolve(process.cwd(), "../../.tmp/resp-audit");
-const WIDTHS = Array.from({ length: 66 }, (_, i) => 320 + i * 20).filter((w) => w <= 1600); // 320 ~ 1600
+const STEP = Number(process.env.RESP_AUDIT_STEP ?? 20); // 점검용: 더 성긴 간격(기본 20)
+const ONLY = process.env.RESP_AUDIT_ONLY ? new RegExp(process.env.RESP_AUDIT_ONLY) : null; // 점검용: 이름이 맞는 것만
+const WIDTHS = Array.from({ length: Math.floor(1280 / STEP) + 1 }, (_, i) => 320 + i * STEP).filter((w) => w <= 1600); // 320 ~ 1600
 const WIDE_FONT = `*{font-family:"Arial Black","Verdana",sans-serif !important;letter-spacing:0.02em !important}`;
 
 type Variant = { name: string; path: string; prep?: (page: Page) => Promise<void>; after?: (page: Page) => Promise<void> };
@@ -86,7 +88,7 @@ test.beforeEach(({ isMobile }) => {
   test.skip(isMobile, "폭을 직접 맞춰 재는 점검 — 넓은 화면 프로젝트에서만");
 });
 
-for (const v of VARIANTS) {
+for (const v of VARIANTS.filter((x) => !ONLY || ONLY.test(x.name))) {
   for (const wide of [false, true]) {
     test(`${v.name} · ${wide ? "넓은 글꼴" : "보통 글꼴"} — 320 ~ 1600 (a 넘침 · 겹침 / b 두 칸 아래 끝 / c 가운데 기둥 / d 아래 빈 공간)`, async ({ page }) => {
       test.setTimeout(600_000);
@@ -121,7 +123,7 @@ for (const v of VARIANTS) {
 }
 
 // e — 동적 변화: 스크롤로 구역이 화면에 들어오는 동안 문서 높이 · 구역 위치가 변하지 않음(첫 페이지 section.today 435 → 984 같은 것)
-for (const v of VARIANTS) {
+for (const v of VARIANTS.filter((x) => !ONLY || ONLY.test(x.name))) {
   test(`${v.name} · e 스크롤로 들어올 때 높이 · 구역 위치 변화 없음 (390 · 768 · 1280)`, async ({ page }) => {
     test.setTimeout(180_000);
     await load(page, v, false);

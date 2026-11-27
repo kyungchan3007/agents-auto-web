@@ -20,7 +20,23 @@ export function auditDom(): Violation[] {
     const r = e.getBoundingClientRect();
     return r.width > 0 && r.height > 0;
   };
-  const skip = (e: Element): boolean => !!e.closest("[inert],[aria-hidden='true'],script,style,noscript,svg *,[data-resp-skip]");
+  const skip = (e: Element): boolean => !!e.closest("[inert],[aria-hidden='true'],script,style,noscript,svg *,[data-resp-skip],.sr-only");
+  // 글자 줄 상자 — 요소 자체 상자(자식까지 품음)가 아니라 그 요소가 직접 가진 글자만의 상자
+  const textRect = (e: Element): DOMRect | null => {
+    const rs: DOMRect[] = [];
+    for (const n of e.childNodes) {
+      if (n.nodeType !== 3 || (n.textContent ?? "").trim() === "") continue;
+      const range = document.createRange();
+      range.selectNodeContents(n);
+      for (const r of range.getClientRects()) if (r.width > 0 && r.height > 0) rs.push(r);
+    }
+    if (!rs.length) return null;
+    const l = Math.min(...rs.map((r) => r.left));
+    const t = Math.min(...rs.map((r) => r.top));
+    const rr = Math.max(...rs.map((r) => r.right));
+    const b = Math.max(...rs.map((r) => r.bottom));
+    return new DOMRect(l, t, rr - l, b - t);
+  };
   const fixedAncestor = (e: Element): boolean => {
     for (let n: Element | null = e; n && n !== document.body; n = n.parentElement) {
       const p = getComputedStyle(n).position;
@@ -67,15 +83,16 @@ export function auditDom(): Violation[] {
         break;
       }
     }
-    if (box && !clipped(e)) {
+    const tr0 = textRect(e);
+    if (box && tr0 && !clipped(e)) {
       const br = box.getBoundingClientRect();
-      const r = e.getBoundingClientRect();
+      const r = tr0;
       const over = Math.max(r.right - br.right, br.left - r.left);
       if (over > 1) add("a", `글자가 상자 밖 ${label(e)} ⊄ ${label(box)}`, over);
     }
   }
   // a — 글자끼리 겹침
-  const tr = texts.filter((e) => !fixedAncestor(e)).map((e) => ({ e, r: e.getBoundingClientRect() }));
+  const tr = texts.filter((e) => !fixedAncestor(e)).map((e) => ({ e, r: textRect(e) })).filter((x): x is { e: Element; r: DOMRect } => x.r !== null);
   for (let i = 0; i < tr.length; i++)
     for (let j = i + 1; j < tr.length; j++) {
       const a = tr[i];
@@ -106,12 +123,20 @@ export function auditDom(): Violation[] {
     }
   }
 
-  // c — 899 이하 좌우 여백
+  // c — 899 이하: 같은 가운데 기둥 — 줄을 혼자 차지하는 덩어리(옆에 형제가 없는 블록)의 좌우 여백 차 > 2
   if (W <= 899) {
+    const blockTags = new Set(["DIV", "SECTION", "ARTICLE", "FORM", "UL", "OL", "LI", "P", "H1", "H2", "H3", "NAV", "FIGURE", "IMG", "INPUT", "SELECT", "BUTTON", "A", "TABLE", "CANVAS", "DETAILS"]);
+    const bad = new Set<Element>();
+    const marginDiff = (e: Element): number => {
+      const r = e.getBoundingClientRect();
+      return r.left - (W - r.right);
+    };
     for (const e of all) {
+      if (!blockTags.has(e.tagName)) continue;
+      const s = getComputedStyle(e);
+      if (!(s.display === "block" || s.display === "flex" || s.display === "grid" || s.display === "list-item" || s.display === "table" || s.display === "flow-root")) continue;
       const r = e.getBoundingClientRect();
       if (r.width < W * 0.3 || r.height < 40 || r.width >= W - 1) continue;
-      const s = getComputedStyle(e);
       if (s.position === "absolute" || s.position === "fixed" || fixedAncestor(e)) continue;
       let scroller = false;
       for (let n: Element | null = e.parentElement; n && n !== document.body; n = n.parentElement) {
@@ -119,9 +144,17 @@ export function auditDom(): Violation[] {
         if (o === "auto" || o === "scroll") scroller = true;
       }
       if (scroller) continue;
-      const left = r.left;
-      const right = W - r.right;
-      if (Math.abs(left - right) > 2) add("c", `좌우 여백 ${label(e)}`, left - right);
+      // 옆에 형제가 있으면(같은 줄) 한 줄 배치가 아님
+      const sib = e.parentElement ? [...e.parentElement.children].filter((k) => k !== e && shown(k)) : [];
+      if (sib.some((k) => { const kr = k.getBoundingClientRect(); return kr.top < r.bottom - 1 && kr.bottom > r.top + 1 && kr.width > 20; })) continue;
+      const d = marginDiff(e);
+      if (Math.abs(d) <= 2) continue;
+      // 바깥 덩어리가 이미 어긋났으면 안쪽은 같은 문제라 따로 세지 않음
+      let anc = false;
+      for (let n = e.parentElement; n && n !== document.body; n = n.parentElement) if (bad.has(n)) anc = true;
+      if (anc) continue;
+      bad.add(e);
+      add("c", `가운데 기둥 어긋남 ${label(e)}`, d);
     }
   }
 
@@ -142,7 +175,7 @@ export function auditDom(): Violation[] {
     }
     const es = getComputedStyle(e);
     const blank = r.bottom - last - parseFloat(es.paddingBottom) - parseFloat(es.borderBottomWidth);
-    if (blank > 160 || blank > r.height * 0.25) add("d", `아래 빈 공간 ${label(e)} (구역 높이 ${Math.round(r.height)})`, blank);
+    if (blank > 160 || blank > r.height * 0.25) add("d", `아래 빈 공간 ${label(e)}`, blank);
   }
   return out;
 }
