@@ -3,12 +3,17 @@
 /* 기간 고르기는 캐러셀(carousel.css)이 html 의 data-hero 로 함 (작업 0385) */
 .bf-hero {
   position: relative;
+  display: flex;
+  flex: 1 1 auto; /* 캐러셀에서 짧은 장도 칸 높이를 채우고 안 내용은 세로 가운데 (작업 0398) */
+  flex-direction: column;
+  justify-content: center;
   overflow: hidden;
   background: var(--hav-bf-bg);
   color: var(--hav-bf-fg);
 }
 .bf-inner {
   display: grid;
+  width: 100%;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: clamp(20px, 4vw, 56px);
