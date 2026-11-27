@@ -4,6 +4,7 @@
 //   값은 홈이 받는 환율 · 신호 · 물가에서만 — 값이 없는 칸은 글이 정확히 "-" (인도는 통화가 없어 전부 "-")
 import { type Locator, type Page, expect, test } from "@playwright/test";
 import { forceDefaultHero } from "./default-hero";
+import { typeHero, waitHeroHydrated } from "./hero-search";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const box = async (loc: Locator, name: string) => {
@@ -43,6 +44,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 const settle = async (page: Page) => {
+  await waitHeroHydrated(page); // 작업 0394: 하이드레이션 전 클릭 · 입력은 사라짐(느린 CI)
   await expect(front(page)).toHaveCount(1);
   await expect.poll(() => page.locator('[data-testid="hero-pass"][data-s="out"]').count(), { timeout: 5000 }).toBe(0);
 };
@@ -108,8 +110,7 @@ test.describe("검색으로 고르기 — 네 도시 밖 (작업 0393 R1 · R3)"
   test("'뉴델리' 입력 → 제안 \"인도 뉴델리\" → Enter: 그 곳 장이 맨 앞 · 덱 밖 장은 하나 · 숫자 칸 제목 · 환율 · 1만원이면 \"-\"", async ({ page }) => {
     await page.goto("/");
     await settle(page);
-    await tid(page, "hero-search").fill("뉴델리");
-    await expect(page.getByRole("option", { name: /인도 뉴델리/ })).toBeVisible();
+    await typeHero(page, "뉴델리", page.getByRole("option", { name: /인도 뉴델리/ }));
     await tid(page, "hero-search").press("Enter");
     await expect.poll(() => frontCity(page), { timeout: 4000 }).toBe("뉴델리");
     await expect(tid(page, "hero-facts-title")).toHaveText("인도 뉴델리");
@@ -134,7 +135,7 @@ test.describe("검색으로 고르기 — 네 도시 밖 (작업 0393 R1 · R3)"
       await expect(tid(page, "hero-facts-title")).toHaveText("태국 방콕");
       await settle(page);
     };
-    await tid(page, "hero-search").fill("방콕");
+    await typeHero(page, "방콕", page.getByRole("option", { name: /방콕/ }));
     await page.getByRole("option", { name: /방콕/ }).first().click();
     await done();
     await tid(page, "hero-search").fill("다낭");
@@ -150,7 +151,7 @@ test.describe("검색으로 고르기 — 네 도시 밖 (작업 0393 R1 · R3)"
     await page.goto("/");
     await settle(page);
     const input = tid(page, "hero-search");
-    await input.fill("인도");
+    await typeHero(page, "인도");
     const list = page.getByRole("listbox", { name: "도시 · 나라 제안" });
     await expect(list).toBeVisible();
     const f = await box(page.locator("form.hp-ask"), "입력칸");

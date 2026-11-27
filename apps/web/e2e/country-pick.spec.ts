@@ -2,6 +2,7 @@
 // 인트로는 config 의 storageState 로 꺼져 있음 — 시트로 고른 값은 localStorage("flapfx:picked") 에 저장되어 새로고침해도 유지
 import { type Page, expect, test } from "@playwright/test";
 import { forceDefaultHero } from "./default-hero";
+import { typeHero } from "./hero-search";
 
 test.beforeEach(async ({ page }) => {
   await forceDefaultHero(page);
@@ -14,7 +15,7 @@ const savePicked = (page: Page, country = "JPN", city = "도쿄") => page.addIni
 const dialog = (page: Page) => page.getByRole("dialog", { name: "어디로 떠나세요?" });
 // 홈 — hero 입력창에 쓰고 첫 후보를 고름 (시트 없음)
 const choose = async (page: Page, query: string, _optionText?: string) => {
-  await page.getByTestId("hero-search").fill(query);
+  await typeHero(page, query); // 작업 0394: 하이드레이션 전 입력이 사라지지 않게
   await page.getByRole("option").first().click();
 };
 

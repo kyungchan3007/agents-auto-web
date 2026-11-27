@@ -6,11 +6,11 @@ test.beforeEach(async ({ page }) => {
   await forceDefaultHero(page);
 });
 
-test("홈 출발 안내판 그림자 — 토큰 shadow-board 가 예전 값(0 10px 24px · 남색 25%)과 같음 @design", async ({ page }) => {
+test("출발 안내판 그림자 — 토큰 shadow-board 가 예전 값(0 10px 24px · 남색 25%)과 같음 @design", async ({ page }) => {
+  // 작업 0394: 홈의 출발 안내판(flap-board)은 작업 0384 에서 없어짐 — 그림자 토큰 값 자체를 :root 에서 읽음(인트로 안내판이 같은 토큰을 씀)
   await page.goto("/");
-  const shadow = await page.locator('[data-testid="flap-board"]').first().evaluate((el) => getComputedStyle(el).boxShadow);
-  // Tailwind 가 앞에 투명한 테두리 층(ring)을 붙이므로 마지막 층이 예전 값과 같은지 봄
-  expect(shadow.endsWith("rgba(22, 36, 110, 0.25) 0px 10px 24px 0px")).toBe(true);
+  const v = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--shadow-board").trim().replace(/\s+/g, " "));
+  expect(v).toMatch(/^0 10px 24px (rgba\(22, ?36, ?110, ?0?\.25\)|#16246e40)$/);
 });
 
 test("토큰이 :root 에서 읽힘 — 3D 장면이 쓰는 하늘 · 흰 거품 · 해 노랑 @design", async ({ page }) => {
