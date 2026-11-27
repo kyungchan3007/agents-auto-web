@@ -14,6 +14,7 @@
 //   기존 home-fix-0217.spec.ts 는 이 작업에서 고침: 설명 문장 ↔ 카드 간격(시안 B 50px · 40px)은 안내 줄이 끼어 마지막 p(작은 줄) ↔ 카드로 8 ~ 54px
 import { type Page, expect, test } from "@playwright/test";
 import { forceDefaultHero } from "./default-hero";
+import { typeHero } from "./hero-search";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const picked = (page: Page) => page.evaluate(() => JSON.parse(localStorage.getItem("flapfx:picked") ?? "null"));
@@ -104,7 +105,7 @@ test.describe("hero 입력창 · 칩 (작업 0380 · 새 문구)", () => {
 
   test("hero 입력창에서 나라를 고르면(베트남) 고른 여행지로 저장됨", async ({ page }) => {
     await page.goto("/");
-    await heroSearch(page).fill("베트남");
+    await typeHero(page, "베트남"); // 작업 0394: 하이드레이션 전 입력이 사라지지 않게
     await page.getByRole("option").first().click();
     expect(await picked(page)).toMatchObject({ country: "VNM" });
   });

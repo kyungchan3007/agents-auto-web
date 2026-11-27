@@ -23,7 +23,7 @@ test.describe("새 홈 — 첫 화면 (작업 0217)", () => {
     await page.goto("/");
     const header = await page.getByRole("banner").boundingBox();
     const hero = await box(page, "home-hero");
-    expect(await bg(page, "home-hero")).toBe(BLUE);
+    expect(await bg(page, "hero-carousel")).toBe(BLUE); // 작업 0394: 바탕색은 작업 0385 부터 캐러셀 칸(hero-carousel)이 가짐 · home-hero 는 투명
     expect(Math.abs(hero.y - (header!.y + header!.height))).toBeLessThanOrEqual(1);
     const h1 = page.getByRole("heading", { level: 1 });
     await expect(h1).toHaveText(/^\d+월에 떠나세요\.$/);

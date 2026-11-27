@@ -192,10 +192,11 @@ test.describe("고른 통화 칩 (작업 0231)", () => {
   test("움직임 줄이기 — 밀려 나가는 칩이 남지 않고(data-leaving 없음) 칩 자리가 바로 최종", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await seed(page, ["JPY", "USD", "EUR", "THB", "GBP"]);
+    // 작업 0394: 칸을 고를 때 새로 불러오면 나중에 심은 카운터가 사라져 undefined 가 됨(CI 간헐) — 처음부터 심어 새로 불러와도 다시 셈
+    await page.addInitScript(() => { const w = window as unknown as { __leave: number; __stopL: boolean }; w.__leave = 0; w.__stopL = false; const tick = () => { w.__leave += document.querySelectorAll('[data-testid="chip"][data-leaving="true"]').length; if (!w.__stopL) requestAnimationFrame(tick); }; requestAnimationFrame(tick); });
     await page.goto("/currencies/JPY");
     const [x] = (await others(page, 6)).filter((c) => c !== "GBP");
     test.skip(!x, "목록에 통화가 모자람");
-    await page.evaluate(() => { const w = window as unknown as { __leave: number; __stopL: boolean }; w.__leave = 0; w.__stopL = false; const tick = () => { w.__leave += document.querySelectorAll('[data-testid="chip"][data-leaving="true"]').length; if (!w.__stopL) requestAnimationFrame(tick); }; requestAnimationFrame(tick); });
     await pickFromList(page, x);
     await urlIs(page, x);
     await page.waitForTimeout(800);

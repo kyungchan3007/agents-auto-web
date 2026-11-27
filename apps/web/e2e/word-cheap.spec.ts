@@ -47,10 +47,10 @@ test.describe('"쌈 · 비쌈" 문구 바꾸기 (작업 0276 · A)', () => {
     await expect(page.locator("main")).toContainText("낮은 쪽 30% 안이면 낮음, 높은 쪽 30% 안이면 높음");
   });
 
-  test("바뀌지 않는 곳 — 홈 카드 제목 · 달력 제목 · '싼 편 · 비싼 편' 꾸미는 말은 그대로", async ({ page }) => {
+  test("바뀌지 않는 곳 — 달력 제목 · '싼 편 · 비싼 편' 꾸미는 말은 그대로", async ({ page }) => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
-    await expect(page.locator("body")).toContainText("이번 주 가장 싸게 갈 수 있는 곳");
+    // 작업 0394: 홈 카드 제목 "이번 주 가장 싸게 갈 수 있는 곳"은 작업 0384 에서 카드와 함께 없어짐 — 달력 제목 · 꾸미는 말만 확인
     await page.goto("/flights");
     await page.waitForLoadState("networkidle");
     const calendar = page.locator("#airfare-title");
