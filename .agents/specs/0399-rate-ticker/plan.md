@@ -13,9 +13,13 @@
 - .agents/specs/0399-rate-ticker/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- apps/web/src/app/layout.tsx: 홈 밖 모든 화면에 바닥 고정 띠를 붙이려고 layout 이 latest · signals 를 받아 FixedTicker 를 그림(홈 '/' 은 안 그림 · 서버 첫 그림부터).
+- currencyListName 에 GBP '영국 파운드' 추가(시안 이름): 통화 상세 머리 국기 줄 · 통화 둘러보기 목록 · 다른 나라 통화 목록 부제에도 같이 바뀜(나라 물가 단위 글은 '파운드' 그대로).
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋 CI gate)
 - [ ] develop 머지까지(main · 릴리스는 사용자가 말할 때) · 미리보기 주소(최신 커밋 빌드 확인 뒤)와 볼 경로를 claude-desktop 에
 
 ## 허점
+- 바닥 띠 흰 글자 대비: 흰 본문 위 2.1~2.5(.36~.42) · 파란 머리 위 3.4~3.6 — 4.5 미달. 작업서 허용 최대 .42 적용 · 4.5 는 약 .65 이상이라 사용자의 '조금 더 밝게'와 반대 → 사용자 결정 대기(토큰 --hav-ticker-glass-bg 하나만 바꾸면 됨).
+- resp-audit 전체는 이 작업에서 바꾼 spec 이 아니라 로컬 가드로 못 돌림 · develop PR CI 에도 e2e 없음 → 다음 main 전체 e2e 에서 확인.
