@@ -7,13 +7,10 @@
 //   travel-timing.ts  export function heroParts(t: TravelTiming): { month: string; rest: string } | null   // ready 면 { month: "11월", rest: "에 떠나세요." } · 아니면 null (travelTimingCopy 의 title 과 같은 글)
 //   dest-motion.ts    export function dotPosition(final: number, progress: number): number   // 막대 위 동그라미 위치 0~1 — 카운트업과 같은 시작 비율(최종의 85%)에서 최종 위치로 progress(0~1)만큼 · progress 1 이면 정확히 final · 범위 밖 progress 는 자름
 //   destinations.ts   DestinationRowData 에 rateValue: number | null (baseRate 그대로) · rateDigits: 0 | 1 (baseRate ≥ 100 이면 0 · 아니면 1) — formatCount(rateValue, rateDigits) + "원" 이 rateText 와 같음 · 환율이 없으면 null · 0
-//   today-board.ts · picked.ts   반환값에 percentile: number | null (판 아래 막대 길이 · 백분위 0~1) — 가장 싼 곳은 found.percentile · 없으면 null / 고른 나라는 그 통화 신호의 percentile · 없으면 null
 import { formatCount } from "@hav/ui/hooks/count/use-count-up";
 import { describe, expect, it } from "vitest";
 import { dotPosition } from "./dest-motion";
-import { type SignalRow, cheapestDestination, destinationRows } from "../common/destinations";
-import { pickedBoard } from "../today/picked";
-import { todayBoard } from "../today/today-view";
+import { type SignalRow, destinationRows } from "../common/destinations";
 import { heroParts, travelTiming } from "../timing/travel-timing";
 import { yearBars } from "../timing/year-bars-view";
 
@@ -121,20 +118,5 @@ describe("destinationRows — 금액 카운트업용 숫자", () => {
   it("환율이 없으면 null · 0", () => {
     const none = destinationRows(SIGNALS, [], DEST);
     expect(none[0]).toMatchObject({ rateValue: null, rateDigits: 0, rateText: null });
-  });
-});
-
-describe("판 아래 막대 길이 — percentile", () => {
-  it("가장 싼 곳(todayBoard)은 found.percentile · 없으면 null", () => {
-    const found = cheapestDestination(SIGNALS, RATES, DEST);
-    expect(todayBoard({ found, hasRates: true, windowDays: 90 }).percentile).toBe(0.12);
-    expect(todayBoard({ found: null, hasRates: true, windowDays: 90 }).percentile).toBeNull();
-    expect(todayBoard({ found: null, hasRates: false, windowDays: 90 }).percentile).toBeNull();
-  });
-  it("고른 나라(pickedBoard)는 그 통화 신호의 percentile · 신호가 없으면 null", () => {
-    const base = { city: "방콕", budget: 0, fromCity: "서울" } as never;
-    const picked = { ...(base as object), country: "THA", city: "방콕", budget: 0 } as never;
-    expect(pickedBoard({ picked, rates: RATES, signals: SIGNALS, windowDays: 90 })?.percentile).toBe(0.25);
-    expect(pickedBoard({ picked, rates: RATES, signals: [], windowDays: 90 })?.percentile).toBeNull();
   });
 });
