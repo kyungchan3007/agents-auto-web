@@ -189,12 +189,29 @@ export function auditDom(): Violation[] {
       }
       if (beside) continue;
       const d = r.left - (W - r.right);
-      if (Math.abs(d) <= 2) continue;
+      if (Math.abs(d) <= 2) continue; // 화면 가운데
+      // lead 기준: 기둥(부모 안쪽 폭)보다 좁아도 왼쪽 끝이 기둥 왼쪽 끝과 같으면(±2) 왼쪽 정렬 내용으로 통과 · 실패 = ① 왼쪽 끝이 기둥과 어긋남 ② 칸 모양(바탕 · 테두리 · 입력)이 기둥의 60% 넘는데 꽉 채우지도 가운데도 아님
+      const par = e.parentElement;
+      const ps = par ? getComputedStyle(par) : null;
+      const pr = par ? par.getBoundingClientRect() : null;
+      if (par && ps && pr) {
+        const colLeft = pr.left + parseFloat(ps.paddingLeft) + parseFloat(ps.borderLeftWidth);
+        const colRight = pr.right - parseFloat(ps.paddingRight) - parseFloat(ps.borderRightWidth);
+        const colW = colRight - colLeft;
+        if (Math.abs(r.left - colLeft) <= 2) {
+          const filled = r.width >= colW - 2;
+          if (filled || !asBox || r.width <= colW * 0.6) continue;
+          add("c", `칸이 기둥의 ${Math.round((r.width / colW) * 100)}% 인데 꽉 채우지도 가운데도 아님 ${label(e)}`, colW - r.width);
+          bad.add(e);
+          continue;
+        }
+        if (Math.abs((r.left - colLeft) - (colRight - r.right)) <= 2) continue; // 기둥 가운데
+      }
       let anc = false;
       for (let n = e.parentElement; n && n !== document.body; n = n.parentElement) if (bad.has(n)) anc = true;
       if (anc) continue;
       bad.add(e);
-      add("c", `가운데 기둥 어긋남 ${label(e)}`, d);
+      add("c", `왼쪽 끝이 기둥과 어긋남 ${label(e)}`, d);
     }
   }
 
