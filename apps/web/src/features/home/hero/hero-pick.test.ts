@@ -23,7 +23,7 @@ const RATES: RateRow[] = [
   { currency: "VND", unit: 100, baseRate: 5.6 },
   { currency: "IDR", unit: 100, baseRate: 8.7 },
 ];
-// percentile 0.36 → "64% 의 날보다 쌈"(1 - 0.36)
+// percentile 0.36 → "64% 의 날보다 낮음"(1 - 0.36)
 const SIGNALS: SignalRow[] = [
   { currency: "JPY", signal: "cheap", reason: "", percentile: 0.36, median: 9.2 },
   { currency: "IDR", signal: "cheap", reason: "", percentile: 0.29, median: 0.092 },
@@ -94,14 +94,14 @@ describe("pickFacts — 숫자 칸 값", () => {
     expect(f.tenKUnit).toBe("엔");
     expect(f.priceText).toBe("12% 높음"); // relative 1.12 · 한국보다
     expect(f.position).toBe(64);
-    expect(f.positionText).toBe("오늘은 90일 중 보통 (64%의 날보다 쌈)");
+    expect(f.positionText).toBe("오늘은 90일 중 보통 (64%의 날보다 낮음)");
     expect(f.medianText).toBe("9.20원"); // 90일 중간값 · 1 외화당 원 · 같은 자릿수 규칙
   });
 
   it("위치 말: 66% 이상 낮은 편 · 33~65% 보통 · 32% 이하 높은 편 · 기간(windowDays)을 글에 씀", () => {
-    expect(pickFacts(BALI, RATES, SIGNALS, LEVELS).positionText).toBe("오늘은 90일 중 낮은 편 (71%의 날보다 쌈)");
-    expect(pickFacts(hit("FRA", "파리", "프랑스"), RATES, SIGNALS, LEVELS).positionText).toBe("오늘은 90일 중 높은 편 (10%의 날보다 쌈)");
-    expect(pickFacts(BALI, RATES, SIGNALS, LEVELS, 60).positionText).toBe("오늘은 60일 중 낮은 편 (71%의 날보다 쌈)");
+    expect(pickFacts(BALI, RATES, SIGNALS, LEVELS).positionText).toBe("오늘은 90일 중 낮은 편 (71%의 날보다 낮음)");
+    expect(pickFacts(hit("FRA", "파리", "프랑스"), RATES, SIGNALS, LEVELS).positionText).toBe("오늘은 90일 중 높은 편 (10%의 날보다 낮음)");
+    expect(pickFacts(BALI, RATES, SIGNALS, LEVELS, 60).positionText).toBe("오늘은 60일 중 낮은 편 (71%의 날보다 낮음)");
   });
 
   it("물가: 한국보다 낮으면 \"N% 낮음\" · 같으면 \"비슷\"", () => {
