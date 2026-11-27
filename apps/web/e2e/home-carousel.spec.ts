@@ -7,7 +7,7 @@
 //     hero-tabs(tablist) · hero-tab ×2(role=tab · data-slide · aria-selected · 글 "블랙프라이데이" | "여행 타이밍")
 //     hero-prev · hero-next  양옆 ‹ › (폭 900 이상에서만 보임)
 //     hero-progress  고른 알약 안 노란 줄 (자동 넘김이 off 면 없음)
-//   기존 표시: home-hero(sea 장) · bf-hero(블프 장) · hero-search · hero-chip · bf-amount · bf-route · bf-receipt …
+//   기존 표시: home-hero(sea 장) · bf-hero(블프 장) · hero-search · hero-chip · bf-amount · bf-route(통관 고정 글자 · 작업 0389) · bf-receipt …
 //   모양 · 위치 · 크기(겹침 · 화면 밖 · 가로 스크롤 · 높이 같음 · 넓은 글꼴)는 별도 측정(.tmp/wt-0385-test) · 여기서는 높이 같음만 세 폭에서 한 번 확인
 //   작업 0386: 첫 페이지 헤더(banner) 색이 지금 장 hero 바탕을 따라감 — 블프 장 검정 · 여행 타이밍 장 울트라마린 · 0.5초 함께 바뀜 · 움직임 줄이기면 바로 · 첫 그림부터(자바스크립트가 붙기 전) 검정 · 기간 뒤 울트라마린 · 다른 페이지 그대로 · 글자 · 초점 고리 대비
 //   시간: 시계는 page.clock.install 로 블프 기간 안(2026-11-27 낮)에 두고 흐르게 둠 — 실제 시간으로 9초 · 7초를 기다림
@@ -80,13 +80,13 @@ test.describe("입력하면 자동 넘김 취소 (두 장 모두 · 11초 넘지
     expect(await slideOf(page)).toBe("bf");
   });
 
-  test("블프 장 — 값을 넣지 않고 초점만 가도 취소 (고르기 칸 · select 도 같음)", async ({ page }) => {
+  test("블프 장 — 값을 넣지 않고 입력칸에 초점만 가도 취소 (통관은 글자라 초점이 가지 않음 · 작업 0389)", async ({ page }) => {
     test.setTimeout(40_000);
     await open(page);
-    await tid(page, "bf-route").focus();
+    await tid(page, "bf-amount").focus();
     await page.mouse.move(2, 2);
     await expect(tid(page, "hero-carousel")).toHaveAttribute("data-auto", "off");
-    await tid(page, "bf-route").blur();
+    await tid(page, "bf-amount").blur();
     await page.waitForTimeout(11_000);
     expect(await slideOf(page)).toBe("bf");
   });
@@ -493,5 +493,60 @@ test.describe("헤더 색 — 지금 장 hero 바탕을 따라감 (작업 0386)"
       expect(ring?.style).not.toBe("none");
       expect(contrast(await onBg(page, ring?.color ?? "rgb(0,0,0)", bg), bg), `${s} 장 고리 ${ring?.color} / 바탕 ${bg}`).toBeGreaterThanOrEqual(3);
     }
+  });
+});
+
+// ── 작업 0389 — 블프 hero 높이 고정 (영수증이 찍혀도 hero · 아래 화면이 밀리지 않음) ──
+test.describe("높이 고정 — 첫 화면부터 영수증이 다 찍힐 때까지 hero 높이 변화 0 (작업 0389)", () => {
+  for (const [w, h] of [[320, 700], [390, 844], [768, 1000], [1000, 800], [1440, 900], [1600, 900]] as const) {
+    test(`${w}px — 첫 그림부터 7초 동안 hero 높이 · 아래 구역 위치 변화 0`, async ({ page }) => {
+      test.setTimeout(40_000);
+      await page.setViewportSize({ width: w, height: h });
+      await page.addInitScript(() => {
+        const w = window as unknown as { __hh: number[]; __below: number[] };
+        w.__hh = [];
+        w.__below = [];
+        const t0 = performance.now();
+        const tick = () => {
+          const car = document.querySelector('[data-testid="hero-carousel"]');
+          const below = document.querySelector('[data-testid="year-bars"]')?.closest("section") ?? null; // hero 바로 아래 구역(12달 막대)
+          if (car) w.__hh.push(Math.round(car.getBoundingClientRect().height * 10) / 10);
+          if (below) w.__below.push(Math.round((below.getBoundingClientRect().top + window.scrollY) * 10) / 10);
+          if (performance.now() - t0 < 7000) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+      await page.clock.install({ time: new Date(IN_BF) });
+      await page.goto("/", { waitUntil: "commit" });
+      await page.waitForTimeout(7_300);
+      const r = await page.evaluate(() => {
+        const w = window as unknown as { __hh: number[]; __below: number[] };
+        return { hh: w.__hh, below: w.__below };
+      });
+      expect(r.hh.length, "잰 횟수").toBeGreaterThan(30);
+      expect(Math.max(...r.hh) - Math.min(...r.hh), `hero 높이 ${[...new Set(r.hh)].join(" · ")}`).toBeLessThanOrEqual(1);
+      expect(Math.max(...r.below) - Math.min(...r.below), `아래 구역 위치 ${[...new Set(r.below)].join(" · ")}`).toBeLessThanOrEqual(1);
+    });
+  }
+
+  for (const [w, h] of [[320, 700], [390, 844], [768, 1000], [1000, 800], [1440, 900], [1600, 900]] as const) {
+    test(`${w}px — 두 장(블프 · 여행 타이밍) hero 높이가 같음`, async ({ page }) => {
+      await page.setViewportSize({ width: w, height: h });
+      await open(page);
+      await page.waitForTimeout(3_500);
+      const heights: number[] = [];
+      for (const s of ["bf", "sea", "bf"] as const) {
+        await tab(page, s).click();
+        await page.waitForTimeout(700);
+        heights.push(await heroH(page));
+      }
+      expect(Math.max(...heights) - Math.min(...heights), `높이 ${heights.join(" · ")}`).toBeLessThanOrEqual(1);
+    });
+  }
+
+  test("블프 장에 select · combobox 가 없음 (통관은 글자)", async ({ page }) => {
+    await open(page);
+    await expect(page.locator('[data-testid="bf-hero"] select')).toHaveCount(0);
+    await expect(page.locator('[data-testid="bf-hero"]').getByRole("combobox")).toHaveCount(0);
   });
 });

@@ -8,7 +8,7 @@
 //     bf-title         제목 (h1 · "$200" 은 data-testid="bf-accent" 로 감싸 노랑)
 //     bf-lede · bf-tag 한 줄 · 꼬리표
 //     bf-amount        금액 입력 (role=textbox · 접근 이름 "금액(달러)" · inputmode numeric · 숫자만(작업 0385))
-//     bf-route         선택칸 <select> (옵션 "미국 · 목록통관" = us-list · "그 밖 나라 · 일반통관" = other)
+//     bf-route         통관 고정 글자 <span> "미국 · 목록통관" (작업 0389: select 삭제 · 칸 모양 안 글자 · 누를 수 없음 · button/select 아님) · 입력칸 aria-describedby="bf-route-note"(화면 읽기 전용 "미국 목록통관 기준" 글)
 //     bf-krw · bf-judge   "약 N원" · 판정 글(면세 · 한도까지 … / 한도 초과 …) · 틀린 입력이면 bf-error 만
 //     bf-hint · bf-bar    입력 전 안내 · 한도 막대(data-over="true|false")
 //     bf-source · bf-note 환율 기준 · 출처 줄 · 합산 안내 작은 글
@@ -99,12 +99,36 @@ test.describe("문구 — 정한 글 그대로 (새 문구 · 블프 안)", () =
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
   });
 
-  test("입력 전 — 안내 글 · 아래 작은 글 · 선택칸 두 값", async ({ page }) => {
+  test("입력 전 — 안내 글 · 아래 작은 글 · 통관은 고정 글자(미국 · 목록통관)", async ({ page }) => {
     await expect(tid(page, "bf-hint")).toHaveText("원화로 얼마인지 바로 봅니다");
     await expect(tid(page, "bf-note")).toContainText("같은 판매자에게 같은 날 산 물건은 합쳐서 봅니다 · 예상 금액");
-    await expect(tid(page, "bf-route").locator("option")).toHaveText(["미국 · 목록통관", "그 밖 나라 · 일반통관"]);
-    await expect(tid(page, "bf-route")).toHaveValue("us-list");
+    await expect(tid(page, "bf-route")).toHaveText("미국 · 목록통관");
     await expect(tid(page, "bf-krw")).toHaveCount(0);
+  });
+
+  test("통관 칸은 글자 — select · combobox · button 이 아니고 누르거나 고를 수 없음 (작업 0389)", async ({ page }) => {
+    const route = tid(page, "bf-route");
+    expect(await route.evaluate((el) => el.tagName.toLowerCase()), "span").toBe("span");
+    await expect(page.locator('[data-testid="bf-hero"] select')).toHaveCount(0);
+    await expect(page.locator('[data-testid="bf-hero"]').getByRole("combobox")).toHaveCount(0);
+    await expect(page.locator('[data-testid="bf-hero"]').getByRole("button")).toHaveCount(0);
+    expect(await route.evaluate((el) => el.matches("[tabindex], button, select, a[href]") || el.querySelector("button, select, a, [tabindex]") !== null), "초점 · 눌림 요소 없음").toBe(false);
+    // 누르거나 고르려 해도 값이 그대로 · 화살표 · 펼침 없음
+    await route.click({ force: true }).catch(() => {});
+    await expect(route).toHaveText("미국 · 목록통관");
+    await expect(page.locator('[data-testid="bf-hero"] [role="listbox"], [data-testid="bf-hero"] option')).toHaveCount(0);
+  });
+
+  test("입력칸 이름 — 금액(달러) · 설명에 '미국 목록통관 기준'이 읽힘(aria-describedby)", async ({ page }) => {
+    const input = tid(page, "bf-amount");
+    await expect(input).toHaveAttribute("aria-label", "금액(달러)");
+    const id = await input.getAttribute("aria-describedby");
+    expect(id, "aria-describedby").toBeTruthy();
+    const note = page.locator(`#${id}`);
+    await expect(note).toHaveCount(1);
+    await expect(note).toContainText("미국");
+    await expect(note).toContainText("목록통관");
+    await expect(note).toContainText("기준");
   });
 
   test("긴 줄표(—)가 없음", async ({ page }) => {
@@ -136,12 +160,15 @@ test.describe("계산기 — 입력 즉시 (한도는 import-calc rules 와 같�
     await expect(tid(page, "bf-judge")).toHaveText("면세 · 한도까지 $0 남음");
   });
 
-  test("그 밖 나라로 바꾸면 한도 150 — 160 은 한도 초과 $10", async ({ page }) => {
-    await tid(page, "bf-route").selectOption("other");
+  test("한도는 미국 목록통관 $200 고정 — 201 은 한도 초과 $1 · 160 은 면세 · 남음 $40 (그 밖 나라 150 이 아님)", async ({ page }) => {
+    await type(page, "201");
+    await expect(tid(page, "bf-judge")).toHaveText("한도 초과 $1 · 관부가세 대상");
     await type(page, "160");
-    await expect(tid(page, "bf-judge")).toHaveText("한도 초과 $10 · 관부가세 대상");
-    await tid(page, "bf-route").selectOption("us-list");
     await expect(tid(page, "bf-judge")).toHaveText("면세 · 한도까지 $40 남음");
+    await type(page, "200");
+    await expect(tid(page, "bf-judge")).toHaveText("면세 · 한도까지 $0 남음");
+    await type(page, "250");
+    await expect(tid(page, "bf-judge")).toHaveText("한도 초과 $50 · 관부가세 대상");
   });
 
   test("금액을 지우면 다시 안내 글", async ({ page }) => {
