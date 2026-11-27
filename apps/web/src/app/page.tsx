@@ -20,7 +20,7 @@ export default async function Page() {
   return (
     <>
       <JsonLd data={siteLd()} />
-      <Home latest={mustHave(latest, "오늘 환율")} signals={signals} airFare={airFare} pageCodes={countryTargets(levels.ok ? levels.data : null)} customs={customs} />
+      <Home latest={mustHave(latest, "오늘 환율")} signals={signals} airFare={airFare} pageCodes={countryTargets(levels.ok ? levels.data : null)} customs={customs} levels={levels.ok ? levels.data : null} />
       <IntroGate data={introDataOf({ latest, signals, airFare, levels })} />
     </>
   );
