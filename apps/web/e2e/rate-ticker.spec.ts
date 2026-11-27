@@ -3,7 +3,7 @@
 //   홈 밖(통화 · 통화 상세 · 여행 물가 · 나라 물가 · 직구 계산 · 항공권 · 소개 · 404): 화면 바닥 고정(position fixed · bottom 0 · 높이 48px · 휴대폰 42px) · 맨 아래에서 바닥 출처 띠를 안 가림 · 메뉴(z 50) · 시트(z 70)보다 아래
 //   builder 가 만든 표시(shared/ticker/rate-ticker.tsx — 홈 · 바닥이 같은 부품) — 클래스 rt-*
 //     [data-testid="rate-ticker"]  띠 루트(section · aria-label "오늘 환율") · data-variant="hero"(홈 hero 아래) | "fixed"(바닥 고정) · data-run="true"(흐름 켜짐 = 자바스크립트가 돌고 움직임 줄이기가 아닐 때) · data-held(손가락으로 만짐)
-//     .rt-label  왼쪽 고정 라벨 — 넓은 화면 "오늘 환율 · 11.27 기준" · 휴대폰 "오늘 환율"(날짜는 CSS 로 숨김)
+//     .rt-label  왼쪽 고정 라벨(안의 .rt-chip 이 테두리 알약) — 넓은 화면 "오늘 환율 · 11.27 기준" · 휴대폰 "오늘 환율"(날짜는 CSS 로 숨김)
 //     .rt-view   흐르는 칸(overflow) — 흐름 켜짐이면 hidden · 꺼짐(자바스크립트 꺼짐 · 움직임 줄이기)이면 가로 스크롤 · .rt-track 이 CSS animation 으로 왼쪽으로(약 40px/초) · 마우스(.rt-view:hover) · 키보드 초점(:focus-within)이면 animation-play-state paused
 //     ul.rt-row  항목 줄 — 읽히는 목록은 aria-hidden 이 없는 첫 줄 하나 · 두 번째(복사본)는 aria-hidden="true" · 복사본 링크 tabindex -1
 //     [data-testid="rate-ticker-item"]  읽히는 줄의 항목 링크(a · href="/currencies/{코드}") — 안에 국기 · .rt-name · .rt-amount(금액) · .rt-sig(점 + 글 · 신호가 없으면 없음)
@@ -145,7 +145,7 @@ test.describe("항목 · 순서 · 라벨 · 읽기 · 누르면", () => {
     // 보이는 글(innerText) — 휴대폰은 날짜를 CSS 로 숨김
     const shown = async () => ((await label.innerText()) ?? "").replace(/\s+/g, " ").trim();
     // 시안: 라벨은 테두리 있는 알약 칩(작업 0399) · 둥근 모서리 + 1px 테두리
-    const chip = await label.evaluate((el) => ({ bw: parseFloat(getComputedStyle(el).borderTopWidth), br: parseFloat(getComputedStyle(el).borderTopLeftRadius) }));
+    const chip = await page.locator(".rt-label .rt-chip").evaluate((el) => ({ bw: parseFloat(getComputedStyle(el).borderTopWidth), br: parseFloat(getComputedStyle(el).borderTopLeftRadius) }));
     expect(chip.bw, "라벨 테두리").toBeGreaterThan(0);
     expect(chip.br, "라벨 모서리 둥글게(알약)").toBeGreaterThanOrEqual(12);
     if (isMobile) await expect.poll(shown).toBe("오늘 환율");
