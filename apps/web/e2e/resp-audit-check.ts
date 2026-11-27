@@ -46,7 +46,15 @@ export function auditDom(): Violation[] {
       if (n.nodeType !== 3 || (n.textContent ?? "").trim() === "") continue;
       const range = document.createRange();
       range.selectNodeContents(n);
-      for (const r of range.getClientRects()) if (r.width > 0 && r.height > 0) rs.push(new DOMRect(r.left, r.top + r.height * 0.1, r.width, r.height * 0.8));
+      // 말줄임(truncate · overflow 잘림) 요소는 보이는 칸 안쪽까지만 글자로 셈 — 잘려 안 보이는 글 끝은 겹침이 아님
+      const own = e.getBoundingClientRect();
+      const clip = getComputedStyle(e).overflowX !== "visible";
+      for (const r of range.getClientRects()) {
+        if (r.width <= 0 || r.height <= 0) continue;
+        const left = clip ? Math.max(r.left, own.left) : r.left;
+        const right = clip ? Math.min(r.right, own.right) : r.right;
+        if (right - left > 0) rs.push(new DOMRect(left, r.top + r.height * 0.1, right - left, r.height * 0.8));
+      }
     }
     return rs;
   };
