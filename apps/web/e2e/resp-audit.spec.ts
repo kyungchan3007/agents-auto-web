@@ -15,11 +15,12 @@ const ONLY = process.env.RESP_AUDIT_ONLY ? new RegExp(process.env.RESP_AUDIT_ONL
 const WIDTHS = Array.from({ length: Math.floor(1280 / STEP) + 1 }, (_, i) => 320 + i * STEP).filter((w) => w <= 1600); // 320 ~ 1600
 const WIDE_FONT = `*{font-family:"Arial Black","Verdana",sans-serif !important;letter-spacing:0.02em !important}`;
 
-type Variant = { name: string; path: string; prep?: (page: Page) => Promise<void>; after?: (page: Page) => Promise<void> };
+type Variant = { name: string; path: string; settleMs?: number; prep?: (page: Page) => Promise<void>; after?: (page: Page) => Promise<void> };
 const VARIANTS: Variant[] = [
   {
     name: "home-bf",
     path: "/",
+    settleMs: 700, // 도착지 알약 · 펼침 움직임이 끝난 최종 상태에서 잼(움직이는 동안의 겹침은 설계상)
     // 블프 기간 장 — 지금 시각이 기간 안이라도 기간 밖이 되지 않게 시계를 앞으로 당기지 않고 그대로 둠(기간이 끝난 뒤에는 기간 안으로 되돌림)
     prep: async (page) => {
       await page.addInitScript(() => {
@@ -34,6 +35,7 @@ const VARIANTS: Variant[] = [
   {
     name: "home-default-picked",
     path: "/",
+    settleMs: 700, // 도착지 알약 · 펼침 움직임이 끝난 최종 상태에서 잼(움직이는 동안의 겹침은 설계상)
     prep: forceDefaultHero,
     after: async (page) => {
       await expect(async () => {
@@ -72,7 +74,7 @@ async function load(page: Page, v: Variant, wide: boolean) {
   if (wide) await page.addStyleTag({ content: WIDE_FONT });
 }
 
-const settle = (page: Page) => page.evaluate(() => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 120)))));
+const settle = (page: Page, ms = 120) => page.evaluate((m) => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, m)))), ms);
 const rangeText = (ws: number[]) => {
   const out: string[] = [];
   for (let i = 0; i < ws.length; ) {
@@ -97,7 +99,7 @@ for (const v of VARIANTS.filter((x) => !ONLY || ONLY.test(x.name))) {
       let shots = 0;
       for (const w of WIDTHS) {
         await page.setViewportSize({ width: w, height: 900 });
-        await settle(page);
+        await settle(page, v.settleMs);
         const vs: Violation[] = await page.evaluate(auditDom);
         for (const x of vs) {
           // 예외(lead 결정): /prices 목록 첫 구역 두 칸 아래 끝 차이 80px — 작업 0248 3번 사용자 확정 디자인(예산 카드 lg:-mb-20 으로 파랑 면 경계에 걸침) · 이 구역만 걸침 80px 까지
