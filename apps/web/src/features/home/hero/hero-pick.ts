@@ -4,7 +4,7 @@ import { type DestinationHit, POPULAR_DESTINATIONS } from "@hav/shared/destinati
 import type { PriceLevels } from "@hav/shared/prices";
 import { TRAVEL_COUNTRIES, countryPath } from "@hav/shared/travel";
 import type { RateRow, SignalRow } from "../common/destinations";
-import { type Facts, belowOf, currencyOf, factsFor, fixed, perOf, unitName } from "@/shared/facts/facts";
+import { type Facts, belowOf, currencyOf, factsOf, fixed, perOf, unitName } from "@/shared/facts/facts";
 import { ORIGIN, PASS_CITIES, type PassCard } from "./hero-pass";
 
 /** 도착 공항 — 항공권 달력이 다루는 8곳만(자료에 있을 때만 · 나머지는 빈 글) */
@@ -45,7 +45,7 @@ export type PickFacts = Facts;
 /** 칩 아래 숫자 칸의 값 — 계산은 공통 shared/facts 에서(나라 물가 머리도 같이 씀) · 제목만 "나라 도시" */
 export function pickFacts(hit: DestinationHit, rates: RateRow[], signals: SignalRow[], levels: PriceLevels | null, windowDays = 90): PickFacts {
   const country = TRAVEL_COUNTRIES[hit.country];
-  return factsFor({ country: hit.country, title: `${country?.name ?? ""} ${hit.city}`.trim(), rates, signals, levels, windowDays });
+  return factsOf({ country: hit.country, title: `${country?.name ?? ""} ${hit.city}`.trim(), rates, signals, levels, windowDays });
 }
 
 /** 나라 물가 페이지 주소 — 그 나라 페이지가 만들어지지 않으면 null */

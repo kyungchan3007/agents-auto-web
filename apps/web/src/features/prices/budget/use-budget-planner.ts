@@ -6,7 +6,7 @@ import { PICK_EVENT, type PickedTrip, type TravelRow, TRAVEL_CITIES, TRAVEL_COUN
 import { useState } from "react";
 import { usePickedTrip } from "@/shared/trip/use-picked-trip";
 import { useQueryParam } from "@hav/ui/hooks/browser/use-query-param";
-import { emptyProps } from "@hav/shared/fx-schedule";
+import { emptyProps, fxGiven } from "@hav/shared/fx-schedule";
 import { budgetCountry, budgetOf, parseDaily, parseDays } from "./budget";
 
 export type Latest = SignalList["signals"][number]["latest"];
@@ -51,7 +51,7 @@ export function useBudgetPlanner(rows: TravelRow[], latestOf: Record<string, Lat
     n,
     latest,
     /** 환율을 못 받은 나라(통화가 있는데 오늘 환율이 없음)면 금액 대신 빈 상태 (작업 0346) · 통화가 원래 없는 나라는 null */
-    empty: row?.currency && !latest ? emptyProps({ screen: "prices", name: row.name, kind: "late" }) : null,
+    empty: row?.currency && !latest ? emptyProps({ screen: "prices", name: row.name, given: fxGiven(row.currency) }) : null,
     budget: row && d != null && n != null ? budgetOf(d, n, row.relative, latest?.value ?? null) : null,
   };
 }
