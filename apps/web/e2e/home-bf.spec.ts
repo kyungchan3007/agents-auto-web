@@ -7,7 +7,7 @@
 //     bf-label         제목 위 노란 알약
 //     bf-title         제목 (h1 · "$200" 은 data-testid="bf-accent" 로 감싸 노랑)
 //     bf-lede · bf-tag 한 줄 · 꼬리표
-//     bf-amount        금액 입력 (role=textbox · 접근 이름 "금액(달러)" · inputmode decimal)
+//     bf-amount        금액 입력 (role=textbox · 접근 이름 "금액(달러)" · inputmode numeric · 숫자만(작업 0385))
 //     bf-route         선택칸 <select> (옵션 "미국 · 목록통관" = us-list · "그 밖 나라 · 일반통관" = other)
 //     bf-krw · bf-judge   "약 N원" · 판정 글(면세 · 한도까지 … / 한도 초과 …) · 틀린 입력이면 bf-error 만
 //     bf-hint · bf-bar    입력 전 안내 · 한도 막대(data-over="true|false")
@@ -152,16 +152,17 @@ test.describe("계산기 — 입력 즉시 (한도는 import-calc rules 와 같�
     await expect(tid(page, "bf-krw")).toHaveCount(0);
   });
 
-  test("틀린 입력(글자 · 0 · 음수)은 결과 숫자 대신 안내", async ({ page }) => {
+  test("틀린 입력 — 글자 · 음수 기호는 입력칸이 막고(작업 0385 숫자만) · 0 은 결과 숫자 대신 안내", async ({ page }) => {
     await type(page, "abc");
-    await expect(tid(page, "bf-error")).toHaveText("물건 값은 0 이상의 숫자만 됩니다");
+    await expect(tid(page, "bf-amount")).toHaveValue(""); // 글자는 들어가지 않음 → 입력 전 안내
+    await expect(tid(page, "bf-hint")).toBeVisible();
     await expect(tid(page, "bf-krw")).toHaveCount(0);
     await expect(tid(page, "bf-judge")).toHaveCount(0);
     await type(page, "0");
     await expect(tid(page, "bf-error")).toHaveText("물건 값은 0보다 커야 합니다");
-    await type(page, "-5");
-    await expect(tid(page, "bf-error")).toBeVisible();
     await expect(tid(page, "bf-krw")).toHaveCount(0);
+    await type(page, "-5");
+    await expect(tid(page, "bf-amount")).toHaveValue("5"); // '-' 는 막힘
   });
 
   test("환율 기준 · 출처 줄 — 과세환율이면 관세청 · 없으면 은행 예상 금액", async ({ page }) => {
