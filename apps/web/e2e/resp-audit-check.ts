@@ -20,7 +20,25 @@ export function auditDom(): Violation[] {
     const r = e.getBoundingClientRect();
     return r.width > 0 && r.height > 0;
   };
-  const skip = (e: Element): boolean => !!e.closest("[inert],[aria-hidden='true'],script,style,noscript,svg *,[data-resp-skip],.sr-only");
+  // 닫힌 details 의 본문은 그려지지 않는데 상자 값은 남아 있음 — 점검에서 뺌
+  const inClosedDetails = (e: Element): boolean => {
+    const d = e.closest("details:not([open])");
+    return !!d && !e.closest("summary");
+  };
+  const skip = (e: Element): boolean => inClosedDetails(e) || !!e.closest("[inert],[aria-hidden='true'],script,style,noscript,svg *,[data-resp-skip],.sr-only");
+  // 글자가 overflow 로 잘려 보이지 않는 자리(굴러가는 숫자 줄 등)면 점검에서 뺌
+  const hiddenByClip = (e: Element, r: DOMRect): boolean => {
+    for (let n = e.parentElement; n && n !== document.documentElement; n = n.parentElement) {
+      const cs = getComputedStyle(n);
+      if (cs.overflowX !== "visible" || cs.overflowY !== "visible") {
+        const nr = n.getBoundingClientRect();
+        const ox = Math.min(r.right, nr.right) - Math.max(r.left, nr.left);
+        const oy = Math.min(r.bottom, nr.bottom) - Math.max(r.top, nr.top);
+        if (ox < Math.min(r.width, 4) || oy < Math.min(r.height, 4)) return true;
+      }
+    }
+    return false;
+  };
   // 글자 줄 상자 — 요소 자체 상자(자식까지 품음)가 아니라 그 요소가 직접 가진 글자만의 상자
   const textRect = (e: Element): DOMRect | null => {
     const rs: DOMRect[] = [];
@@ -84,7 +102,7 @@ export function auditDom(): Violation[] {
       }
     }
     const tr0 = textRect(e);
-    if (box && tr0 && !clipped(e)) {
+    if (box && tr0 && !clipped(e) && !hiddenByClip(e, tr0)) {
       const br = box.getBoundingClientRect();
       const r = tr0;
       const over = Math.max(r.right - br.right, br.left - r.left);
@@ -92,7 +110,7 @@ export function auditDom(): Violation[] {
     }
   }
   // a — 글자끼리 겹침
-  const tr = texts.filter((e) => !fixedAncestor(e)).map((e) => ({ e, r: textRect(e) })).filter((x): x is { e: Element; r: DOMRect } => x.r !== null);
+  const tr = texts.filter((e) => !fixedAncestor(e)).map((e) => ({ e, r: textRect(e) })).filter((x): x is { e: Element; r: DOMRect } => x.r !== null && !hiddenByClip(x.e, x.r)).map((x) => ({ e: x.e, r: new DOMRect(x.r.left, x.r.top + x.r.height * 0.1, x.r.width, x.r.height * 0.8) })); // 줄 높이가 글자보다 큰 만큼은 겹침으로 세지 않음(위아래 10% 줄임)
   for (let i = 0; i < tr.length; i++)
     for (let j = i + 1; j < tr.length; j++) {
       const a = tr[i];
@@ -115,7 +133,8 @@ export function auditDom(): Violation[] {
     const BR = big.map((k) => k.getBoundingClientRect());
     const side = BR.every((a) => Math.abs(a.top - BR[0].top) < 60) && BR.every((a, i) => i === 0 || a.left > BR[i - 1].left + 40);
     if (!side) continue;
-    const bottoms = BR.map((a) => a.bottom);
+    // 칸 안쪽 아래 끝(칸의 아래 안쪽 여백 · 테두리는 뺌 — 한쪽은 padding · 한쪽은 margin 으로 간격을 둬도 같은 배치)
+    const bottoms = big.map((k, i) => BR[i].bottom - parseFloat(getComputedStyle(k).paddingBottom) - parseFloat(getComputedStyle(k).borderBottomWidth));
     const diff = Math.max(...bottoms) - Math.min(...bottoms);
     if (diff > 24) {
       const short = big[bottoms.indexOf(Math.min(...bottoms))];
