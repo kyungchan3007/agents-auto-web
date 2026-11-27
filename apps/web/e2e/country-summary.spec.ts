@@ -138,8 +138,8 @@ test.describe("높이 · 위치 고정", () => {
 });
 
 // 두 칸 배치는 1024px 부터(lg) — 1023 이하는 설명 아래로 흐름(그대로). 작업 전 1124 · 1280 · 1440 은 왼쪽 글 끝과 카드 끝 차이가 약 360px
-//   builder 가 두 칸 줄 높이를 맞춤(오른쪽 카드 stretch) → 왼쪽 칸의 마지막 상자(한 줄 답 상자가 있으면 그것 · 없으면 요약 칸) 아래 끝 = 카드 아래 끝
-//   (±2px · 카드가 자기 내용만으로 더 길면 그 차이만큼 왼쪽이 짧음 — 24px 이하) · 카드 안 입력 위치는 나라를 바꿔도 같음
+//   카드는 내용 높이(stretch 없음 · lead 결정 — 카드 안 흰 빈칸이 더 어색) → 베트남: 왼쪽 칸 끝이 카드 끝과 24px 이내(빈자리 해소) ·
+//   일본: 왼쪽 열(요약 칸 + 한 줄 답)이 카드보다 길고 카드는 내용 높이 그대로(카드 아래 끝이 왼쪽 열 끝을 넘지 않음) · 카드 안 입력 위치는 나라를 바꿔도 같음
 test.describe("두 칸 아래 끝 (1024 · 1124 · 1280 · 1440)", () => {
   test.beforeEach(({ isMobile }) => {
     test.skip(isMobile, "폭을 직접 맞춰 재는 검사 — 넓은 화면 프로젝트에서만");
@@ -160,8 +160,9 @@ test.describe("두 칸 아래 끝 (1024 · 1124 · 1280 · 1440)", () => {
         expect(facts.x + facts.width, "왼쪽 칸 — 카드와 가로로 겹치지 않음").toBeLessThanOrEqual(card.x + 1);
         const sy = await page.evaluate(() => window.scrollY);
         const gap = card.y + sy + card.height - (await leftBottom(page));
-        expect(gap, `두 칸 아래 끝 차이(카드 − 왼쪽 마지막 상자)=${Math.round(gap)}px`).toBeGreaterThanOrEqual(-2);
-        expect(gap, `두 칸 아래 끝 차이(카드 − 왼쪽 마지막 상자)=${Math.round(gap)}px`).toBeLessThanOrEqual(24);
+        expect(gap, `두 칸 아래 끝 차이(카드 − 왼쪽 마지막 상자)=${Math.round(gap)}px`).toBeLessThanOrEqual(24); // 빈자리 해소(작업 전 약 360)
+        expect(gap, "카드가 왼쪽 열 끝을 넘지 않음").toBeGreaterThanOrEqual(code === "JPN" ? -700 : -2);
+        if (code === "JPN") expect(card.height, "일본 카드는 내용 높이(안이 흰 빈칸으로 늘어나지 않음)").toBeLessThanOrEqual(520);
         expect(await hScroll(page)).toBeLessThanOrEqual(0);
       });
     }
@@ -186,7 +187,7 @@ test.describe("두 칸 아래 끝 (1024 · 1124 · 1280 · 1440)", () => {
       expect(Math.abs(after.daily - before.daily), `${label}: 입력 위치`).toBeLessThanOrEqual(1);
       expect(Math.abs(after.select - before.select), `${label}: 나라 칸 위치`).toBeLessThanOrEqual(1);
       expect(Math.abs(after.next - before.next), `${label}: 아래 구역 위치`).toBeLessThanOrEqual(1);
-      expect(Math.abs(after.cardBottom - after.left - (before.cardBottom - before.left)), `${label}: 두 칸 아래 끝 차이가 처음과 같음`).toBeLessThanOrEqual(2);
+      expect(Math.abs(after.left - before.left), `${label}: 왼쪽 열 끝 위치`).toBeLessThanOrEqual(1);
     }
   });
 
