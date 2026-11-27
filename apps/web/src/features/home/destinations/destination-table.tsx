@@ -9,6 +9,7 @@
 import { Flag } from "@hav/ui/data/flag";
 import { formatCount } from "@hav/ui/hooks/count/use-count-up";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { useDestinationsPill } from "./use-destinations-pill";
 import type { DestinationRowData } from "../common/destinations";
 import { type PillFrame, pillFrame, rateAt } from "./dest-motion";
@@ -84,16 +85,22 @@ function Row({ row, f, motion }: { row: DestinationRowData; f: PillFrame; motion
 }
 
 export function DestinationTable({ rows, windowDays = 90 }: { rows: DestinationRowData[]; windowDays?: number }) {
-  const { ref, state, t, boot } = useDestinationsPill<HTMLDivElement>(rows.length);
+  const { ref, state, t, full, boot } = useDestinationsPill<HTMLDivElement>(rows.length);
   const motion = state !== "final";
-  // 카드 틀은 처음부터 끝 높이로 자리를 잡음(작업 0398 · 화면에 들어올 때 435 → 984px 늘어나 아래가 밀리던 것을 없앰) — 접힘 · 펼침은 알약 글 · 줄의 투명도와 이동만
+  // 카드 자리(레이아웃 높이)는 처음부터 끝 높이로 고정(작업 0398 · 화면에 들어올 때 435 → 984px 늘어나 아래가 밀리던 것을 없앰)
+  // 0228 의 자라는 움직임은 그 자리 안에서 그대로: 보이는 틀(::before · 클리핑) 높이 · 모서리만 알약(--pill-h · 반지름 = 높이의 절반)에서 끝(100% · 24px)으로 (끝에는 인라인 값 없음 · 틀 모양은 globals.css)
+  const g = state === "pill" ? 0 : pillFrame(t, 0).grow;
+  const style = motion
+    ? ({ "--vh": `calc(var(--pill-h) + (${full}px - var(--pill-h)) * ${g})`, "--vr": `calc(var(--pill-h) / 2 + (24px - var(--pill-h) / 2) * ${g})` } as CSSProperties)
+    : undefined;
   return (
     <div
       ref={ref}
       data-testid="dest-list"
       data-state={state}
       data-boot={boot ? "" : undefined}
-      className="relative mt-8 divide-y divide-line rounded-[1.5rem] border-2 border-line bg-card px-5 py-2 [--pill-h:4.75rem] sm:px-8 sm:[--pill-h:4.5rem]"
+      style={style}
+      className="relative isolate mt-8 divide-y divide-line border-2 border-transparent px-5 py-2 [--pill-h:4.75rem] sm:px-8 sm:[--pill-h:4.5rem]"
     >
       {(state !== "final" || boot) && <DestinationsPill rows={rows} windowDays={windowDays} fade={state === "expanding" ? pillFrame(t, 0).pill : 1} />}
       {rows.map((row, i) => (
