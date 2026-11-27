@@ -6,6 +6,9 @@ import { DUTY_FREE_USD, type Route } from "@/shared/customs/rules";
 
 export type BfPicked = { rate: { baseRate: number; unit: number }; source: { kind: "customs"; weekStart: string; label: string } | { kind: "bank"; label: string } };
 
+/** 블프 hero 는 미국 목록통관 한 가지로 고정 — 한도는 직구 계산기 rules 한 곳에서 읽음 (작업 0389) */
+export const BF_ROUTE: Route = "us-list";
+
 export const BF_IDLE_HINT = "원화로 얼마인지 바로 봅니다";
 
 export type BfResult =

@@ -9,6 +9,9 @@ export const BF_COPY = {
   titleLines: [`${LIMIT} 넘기 전에`, "먼저 계산하세요."],
   lede: `미국 직구는 ${LIMIT}까지 면세입니다.`,
   tag: "관세청 · 목록통관 기준",
+  /** 금액 칸 옆 고정 글(고르는 칸 아님) · 입력칸 설명(aria-describedby) */
+  route: "미국 · 목록통관",
+  routeNote: "미국 목록통관 기준",
   note: "같은 판매자에게 같은 날 산 물건은 합쳐서 봅니다 · 예상 금액",
   receiptNote: "예상 금액 · 실제 세액은 관세청 기준",
   brand: "FLAPFX DIRECT",
