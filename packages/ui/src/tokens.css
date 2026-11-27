@@ -119,6 +119,17 @@
   --hav-hero-chip-line: rgb(255 255 255 / 0.28);
   --hav-hero-src-line: rgb(255 255 255 / 0.3);
   --hav-stub-bar: rgb(255 255 255 / 0.18);
+  /* 기본 hero 고른 곳 숫자 칸(작업 0393 · 사용자가 글래스 도구로 확정한 값 그대로) */
+  --hav-glass-bg: rgb(0 0 0 / 0.35);
+  --hav-glass-shadow: 0 8px 32px rgb(0 0 0 / 0.25);
+  --hav-glass-fg-2: rgb(255 255 255 / 0.72);
+  --hav-glass-track: rgb(255 255 255 / 0.2);
+  --hav-glass-dot-halo: rgb(247 197 72 / 0.22);
+  --hav-glass-dot-shadow: 0 2px 6px rgb(0 0 0 / 0.3);
+  --hav-list-shadow: 0 18px 40px rgb(10 20 80 / 0.35);
+  --hav-list-hover: #eef2ff;
+  --hav-list-code: #6a75a0;
+  --hav-pass-mine: #c48a00;
   /* hero 캐러셀 알약 · ‹ › (작업 0385) — 어두운 면(울트라마린 · 블프 검정) 위 */
   --hav-car-bg: rgb(255 255 255 / 0.08);
   --hav-car-bg-on: rgb(255 255 255 / 0.14);
