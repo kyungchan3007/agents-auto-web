@@ -1,0 +1,161 @@
+/* hero 캐러셀 스타일 (작업 0385 · 시안 mockup) — 색은 모두 tokens.css 토큰 · 두 장은 grid 한 칸에 겹침(높이 = 긴 장 · JS 로 재지 않음) · 초점 고리는 공통(data-surface 어두운 면 흰색) */
+
+.hc {
+  position: relative;
+  background: var(--hav-surface);
+  transition: background-color 0.5s;
+}
+.hc[data-slide="bf"] {
+  background: var(--hav-bf-bg);
+}
+/* 두 장의 바탕은 캐러셀이 그림 — 배경색이 0.5초에 바뀌고 글 · 그림만 0.35초 흐려짐 */
+.hc .bf-hero,
+.hc .hp-hero {
+  background: transparent;
+}
+
+.hc-stack {
+  display: grid;
+}
+.hc-slide {
+  grid-area: 1 / 1;
+  min-width: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.35s,
+    visibility 0s linear 0.35s;
+}
+.hc-slide[data-active="true"] {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.35s;
+}
+
+/* 기간이 끝났거나 값이 없으면 여행 타이밍 한 장 · 알약 · ‹ › 없음 (html data-hero 는 head 스크립트가 첫 그림 전에 정함) */
+html:not([data-hero="bf"]) .hc {
+  background: var(--hav-surface);
+}
+html:not([data-hero="bf"]) .hc-slide[data-slide="bf"],
+html:not([data-hero="bf"]) .hc-nav {
+  display: none;
+}
+html:not([data-hero="bf"]) .hc-slide[data-slide="sea"] {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 알약 · ‹ › */
+.hc-nav {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transform: translateX(-50%);
+}
+.hc-tabs {
+  display: flex;
+  gap: 8px;
+}
+.hc-tab,
+.hc-arrow {
+  border: 1px solid var(--hav-car-line);
+  background: var(--hav-car-bg);
+  color: var(--hav-car-fg);
+  font: inherit;
+  cursor: pointer;
+}
+.hc-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  overflow: hidden;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.hc-tab[aria-selected="true"] {
+  border-color: var(--hav-car-line-on);
+  background: var(--hav-car-bg-on);
+  color: var(--hav-fg);
+}
+.hc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+}
+.hc-tab[aria-selected="true"] .hc-dot {
+  background: var(--hav-sun);
+  opacity: 1;
+}
+.hc-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--hav-sun);
+  animation: hc-fill var(--dur) linear forwards;
+}
+.hc[data-held="true"] .hc-fill {
+  animation-play-state: paused;
+}
+@keyframes hc-fill {
+  to {
+    width: 100%;
+  }
+}
+.hc-arrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--hav-fg);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* 900 이상: 알약은 hero 아래 가운데에 걸쳐 두고 장 아래에 자리를 비움 */
+@media (min-width: 900px) {
+  .hc-stack {
+    padding-bottom: 64px;
+  }
+}
+
+/* 899 이하: 알약은 그림 아래 흐름 안 · ‹ › 없음 */
+@media (max-width: 899px) {
+  .hc-nav {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    width: max-content;
+    margin: 0 auto;
+    padding-bottom: 18px;
+    transform: none;
+  }
+  .hc-arrow {
+    display: none;
+  }
+  .hc-tab {
+    padding: 0 12px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hc,
+  .hc-slide {
+    transition: none;
+  }
+  .hc-fill {
+    animation: none;
+  }
+}
