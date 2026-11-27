@@ -144,6 +144,10 @@ test.describe("항목 · 순서 · 라벨 · 읽기 · 누르면", () => {
     await expect(label).toBeVisible();
     // 보이는 글(innerText) — 휴대폰은 날짜를 CSS 로 숨김
     const shown = async () => ((await label.innerText()) ?? "").replace(/\s+/g, " ").trim();
+    // 시안: 라벨은 테두리 있는 알약 칩(작업 0399) · 둥근 모서리 + 1px 테두리
+    const chip = await label.evaluate((el) => ({ bw: parseFloat(getComputedStyle(el).borderTopWidth), br: parseFloat(getComputedStyle(el).borderTopLeftRadius) }));
+    expect(chip.bw, "라벨 테두리").toBeGreaterThan(0);
+    expect(chip.br, "라벨 모서리 둥글게(알약)").toBeGreaterThanOrEqual(12);
     if (isMobile) await expect.poll(shown).toBe("오늘 환율");
     else await expect.poll(shown).toMatch(/^오늘 환율 ?· \d{1,2}\.\d{2} 기준$/);
   });

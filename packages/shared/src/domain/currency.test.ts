@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CURRENCIES, RATE_SOURCE_LABEL, SOURCE_NOTE, USD_PEGGED, currencyFlag, currencyName, currencySymbol, groupByRegion, headline, matchCurrency, pegText, percentileText, rangeOf, rateText, sampleText, toUnit } from "./currency";
+import { CURRENCIES, RATE_SOURCE_LABEL, SOURCE_NOTE, USD_PEGGED, currencyFlag, currencyName, currencySymbol, groupByRegion, headline, matchCurrency, pegText, percentileText, rangeOf, rateText, sampleText, toUnit , currencyListName } from "./currency";
 
 // 배포한 API 가 2026-10-28 에 준 22개
 const LIVE = ["AED", "AUD", "BHD", "BND", "CAD", "CHF", "CNH", "DKK", "EUR", "GBP", "HKD", "IDR", "JPY", "KWD", "MYR", "NOK", "NZD", "SAR", "SEK", "SGD", "THB", "USD"].map((currency) => ({ currency }));
@@ -155,5 +155,15 @@ describe("환율 출처 문구 (작업 0299)", () => {
     expect(RATE_SOURCE_LABEL).toBe("한국수출입은행 · Frankfurter(수출입은행 값을 받지 못한 날)");
     expect(SOURCE_NOTE).toBe(`환율: ${RATE_SOURCE_LABEL}`);
     expect(SOURCE_NOTE, "옛 괄호 표기는 없음").not.toContain("(예비:");
+  });
+});
+
+describe("목록 이름 — currencyListName (작업 0399: 영국 파운드)", () => {
+  it("나라 이름이 든 목록 이름 · 표에 없으면 통화 이름", () => {
+    expect(currencyListName("GBP")).toBe("영국 파운드");
+    expect(currencyListName("JPY")).toBe("일본 엔");
+    expect(currencyListName("USD")).toBe("미국 달러");
+    expect(currencyListName("EUR")).toBe("유로");
+    expect(currencyListName("CAD")).toBe(currencyName("CAD"));
   });
 });

@@ -60,7 +60,7 @@ describe("tickerItems — 항목 글", () => {
     expect(by("EUR").name).toBe("유로");
     expect(by("THB").name).toBe("태국 바트");
     expect(by("SGD").name).toBe("싱가포르 달러");
-    expect(by("GBP").name).toContain("파운드");
+    expect(by("GBP").name).toBe("영국 파운드"); // 시안 이름(작업 0399 — currencyListName 에 GBP 추가)
   });
 
   it("금액 — 홈 도착지 목록과 같은 함수(wonText): 100원 이상 정수 · 미만 소수 한 자리", () => {
