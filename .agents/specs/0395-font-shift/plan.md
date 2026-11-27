@@ -13,9 +13,12 @@
 - .agents/specs/0395-font-shift/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- 글꼴 가설은 틀림(test: 글꼴을 막아도 · 늦춰도 로컬 hero 1090.9 일정) → builder 코드 변경 없음 · 테스트만: tap-44(apps/web/e2e/tap-44.spec.ts) · home-carousel 진단.
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋 CI gate)
 - [ ] develop 머지 뒤 #470 전체 e2e 통과
 
 ## 허점
+- tap-44 '/' more-currencies 실패 원인: 아래 구역 section.today(도착지별 환전 타이밍)가 화면에 들어올 때 높이가 435 → 984px(+549 · 약 0.6초) 늘어나 가운데로 가져온 링크가 화면 밖으로 밀림. 테스트는 위치가 멈춘 뒤 재도록 고침. 사용자가 스크롤할 때도 보이는 높이 변화라 '높이 · 위치 변화 0' 원칙에 걸림 → today 구역 자리를 처음부터 예약하는 새 작업 거리.
+- home-carousel:502 CI 첫 그림 1042.9 = sea 장 높이(+6) · 알약 줄 없음 → 첫 그림에 html data-hero 가 bf 가 아니었을 가능성이 가장 큼(로컬 재현 안 됨). 실패 때 첫 프레임 상태를 남기는 진단을 넣어 다음 CI 로 확정.
