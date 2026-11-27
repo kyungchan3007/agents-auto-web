@@ -73,6 +73,15 @@
 }
 
 /* 3D 전용 고정 색 — 어느 배경 에서도 값이 같음 (R7: 지구 · 비행기는 생김새 그대로 · 새 테마가 바뀌어도 지구 호 · 점 색이 따라 바뀌지 않음) */
+/* 흐르는 환율 띠 (작업 0399) — hero 아래 위 선 · 홈 밖 바닥 고정 띠의 어두운 유리 바탕 · 위 선 · 글자 그림자 · 양 끝 흐림 마스크 */
+:root {
+  --hav-ticker-line: rgba(255, 255, 255, 0.15);
+  --hav-ticker-glass-bg: rgba(24, 36, 100, 0.36);
+  --hav-ticker-glass-line: rgba(255, 255, 255, 0.22);
+  --hav-ticker-shadow: rgba(0, 0, 0, 0.25);
+  --hav-mask-opaque: #000;
+}
+
 :root {
   --hav-3d-aurora-1: #4ff0e0;
   --hav-3d-aurora-2: #9c8cff;

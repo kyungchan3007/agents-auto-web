@@ -148,6 +148,10 @@ html[data-hero="bf"]:has([data-testid="hero-carousel"]):not([data-slide="sea"]) 
   .hc-stack {
     padding-bottom: 64px;
   }
+  /* 맨 아래 환율 띠(52px · 작업 0399)가 있으면 알약은 그 위에 */
+  .hc:has(.rt) .hc-nav {
+    bottom: calc(22px + 52px);
+  }
 }
 
 /* 899 이하: 알약은 그림 아래 흐름 안 · ‹ › 없음 */
