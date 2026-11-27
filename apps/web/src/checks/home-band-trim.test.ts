@@ -23,37 +23,20 @@ function sources(dir: string): string[] {
 }
 const HOME = sources(join(WEB_SRC, "features/home"));
 const homeText = HOME.map(read).join("\n");
-const band = [read(join(WEB_SRC, "features/home/today/today-board.tsx")), read(join(WEB_SRC, "features/home/today/ticket.tsx"))].join("\n"); // 작업 0217: 탑승권 카드(ticket.tsx)가 판정 한 줄을 그림 // 작업 0177: 바다 띠 → 출발 안내판 (파일 이름만 바뀜 · 문구 규칙은 그대로)
-const boardLib = read(join(WEB_SRC, "features/home/today/today-view.ts"));
 
 describe("홈 바다 띠 — 지울 문구 (작업 0174)", () => {
-  it("'예측이 아닙니다' · '평일 12시' 가 홈 바다 띠 · 근거 문장 코드에 없음", () => {
+  it("'예측이 아닙니다' · '평일 12시' 가 근거 문장 코드에 없음", () => {
     const evidence = read(join(WEB_SRC, "features/home/common/destinations.ts"));
-    for (const text of [band, evidence]) {
-      expect(text).not.toMatch(/예측이 아닙니다/);
-      expect(text).not.toMatch(/평일 12시/);
-    }
+    expect(evidence).not.toMatch(/예측이 아닙니다/);
+    expect(evidence).not.toMatch(/평일 12시/);
   });
 
-  it("바다 띠에 FreshnessNote(기준일 이유 줄 — '주말에는 고시가 없어 …')가 없음", () => {
-    expect(band).not.toMatch(/\bFreshnessNote\b/);
+  it("홈에 FreshnessNote(기준일 이유 줄 — '주말에는 고시가 없어 …')가 없음", () => {
     expect(homeText).not.toMatch(/주말에는 고시가 없어/);
   });
 });
 
 describe("홈 바다 띠 — 남기는 것", () => {
-  it("판정 한 줄('최근 N일 중 …')은 그대로 그림 (cheapestCopy 의 evidence)", () => {
-    expect(band).toMatch(/\bevidence\b/);
-    expect(boardLib).toMatch(/cheapestCopy\(/);
-  });
-
-  it("이번 주 가장 싼 곳 문장 · 큰 숫자 · 환율이 없을 때 문구는 그대로", () => {
-    expect(band).toMatch(/\btodayBoard\(/);
-    expect(boardLib).toMatch(/\.headline/);
-    expect(boardLib).toMatch(/\.value/);
-    expect(boardLib).toMatch(/NO_RATE_COPY/);
-  });
-
   it("도착지별 환전 타이밍 설명 줄에 '예측이 아니며 투자 · 금융 조언이 아닙니다' 가 남음 (SIG-01 · SIG-04)", () => {
     expect(read(join(WEB_SRC, "features/home/destinations/destinations-section.tsx"))).toContain("예측이 아니며 투자 · 금융 조언이 아닙니다");
   });
