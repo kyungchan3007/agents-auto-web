@@ -167,6 +167,7 @@ export function auditDom(): Violation[] {
       if (!asBox && !(containerTags.has(e.tagName) && hasBoxInside(e))) continue;
       const s = getComputedStyle(e);
       if (!(s.display === "block" || s.display === "flex" || s.display === "grid" || s.display === "list-item" || s.display === "table" || s.display === "flow-root" || s.display === "inline-flex" || s.display === "inline-block")) continue;
+      if (e.tagName === "SPAN" || s.transform !== "none") continue; // 꼬리표 · 배지(span)와 기울인 장식은 글 줄의 일부
       const r = e.getBoundingClientRect();
       if (r.width < W * 0.3 || r.height < 24 || r.width >= W - 1) continue;
       if (s.position === "absolute" || s.position === "fixed" || fixedAncestor(e)) continue;
