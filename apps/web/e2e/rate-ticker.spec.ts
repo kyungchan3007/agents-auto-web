@@ -1,13 +1,12 @@
 // 작업 0399 — 흐르는 환율 띠 e2e (테스트 먼저 · 구현 전에는 FAIL 이 정상)
 //   홈: hero 캐러셀 맨 아래(알약 · ‹ › 아래)에 띠 · 바닥 고정 띠 없음 · 높이 52px(휴대폰 44px)
 //   홈 밖(통화 · 통화 상세 · 여행 물가 · 나라 물가 · 직구 계산 · 항공권 · 소개 · 404): 화면 바닥 고정(position fixed · bottom 0 · 높이 48px · 휴대폰 42px) · 맨 아래에서 바닥 출처 띠를 안 가림 · 메뉴(z 50) · 시트(z 70)보다 아래
-//   builder 가 다는 표시(data-testid) — 같은 부품(shared/ticker/rate-ticker.tsx)을 홈 · 바닥에서 씀
-//     rate-ticker            띠 루트(role="region" · aria-label="오늘 환율") · data-placement="hero"(홈 hero 아래) | "bottom"(바닥 고정)
-//     rate-ticker-label      왼쪽 고정 라벨 — 넓은 화면 "오늘 환율 · 11.27 기준" · 휴대폰 "오늘 환율"
-//     rate-ticker-track      흐르는 줄(두 복사본을 담음) — CSS animation 으로 왼쪽으로(약 40px/초) · 마우스 · 초점이면 animation-play-state paused · 움직임 줄이기 · JS 꺼짐이면 animation 없음 + 루트 가로 스크롤(overflow-x auto)
-//     [data-copy="1"]        화면 읽기용 목록(ul) — 읽히는 목록은 이것 하나 · li 마다 항목 링크
-//     [data-copy="2"]        이어 붙인 복사본 — aria-hidden="true" · 안의 링크는 tabindex="-1"
-//     rate-ticker-item       항목 링크(a · href="/currencies/{코드}") — 두 복사본 모두 · 안에 국기 · 이름 · rate-ticker-amount(금액) · rate-ticker-signal(점 + 글 · 신호가 없으면 없음)
+//   builder 가 만든 표시(shared/ticker/rate-ticker.tsx — 홈 · 바닥이 같은 부품) — 클래스 rt-*
+//     [data-testid="rate-ticker"]  띠 루트(section · aria-label "오늘 환율") · data-variant="hero"(홈 hero 아래) | "fixed"(바닥 고정) · data-run="true"(흐름 켜짐 = 자바스크립트가 돌고 움직임 줄이기가 아닐 때) · data-held(손가락으로 만짐)
+//     .rt-label  왼쪽 고정 라벨 — 넓은 화면 "오늘 환율 · 11.27 기준" · 휴대폰 "오늘 환율"(날짜는 CSS 로 숨김)
+//     .rt-view   흐르는 칸(overflow) — 흐름 켜짐이면 hidden · 꺼짐(자바스크립트 꺼짐 · 움직임 줄이기)이면 가로 스크롤 · .rt-track 이 CSS animation 으로 왼쪽으로(약 40px/초) · 마우스(.rt-view:hover) · 키보드 초점(:focus-within)이면 animation-play-state paused
+//     ul.rt-row  항목 줄 — 읽히는 목록은 aria-hidden 이 없는 첫 줄 하나 · 두 번째(복사본)는 aria-hidden="true" · 복사본 링크 tabindex -1
+//     [data-testid="rate-ticker-item"]  읽히는 줄의 항목 링크(a · href="/currencies/{코드}") — 안에 국기 · .rt-name · .rt-amount(금액) · .rt-sig(점 + 글 · 신호가 없으면 없음)
 //   띠가 붙을 때 페이지 위치가 움직이지 않게 처음부터 아래 여백 확보 · 띠 글자 대비는 값을 기록만(.tmp/ticker-contrast.json · 4.5 미만이면 lead 에게)
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -48,14 +47,14 @@ test.describe("홈 — hero 캐러셀 맨 아래 띠 · 바닥 고정 띠 없음
       await page.goto("/");
       const t = tid(page, "rate-ticker");
       await expect(t).toHaveCount(1);
-      await expect(t).toHaveAttribute("data-placement", "hero");
+      await expect(t).toHaveAttribute("data-variant", "hero");
       await expect(page.locator('[data-testid="hero-carousel"] [data-testid="rate-ticker"]')).toHaveCount(1);
       const tb = await box(t, "띠");
       expect(Math.abs(tb.height - heroH(isMobile)), "띠 높이").toBeLessThanOrEqual(1);
       const tabs = await box(tid(page, "hero-tabs"), "알약");
       expect(tb.y, "알약 줄 아래").toBeGreaterThanOrEqual(tabs.y + tabs.height - 1);
       expect(await t.evaluate((el) => getComputedStyle(el).position), "홈 띠는 바닥 고정이 아님").not.toBe("fixed");
-      expect(await page.locator('[data-testid="rate-ticker"][data-placement="bottom"]').count()).toBe(0);
+      expect(await page.locator('[data-testid="rate-ticker"][data-variant="fixed"]').count()).toBe(0);
       await scrollTo(page, "bottom");
       expect(await page.locator("*").evaluateAll((els) => els.filter((e) => getComputedStyle(e).position === "fixed" && e.getBoundingClientRect().bottom >= innerHeight - 1 && e.getBoundingClientRect().height > 20 && e.closest("[data-testid='rate-ticker']")).length), "바닥 고정 띠 없음").toBe(0);
     });
@@ -68,7 +67,7 @@ test.describe("홈 밖 — 화면 바닥 고정 띠", () => {
       await page.goto(path);
       const t = tid(page, "rate-ticker");
       await expect(t).toHaveCount(1);
-      await expect(t).toHaveAttribute("data-placement", "bottom");
+      await expect(t).toHaveAttribute("data-variant", "fixed");
       expect(await t.evaluate((el) => getComputedStyle(el).position)).toBe("fixed");
       for (const where of ["top", "mid", "bottom"] as const) {
         await scrollTo(page, where);
@@ -105,7 +104,7 @@ test.describe("홈 밖 — 화면 바닥 고정 띠", () => {
 test.describe("항목 · 순서 · 라벨 · 읽기 · 누르면", () => {
   test("항목: 국기 · 이름 · 금액 · (신호) — 엔 · 달러 · 유로 순으로 시작 · 금액은 '원' 으로 끝", async ({ page }) => {
     await page.goto("/currencies");
-    const copy1 = page.locator('[data-testid="rate-ticker"] [data-copy="1"] [data-testid="rate-ticker-item"]');
+    const copy1 = page.locator('[data-testid="rate-ticker"] [data-testid="rate-ticker-item"]');
     const n = await copy1.count();
     expect(n).toBeGreaterThanOrEqual(3);
     const names = await copy1.evaluateAll((as) => as.map((a) => (a.textContent ?? "").replace(/\s+/g, " ").trim()));
@@ -114,20 +113,20 @@ test.describe("항목 · 순서 · 라벨 · 읽기 · 누르면", () => {
     expect(names[2]).toContain("유로");
     for (let i = 0; i < n; i++) {
       const it = copy1.nth(i);
-      await expect(it.locator('[data-testid="rate-ticker-amount"]')).toHaveText(/^[\d,]+(\.\d)?원$/);
-      const sig = it.locator('[data-testid="rate-ticker-signal"]');
+      await expect(it.locator('.rt-amount')).toHaveText(/^[\d,]+(\.\d)?원$/);
+      const sig = it.locator('.rt-sig');
       if (await sig.count()) await expect(sig).toHaveText(/낮음|보통|높음/);
       expect(await it.getAttribute("href")).toMatch(/^\/currencies\/[A-Z]{3}$/);
     }
     // 흐르는 복사본은 같은 항목 수 · 같은 주소
-    const copy2 = page.locator('[data-testid="rate-ticker"] [data-copy="2"] [data-testid="rate-ticker-item"]');
+    const copy2 = page.locator('[data-testid="rate-ticker"] ul.rt-row[aria-hidden="true"] a');
     expect(await copy2.count()).toBe(n);
     expect(await copy2.evaluateAll((as) => as.map((a) => a.getAttribute("href")))).toEqual(await copy1.evaluateAll((as) => as.map((a) => a.getAttribute("href"))));
   });
 
   test("라벨 — 넓은 화면 '오늘 환율 · M.DD 기준' · 휴대폰 '오늘 환율'", async ({ page, isMobile }) => {
     await page.goto("/currencies");
-    const label = tid(page, "rate-ticker-label");
+    const label = page.locator(".rt-label");
     await expect(label).toBeVisible();
     if (isMobile) await expect(label).toHaveText("오늘 환율");
     else await expect(label).toHaveText(/^오늘 환율 · \d{1,2}\.\d{2} 기준$/);
@@ -136,17 +135,17 @@ test.describe("항목 · 순서 · 라벨 · 읽기 · 누르면", () => {
   test("화면 읽기 목록은 하나 — 읽히는 목록 1개 · 링크 수 = 항목 수 · 복사본은 aria-hidden · 복사본 링크는 tabindex -1", async ({ page }) => {
     await page.goto("/currencies");
     const t = tid(page, "rate-ticker");
-    const n = await t.locator('[data-copy="1"] [data-testid="rate-ticker-item"]').count();
+    const n = await t.locator('[data-testid="rate-ticker-item"]').count();
     await expect(t.getByRole("list")).toHaveCount(1);
     await expect(t.getByRole("listitem")).toHaveCount(n);
     await expect(t.getByRole("link")).toHaveCount(n);
-    await expect(t.locator('[data-copy="2"]')).toHaveAttribute("aria-hidden", "true");
-    expect(await t.locator('[data-copy="2"] a').evaluateAll((as) => as.every((a) => a.getAttribute("tabindex") === "-1"))).toBe(true);
+    await expect(t.locator('ul.rt-row[aria-hidden="true"]')).toHaveAttribute("aria-hidden", "true");
+    expect(await t.locator('ul.rt-row[aria-hidden="true"] a').evaluateAll((as) => as.every((a) => a.getAttribute("tabindex") === "-1"))).toBe(true);
   });
 
   test("항목을 누르면 /currencies/{통화 코드}", async ({ page }) => {
     await page.goto("/prices");
-    const first = page.locator('[data-testid="rate-ticker"] [data-copy="1"] [data-testid="rate-ticker-item"]').first();
+    const first = page.locator('[data-testid="rate-ticker"] [data-testid="rate-ticker-item"]').first();
     const href = await first.getAttribute("href");
     await first.click();
     await expect(page).toHaveURL(new RegExp(`${href}/?$`));
@@ -154,7 +153,7 @@ test.describe("항목 · 순서 · 라벨 · 읽기 · 누르면", () => {
 
   test("홈 hero 띠 항목도 누르면 통화 상세", async ({ page }) => {
     await page.goto("/");
-    const first = page.locator('[data-testid="rate-ticker"] [data-copy="1"] [data-testid="rate-ticker-item"]').first();
+    const first = page.locator('[data-testid="rate-ticker"] [data-testid="rate-ticker-item"]').first();
     const href = await first.getAttribute("href");
     await first.click();
     await expect(page).toHaveURL(new RegExp(`${href}/?$`));
@@ -162,12 +161,12 @@ test.describe("항목 · 순서 · 라벨 · 읽기 · 누르면", () => {
 });
 
 test.describe("움직임", () => {
-  const x = (page: Page) => tid(page, "rate-ticker-track").evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m41);
+  const x = (page: Page) => page.locator(".rt-track").evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m41);
 
   test("흐름 — 같은 줄을 두 번 이어 왼쪽으로 · 약 초당 40px(30~55px) · 줄이 끝에서 끊기지 않음(한 바퀴 뒤에도 위치가 되돌아옴)", async ({ page }) => {
     await page.goto("/currencies");
     await hydrated(tid(page, "rate-ticker"));
-    const track = tid(page, "rate-ticker-track");
+    const track = page.locator(".rt-track");
     expect(await track.evaluate((el) => getComputedStyle(el).animationName), "애니메이션이 있음").not.toBe("none");
     const a = await x(page);
     await page.waitForTimeout(1000);
@@ -175,7 +174,7 @@ test.describe("움직임", () => {
     expect(a - b, "1초에 왼쪽으로 움직인 px").toBeGreaterThan(30);
     expect(a - b).toBeLessThan(55);
     // 같은 줄 두 번 — 트랙 폭이 한 복사본 폭의 두 배
-    const [w1, w2, wt] = await track.evaluate((el) => [...el.querySelectorAll("[data-copy]")].map((c) => c.getBoundingClientRect().width).concat(el.getBoundingClientRect().width));
+    const [w1, w2, wt] = await track.evaluate((el) => [...el.querySelectorAll("ul.rt-row")].map((c) => c.getBoundingClientRect().width).concat(el.getBoundingClientRect().width));
     expect(Math.abs(w1 - w2), "두 복사본 폭이 같음").toBeLessThanOrEqual(1);
     expect(wt).toBeGreaterThanOrEqual(w1 + w2 - 2);
   });
@@ -184,7 +183,7 @@ test.describe("움직임", () => {
     await page.goto("/currencies");
     await hydrated(tid(page, "rate-ticker"));
     const t = tid(page, "rate-ticker");
-    const track = tid(page, "rate-ticker-track");
+    const track = page.locator(".rt-track");
     const b = await box(t, "띠");
     await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
     await expect.poll(() => track.evaluate((el) => getComputedStyle(el).animationPlayState)).toBe("paused");
@@ -198,20 +197,20 @@ test.describe("움직임", () => {
   test("키보드 초점이 들어오면 멈춤", async ({ page }) => {
     await page.goto("/currencies");
     await hydrated(tid(page, "rate-ticker"));
-    await page.locator('[data-testid="rate-ticker"] [data-copy="1"] [data-testid="rate-ticker-item"]').first().focus();
-    await expect.poll(() => tid(page, "rate-ticker-track").evaluate((el) => getComputedStyle(el).animationPlayState)).toBe("paused");
+    await page.locator('[data-testid="rate-ticker"] [data-testid="rate-ticker-item"]').first().focus();
+    await expect.poll(() => page.locator(".rt-track").evaluate((el) => getComputedStyle(el).animationPlayState)).toBe("paused");
   });
 
   test("움직임 줄이기 — 흐르지 않고 가로 스크롤만(첫 항목부터)", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/currencies");
     await hydrated(tid(page, "rate-ticker"));
-    const track = tid(page, "rate-ticker-track");
+    const track = page.locator(".rt-track");
     expect(await track.evaluate((el) => getComputedStyle(el).animationName)).toBe("none");
     const a = await x(page);
     await page.waitForTimeout(700);
     expect(Math.abs((await x(page)) - a)).toBeLessThanOrEqual(0.5);
-    const scroll = await tid(page, "rate-ticker").evaluate((el) => {
+    const scroll = await page.locator(".rt-view").evaluate((el) => {
       const s = getComputedStyle(el);
       return { ox: s.overflowX, sw: el.scrollWidth, cw: el.clientWidth, left: el.scrollLeft };
     });
@@ -226,9 +225,9 @@ test.describe("움직임", () => {
     await page.goto("/currencies");
     const t = tid(page, "rate-ticker");
     await expect(t).toHaveCount(1);
-    expect(await t.locator('[data-copy="1"] [data-testid="rate-ticker-item"]').count()).toBeGreaterThanOrEqual(3);
-    expect(await tid(page, "rate-ticker-track").evaluate((el) => getComputedStyle(el).animationName)).toBe("none");
-    const s = await t.evaluate((el) => ({ ox: getComputedStyle(el).overflowX, sw: el.scrollWidth, cw: el.clientWidth, left: el.scrollLeft }));
+    expect(await t.locator('[data-testid="rate-ticker-item"]').count()).toBeGreaterThanOrEqual(3);
+    expect(await page.locator(".rt-track").evaluate((el) => getComputedStyle(el).animationName)).toBe("none");
+    const s = await page.locator(".rt-view").evaluate((el) => ({ ox: getComputedStyle(el).overflowX, sw: el.scrollWidth, cw: el.clientWidth, left: el.scrollLeft }));
     expect(["auto", "scroll"]).toContain(s.ox);
     expect(s.sw).toBeGreaterThan(s.cw);
     expect(s.left).toBe(0);
@@ -302,8 +301,8 @@ test.describe("320 ~ 1600 · 넓은 글꼴 — 띠가 겹침 · 가로 스크롤
           const r = await page.evaluate(() => {
             const t = document.querySelector('[data-testid="rate-ticker"]')!;
             const tr = t.getBoundingClientRect();
-            const lab = document.querySelector('[data-testid="rate-ticker-label"]')!.getBoundingClientRect();
-            const first = document.querySelector('[data-testid="rate-ticker"] [data-copy="1"] [data-testid="rate-ticker-item"]')!;
+            const lab = document.querySelector('.rt-label')!.getBoundingClientRect();
+            const first = document.querySelector('[data-testid="rate-ticker"] [data-testid="rate-ticker-item"]')!;
             // 라벨 오른쪽에 항목이 겹쳐 보이지 않게(라벨 뒤는 흐려지는 칸) — 라벨은 띠 안쪽
             return { sx: document.documentElement.scrollWidth - document.documentElement.clientWidth, inView: tr.left >= -1 && tr.right <= innerWidth + 1, labInside: lab.left >= tr.left - 1 && lab.right <= tr.right + 1 && lab.height <= tr.height + 1, firstHeight: first.getBoundingClientRect().height };
           });
