@@ -17,7 +17,6 @@ import { useBfReceipt } from "./use-bf-receipt";
 export function BfHero({ rates, customs }: { rates: FxRate[]; customs: Record<string, CustomsRate> | null }) {
   useBfPeriod();
   const calc = useBfCalc(rates, customs);
-  const receipt = useBfReceipt();
   const r = calc.result;
   const draw = heroDraw(r, calc.perUsd);
   return (
@@ -46,7 +45,7 @@ export function BfHero({ rates, customs }: { rates: FxRate[]; customs: Record<st
               <span className="bf-cur" aria-hidden="true">
                 $
               </span>
-              <input data-testid="bf-amount" aria-label="금액(달러)" inputMode="decimal" autoComplete="off" placeholder="장바구니 금액" value={calc.amount} onChange={calc.onAmount} />
+              <input data-testid="bf-amount" aria-label="금액(달러)" inputMode="numeric" pattern="[0-9]*" autoComplete="off" placeholder="장바구니 금액" value={calc.amount} onChange={calc.onAmount} onCompositionStart={calc.onCompositionStart} onCompositionEnd={calc.onCompositionEnd} />
               <select data-testid="bf-route" aria-label="통관 방식" value={calc.route} onChange={calc.onRoute}>
                 <option value="us-list">{ROUTE_LABEL["us-list"]}</option>
                 <option value="other">{ROUTE_LABEL.other}</option>
@@ -87,8 +86,14 @@ export function BfHero({ rates, customs }: { rates: FxRate[]; customs: Record<st
             </div>
           </div>
         </div>
-        <BfReceipt draw={receiptDraw(receipt, calc.perUsd)} />
+        <BfReceiptLive perUsd={calc.perUsd} />
       </div>
     </section>
   );
+}
+
+/** 영수증 모션 상태는 여기서만 가짐 — 영수증이 한 줄씩 찍혀도 위의 입력칸 · 글(BfHero)은 다시 그려지지 않음 (작업 0385) */
+function BfReceiptLive({ perUsd }: { perUsd: number | null }) {
+  const receipt = useBfReceipt();
+  return <BfReceipt draw={receiptDraw(receipt, perUsd)} />;
 }
