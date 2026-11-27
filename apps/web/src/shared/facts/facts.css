@@ -1,0 +1,174 @@
+/* 숫자 칸(글래스) — 첫 페이지 · 나라 물가 머리가 같이 씀 (작업 0393 · 0396) · 사용자 확정 값 그대로 · 높이는 값이 없어도 같음 · 놓는 자리(여백 · 최대 폭)는 쓰는 쪽이 정함 */
+.facts {
+  position: relative;
+  padding: 16px 18px 14px;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  background: var(--hav-glass-bg);
+  box-shadow: var(--hav-glass-shadow);
+  -webkit-backdrop-filter: blur(4px) saturate(157%);
+  backdrop-filter: blur(4px) saturate(157%);
+  color: var(--hav-fg);
+  text-align: left;
+}
+.facts-hd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+.facts-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.facts-hd small,
+.facts-tag {
+  flex: none;
+  white-space: nowrap;
+}
+.facts-hd small {
+  color: var(--hav-glass-fg-2);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.facts-tag {
+  margin-left: auto;
+  line-height: 1.2;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--hav-sun);
+  color: var(--hav-pin-ink);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.facts-st {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.facts-st small,
+.facts-t {
+  color: var(--hav-glass-fg-2);
+  font-size: 0.75rem;
+}
+.facts-st small {
+  display: block;
+}
+.facts-st b {
+  display: block;
+  margin-top: 3px;
+  font-size: clamp(15px, 4vw, 20px);
+  min-height: calc(1.25em + 0.9375rem);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+.facts-st b i {
+  display: block;
+  color: var(--hav-glass-fg-2);
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.facts-y {
+  color: var(--hav-sun);
+}
+.facts-rng {
+  margin-top: 14px;
+}
+.facts-t {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 1.5em;
+  white-space: nowrap;
+}
+.facts-bar {
+  position: relative;
+  height: 6px;
+  margin: 8px 0 0;
+  border-radius: 9px;
+  background: var(--hav-glass-track);
+}
+.facts-bar i {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border: 2px solid var(--hav-pin-ink);
+  border-radius: 50%;
+  background: var(--hav-sun);
+  box-shadow:
+    0 0 0 4px var(--hav-glass-dot-halo),
+    var(--hav-glass-dot-shadow);
+  transform: translateY(-50%);
+}
+.facts-ft {
+  display: grid;
+  gap: 6px;
+  margin-top: 20px;
+  font-size: 0.8125rem;
+}
+.facts-ft span {
+  display: block;
+  min-height: 3em;
+  color: var(--hav-glass-fg-2);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+.facts-ft a {
+  color: var(--hav-fg);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.facts-ft div {
+  min-height: 1.5em;
+}
+@media (max-width: 480px) {
+  .facts-ft div {
+    min-height: 3em;
+  }
+}
+@media (max-width: 380px) {
+  .facts-st {
+    gap: 6px;
+  }
+  .facts-st b {
+    font-size: 15px;
+  }
+}
+/* 환율을 주지 않는 나라 — 물가만 크게 + 안내 한 줄 (나라 물가) */
+.facts-one {
+  margin-top: 12px;
+}
+.facts-one small {
+  display: block;
+  color: var(--hav-glass-fg-2);
+  font-size: 0.75rem;
+}
+.facts-one b {
+  display: block;
+  margin-top: 3px;
+  font-size: clamp(28px, 7vw, 40px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+.facts-one p {
+  margin: 10px 0 0;
+  min-height: 3em;
+  color: var(--hav-glass-fg-2);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
