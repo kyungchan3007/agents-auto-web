@@ -50,32 +50,21 @@ main:focus {
 /* 홈 도착지 카드 — 서버가 그린 첫 그림부터 접힌 알약 (작업 0228 · 깜빡임 고침)
    펼친 카드가 먼저 그려졌다가 접히는 깜빡임을 막으려고, 스크립트가 켜져 있고 움직임을 줄이지 않았을 때만 CSS 가 처음부터 접어 둠
    자바스크립트 꺼짐 · 움직임 줄이기는 서버 그림부터 펼친 최종 카드 (알약은 DOM 에 있어도 보이지 않음)
-   [data-boot] 은 첫 그림 ~ 하이드레이션 때까지만 붙고, 뒤로는 인라인 값(같은 높이 · 모서리)이 이어 받음 */
+   [data-boot] 은 첫 그림 ~ 하이드레이션 때까지만 붙음 · 카드 높이는 처음부터 끝 높이(작업 0398) */
 [data-testid="dest-list"][data-boot] [data-testid="dest-pill"] {
   display: none;
 }
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-  [data-testid="dest-list"][data-boot] {
-    height: var(--pill-h);
-    overflow: hidden;
-    border-radius: calc(var(--pill-h) / 2);
-  }
   [data-testid="dest-list"][data-boot] [data-testid="dest-pill"] {
     display: flex;
   }
   [data-testid="dest-list"][data-boot] [data-testid="dest-row"] {
     opacity: 0;
   }
-  /* 자바스크립트가 늦거나 실패해 [data-boot] 가 5초 넘게 남으면 펼친 최종 카드를 보여 줌 (평소엔 하이드레이션 한 프레임 뒤 [data-boot] 이 떨어져 이 규칙이 닿지 않음) */
-  [data-testid="dest-list"][data-boot] {
-    animation: boot-release 0s linear 5s forwards;
-  }
+  /* 자바스크립트가 늦거나 실패해 [data-boot] 가 5초 넘게 남으면 줄을 보여 줌 (평소엔 하이드레이션 한 프레임 뒤 [data-boot] 이 떨어져 이 규칙이 닿지 않음) */
   [data-testid="dest-list"][data-boot] [data-testid="dest-row"] {
     animation: boot-show 0s linear 5s forwards;
   }
-}
-@keyframes boot-release {
-  to { height: auto; overflow: visible; }
 }
 @keyframes boot-show {
   to { opacity: 1; }
