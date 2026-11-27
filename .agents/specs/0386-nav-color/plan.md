@@ -15,9 +15,12 @@
 - .agents/specs/0386-nav-color/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- 없음(휴대폰 펼친 메뉴 패널 색도 같은 carousel.css 선택자로 맞춤).
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋 CI gate)
 - [ ] develop 머지 → develop → main fast-forward · 릴리스 없음
 
 ## 허점
+- 휴대폰 펼친 메뉴 패널(header 안 bg-surface)을 처음엔 놓침 · test 가 390 메뉴 펼침에서 잡음. 헤더 색을 바꿀 때는 헤더 안 다른 면(펼친 패널)도 함께 볼 것.
+- 헤더 색 선택자가 packages/ui NavBar 의 구조(header[data-surface=dark] · nav > ul)에 기댐 · NavBar 구조가 바뀌면 함께 볼 것.
