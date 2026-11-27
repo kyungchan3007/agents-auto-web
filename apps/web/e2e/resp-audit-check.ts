@@ -223,7 +223,8 @@ export function auditDom(): Violation[] {
     let last = r.top;
     for (const c of e.querySelectorAll("*")) {
       if (c.closest("svg") && c.tagName.toLowerCase() !== "svg") continue; // 그림(svg)은 하나의 덩어리로 셈
-      if (!shown(c) || (skip(c) && !(c.tagName.toLowerCase() === "svg" && !c.closest("[inert],[aria-hidden='true'],.sr-only")))) continue;
+      // aria-hidden 글자판 · 전광판 글자(보이는 그림)도 내용으로 셈 — 읽는 이 숨김일 뿐 화면에는 보임
+      if (!shown(c) || inClosedDetails(c) || c.closest("[inert],.sr-only,script,style,noscript")) continue;
       const cs = getComputedStyle(c);
       if (cs.position === "absolute") continue;
       const leaf = c.tagName.toLowerCase() === "svg" || c.children.length === 0 || [...c.childNodes].some((n) => n.nodeType === 3 && (n.textContent ?? "").trim() !== "");
