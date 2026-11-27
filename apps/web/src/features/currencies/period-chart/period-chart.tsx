@@ -17,14 +17,14 @@ export function PeriodChart({ rates, unit = 1, unitText, lastTone }: { rates: { 
         <h2 id="year-flow-title" className="text-[1.375rem] font-bold tracking-display text-fg sm:text-[1.75rem]">
           {period.label} 흐름
         </h2>
-        <div className="inline-flex rounded-pill border-2 border-line bg-card p-1" role="group" aria-label="기간">
+        <div className="inline-flex rounded-pill border-2 border-line bg-card p-1 max-sm:w-full" role="group" aria-label="기간">
           {CHIP_PERIODS.map((p) => (
             <button
               key={p.id}
               type="button"
               aria-pressed={p.id === id}
               onClick={() => setId(p.id)}
-              className={`tap-44 rounded-pill px-4 py-1.5 text-small font-bold transition-colors ${p.id === id ? "bg-pin-ink text-foam" : "text-fg hover:bg-surface-2"}`}
+              className={`tap-44 rounded-pill px-4 py-1.5 text-small font-bold transition-colors max-sm:flex-1 ${p.id === id ? "bg-pin-ink text-foam" : "text-fg hover:bg-surface-2"}`}
             >
               {p.label}
             </button>
