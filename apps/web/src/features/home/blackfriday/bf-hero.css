@@ -426,6 +426,10 @@
     max-width: 600px;
     margin-inline: auto;
   }
+  /* 계산 칸도 기둥 폭을 다 채움 — 460px 로 남으면 글이 영수증 가운데보다 왼쪽으로 쏠림 (작업 0398) */
+  .bf-calc {
+    max-width: none;
+  }
   .bf-rcpt-wrap {
     width: min(300px, 80vw);
     margin-block: 18px 12px;

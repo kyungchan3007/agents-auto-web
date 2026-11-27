@@ -19,6 +19,9 @@
 }
 .hc-slide {
   grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* 짧은 장은 내용을 세로 가운데로 — 긴 장에 높이를 맞춘 빈 공간이 아래에만 몰리지 않게 (작업 0398) */
   min-width: 0;
   opacity: 0;
   visibility: hidden;
