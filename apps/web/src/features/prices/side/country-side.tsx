@@ -54,13 +54,7 @@ export function CountrySide({ s, entry }: { s: ReturnType<typeof useCountrySide>
           <h2 id="country-side-title" data-testid="country-side-title" className="text-[1.375rem] leading-snug font-bold tracking-display text-fg">
             {entry.title}
           </h2>
-          <div className={`mt-4 rounded-[1rem] border px-4 py-3 ${entry.answer.none ? "border-line bg-surface-2" : "border-line bg-card"}`}>
-            <p className="text-[0.8125rem] text-fg-2">{entry.answer.label}</p>
-            <p data-testid="country-side-answer" className="mt-1 text-body font-bold text-fg">
-              {entry.answer.text}
-            </p>
-          </div>
-          <div className="mt-5 grid grid-cols-2 gap-4 border-t border-line pt-4">
+          <div className="mt-4 grid grid-cols-2 gap-4">
             <div>
               <p className="text-[0.8125rem] text-fg-2">물가 (한국 = 100)</p>
               <p data-testid="country-side-value" className="mt-1 text-[2rem] leading-none font-bold tabular-nums text-fg">
