@@ -19,6 +19,7 @@ describe("코드 자리 (작업 0126 · 0137 · 0312)", () => {
     // nav: 상단 메뉴 · 링크 / seo: 검색 · 공유 정보(메타 · 구조화 자료 · sitemap · 공유 이미지 글꼴) / outage: 장애 안내
     // signal: 판정 핀 · 점 색 · 판정 글 · 신호 맵 · 눈금 위치 / trip: 여행지 고르기 · 바꾸기 · 도착지 줄 / rate: 통화 국기 · 1년 그래프 · 기준일 안내 (운영만 쓰는 도메인 UI · 작업 0312 에 @hav/ui 에서 옮김)
     // facts: 숫자 칸(글래스) 계산 · 그리기 · 홈 hero 와 나라 물가가 함께 씀 (작업 0396)
+    // ticker: 흐르는 환율 띠(홈 hero 아래 · 홈 밖 바닥 고정 — 두 곳 이상이 씀 · 작업 0399)
     // customs: 직구 면세 한도 · 과세환율 고르기 · 금액 읽기 (홈 블프 hero 와 /calc 가 함께 씀 · 기능 폴더끼리 가져오기 금지라 shared 로 · 작업 0381)
     const allowed = [
       "customs/customs-rate.ts",
@@ -52,6 +53,9 @@ describe("코드 자리 (작업 0126 · 0137 · 0312)", () => {
       "signal/signal-pin-text.ts",
       "signal/signal-pin.tsx",
       "signal/signal-tone.ts",
+      "ticker/rate-ticker.tsx",
+      "ticker/ticker.ts",
+      "ticker/use-rate-ticker.ts",
       "trip/destination-row.tsx",
       "trip/pick-trip.tsx",
       "trip/trip-copy.ts",
