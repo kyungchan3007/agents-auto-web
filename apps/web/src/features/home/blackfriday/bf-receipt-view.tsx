@@ -33,7 +33,7 @@ export function BfReceipt({ draw }: { draw: ReceiptDraw }) {
           <div className="bf-rule" />
           <div>
             {draw.items.map((it) => (
-              <div key={it.name} data-testid="bf-receipt-item" className={it.fresh ? "bf-ln bf-new" : "bf-ln"}>
+              <div key={it.name} data-testid={it.shown ? "bf-receipt-item" : undefined} data-shown={String(it.shown)} className={it.fresh ? "bf-ln bf-new" : "bf-ln"}>
                 <span>{it.name}</span>
                 <span>{it.usdText}</span>
               </div>
