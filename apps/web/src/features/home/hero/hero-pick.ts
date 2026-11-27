@@ -68,7 +68,7 @@ export type PickFacts = {
   priceText: string | null;
   /** 90일 위치 막대(0~100) */
   position: number | null;
-  /** "오늘은 90일 중 보통 (64%의 날보다 쌈)" */
+  /** "오늘은 90일 중 보통 (64%의 날보다 낮음)" */
   positionText: string | null;
   /** 90일 중간값 "9.20원" */
   medianText: string | null;
@@ -93,7 +93,7 @@ export function pickFacts(hit: DestinationHit, rates: RateRow[], signals: Signal
     tenKUnit: currency && per !== null ? unitName(currency) : null,
     priceText: !lv || gap === null ? null : gap === 0 ? "비슷" : `${gap}% ${lv.relative > 1 ? "높음" : "낮음"}`,
     position: below,
-    positionText: below === null ? null : `오늘은 ${windowDays}일 중 ${band} (${below}%의 날보다 쌈)`,
+    positionText: below === null ? null : `오늘은 ${windowDays}일 중 ${band} (${below}%의 날보다 낮음)`,
     medianText: median === null || median === undefined || !Number.isFinite(median) ? null : `${fixed(median)}원`,
   };
 }

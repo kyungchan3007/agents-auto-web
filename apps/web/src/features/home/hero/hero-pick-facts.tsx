@@ -53,7 +53,7 @@ export function HeroPickFacts() {
           <span>90일 중간 {facts.medianText ?? NONE}</span>
           <span>오늘 {facts.rateText ?? NONE}</span>
         </div>
-        <div data-testid="hero-fact-bar" role="img" aria-label={facts.position === null ? "90일 위치를 받지 못했습니다" : `오늘 환율은 최근 90일 중 ${facts.position}%의 날보다 쌉니다`} className="hp-facts-bar">
+        <div data-testid="hero-fact-bar" role="img" aria-label={facts.position === null ? "90일 위치를 받지 못했습니다" : `오늘 환율은 최근 90일 중 ${facts.position}%의 날보다 낮습니다`} className="hp-facts-bar">
           {facts.position !== null && <i style={{ left: `${facts.position}%` }} />}
         </div>
       </div>

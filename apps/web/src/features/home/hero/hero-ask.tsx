@@ -8,7 +8,7 @@ import { HeroPickFacts } from "./hero-pick-facts";
 import { useHeroAsk } from "./use-hero-ask";
 
 export function HeroAsk() {
-  const a = useHeroAsk();
+  const { mountInput, ...a } = useHeroAsk();
   return (
     <div className="hp-ask-wrap">
       <div className="hp-ask-box hp-rise" data-i="2">
@@ -22,6 +22,7 @@ export function HeroAsk() {
           }}
         >
           <input
+            ref={mountInput}
             data-testid="hero-search"
             role="combobox"
             type="search"
