@@ -11,8 +11,8 @@ import { SectionTitle } from "@hav/ui/text/heading";
 import { localText, wonText } from "./budget";
 import { type Latest, useBudgetPlanner } from "./use-budget-planner";
 
-export function BudgetPlanner({ rows, latestOf, className = "", initial = null, builtAt = null }: { rows: TravelRow[]; latestOf: Record<string, Latest>; className?: string; /** 빌드 시각 — 빈 상태 이름표의 "확인" 시각 (작업 0346) */ builtAt?: string | null; /** 처음 고를 나라 (나라 페이지) — 없으면 지금 규칙 */ initial?: string | null }) {
-  const { sorted, country, setCountry, daily, setDaily, days, setDays, row, d, n, latest, empty, budget: b } = useBudgetPlanner(rows, latestOf, initial, builtAt);
+export function BudgetPlanner({ rows, latestOf, className = "", initial = null }: { rows: TravelRow[]; latestOf: Record<string, Latest>; className?: string; /** 처음 고를 나라 (나라 페이지) — 없으면 지금 규칙 */ initial?: string | null }) {
+  const { sorted, country, setCountry, daily, setDaily, days, setDays, row, d, n, latest, empty, budget: b } = useBudgetPlanner(rows, latestOf, initial);
 
   return (
     <section id="budget" data-testid="budget" aria-labelledby="budget-title" className={`scroll-mt-(--hav-nav-h) rounded-[1.5rem] border border-line bg-card px-5 py-6 text-fg shadow-ticket sm:px-8 sm:py-8 lg:px-[30px] lg:pt-7 lg:pb-[26px] ${className}`}>

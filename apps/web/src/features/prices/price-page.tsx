@@ -21,7 +21,7 @@ import { allRows } from "./bands/bands";
 import { SideProvider } from "./side/side-provider";
 import type { SideEntry } from "./side/side-view";
 
-export function PricePage({ levels, signals, builtAt = null, side = [] }: { levels: Fetched<PriceLevels>; signals: Fetched<SignalList>; /** 빌드 시각 — 예산 카드 빈 상태 이름표 (작업 0346) */ builtAt?: string | null; /** 목록 나라를 누르면 여는 사이드바 · 시트의 내용 (작업 0361) — 비면 링크 그대로 나라 페이지로 */ side?: SideEntry[] }) {
+export function PricePage({ levels, signals, side = [] }: { levels: Fetched<PriceLevels>; signals: Fetched<SignalList>; /** 목록 나라를 누르면 여는 사이드바 · 시트의 내용 (작업 0361) — 비면 링크 그대로 나라 페이지로 */ side?: SideEntry[] }) {
   const data = levels.ok ? travelBands(levels.data) : null;
   const { signalOf, percentileOf, latestOf } = signalMaps(signals);
   const rows = data ? allRows(data.bands) : [];
@@ -40,7 +40,7 @@ export function PricePage({ levels, signals, builtAt = null, side = [] }: { leve
           </div>
           {data && data.bands.length > 0 && (
             <div className="relative z-10 col-start-2 row-start-2 -mt-24 pb-2 lg:row-start-1 lg:mt-[3.25rem] lg:-mb-20 lg:ml-auto lg:w-[28.25rem] lg:self-start lg:pb-0">
-              <BudgetPlanner rows={rows} latestOf={latestOf} builtAt={builtAt} />
+              <BudgetPlanner rows={rows} latestOf={latestOf} />
             </div>
           )}
         </div>

@@ -25,12 +25,12 @@ import { bigRate } from "./range/redesign";
 
 const DOT = { cheap: "bg-pin-cheap", normal: "bg-pin-line", expensive: "bg-pin-expensive" } as const;
 
-export type DetailData = { code: string; rate: FxRate | null; signal: Fetched<CurrencySignal>; history: Fetched<FxHistory>; /** 물가 자료 — 쓰는 나라 물가 질문 (못 받았으면 null · 작업 0345) */ levels?: PriceLevels | null; problem: string | null; /** 빌드 시각 — 빈 상태 이름표의 "확인" 시각 (작업 0346) */ builtAt?: string | null };
+export type DetailData = { code: string; rate: FxRate | null; signal: Fetched<CurrencySignal>; history: Fetched<FxHistory>; /** 물가 자료 — 쓰는 나라 물가 질문 (못 받았으면 null · 작업 0345) */ levels?: PriceLevels | null; problem: string | null; };
 
-export function CurrencyDetail({ code, rate, signal, history, levels = null, builtAt = null }: DetailData) {
+export function CurrencyDetail({ code, rate, signal, history, levels = null }: DetailData) {
   const name = currencyName(code);
   if (!rate) {
-    return <DataEmpty {...emptyProps({ screen: "currency", name: `${name}(${code})`, at: builtAt })} />;
+    return <DataEmpty {...emptyProps({ screen: "currency", name: `${name}(${code})` })} />;
   }
   const t = rateText(rate);
   const big = bigRate(rate);

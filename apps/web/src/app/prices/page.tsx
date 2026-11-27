@@ -1,4 +1,3 @@
-import { buildTimeIso } from "@hav/shared/fx-schedule";
 import type { Metadata } from "next";
 import { loadSideViews } from "@/features/prices/country/load";
 import { PricePage } from "@/features/prices/price-page";
@@ -17,7 +16,7 @@ export default async function Page() {
   return (
     <>
       <JsonLd data={breadcrumbLd([{ name: "여행 물가", path: "/prices" }])} />
-      <PricePage levels={levels} signals={signals} builtAt={buildTimeIso()} side={side} />
+      <PricePage levels={levels} signals={signals} side={side} />
     </>
   );
 }
