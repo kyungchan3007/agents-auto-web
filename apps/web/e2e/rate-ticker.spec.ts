@@ -142,8 +142,10 @@ test.describe("항목 · 순서 · 라벨 · 읽기 · 누르면", () => {
     await page.goto("/currencies");
     const label = page.locator(".rt-label");
     await expect(label).toBeVisible();
-    if (isMobile) await expect(label).toHaveText("오늘 환율");
-    else await expect(label).toHaveText(/^오늘 환율\s*· \d{1,2}\.\d{2} 기준$/);
+    // 보이는 글(innerText) — 휴대폰은 날짜를 CSS 로 숨김
+    const shown = async () => ((await label.innerText()) ?? "").replace(/\s+/g, " ").trim();
+    if (isMobile) await expect.poll(shown).toBe("오늘 환율");
+    else await expect.poll(shown).toMatch(/^오늘 환율 ?· \d{1,2}\.\d{2} 기준$/);
   });
 
   test("화면 읽기 목록은 하나 — 읽히는 목록 1개 · 링크 수 = 항목 수 · 복사본은 aria-hidden · 복사본 링크는 tabindex -1", async ({ page }) => {
@@ -157,20 +159,35 @@ test.describe("항목 · 순서 · 라벨 · 읽기 · 누르면", () => {
     expect(await t.locator('ul.rt-row[aria-hidden="true"] a').evaluateAll((as) => as.every((a) => a.getAttribute("tabindex") === "-1"))).toBe(true);
   });
 
+  // 흐르는 줄은 움직이는 중이라 Playwright 의 '안정' 기다림이 끝나지 않음 — 사용자처럼 마우스를 띠에 올려 멈춘 뒤, 보이는 칸 안 항목을 좌표로 누름
+  const clickVisibleItem = async (page: Page) => {
+    await page.evaluate(() => document.querySelector('[data-testid="rate-ticker"]')!.scrollIntoView({ block: "center" }));
+    const view = await box(page.locator(".rt-view"), "흐르는 칸");
+    await page.mouse.move(view.x + view.width / 2, view.y + view.height / 2);
+    await expect.poll(() => page.locator(".rt-track").evaluate((el) => getComputedStyle(el).animationPlayState)).toBe("paused");
+    const target = await page.locator('[data-testid="rate-ticker"] [data-testid="rate-ticker-item"]').evaluateAll((as, v) => {
+      for (const a of as) {
+        const r = a.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        if (cx > v.x + 40 && cx < v.x + v.width - 40) return { href: a.getAttribute("href"), x: r.left + r.width / 2, y: r.top + r.height / 2 };
+      }
+      return null;
+    }, view);
+    expect(target, "보이는 칸 안에 항목이 있음").not.toBeNull();
+    await page.mouse.click(target!.x, target!.y);
+    await expect(page).toHaveURL(new RegExp(`${target!.href}/?$`));
+  };
+
   test("항목을 누르면 /currencies/{통화 코드}", async ({ page }) => {
     await page.goto("/prices");
-    const first = page.locator('[data-testid="rate-ticker"] [data-testid="rate-ticker-item"]').first();
-    const href = await first.getAttribute("href");
-    await first.click();
-    await expect(page).toHaveURL(new RegExp(`${href}/?$`));
+    await hydrated(tid(page, "rate-ticker"));
+    await clickVisibleItem(page);
   });
 
   test("홈 hero 띠 항목도 누르면 통화 상세", async ({ page }) => {
     await page.goto("/");
-    const first = page.locator('[data-testid="rate-ticker"] [data-testid="rate-ticker-item"]').first();
-    const href = await first.getAttribute("href");
-    await first.click();
-    await expect(page).toHaveURL(new RegExp(`${href}/?$`));
+    await hydrated(tid(page, "rate-ticker"));
+    await clickVisibleItem(page);
   });
 });
 
