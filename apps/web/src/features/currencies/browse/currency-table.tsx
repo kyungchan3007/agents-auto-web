@@ -52,9 +52,9 @@ export function CurrencyTable({ items }: { items: ListItem[] }) {
         >
           <span className="flex min-w-0 items-center gap-3">
             <CurrencyFlag currency={r.currency} className="h-4 w-6 shrink-0" />
-            <span className="min-w-0 truncate">
-              <span data-testid="currency-name" className="font-bold text-fg">{name}</span>
-              <span data-testid="currency-code" className="ml-2 hidden text-small text-fg-2 lg:inline">{r.currency}</span>
+            <span className="flex min-w-0 items-baseline">
+              <span data-testid="currency-name" className="min-w-0 truncate font-bold text-fg">{name}</span>
+              <span data-testid="currency-code" className="ml-2 hidden shrink-0 text-small text-fg-2 lg:inline">{r.currency}</span>
             </span>
           </span>
           <span data-testid="currency-rate" className="text-right font-bold whitespace-nowrap text-fg tabular-nums">{rate}</span>

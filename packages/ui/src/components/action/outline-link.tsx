@@ -7,7 +7,7 @@ export const OUTLINE_BOX = "tap-44 border-2 border-line bg-card text-fg hover:bg
 
 export function OutlineLink({ href, children, testId, track, onClick }: { href: string; children: ReactNode; testId?: string; /** 누를 때 쓰는 쪽이 가로챌 수 있음(예: 링크 대신 사이드바 · 작업 0361) */ onClick?: MouseEventHandler<HTMLAnchorElement>; /** 클릭 이벤트 이름 표시(data-track) — 읽고 보내는 일은 앱이 함 (작업 0359) */ track?: string }) {
   return (
-    <a href={href} data-testid={testId} data-track={track} onClick={onClick} className={`${OUTLINE_BOX} inline-flex min-h-11 items-center gap-1.5 rounded-pill px-5 py-2.5 text-body font-bold`}>
+    <a href={href} data-testid={testId} data-track={track} onClick={onClick} className={`${OUTLINE_BOX} inline-flex min-h-11 items-center gap-1.5 rounded-pill px-5 py-2.5 text-body font-bold max-sm:w-full max-sm:justify-center`}>
       {children}
       <span aria-hidden="true">›</span>
     </a>
