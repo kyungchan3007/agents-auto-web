@@ -132,10 +132,10 @@ test.describe("키보드 초점 고리 (작업 0269 → 0271)", () => {
         if (hostDrawn(s)) continue;
         if (/^a "flapfx|^a "$/i.test(s.label) || s.label.startsWith('a "flapfx')) reached["로고"]++;
         if (s.tag === "button" && /메뉴/.test(s.label)) reached["메뉴 링크 · 버튼"]++;
-        if (s.testid === "pick-chip") reached["홈 도시 칩"]++;
+        if (s.testid === "hero-chip") reached["홈 도시 칩"]++;
         if (s.tag === "input") reached["입력 칸(input)"]++;
         if (s.tag === "select") reached["select"]++;
-        if (["input", "select"].includes(s.tag) || s.testid === "pick-chip") {
+        if (["input", "select"].includes(s.tag) || s.testid === "hero-chip") {
           const dark = isDark(s.surface);
           expect(s.style, `${path} ${s.label} 고리`).not.toBe("none");
           expect(s.color, `${path} ${s.label} 색(남색이 아니라 규칙의 파랑)`).toBe(dark ? WHITE : BLUE);

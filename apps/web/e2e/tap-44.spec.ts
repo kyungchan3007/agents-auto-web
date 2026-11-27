@@ -20,7 +20,6 @@ type Target = { id: string; page: string; sel: string; size?: { w?: number; h?: 
 const TARGETS: Target[] = [
   { id: "로고", page: "/", sel: 'header a[href="/"]', size: { w: 54, h: 33 } },
   { id: "메뉴 버튼", page: "/", sel: 'header button[aria-expanded]', size: { w: 40, h: 40 } },
-  { id: "도시 칩 pick-chip", page: "/", sel: '[data-testid="pick-chip"]', size: { h: 36 } },
   { id: "year-link", page: "/", sel: '[data-testid="year-link"]', size: { h: 28 } },
   { id: "more-currencies", page: "/", sel: '[data-testid="more-currencies"]', size: { h: 30 } },
   { id: "달력 이전 airfare-prev", page: "/flights", sel: '[data-testid="airfare-prev"]', size: { w: 32, h: 32 } },

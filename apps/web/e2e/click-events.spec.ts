@@ -1,7 +1,7 @@
 // 작업 0359 — 버튼 클릭 이벤트 e2e (테스트 먼저 · 구현 전에는 FAIL 이 정상)
 //   원문: 운영 주소에서만 · 이벤트 이름은 버튼마다 따로 · 개인정보 없음(고른 통화 · 나라 코드 정도만) · 미리보기 · 로컬에서는 보내지 않음
 //   운영 흉내: click-track.ts 머리말 참고(--host-resolver-rules 로 flapfx.com → 127.0.0.1 · dataLayer 에 쌓인 'event' 를 읽음)
-//   builder 는 새 표시가 필요 없음: 기존 표시 그대로 — next-card · compare-link · more-countries · faq-item · currency-more · currency-side-row · picked-country-link · 콤보박스 "여행지 검색"
+//   builder 는 새 표시가 필요 없음: 기존 표시 그대로 — next-card · compare-link · more-countries · faq-item · currency-more · currency-side-row · hero-search(새 hero 입력창)
 //   이벤트와 누르는 곳(이름은 packages/shared 이벤트 표):
 //     home_search_pick     홈 검색 칸에서 나라(옵션)를 고름        home_country_link   홈 카드 안 나라 페이지 링크
 //     country_next_fx · country_next_flight · country_next_budget   /prices/JPN '다음으로 볼 것' 카드 1 · 2 · 3 의 링크
@@ -21,7 +21,7 @@ test.beforeEach(async ({ page }) => {
 test.use({ launchOptions: PROD_LAUNCH });
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
-const search = (page: Page) => page.getByRole("combobox", { name: "여행지 검색" });
+const search = (page: Page) => page.getByTestId("hero-search"); // 작업 0384: 예전 카드의 검색 칸은 없고 새 hero 입력창이 같은 고르기 상태를 씀
 
 test.describe("운영 주소에서 누르면 그 이름의 이벤트 하나 (작업 0359)", () => {
   test.beforeEach(async ({ context }) => {
@@ -36,14 +36,12 @@ test.describe("운영 주소에서 누르면 그 이름의 이벤트 하나 (작
     expect(await names(page), "페이지를 열기만 해서는 클릭 이벤트가 없음").toEqual([]);
   };
 
-  test("홈: 검색 칸에서 나라를 고르면 home_search_pick · 카드의 나라 페이지 링크를 누르면 home_country_link", async ({ page, baseURL }) => {
+  test("홈: hero 입력창에서 나라를 고르면 home_search_pick (예전 카드의 나라 링크는 없어져 home_country_link 는 홈에서 보내지 않음 · 작업 0384)", async ({ page, baseURL }) => {
     await go(page, baseURL, "/");
     await search(page).fill("베트남");
     await page.getByRole("option").first().click();
     await expect.poll(() => names(page)).toEqual(["home_search_pick"]);
-    await tid(page, "picked-country-link").click();
-    await expect(page).toHaveURL(/\/prices\/VNM\/?$/);
-    expect(await names(page)).toEqual(["home_search_pick", "home_country_link"]);
+    await expect(tid(page, "picked-country-link"), "예전 카드의 나라 링크는 없음").toHaveCount(0);
     expectClean(await sent(page));
   });
 
@@ -127,8 +125,6 @@ test.describe("미리보기 · 로컬(지금 주소)에서는 어떤 버튼을 �
     await page.waitForLoadState("networkidle");
     await search(page).fill("베트남");
     await page.getByRole("option").first().click();
-    await tid(page, "picked-country-link").click();
-    await expect(page).toHaveURL(/\/prices\/VNM\/?$/);
     expect(await sent(page), "보낸 이벤트 없음").toEqual([]);
   });
 });

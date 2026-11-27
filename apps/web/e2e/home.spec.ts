@@ -1,6 +1,6 @@
 // 홈 — 작업 0169 (디자인 변경 ②) · 실행은 lead 가 PR 직전에 (빌드한 사이트를 읽음)
 // 값은 날마다 · 자료 유무에 따라 달라서 동작 · 순서 · 문구만 봄 — 지수가 있을 때와 없을 때(지금 운영) 모두 맞아야 함
-//   builder 가 다는 표시: id="board"(탑승권 카드) · id="today"(도착지별 환전 타이밍 · 작업 0233)  · data-testid="travel-graph" · data-testid="plane-route"
+//   builder 가 다는 표시: id="today"(도착지별 환전 타이밍 · 작업 0233)  · data-testid="travel-graph" · data-testid="plane-route"
 import { expect, test } from "@playwright/test";
 import { openMenuIfCollapsed } from "./helpers";
 import { forceDefaultHero } from "./default-hero";
@@ -9,15 +9,13 @@ test.beforeEach(async ({ page }) => {
   await forceDefaultHero(page);
 });
 
-test("홈 구간 순서 — hero(N월에 떠나세요.) → 오늘 환율(바다 띠) → 도착지별 환전 타이밍", async ({ page }) => {
+test("홈 구간 순서 — hero(N월에 떠나세요.) → 도착지별 환전 타이밍 (작업 0384: 예전 탑승권 카드 구간은 없어짐)", async ({ page }) => {
   await page.goto("/");
   const y = async (loc: ReturnType<typeof page.locator>) => (await loc.boundingBox())?.y ?? Number.NaN;
   // 작업 0380: 제목 위 작은 라벨 "여행 타이밍" 은 새 hero 에 없음 — hero 자체의 위치로 비교
   const timing = await y(page.locator('[data-testid="home-hero"]'));
-  const today = await y(page.locator("#board"));
   const dest = await y(page.locator("#today"));
-  expect(timing, "여행 타이밍").toBeLessThan(today);
-  expect(today, "오늘 환율").toBeLessThan(dest);
+  expect(timing, "hero").toBeLessThan(dest);
 });
 
 test("여행 타이밍 — 지수가 없으면 '아직 받지 못했습니다' · 12달 막대 없음 / 있으면 'N월에 떠나세요.' · 12달 막대 (3D 비행기는 홈에 없음 · 작업 0217)", async ({ page }) => {
@@ -31,13 +29,6 @@ test("여행 타이밍 — 지수가 없으면 '아직 받지 못했습니다' �
     await expect(page.locator('[data-testid="year-bars"]')).toBeVisible();
   }
   await expect(page.locator('[data-testid="plane-route"]')).toHaveCount(0);
-});
-
-test("오늘 환율 띠 — 이번 주 가장 싼 곳 문장 또는 '오늘 환율을 아직 받지 못했습니다' · 숫자를 지어내지 않음", async ({ page }) => {
-  await page.goto("/");
-  const band = page.locator("#board");
-  await expect(band).toContainText("이번 주 가장 싸게 갈 수 있는 곳"); // 작업 0177: 안내판 위 작은 제목
-  await expect(page.locator('[data-testid="flap-board"]')).toHaveAttribute("aria-label", /이번 주 가장 싸게 갈 수 있는 곳은 .+입니다|오늘 환율을 아직 받지 못했습니다|판단할 신호가 아직 없습니다/);
 });
 
 test("도착지별 환전 타이밍 — 네 도시 줄이 통화 상세로 연결", async ({ page }) => {
@@ -138,16 +129,6 @@ test("글꼴 — 구간 제목(도착지별 환전 타이밍) · 도시 이름�
     expect(s.family).not.toMatch(FONT);
     expect(Number(s.weight)).toBeGreaterThanOrEqual(700);
   }
-});
-
-// 홈 바다 띠 문구 정리 — 작업 0174: "예측이 아닙니다 · 평일 12시" · "주말에는 고시가 없어 …" 줄이 없음 (실행은 lead)
-test("오늘 환율 띠 — '예측이 아닙니다' · '평일 12시' · 주말 고시 줄이 없고 판정 한 줄은 있음 (작업 0174)", async ({ page }) => {
-  await page.goto("/");
-  const band = page.locator("#board");
-  await expect(band).not.toContainText("예측이 아닙니다");
-  await expect(band).not.toContainText("평일 12시");
-  await expect(band).not.toContainText(/주말에는 고시가 없어|값 반영이 늦어지고|낮 12시경 나옵니다/);
-  if (await band.getByText(/이번 주 가장 싸게 갈 수 있는 곳은/).count()) await expect(band).toContainText(/최근 90일 중 /);
 });
 
 test("홈 — 도착지 설명 줄의 '예측이 아니며 투자 · 금융 조언이 아닙니다' · 바닥 띠의 출처는 남음 (작업 0174)", async ({ page }) => {
