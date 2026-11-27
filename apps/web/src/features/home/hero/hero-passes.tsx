@@ -58,13 +58,13 @@ export function HeroPasses({ tags, monthLabel }: { tags: FxTag[]; monthLabel: st
                   <b>{c.month}</b>
                 </div>
               </div>
-              {c.id === deck.pickedId && (
-                <div className="hp-go">
+              <div className="hp-go" data-on={String(c.id === deck.pickedId)}>
+                {c.id === deck.pickedId && (
                   <a data-testid="hero-pass-go" href="/flights" tabIndex={c.id === deck.order[0] ? 0 : -1}>
                     {c.city} 항공권 날짜 보기 ›
                   </a>
-                </div>
-              )}
+                )}
+              </div>
             </div>
             <aside className="hp-stub" aria-hidden="true">
               <div>

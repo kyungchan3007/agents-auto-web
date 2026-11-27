@@ -24,7 +24,15 @@ export function HeroPickFacts() {
       <div className="hp-facts-st">
         <div>
           <small>오늘 환율</small>
-          <b data-testid="hero-fact-rate">{facts.rateText ? `${facts.rateText} / ${facts.perText ?? ""}` : NONE}</b>
+          <b data-testid="hero-fact-rate">
+            {facts.rateText ?? NONE}
+            {facts.rateText && facts.perText && (
+              <>
+                {" "}
+                <i>/ {facts.perText}</i>
+              </>
+            )}
+          </b>
         </div>
         <div>
           <small>1만원이면</small>
@@ -51,11 +59,13 @@ export function HeroPickFacts() {
       </div>
       <div className="hp-facts-ft">
         <span data-testid="hero-fact-position">{facts.positionText ?? NONE}</span>
-        {link && (
-          <a data-testid="hero-fact-link" href={link.href}>
-            {link.name} 물가 · 환율 자세히 보기 ›
-          </a>
-        )}
+        <div>
+          {link && (
+            <a data-testid="hero-fact-link" href={link.href}>
+              {link.name} 물가 · 환율 자세히 보기 ›
+            </a>
+          )}
+        </div>
       </div>
     </section>
   );

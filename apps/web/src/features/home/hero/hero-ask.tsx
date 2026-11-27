@@ -64,7 +64,7 @@ export function HeroAsk() {
         )}
         {a.empty && (
           <p role="status" className="hp-empty">
-            찾는 여행지가 없습니다 · 도시나 나라 이름으로 찾아 보세요
+            찾는 여행지가 없습니다
           </p>
         )}
       </div>
