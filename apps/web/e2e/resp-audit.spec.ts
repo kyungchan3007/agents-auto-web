@@ -141,6 +141,8 @@ for (const v of VARIANTS.filter((x) => !ONLY || ONLY.test(x.name))) {
       await page.goto(v.path, { waitUntil: "load" });
       await page.waitForLoadState("networkidle").catch(() => {});
       await page.waitForTimeout(800);
+      // 글꼴 로딩 중(document.fonts.status=loading) 첫 그림 전 제목 줄 수 변화는 실패가 아니라 기록 밖(lead 결정 · 막는 방법이 빈 띠 · 기기별 값 · 브랜드 글꼴 손실 중 하나) — 글꼴이 준비된 뒤 값끼리 비교
+      await page.evaluate(() => document.fonts.ready.then(() => undefined));
       if (v.after) await v.after(page);
       await page.evaluate(() => window.scrollTo(0, 0));
       await settle(page);
