@@ -134,7 +134,12 @@ export function auditDom(): Violation[] {
     const side = BR.every((a) => Math.abs(a.top - BR[0].top) < 60) && BR.every((a, i) => i === 0 || a.left > BR[i - 1].left + 40);
     if (!side) continue;
     // 칸 안쪽 아래 끝(칸의 아래 안쪽 여백 · 테두리는 뺌 — 한쪽은 padding · 한쪽은 margin 으로 간격을 둬도 같은 배치)
-    const bottoms = big.map((k, i) => BR[i].bottom - parseFloat(getComputedStyle(k).paddingBottom) - parseFloat(getComputedStyle(k).borderBottomWidth));
+    // 자기 테두리 · 배경 · 그림자가 있는 칸(카드)은 보이는 바닥이 상자 바닥 — 없는 칸(그냥 열)만 아래 안쪽 여백을 뺌
+    const visualBox = (k: Element): boolean => {
+      const cs = getComputedStyle(k);
+      return parseFloat(cs.borderBottomWidth) > 0 || !/rgba\(0, 0, 0, 0\)|transparent/.test(cs.backgroundColor) || cs.boxShadow !== "none";
+    };
+    const bottoms = big.map((k, i) => (visualBox(k) ? BR[i].bottom : BR[i].bottom - parseFloat(getComputedStyle(k).paddingBottom)));
     const diff = Math.max(...bottoms) - Math.min(...bottoms);
     if (diff > 24) {
       const short = big[bottoms.indexOf(Math.min(...bottoms))];
