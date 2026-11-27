@@ -119,6 +119,12 @@
   --hav-hero-chip-line: rgb(255 255 255 / 0.28);
   --hav-hero-src-line: rgb(255 255 255 / 0.3);
   --hav-stub-bar: rgb(255 255 255 / 0.18);
+  /* hero 캐러셀 알약 · ‹ › (작업 0385) — 어두운 면(울트라마린 · 블프 검정) 위 */
+  --hav-car-bg: rgb(255 255 255 / 0.08);
+  --hav-car-bg-on: rgb(255 255 255 / 0.14);
+  --hav-car-line: rgb(255 255 255 / 0.28);
+  --hav-car-line-on: rgb(255 255 255 / 0.6);
+  --hav-car-fg: rgb(255 255 255 / 0.78);
   --hav-bf-bg: #0b0b10;
   --hav-bf-fg: #f5f6fb;
   --hav-bf-fg-2: #a9adc2;

@@ -1,16 +1,6 @@
 /* 블랙프라이데이 hero 스타일 (작업 0381) — 색 · 그림자는 모두 tokens.css 의 --hav-bf-* · 영수증 안 글자 · 여백은 em(카드 폭 cqw 가 글자 크기를 정함 · vw 쓰지 않음) */
 
-/* 기간 고르기 — html 의 data-hero 를 head 의 작은 인라인 스크립트가 첫 그림 전에 정함 · 값이 없으면(스크립트 꺼짐) 기본 hero 가 보임 */
-.bf-hero {
-  display: none;
-}
-html[data-hero="bf"] .bf-hero {
-  display: block;
-}
-html[data-hero="bf"] .bf-default {
-  display: none;
-}
-
+/* 기간 고르기는 캐러셀(carousel.css)이 html 의 data-hero 로 함 (작업 0385) */
 .bf-hero {
   position: relative;
   overflow: hidden;
