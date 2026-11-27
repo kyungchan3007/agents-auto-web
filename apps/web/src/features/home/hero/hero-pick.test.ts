@@ -25,9 +25,9 @@ const RATES: RateRow[] = [
 ];
 // percentile 0.36 → "64% 의 날보다 쌈"(1 - 0.36)
 const SIGNALS: SignalRow[] = [
-  { currency: "JPY", signal: "buy", reason: "", percentile: 0.36, median: 9.2 },
-  { currency: "IDR", signal: "wait", reason: "", percentile: 0.29, median: 0.092 },
-  { currency: "EUR", signal: "wait", reason: "", percentile: 0.9, median: null },
+  { currency: "JPY", signal: "cheap", reason: "", percentile: 0.36, median: 9.2 },
+  { currency: "IDR", signal: "cheap", reason: "", percentile: 0.29, median: 0.092 },
+  { currency: "EUR", signal: "expensive", reason: "", percentile: 0.9, median: null },
 ];
 const LEVELS = {
   base: "KOR",
