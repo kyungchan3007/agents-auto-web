@@ -115,6 +115,27 @@ for (const v of VARIANTS.filter((x) => !ONLY || ONLY.test(x.name))) {
           shots++;
         }
       }
+      // 폭을 바꿔 가며 이어 잰 값은 그 폭에서 새로 연 값과 다를 수 있음(움직임 · 늦은 계산이 이전 폭 상태로 남음) — a · b · d 는 걸린 폭 몇 곳(최대 4)에서 새로 열어 다시 재고, 새로 열어도 하나도 안 나오면 폭을 바꾸다 생긴 값으로 보고 뺌
+      for (const [gk, g] of [...groups]) {
+        if (g.item === "c") continue;
+        const sample = g.widths.filter((_, i) => i % Math.max(1, Math.ceil(g.widths.length / 4)) === 0).slice(0, 4);
+        let still = false;
+        for (const w of sample) {
+          await page.setViewportSize({ width: w, height: 900 });
+          await page.goto(v.path, { waitUntil: "load" });
+          await page.waitForLoadState("networkidle").catch(() => {});
+          await page.waitForTimeout(1500);
+          if (v.after) await v.after(page);
+          if (wide) await page.addStyleTag({ content: WIDE_FONT });
+          await settle(page, v.settleMs ?? 300);
+          const again: Violation[] = await page.evaluate(auditDom);
+          if (again.some((x) => x.item === g.item && x.key === g.key)) {
+            still = true;
+            break;
+          }
+        }
+        if (!still) groups.delete(gk);
+      }
       const rows = [...groups.values()].map((g) => ({ page: v.name, font: wide ? "넓은 글꼴" : "보통 글꼴", item: g.item, key: g.key, widths: rangeText(g.widths), max: Math.max(...g.vals.map(Math.abs)), count: g.widths.length }));
       if (LIST) {
         mkdirSync(OUT, { recursive: true });
