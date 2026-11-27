@@ -17,6 +17,7 @@
 - .agents/specs/0388-build-guard/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- 빌드 시작 때 apps/web/.next/cache/fetch-cache 지우기(새 스크립트 · build 앞): test 확인 결과 next build 가 fetch-cache 의 옛 응답(revalidate 1년)을 다시 써서 사이트가 어제 환율로 만들어짐(로컬 재현 · 캐시 지우면 오늘 값). Workers Builds 가 .next/cache 를 되살리면 운영도 낡은 값으로 빌드되고 이 검사가 매일 막음 → 늘 새로 받게 함. D1 은 API 응답 캐시가 막아 줌.
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋 CI gate) · CI gate 의 빌드가 검사 때문에 막히지 않음(경고만)
