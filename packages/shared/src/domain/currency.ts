@@ -50,7 +50,7 @@ export const CURRENCIES: Record<string, Meta> = {
 
 export const currencyName = (code: string) => CURRENCIES[code]?.name ?? code;
 /** Figma 목록 이름 — 표에 없는 통화는 기존 이름(코드도 없으면 코드) · 통화 상세 목록과 나라 페이지가 같이 씀 (작업 0344 · 통화 상세 detail-view 에서 옮김) */
-const LIST_NAME: Record<string, string> = { USD: "미국 달러", JPY: "일본 엔", EUR: "유로", THB: "태국 바트", VND: "베트남 동", CNY: "중국 위안", CNH: "중국 위안" };
+const LIST_NAME: Record<string, string> = { USD: "미국 달러", JPY: "일본 엔", EUR: "유로", THB: "태국 바트", GBP: "영국 파운드", VND: "베트남 동", CNY: "중국 위안", CNH: "중국 위안" };
 export const currencyListName = (code: string): string => LIST_NAME[code] ?? currencyName(code);
 
 export const currencyFlag = (code: string) => CURRENCIES[code]?.flag ?? null;
