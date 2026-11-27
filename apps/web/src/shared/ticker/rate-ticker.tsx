@@ -40,9 +40,11 @@ export function RateTicker({ items, date, variant }: { items: TickerItem[]; /** 
   return (
     <section data-testid="rate-ticker" data-variant={variant} data-run={run ? "true" : "false"} data-held={held ? "true" : "false"} data-surface="dark" aria-label="오늘 환율" className="rt" {...bind}>
       <p className="rt-label">
-        <i aria-hidden />
-        <span>오늘 환율</span>
-        {date && <small>· {date} 기준</small>}
+        <span className="rt-chip">
+          <i aria-hidden />
+          오늘 환율
+          {date && <small>· {date} 기준</small>}
+        </span>
       </p>
       <div className="rt-view">
         <div className="rt-track" style={{ "--rt-dur": `${tickerSeconds(items.length)}s` } as CSSProperties}>
