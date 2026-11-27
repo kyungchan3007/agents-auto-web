@@ -6,6 +6,9 @@ import { verificationOther } from "@/shared/seo/verification";
 import { heroScript } from "@/features/home/blackfriday/bf-period";
 import { outageActive } from "@/shared/outage/outage";
 import { OutageNotice } from "@/shared/outage/outage-notice";
+import { FixedTicker } from "@/shared/ticker/fixed-ticker";
+import { tickerDate, tickerItems } from "@/shared/ticker/ticker";
+import { api } from "@hav/shared/api";
 import "./globals.css";
 
 // 글꼴 — 본문 IBM Plex Sans KR (400 · 600 · 700) · 큰 제목 · 큰 숫자 · 로고는 Pretendard 800 (apps/web/src/app/pretendard.css · 자체 호스팅 · 작업 0176) · 빌드 때 받아 자체 호스팅 (런타임 외부 요청 없음 · next.config 변경 없음 · 작업 0168)
@@ -30,7 +33,10 @@ export const viewport: Viewport = {
   themeColor: "#FFFFFF",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // 홈 밖 모든 화면의 바닥 고정 환율 띠 값 (작업 0399) — 새 API 없음 · 빌드 때 이미 받는 환율 · 신호 · 못 받으면 띠 없음
+  const [latest, signals] = await Promise.all([api.latest(), api.signals()]);
+  const items = tickerItems(latest.ok ? latest.data.rates : [], signals.ok ? signals.data.signals : []);
   return (
     <html lang="ko" data-surface="light" className={sans.variable} suppressHydrationWarning>
       {/* 블랙프라이데이 기간(작업 0381) — 첫 그림 전에 지금 시각으로 html 의 data-hero(bf | default)를 정함 · 홈의 두 hero 중 하나만 보이게 (깜빡임 없음) */}
@@ -48,6 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* 장애 안내 — 모든 페이지 맨 위 (빌드 때 끝난 시각이면 안 넣음) */}
         <OutageNotice show={outageActive()} />
         {children}
+        <FixedTicker items={items} date={tickerDate(latest.ok ? latest.data.date : null)} />
         <AnalyticsScript />
       </body>
     </html>
