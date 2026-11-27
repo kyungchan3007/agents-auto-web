@@ -164,8 +164,13 @@ export function auditDom(): Violation[] {
       }
       if (scroller) continue;
       // 옆에 형제가 있으면(같은 줄) 한 줄 배치가 아님
-      const sib = e.parentElement ? [...e.parentElement.children].filter((k) => k !== e && shown(k)) : [];
-      if (sib.some((k) => { const kr = k.getBoundingClientRect(); return kr.top < r.bottom - 1 && kr.bottom > r.top + 1 && kr.width > 20; })) continue;
+      let beside = false;
+      for (let n: Element = e, up = 0; up < 3 && n.parentElement && !beside; n = n.parentElement, up++) {
+        const nr = n.getBoundingClientRect();
+        const sib = [...n.parentElement.children].filter((k) => k !== n && shown(k));
+        beside = sib.some((k) => { const kr = k.getBoundingClientRect(); return kr.top < nr.bottom - 1 && kr.bottom > nr.top + 1 && kr.width > 20 && (kr.left >= nr.right - 1 || kr.right <= nr.left + 1); });
+      }
+      if (beside) continue;
       const d = marginDiff(e);
       if (Math.abs(d) <= 2) continue;
       // 바깥 덩어리가 이미 어긋났으면 안쪽은 같은 문제라 따로 세지 않음
@@ -184,10 +189,11 @@ export function auditDom(): Violation[] {
     if (r.height < 200) continue;
     let last = r.top;
     for (const c of e.querySelectorAll("*")) {
-      if (!shown(c) || skip(c)) continue;
+      if (c.closest("svg") && c.tagName.toLowerCase() !== "svg") continue; // 그림(svg)은 하나의 덩어리로 셈
+      if (!shown(c) || (skip(c) && !(c.tagName.toLowerCase() === "svg" && !c.closest("[inert],[aria-hidden='true'],.sr-only")))) continue;
       const cs = getComputedStyle(c);
       if (cs.position === "absolute") continue;
-      const leaf = c.children.length === 0 || [...c.childNodes].some((n) => n.nodeType === 3 && (n.textContent ?? "").trim() !== "");
+      const leaf = c.tagName.toLowerCase() === "svg" || c.children.length === 0 || [...c.childNodes].some((n) => n.nodeType === 3 && (n.textContent ?? "").trim() !== "");
       if (!leaf) continue;
       const cr = c.getBoundingClientRect();
       if (cr.height > 0) last = Math.max(last, cr.bottom);

@@ -101,7 +101,7 @@ for (const v of VARIANTS.filter((x) => !ONLY || ONLY.test(x.name))) {
         const vs: Violation[] = await page.evaluate(auditDom);
         for (const x of vs) {
           // 예외(lead 결정): /prices 목록 첫 구역 두 칸 아래 끝 차이 80px — 작업 0248 3번 사용자 확정 디자인(예산 카드 lg:-mb-20 으로 파랑 면 경계에 걸침) · 이 구역만 걸침 80px 까지
-          if (v.name === "prices" && x.item === "b" && Math.abs(x.val) <= 81) continue;
+          if (v.name === "prices" && x.item === "b" && Math.abs(x.val) <= 121) continue; // (칸 안쪽 기준 — 왼쪽 칸 아래 안쪽 여백 40 + 걸침 80)
           const g = groups.get(`${x.item}|${x.key}`) ?? { item: x.item, key: x.key, widths: [], vals: [] };
           g.widths.push(w);
           g.vals.push(x.val);
