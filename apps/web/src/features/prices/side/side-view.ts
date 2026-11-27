@@ -36,14 +36,6 @@ export function swapDir(order: string[], from: string, to: string): 1 | -1 {
   return a >= 0 && b >= 0 && b < a ? -1 : 1;
 }
 
-const NONE_LABEL = "오늘 기준 한 줄 답";
-
-/** 오늘 통화 한 줄 답 — 받는 통화는 나라 페이지의 그 글 그대로 · 없으면 이유(통화 이름이 있으면 괄호로) */
-export function rateLine(p: { oneLine: { label: string; text: string } | null; currency: string | null }): { label: string; text: string; none: boolean } {
-  if (p.oneLine) return { ...p.oneLine, none: false };
-  return { label: NONE_LABEL, text: `이 나라 통화${p.currency ? `(${p.currency})` : ""}는 아직 환율을 받지 않아 물가만 보여 드립니다`, none: true };
-}
-
 /** "여행 물가 › 일본" */
 export const crumbText = (name: string): string => `여행 물가 › ${name}`;
 
@@ -56,7 +48,6 @@ export type SideEntry = {
   name: string;
   crumb: string;
   title: string;
-  answer: { label: string; text: string; none: boolean };
   /** 물가 값(한국 = 100) — 목록의 "물가 N" 과 같음 */
   value: number;
   /** "약 134,000원" 하루 예산 예시 */
@@ -73,7 +64,6 @@ export function sideEntry(v: CountryView): SideEntry {
     name: v.name,
     crumb: crumbText(v.name),
     title: v.title,
-    answer: rateLine({ oneLine: v.oneLine ? { label: v.oneLine.label, text: v.oneLine.text } : null, currency: v.currency }),
     value: v.index,
     budget: `약 ${wonDigits(budgetWon(v.index))}원`,
     cards: nextCards(v, { fxOnlyIfRate: true }).map((c) => ({ track: c.track, kicker: c.kicker, title: c.title, say: c.say, href: c.href.startsWith("#") ? `${countryPath(v.code)}${c.href}` : c.href, link: c.link })),
