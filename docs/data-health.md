@@ -254,14 +254,14 @@ SerpApi 이번 달 예상 사용량(코드상 계산):
 
 ## 빌드 자료 검사 (작업 0388)
 
-깨진 자료("아직 받지 못했습니다" 화면)가 운영에 나가지 않게, 사이트 빌드 끝에 검사를 붙였습니다. `apps/web` 의 `build` 가 `next build` 뒤에 `scripts/check-build-data.ts` 를 부릅니다.
+깨진 자료("아직 받지 못했습니다" 화면)가 운영에 나가지 않게, 사이트 빌드 끝에 검사를 붙였습니다. `apps/web` 의 `build` 가 `next build` 뒤에 `scripts/check-build-data.mjs`(순수 JS · Node 18 이상 어디서나) 를 부릅니다.
 
 - 기준은 빌드가 실제로 받은 값(Next 가 저장한 응답, `apps/web/.next/cache/fetch-cache`)입니다. 새로 받아 덮어 보지 않고, 지금 API `/fx/latest` 의 기준일 한 줄만 읽어 비교합니다.
 - 실패(운영 빌드에서만 빌드를 멈춤): 오늘 환율을 받지 못함 · 통화 0개 · 기준일이 없음 · 빌드가 받은 기준일이 지금 API 기준일보다 오래됨. 주말 · 공휴일은 API 가 준 날짜끼리 비교하므로 직전 영업일이면 통과합니다.
-- 경고만: 신호 · 국제항공료 지수가 비었거나 받지 못함. 받은 기록 폴더를 읽지 못해 검사 자체를 못 한 경우, 지금 API 기준일을 읽지 못한 경우.
+- 경고만: 신호 · 국제항공료 지수가 비었거나 받지 못함. 받은 기록 폴더를 읽지 못해 검사 자체를 못 한 경우(운영 빌드에서는 `주의 !!!` 로 눈에 띄게 한 줄을 남기지만 실패는 아님), 지금 API 기준일을 읽지 못한 경우.
 - 운영 빌드는 Workers Builds 의 `WORKERS_CI=1` · `WORKERS_CI_BRANCH=main`(옛 Pages 는 `CF_PAGES=1` · `CF_PAGES_BRANCH=main`)입니다. 브랜치 미리보기 · 로컬 · CI gate 빌드는 경고만 하므로 막히지 않습니다. 같은 기준을 `@hav/shared/api` 의 `mustHave` 도 씁니다.
 - 실패한 빌드는 배포되지 않아 어제 정상 화면이 그대로 남습니다. 빌드 출력의 `[빌드 자료 검사]` 줄이 Workers Builds 빌드 기록에 남습니다.
-- 판정 함수: `apps/web/scripts/check-build-data-lib.ts` 의 `judgeBuildData` (단위 테스트 대상).
+- 판정 함수: `apps/web/scripts/check-build-data-lib.mjs` 의 `judgeBuildData` (단위 테스트 대상).
 
 ### 막힌 날 확인
 
