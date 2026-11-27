@@ -20,9 +20,14 @@
 - .agents/specs/0387-maintenance/** · .agents/orchestration/TASKS.md
 
 ## 계획 밖 변경 이유
+- apps/web/maintenance/html.d.ts: worker.ts 가 index.html 을 글로 가져오는 타입 선언(타입 검사용).
 
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋 CI gate)
 - [ ] develop 머지까지(main 반영은 사용자가 말할 때) · 운영에 켜지 않음 · 릴리스 없음
 
 ## 허점
+- wrangler 는 --name 만 줘도 위 폴더의 apps/web/wrangler.jsonc 를 찾아 사이트 설정(assets · 바인딩)을 섞음 → 켜기는 설정 없는 .tmp/maintenance-deploy 로 복사한 뒤 --cwd 로 배포(builder 가 dry-run 으로 찾음).
+- 점검 버전에는 사이트 assets · 서비스 바인딩이 없음 · 끄기(rollback)가 되살림. 켜 둔 동안 main 푸시 · 다시 빌드 후크가 돌면 정상 사이트가 다시 배포되어 점검 화면이 내려감(문서에 적음).
+- 시험 Worker flapfx-maint-test(workers.dev · 정상 200 버전으로 되돌려 둠)를 다음 시험용으로 남김 · 지울 때 npx wrangler delete --name flapfx-maint-test.
+- 휴대폰 켜기(GitHub Actions 수동 실행)는 .github/workflows 보호 파일이라 docs 초안만 · 사람 승인 · Cloudflare API 토큰 Secret 필요.

@@ -195,4 +195,4 @@
 | 0384 | 첫 페이지 예전 hero(TodayBoard · 오늘 환율 탑승권 카드) 지우기 (Quick · 릴리스 없음 · develop 머지 뒤 바로 main ff) | builder ∥ test | 머지됨 (#457) · main ff | task/0384-old-hero | apps/web/src/features/home/{home.tsx,today/**} · 홈 카드 검사(checks · e2e) |
 | 0385 | 첫 페이지 hero 캐러셀(블프 1장 → 기본 2장) · 입력하면 자동 넘김 끔 · 블프 입력 숫자만 · 블프 장 반응형 (Full · 릴리스 없음 · develop 머지 뒤 바로 main ff) | test ∥ builder → test | 머지됨 (#458) · main ff | task/0385-hero-carousel | apps/web/src/features/home/{home.tsx,carousel/**,blackfriday/**,hero/hero.css} · tokens.css |
 | 0386 | 첫 페이지 헤더 색을 캐러셀 장(블프 검정 · 기본 울트라마린)에 맞춤 (Quick · 릴리스 없음 · develop 머지 뒤 바로 main ff) | builder → test | 머지됨 (#459) · main ff | task/0386-nav-color | apps/web/src/features/home/carousel/** · e2e/home-carousel.spec.ts |
-| 0387 | 사이트 점검 화면(503 · 켜기 · 끄기 명령 · 운영에 켜지 않음) (Quick · develop 머지까지) | builder → test | 진행 | task/0387-maintenance | apps/web/maintenance/** · package.json(scripts) · docs/maintenance.md |
+| 0387 | 사이트 점검 화면(503 · 켜기 · 끄기 명령 · 운영에 켜지 않음) (Quick · develop 머지까지) | builder → test | PR 열림 | task/0387-maintenance | apps/web/maintenance/** · package.json(scripts) · docs/maintenance.md |
