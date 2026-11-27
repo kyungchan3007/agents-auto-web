@@ -1,14 +1,14 @@
 // 작업 0361 2단계 — 여행 물가 "싼 곳 · 비슷한 곳 · 비싼 곳" 목록 → 나라 사이드바(1024px 이상) · 바텀 시트(1024px 미만) e2e (테스트 먼저 · 구현 전에는 FAIL 이 정상)
 //   원문: 나라를 누르면 나라 페이지로 넘어가지 않고 사이드바 · 시트로 연다 · 나라 이름은 HTML 에서 /prices/[code] 링크로 남고 누를 때만 가로챔 ·
 //         넓은 화면 오른쪽 420px · 뒤를 덮지 않고 본문을 왼쪽으로 밀어냄(목록 세 칸이 보이고 누를 수 있음 · 좁아지면 한 줄로 쌓임) · 뒤 스크롤 잠그지 않음 ·
-//         좁은 화면 아래 78% 시트 · 뒤를 어둡게 덮고 스크롤 잠금 · 바깥 누르면 닫힘 · 연 채로 다른 나라 · ‹ › · "n / 전체" · 내용(경로 · 물가 문장 · 한 줄 답 · 값 · 예산 · 다음으로 볼 것 · 자세히 보기) ·
+//         좁은 화면 아래 78% 시트 · 뒤를 어둡게 덮고 스크롤 잠금 · 바깥 누르면 닫힘 · 연 채로 다른 나라 · ‹ › · "n / 전체" · 내용(경로 · 물가 문장 · 값 · 예산 · 다음으로 볼 것 · 자세히 보기) ·
 //         dialog · 포커스 안으로 · 닫으면 누른 곳으로 · Esc · 세 폭 1440 · 900 · 375 · 움직임 모양(모션 A · 옆으로 바뀜)은 @design 이라 여기서 보지 않음 · 움직임 줄이기는 바로
 //   기존 표시 그대로: price-bands · price-band-link(목록의 나라 이름 링크 · href /prices/XXX)
 //   builder 가 다는 표시(data-testid)
 //     country-sidebar          dialog 상자(role="dialog" · 이름에 나라 이름 · 열린 동안만 화면에 있음 · 닫히면 숨김 또는 없음)
 //     country-side-backdrop    뒤를 덮는 막 — 시트(1024 미만)에만 · 사이드바에는 없음
 //     country-side-close       ✕ 닫기(접근 이름 "닫기") · country-side-prev · country-side-next(‹ ›  접근 이름 "앞 나라" · "다음 나라" · 처음 · 끝에서 disabled) · country-side-pos("n / 전체")
-//     country-side-crumb       "여행 물가 › 일본" · country-side-title 물가 문장(나라 페이지 제목 규칙 그대로) · country-side-answer 오늘 통화 한 줄 답(없으면 "아직 환율을 받지 않아 물가만")
+//     country-side-crumb       "여행 물가 › 일본" · country-side-title 물가 문장(나라 페이지 제목 규칙 그대로) · (작업 0397: country-side-answer 한 줄 답은 지움)
 //     country-side-value       물가 값(숫자 · 목록의 "물가 N" 과 같음) · country-side-budget "약 N원" 하루 예산 예시
 //     country-side-next-card   다음으로 볼 것 카드(2~3장 · 환전은 통화가 있을 때만) · 카드마다 링크 하나
 //     country-side-detail      맨 아래 "{나라} 물가 자세히 보기 ›" 링크 → /prices/XXX
@@ -214,7 +214,7 @@ test.describe("내용 (작업 0361)", () => {
     await expandAll(page); // 일본 · 마카오는 접힌 목록 안에 있음
   });
 
-  test("경로 · 물가 문장(나라 페이지 제목과 같은 규칙) · 한 줄 답 · 값 · 예산 · 다음으로 볼 것 · 자세히 보기", async ({ page }) => {
+  test("경로 · 물가 문장(나라 페이지 제목과 같은 규칙) · 값 · 예산 · 다음으로 볼 것 · 자세히 보기", async ({ page }) => {
     const i = (await hrefs(page)).indexOf("JPN");
     test.skip(i < 0, "일본이 목록에 없음");
     await openAt(page, i);
@@ -223,13 +223,15 @@ test.describe("내용 (작업 0361)", () => {
     const other = await page.context().newPage();
     await other.goto("/prices/JPN");
     const h1 = ((await other.getByRole("heading", { level: 1 }).innerText()) ?? "").replace(/\s+/g, " ").trim();
-    const oneline = other.locator('[data-testid="country-oneline"]');
-    // 나라 페이지의 한 줄 답 상자: 첫 줄 이름표("오늘 기준 한 줄 답 · 날짜") · 둘째 줄 문장 · 셋째 줄 보충(note) — 사이드바는 문장을 보임
-    const onelineText = (await oneline.count()) ? (((await oneline.innerText()) ?? "").split("\n").map((l) => l.trim()).filter(Boolean)[1] ?? null) : null;
     await other.close();
     expect(((await tid(page, "country-side-title").innerText()) ?? "").replace(/\s+/g, " ").trim()).toBe(h1);
-    if (onelineText) await expect(tid(page, "country-side-answer")).toContainText(onelineText);
-    else await expect(tid(page, "country-side-answer")).toContainText("아직 환율을 받지 않아 물가만");
+    // 작업 0397: 한 줄 답은 시트에도 없음 · 제목 아래가 바로 값 줄로 이어짐(빈 구멍 없음)
+    await expect(tid(page, "country-side-answer")).toHaveCount(0);
+    await expect(side(page)).not.toContainText("오늘 기준 한 줄 답");
+    const tb = await box(tid(page, "country-side-title"));
+    const vb = await box(tid(page, "country-side-value"));
+    expect(vb.y - (tb.y + tb.height), "제목 아래 ~ 물가 값 사이(한 줄 답 자리가 비어 있지 않음)").toBeGreaterThanOrEqual(8);
+    expect(vb.y - (tb.y + tb.height), "제목 아래 ~ 물가 값 사이").toBeLessThanOrEqual(90);
     // 값 = 목록의 물가 N · 예산 = 약 N 천 원
     const row = links(page).nth(i).locator("xpath=ancestor::li[1]");
     const listValue = Number(((await row.innerText()) ?? "").match(/물가\s*(\d+)\s*\(한국 100\)/)?.[1]);
@@ -260,11 +262,12 @@ test.describe("내용 (작업 0361)", () => {
     }
   });
 
-  test("받는 통화가 없는 나라(마카오)는 한 줄 답 자리에 '아직 환율을 받지 않아 물가만' · 환전 카드 없음", async ({ page }) => {
+  test("받는 통화가 없는 나라(마카오) — 한 줄 답 · '아직 환율을 받지 않아 물가만' 글 없음(작업 0397) · 환전 카드 없음", async ({ page }) => {
     const i = (await hrefs(page)).indexOf("MAC");
     test.skip(i < 0, "마카오가 목록에 없음");
     await openAt(page, i);
-    await expect(tid(page, "country-side-answer")).toContainText("아직 환율을 받지 않아 물가만");
+    await expect(tid(page, "country-side-answer")).toHaveCount(0);
+    await expect(side(page)).not.toContainText("아직 환율을 받지 않아 물가만");
     await expect(tid(page, "country-side-next-card").filter({ hasText: "환전" })).toHaveCount(0);
   });
 
