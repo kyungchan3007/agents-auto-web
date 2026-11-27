@@ -15,7 +15,12 @@ const front = (page: Page) => page.locator('[data-testid="hero-pass"][data-s="0"
 const frontCity = async (page: Page) => (await front(page).getAttribute("data-city")) ?? "";
 const chip = (page: Page, city: string) => tid(page, "hero-chip").filter({ hasText: city });
 const outs = (page: Page) => page.evaluate(() => (window as unknown as { __outs: string[] }).__outs.slice());
-const resetOuts = (page: Page) => page.evaluate(() => ((window as unknown as { __outs: string[] }).__outs.length = 0));
+const resetOuts = (page: Page) =>
+  page.evaluate(() => {
+    (window as unknown as { __outs: string[] }).__outs.length = 0;
+    (window as unknown as { __snaps: unknown[] }).__snaps.length = 0;
+  });
+const snaps = (page: Page) => page.evaluate(() => (window as unknown as { __snaps: Record<string, string>[] }).__snaps.slice());
 
 test.beforeEach(async ({ page }) => {
   await forceDefaultHero(page);
@@ -23,11 +28,16 @@ test.beforeEach(async ({ page }) => {
     localStorage.setItem("flapfx:intro-off", "1");
     // 탑승권이 사라지기 시작한 때(data-s 가 out 으로 바뀐 때)를 도시와 함께 기록 — 한 번 고르는데 여러 번 기록되면 "반복"
     (window as unknown as { __outs: string[] }).__outs = [];
+    (window as unknown as { __snaps: Record<string, string>[] }).__snaps = [];
     new MutationObserver((ms) => {
       for (const m of ms) {
         const el = m.target as HTMLElement;
         if (el.getAttribute("data-s") === "out") (window as unknown as { __outs: string[] }).__outs.push(el.getAttribute("data-city") ?? "");
       }
+      // 바뀔 때마다 모든 장의 자리를 기록 — 넘김 중 어느 장이 어느 자리인지 나중에 확인
+      const snap: Record<string, string> = {};
+      for (const e of Array.from(document.querySelectorAll('[data-testid="hero-pass"]'))) snap[e.getAttribute("data-city") ?? ""] = e.getAttribute("data-s") ?? "";
+      (window as unknown as { __snaps: Record<string, string>[] }).__snaps.push(snap);
     }).observe(document, { attributes: true, subtree: true, attributeFilter: ["data-s"] });
   });
 });
@@ -95,7 +105,7 @@ test.describe("고르기 모션 — 처음 모션 한 번 (작업 0393 R1)", () 
 });
 
 test.describe("검색으로 고르기 — 네 도시 밖 (작업 0393 R1 · R3)", () => {
-  test("'뉴델리' 입력 → 제안 \"인도 뉴델리\" → Enter: 그 곳 장이 맨 앞 · 덱 밖 장은 하나 · 숫자 칸 제목 · 값 없는 칸은 \"-\"", async ({ page }) => {
+  test("'뉴델리' 입력 → 제안 \"인도 뉴델리\" → Enter: 그 곳 장이 맨 앞 · 덱 밖 장은 하나 · 숫자 칸 제목 · 환율 · 1만원이면 \"-\"", async ({ page }) => {
     await page.goto("/");
     await settle(page);
     await tid(page, "hero-search").fill("뉴델리");
@@ -104,7 +114,9 @@ test.describe("검색으로 고르기 — 네 도시 밖 (작업 0393 R1 · R3)"
     await expect.poll(() => frontCity(page), { timeout: 4000 }).toBe("뉴델리");
     await expect(tid(page, "hero-facts-title")).toHaveText("인도 뉴델리");
     await expect(tid(page, "hero-facts-mine")).toBeVisible();
-    for (const id of ["hero-fact-rate", "hero-fact-tenk", "hero-fact-price"]) await expect(tid(page, id), id).toHaveText("-");
+    // 인도는 통화가 없어 환율 · 1만원이면은 "-" · 물가는 나라 기준 자료라 있으면 숫자 · 없으면 "-"
+    for (const id of ["hero-fact-rate", "hero-fact-tenk"]) await expect(tid(page, id), id).toHaveText("-");
+    await expect(tid(page, "hero-fact-price")).toHaveText(/^(-|비슷|\d+% (낮음|높음))$/);
     expect(await tid(page, "hero-pass").count()).toBe(5);
     // 또 다른 도시를 고르면 덱 밖 장은 여전히 하나
     await tid(page, "hero-search").fill("뭄바이");
@@ -226,5 +238,59 @@ test.describe("새로고침 뒤 유지 (작업 0393 R1)", () => {
     await page.reload();
     expect(await page.evaluate(() => JSON.parse(localStorage.getItem("flapfx:picked") ?? "null")?.city)).toBe("방콕");
     await expect(tid(page, "hero-facts-title")).toHaveText("태국 방콕");
+  });
+});
+
+// 추가 지시 — 고를 때 사라지는 동안 원래 1번 장(B)이 드러나지 않음: 맨 앞 A · 1번 B 일 때 C 를 고르면 사라지는 동안 data-s=1 은 C · 끝나면 C 가 0 · 중간에 B 가 0 이 되는 순간 없음
+test.describe("고르는 동안 원래 1번 장이 드러나지 않음 (작업 0393 추가)", () => {
+  const CHIPS = ["도쿄", "방콕", "다낭", "파리"];
+  const perms = <T,>(a: T[]): T[][] => (a.length <= 1 ? [a] : a.flatMap((x, i) => perms([...a.slice(0, i), ...a.slice(i + 1)]).map((r) => [x, ...r])));
+
+  /** 한 번 고르고 · 끝난 뒤 기록을 검사 */
+  const pickAndCheck = async (page: Page, target: string, doPick: () => Promise<void>) => {
+    await settle(page);
+    const a = await frontCity(page);
+    if (a === target) return;
+    const b = await page.locator('[data-testid="hero-pass"][data-s="1"]').getAttribute("data-city");
+    await resetOuts(page);
+    await doPick();
+    await expect.poll(() => frontCity(page), { timeout: 4000 }).toBe(target);
+    await settle(page);
+    await page.waitForTimeout(300);
+    const log = await snaps(page);
+    const why = `${a}(앞) · ${b}(1번) → ${target} 고름`;
+    const i = log.findIndex((m) => m[a] === "out");
+    expect(i, `${why}: 맨 앞 장이 사라지는 기록`).toBeGreaterThanOrEqual(0);
+    expect(log[i][target], `${why}: 사라지는 동안 1번 자리는 고른 장`).toBe("1");
+    for (const [k, m] of log.entries()) {
+      const zero = Object.entries(m).filter(([, v]) => v === "0").map(([c]) => c);
+      for (const c of zero) expect([a, target], `${why}: ${k}번째 기록에서 ${c} 가 0 번 자리`).toContain(c);
+    }
+    expect(log.at(-1)?.[target], `${why}: 끝나면 고른 장이 0`).toBe("0");
+  };
+
+  test("네 칩의 모든 순서(24가지) — 매 선택마다 B 가 0 이 되는 순간 없음 · 사라지는 동안 1번은 고른 장", async ({ page }, info) => {
+    test.setTimeout(300_000);
+    await page.goto("/");
+    const orders = info.project.name === "넓은 화면" ? perms(CHIPS) : perms(CHIPS).filter((_, i) => i % 6 === 0);
+    for (const order of orders) for (const city of order) await pickAndCheck(page, city, () => chip(page, city).click());
+  });
+
+  test("덱 밖 도시(오사카 · 뉴델리 · 뭄바이)와 칩을 섞어 고르기 — 같은 규칙", async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto("/");
+    const viaSearch = (q: string) => async () => {
+      await tid(page, "hero-search").fill(q);
+      await tid(page, "hero-search").press("Enter");
+    };
+    for (const [city, q] of [
+      ["오사카", "오사카"],
+      ["도쿄", ""],
+      ["뉴델리", "뉴델리"],
+      ["뭄바이", "뭄바이"],
+      ["다낭", ""],
+      ["오사카", "오사카"],
+      ["방콕", ""],
+    ] as const) await pickAndCheck(page, city, q ? viaSearch(q) : () => chip(page, city).click());
   });
 });
