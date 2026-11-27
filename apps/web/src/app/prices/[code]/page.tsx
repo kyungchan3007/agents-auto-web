@@ -16,9 +16,9 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps<"/prices/[code]">): Promise<Metadata> {
   const { code } = await params;
-  const { view } = await loadCountry(code);
+  const { view, descriptionLine } = await loadCountry(code);
   if (!view) return {};
-  const description = `${view.title}. ${view.oneLine ? `${view.oneLine.text}. ` : ""}세계은행 ${view.year}년 물가 자료 · 환율 신호 · 항공권 · 하루 예산을 한 곳에서 봅니다`;
+  const description = `${view.title}. ${descriptionLine ? `${descriptionLine}. ` : ""}세계은행 ${view.year}년 물가 자료 · 환율 신호 · 항공권 · 하루 예산을 한 곳에서 봅니다`;
   return pageMeta({ path: countryPath(code), title: `${view.name} 물가 · ${view.title} · Flapfx`, description });
 }
 

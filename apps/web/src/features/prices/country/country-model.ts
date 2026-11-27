@@ -32,7 +32,6 @@ export type CountryView = {
   year: number;
   relative: number;
   title: string;
-  oneLine: { label: string; text: string; note: string | null } | null;
   flight: FlightCard;
   budget: { dailyWon: number; days: number; totalWon: number; text: string };
   exchange: { unit: string; title: string; value: string; note: string } | null;
@@ -45,6 +44,17 @@ export type CountryView = {
   index: number;
 };
 
+/** 오늘 환율 한 줄 문장의 재료 — 화면에 상자로 그리지 않고(작업 0397) FAQ · 환전 카드 · description 문장만 만듦 */
+function rateLine(i: CountryInput, currency: string | null) {
+  const per = i.rate && i.rate.unit > 0 ? i.rate.baseRate : null;
+  const avg1y = i.history && i.history.length > 0 && i.rate ? (i.history.reduce((s, r) => s + (r.baseRate / r.unit) * i.rate!.unit, 0) / i.history.length) : null;
+  const label = currency && i.rate ? unitLabel(currency, i.rate.unit) : "";
+  return { per, label, one: oneLineAnswer({ currency, unitLabel: label, baseRate: per, avg1y, date: i.rate?.date ?? null }) };
+}
+
+/** description 메타에 넣는 환율 문장(서버에서만 쓰고 페이지 데이터로 넘기지 않음) — 통화가 없거나 값이 없으면 null (작업 0397) */
+export const descriptionLine = (i: CountryInput): string | null => rateLine(i, TRAVEL_COUNTRIES[i.code]?.currency ?? null).one?.text ?? null;
+
 /** 나라 코드가 물가 표에 없으면 null (페이지 없음) */
 export function countryView(i: CountryInput): CountryView | null {
   const meta = TRAVEL_COUNTRIES[i.code];
@@ -53,10 +63,7 @@ export function countryView(i: CountryInput): CountryView | null {
   if (!meta || !row) return null;
   const title = pickedHeadline(i.code, all)?.title ?? `${row.name}${eunNeun(row.name)} 한국과 물가가 비슷합니다`;
 
-  const per = i.rate && i.rate.unit > 0 ? i.rate.baseRate : null;
-  const avg1y = i.history && i.history.length > 0 && i.rate ? (i.history.reduce((s, r) => s + (r.baseRate / r.unit) * i.rate!.unit, 0) / i.history.length) : null;
-  const label = meta.currency && i.rate ? unitLabel(meta.currency, i.rate.unit) : "";
-  const one = oneLineAnswer({ currency: meta.currency, unitLabel: label, baseRate: per, avg1y, date: i.rate?.date ?? null });
+  const { per, label, one } = rateLine(i, meta.currency);
   const sig = i.signal && i.signal.signal !== null ? percentileText(i.signal.signal, i.signal.percentile, i.signal.windowDays) : null;
   const sigSentence = sig && meta.currency ? `${currencyName(meta.currency)} 환율은 ${sig}입니다` : null;
 
@@ -71,7 +78,6 @@ export function countryView(i: CountryInput): CountryView | null {
     year: row.year,
     relative: row.relative,
     title,
-    oneLine: one && { ...one, note: sigSentence },
     flight,
     budget,
     exchange,
