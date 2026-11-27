@@ -39,6 +39,17 @@ export function auditDom(): Violation[] {
     }
     return false;
   };
+  // 글자의 줄마다 상자(여러 줄로 감긴 글을 한 상자로 합치면 다른 글과 가짜로 겹침)
+  const textLineRects = (e: Element): DOMRect[] => {
+    const rs: DOMRect[] = [];
+    for (const n of e.childNodes) {
+      if (n.nodeType !== 3 || (n.textContent ?? "").trim() === "") continue;
+      const range = document.createRange();
+      range.selectNodeContents(n);
+      for (const r of range.getClientRects()) if (r.width > 0 && r.height > 0) rs.push(new DOMRect(r.left, r.top + r.height * 0.1, r.width, r.height * 0.8));
+    }
+    return rs;
+  };
   // 글자 줄 상자 — 요소 자체 상자(자식까지 품음)가 아니라 그 요소가 직접 가진 글자만의 상자
   const textRect = (e: Element): DOMRect | null => {
     const rs: DOMRect[] = [];
@@ -109,16 +120,24 @@ export function auditDom(): Violation[] {
       if (over > 1) add("a", `글자가 상자 밖 ${label(e)} ⊄ ${label(box)}`, over);
     }
   }
-  // a — 글자끼리 겹침
-  const tr = texts.filter((e) => !fixedAncestor(e)).map((e) => ({ e, r: textRect(e) })).filter((x): x is { e: Element; r: DOMRect } => x.r !== null && !hiddenByClip(x.e, x.r)).map((x) => ({ e: x.e, r: new DOMRect(x.r.left, x.r.top + x.r.height * 0.1, x.r.width, x.r.height * 0.8) })); // 줄 높이가 글자보다 큰 만큼은 겹침으로 세지 않음(위아래 10% 줄임)
+  // a — 글자끼리 겹침(줄마다 비교 · 줄 높이 위아래 10%는 뺌 · 4px 넘는 겹침만)
+  const tr = texts
+    .filter((e) => !fixedAncestor(e))
+    .map((e) => ({ e, rs: textLineRects(e).filter((r) => !hiddenByClip(e, r)) }))
+    .filter((x) => x.rs.length > 0);
   for (let i = 0; i < tr.length; i++)
     for (let j = i + 1; j < tr.length; j++) {
       const a = tr[i];
       const b = tr[j];
       if (a.e.contains(b.e) || b.e.contains(a.e)) continue;
-      const ox = Math.min(a.r.right, b.r.right) - Math.max(a.r.left, b.r.left);
-      const oy = Math.min(a.r.bottom, b.r.bottom) - Math.max(a.r.top, b.r.top);
-      if (ox > 2 && oy > 2) add("a", `겹침 ${label(a.e)} × ${label(b.e)}`, Math.min(ox, oy));
+      let worst = 0;
+      for (const ra of a.rs)
+        for (const rb of b.rs) {
+          const ox = Math.min(ra.right, rb.right) - Math.max(ra.left, rb.left);
+          const oy = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top);
+          if (ox > 4 && oy > 4) worst = Math.max(worst, Math.min(ox, oy));
+        }
+      if (worst > 0) add("a", `겹침 ${label(a.e)} × ${label(b.e)}`, worst);
     }
 
   // b — 나란한 큰 칸 아래 끝 차이
