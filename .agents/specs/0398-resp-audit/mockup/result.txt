@@ -1,0 +1,4 @@
+/prices/JPN @1440: 두 칸 아래 끝 차이 145px (짧은 칸: relative z-10 col-start-2 row-start-2 -mt-24 pb-2  · "여행 하루 예산나라괌그리스네덜란드노르")
+/prices/JPN @1600: 두 칸 아래 끝 차이 145px (짧은 칸: relative z-10 col-start-2 row-start-2 -mt-24 pb-2  · "여행 하루 예산나라괌그리스네덜란드노르")
+/prices/FRA @1440: 두 칸 아래 끝 차이 145px (짧은 칸: relative z-10 col-start-2 row-start-2 -mt-24 pb-2  · "여행 하루 예산나라괌그리스네덜란드노르")
+/prices/FRA @1600: 두 칸 아래 끝 차이 145px (짧은 칸: relative z-10 col-start-2 row-start-2 -mt-24 pb-2  · "여행 하루 예산나라괌그리스네덜란드노르")
