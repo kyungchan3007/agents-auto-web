@@ -51,8 +51,8 @@ export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: Tra
       <SiteNav page="flights" />
       <main id="main" tabIndex={-1} className="bg-surface text-fg">
         <section data-testid="flights-hero" aria-labelledby="flights-title" className="border-b border-line bg-card px-4 py-12 sm:px-8 sm:py-16">
-          <div className="mx-auto grid max-w-page items-center gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-14">
-            <div>
+          <div className="mx-auto grid max-w-page items-center gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:items-stretch lg:gap-14">
+            <div className="lg:flex lg:flex-col lg:justify-center">
               <Title as="h1" size="page" id="flights-title" className="text-cheap">
                 <EmphText text={headline} />
               </Title>
@@ -63,7 +63,7 @@ export function FlightsPage({ travel, fxMonthly, airfare = null }: { travel: Tra
               )}
             </div>
             {board && (
-              <div data-testid="hero-board" className="flex min-w-0 lg:justify-end">
+              <div data-testid="hero-board" className="flex min-w-0 lg:items-center lg:justify-end">
                 <FlapBoard rows={board.rows.map((r) => ({ ...r, tone: "dest" as const }))} cols={board.cols} label={board.label} />
               </div>
             )}
