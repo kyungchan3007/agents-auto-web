@@ -70,7 +70,10 @@ export function useHeroDeck(data: HeroData): HeroDeck {
       }
       const fresh = hit && !cur.order.includes(id);
       const extras = fresh ? [...cur.extras, hit] : cur.extras;
-      set({ order: fresh ? [...cur.order, id] : cur.order, leaving: true, extras, picked: hit ?? cur.picked });
+      // 맨 앞이 사라지는 동안 고른 장이 이미 1번 자리에 있어야 엉뚱한 도시가 드러나지 않음 — [맨 앞, 고른 장, …나머지]
+      const front = cur.order[0] ?? id;
+      const order = hit ? [front, id, ...cur.order.filter((x) => x !== front && x !== id)] : cur.order;
+      set({ order, leaving: true, extras, picked: hit ?? cur.picked });
       timer.current = setTimeout(
         () => {
           const now = ref.current;
