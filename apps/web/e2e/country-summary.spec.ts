@@ -22,6 +22,13 @@ const docBox = async (loc: Locator, name: string) => {
   const sy = await loc.first().page().evaluate(() => window.scrollY);
   return { ...b, y: b.y + sy };
 };
+// 왼쪽 칸의 마지막 상자 아래 끝(문서 기준) — 한 줄 답 상자(country-oneline)가 요약 칸 아래에 있으면 그것
+const leftBottom = async (page: Page) => {
+  const f = await docBox(tid(page, "country-facts"), "facts");
+  const one = tid(page, "country-oneline");
+  const o = (await one.count()) ? await docBox(one, "oneline") : null;
+  return Math.max(f.y + f.height, o ? o.y + o.height : 0);
+};
 const hScroll = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 const BAD = [/한국수출입은행이/, /30분마다/, /사이트를 새로 만들/, /자료 없음 · /, /\d{4}-\d{2}-\d{2} \d{2}:\d{2} 확인/];
 
@@ -131,7 +138,8 @@ test.describe("높이 · 위치 고정", () => {
 });
 
 // 두 칸 배치는 1024px 부터(lg) — 1023 이하는 설명 아래로 흐름(그대로). 작업 전 1124 · 1280 · 1440 은 왼쪽 글 끝과 카드 끝 차이가 약 360px
-//   builder 가 두 칸 줄 높이를 맞춤(오른쪽 카드 stretch) → 요약 칸 아래 끝 = 카드 아래 끝(±2px) · 카드 안 입력 위치는 나라를 바꿔도 같음
+//   builder 가 두 칸 줄 높이를 맞춤(오른쪽 카드 stretch) → 왼쪽 칸의 마지막 상자(한 줄 답 상자가 있으면 그것 · 없으면 요약 칸) 아래 끝 = 카드 아래 끝
+//   (±2px · 카드가 자기 내용만으로 더 길면 그 차이만큼 왼쪽이 짧음 — 24px 이하) · 카드 안 입력 위치는 나라를 바꿔도 같음
 test.describe("두 칸 아래 끝 (1024 · 1124 · 1280 · 1440)", () => {
   test.beforeEach(({ isMobile }) => {
     test.skip(isMobile, "폭을 직접 맞춰 재는 검사 — 넓은 화면 프로젝트에서만");
@@ -141,7 +149,7 @@ test.describe("두 칸 아래 끝 (1024 · 1124 · 1280 · 1440)", () => {
     ["VNM", "베트남"],
   ] as const) {
     for (const w of [1024, 1124, 1280, 1440]) {
-      test(`${name} ${w}px — 요약 칸이 설명 아래 왼쪽 · 요약 칸 아래 끝 = 카드 아래 끝(±2px) · 가로 스크롤 없음`, async ({ page }) => {
+      test(`${name} ${w}px — 요약 칸이 설명 아래 왼쪽 · 왼쪽 칸 끝 ≈ 카드 아래 끝 · 가로 스크롤 없음`, async ({ page }) => {
         await page.setViewportSize({ width: w, height: 900 });
         await page.goto(`/prices/${code}`);
         await hydrated(tid(page, "budget"));
@@ -150,8 +158,10 @@ test.describe("두 칸 아래 끝 (1024 · 1124 · 1280 · 1440)", () => {
         const h1 = await box(page.locator("h1"), "h1");
         expect(facts.y, "요약 칸은 제목 아래").toBeGreaterThanOrEqual(h1.y + h1.height - 1);
         expect(facts.x + facts.width, "왼쪽 칸 — 카드와 가로로 겹치지 않음").toBeLessThanOrEqual(card.x + 1);
-        const gap = card.y + card.height - (facts.y + facts.height);
-        expect(Math.abs(gap), `두 칸 아래 끝 차이(카드 − 요약 칸)=${Math.round(gap)}px`).toBeLessThanOrEqual(2);
+        const sy = await page.evaluate(() => window.scrollY);
+        const gap = card.y + sy + card.height - (await leftBottom(page));
+        expect(gap, `두 칸 아래 끝 차이(카드 − 왼쪽 마지막 상자)=${Math.round(gap)}px`).toBeGreaterThanOrEqual(-2);
+        expect(gap, `두 칸 아래 끝 차이(카드 − 왼쪽 마지막 상자)=${Math.round(gap)}px`).toBeLessThanOrEqual(24);
         expect(await hScroll(page)).toBeLessThanOrEqual(0);
       });
     }
@@ -165,7 +175,7 @@ test.describe("두 칸 아래 끝 (1024 · 1124 · 1280 · 1440)", () => {
       daily: (await docBox(page.getByLabel("한국에서 하루 쓰는 돈 (원)"), "daily")).y,
       select: (await docBox(tid(page, "budget").getByLabel("나라"), "select")).y,
       cardBottom: (await docBox(tid(page, "budget"), "card")).y + (await docBox(tid(page, "budget"), "card")).height,
-      factsBottom: (await docBox(tid(page, "country-facts"), "facts")).y + (await docBox(tid(page, "country-facts"), "facts")).height,
+      left: await leftBottom(page),
       next: (await docBox(tid(page, "next-card"), "next")).y,
     });
     const before = await read();
@@ -176,7 +186,7 @@ test.describe("두 칸 아래 끝 (1024 · 1124 · 1280 · 1440)", () => {
       expect(Math.abs(after.daily - before.daily), `${label}: 입력 위치`).toBeLessThanOrEqual(1);
       expect(Math.abs(after.select - before.select), `${label}: 나라 칸 위치`).toBeLessThanOrEqual(1);
       expect(Math.abs(after.next - before.next), `${label}: 아래 구역 위치`).toBeLessThanOrEqual(1);
-      expect(Math.abs(after.cardBottom - after.factsBottom), `${label}: 두 칸 아래 끝`).toBeLessThanOrEqual(2);
+      expect(Math.abs(after.cardBottom - after.left - (before.cardBottom - before.left)), `${label}: 두 칸 아래 끝 차이가 처음과 같음`).toBeLessThanOrEqual(2);
     }
   });
 
