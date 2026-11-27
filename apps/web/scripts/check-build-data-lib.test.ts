@@ -198,11 +198,70 @@ describe("parseCacheFile — Next 빌드 응답 캐시 파일 한 개", () => {
   });
 });
 
-describe("빌드 연결 — package.json 의 build 끝에 검사", () => {
-  it("apps/web build = next build 다음 check-build-data.mjs (검사 실패 코드가 빌드 실패가 됨)", async () => {
+describe("빌드 연결 — package.json 의 build", () => {
+  it("apps/web build = 응답 저장 폴더 지우기 → next build → 자료 검사 (이 차례 · 검사 실패 코드가 빌드 실패가 됨)", async () => {
     const { readFileSync } = await import("node:fs");
     const { join } = await import("node:path");
     const pkg = JSON.parse(readFileSync(join(__dirname, "..", "package.json"), "utf8")) as { scripts: Record<string, string> };
-    expect(pkg.scripts.build).toMatch(/next build\s*&&\s*node scripts\/check-build-data\.mjs/);
+    expect(pkg.scripts.build).toBe("node scripts/clear-fetch-cache.mjs && next build && node scripts/check-build-data.mjs");
+  });
+});
+
+describe("clear-fetch-cache.mjs — 빌드 시작 때 옛 응답 저장 폴더만 지움", () => {
+  // 스크립트는 자기 위치 기준 ../.next/cache/fetch-cache 를 지움 → 임시 폴더(저장소 .tmp/ 안)에 같은 모양을 만들고 스크립트를 복사해 돌림
+  const withTempRoot = async (body: (root: string, run: () => { status: number | null; stderr: string }) => void) => {
+    const { copyFileSync, mkdirSync, mkdtempSync, rmSync } = await import("node:fs");
+    const { spawnSync } = await import("node:child_process");
+    const { join } = await import("node:path");
+    const base = join(__dirname, "..", "..", "..", ".tmp");
+    mkdirSync(base, { recursive: true });
+    const root = mkdtempSync(join(base, "clear-fetch-"));
+    try {
+      mkdirSync(join(root, "scripts"), { recursive: true });
+      copyFileSync(join(__dirname, "clear-fetch-cache.mjs"), join(root, "scripts", "clear-fetch-cache.mjs"));
+      const run = () => {
+        const res = spawnSync(process.execPath, [join(root, "scripts", "clear-fetch-cache.mjs")], { cwd: root, encoding: "utf8" });
+        return { status: res.status, stderr: res.stderr };
+      };
+      body(root, run);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  };
+
+  it("폴더가 없어도 조용히 통과(종료 코드 0 · 오류 글 없음)", async () => {
+    await withTempRoot((_root, run) => {
+      const r = run();
+      expect(r.status).toBe(0);
+      expect(r.stderr).toBe("");
+    });
+  });
+
+  it("fetch-cache 만 지우고 같은 .next/cache 안의 다른 것(빌드 캐시)과 .next 의 다른 파일은 남김", async () => {
+    const { existsSync, mkdirSync, readdirSync, writeFileSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    await withTempRoot((root, run) => {
+      const cache = join(root, ".next", "cache");
+      mkdirSync(join(cache, "fetch-cache"), { recursive: true });
+      writeFileSync(join(cache, "fetch-cache", "abc"), "{}");
+      mkdirSync(join(cache, "turbopack"), { recursive: true });
+      writeFileSync(join(cache, "turbopack", "keep.txt"), "keep");
+      writeFileSync(join(root, ".next", "BUILD_ID"), "id");
+      expect(run().status).toBe(0);
+      expect(existsSync(join(cache, "fetch-cache")), "fetch-cache 가 지워짐").toBe(false);
+      expect(existsSync(join(cache, "turbopack", "keep.txt")), "다른 빌드 캐시는 남음").toBe(true);
+      expect(existsSync(join(root, ".next", "BUILD_ID"))).toBe(true);
+      expect(readdirSync(cache)).toEqual(["turbopack"]);
+    });
+  });
+
+  it("두 번 불러도 같음(이미 없는 폴더) · 종료 코드 0", async () => {
+    const { mkdirSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    await withTempRoot((root, run) => {
+      mkdirSync(join(root, ".next", "cache", "fetch-cache"), { recursive: true });
+      expect(run().status).toBe(0);
+      expect(run().status).toBe(0);
+    });
   });
 });
