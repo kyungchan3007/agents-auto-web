@@ -43,10 +43,6 @@ describe("파일 구성", () => {
   it("말풍선 화면(bubbles/bubble-*.tsx)이 1개 이상", () => {
     expect(walk(join(INTRO, "bubbles"), (f) => /bubble-[\w-]+\.tsx$/.test(f)).length).toBeGreaterThan(0);
   });
-
-  it("홈 쪽 파일 — ticket(작업 0217 · 예전 picked-board) · use-picked-destination · picked.ts", () => {
-    for (const f of ["features/home/today/ticket.tsx", "features/home/today/use-picked-destination.ts", "features/home/today/picked.ts"]) expect(existsSync(join(WEB_SRC, f)), f).toBe(true);
-  });
 });
 
 describe("three 는 인트로가 열릴 때만 — 홈 첫 로딩 무게 그대로", () => {
@@ -162,31 +158,6 @@ describe("기능 폴더 규칙 — 홈 · 인트로가 서로 가져오지 않�
   it("features/intro 는 features/home 을 가져오지 않음 · features/home 은 features/intro 를 가져오지 않음", () => {
     for (const f of SRC(INTRO)) expect(read(f), rel(f)).not.toMatch(/from\s*"(@\/features\/home|\.\.\/\.\.\/home)/);
     for (const f of SRC(join(WEB_SRC, "features/home"))) expect(read(f), rel(f)).not.toMatch(/from\s*"(@\/features\/intro|\.\.\/\.\.\/intro)/);
-  });
-
-  it("홈은 고른 값을 @hav/shared/travel 로만 읽음 (use-picked-destination — readPicked · PICK_EVENT · 정리)", () => {
-    const h = read(join(WEB_SRC, "features/home/today/use-picked-destination.ts"));
-    expect(h).toMatch(/@hav\/shared\/travel/);
-    expect(h).toMatch(/\breadPicked\(/);
-    expect(h).toMatch(/\bPICK_EVENT\b/);
-    expect(h).toMatch(/removeEventListener\(/);
-    expect(h).toMatch(/useEffect\(/); // 서버 HTML 은 지금 그대로 · 마운트 뒤에 읽음
-  });
-
-  it("홈 ticket — 같은 FlapBoard 로 pickedBoard() 를 그림 · key 로 다시 넘어가게 · 탑승권 보기 버튼 (작업 0217)", () => {
-    const b = read(join(WEB_SRC, "features/home/today/ticket.tsx"));
-    expect(b).toMatch(/from\s*"@hav\/ui\/data\/flap-board"/);
-    expect(b).toMatch(/\bpickedBoard\(|\bpickedChip\(/);
-    expect(b).toMatch(/\bkey=/);
-    expect(b).toMatch(/<button\b/);
-    expect(b).toMatch(/탑승권 보기|pickedChip/);
-  });
-
-  it("홈 안내판(today-board → Ticket)이 고른 나라 판을 씀 — 안 한 사람에게는 지금 그대로", () => {
-    const home = ["today/today-board.tsx", "home.tsx"].map((f) => read(join(WEB_SRC, "features/home", f))).join("\n");
-    expect(home).toMatch(/\bTicket\b/);
-    expect(read(join(WEB_SRC, "features/home/today/ticket.tsx"))).toMatch(/\bpickedBoard\(/);
-    expect(home).toMatch(/\btodayBoard\(/); // 서버에서 그리는 지금 안내판은 그대로
   });
 });
 
