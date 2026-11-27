@@ -11,7 +11,7 @@ export function DestinationsPill({ rows, windowDays, fade }: { rows: Destination
   return (
     <div
       data-testid="dest-pill"
-      className="pointer-events-none absolute inset-x-0 top-0 z-10 flex h-(--pill-h) items-center gap-2.5 px-[1.125rem] sm:gap-3.5 sm:px-7"
+      className="pointer-events-none absolute inset-x-0 top-0 z-10 flex h-[calc(var(--pill-h)-4px)] items-center gap-2.5 px-[1.125rem] sm:gap-3.5 sm:px-7"
       style={{ opacity: fade, transform: `translateY(${(1 - fade) * -8}px)` }}
     >
       <span className="flex shrink-0 gap-[0.3125rem]">
