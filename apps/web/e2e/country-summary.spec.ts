@@ -22,12 +22,10 @@ const docBox = async (loc: Locator, name: string) => {
   const sy = await loc.first().page().evaluate(() => window.scrollY);
   return { ...b, y: b.y + sy };
 };
-// 왼쪽 칸의 마지막 상자 아래 끝(문서 기준) — 한 줄 답 상자(country-oneline)가 요약 칸 아래에 있으면 그것
+// 왼쪽 칸의 마지막 상자 아래 끝(문서 기준) — 작업 0397 로 한 줄 답 상자를 지워 요약 칸이 마지막
 const leftBottom = async (page: Page) => {
   const f = await docBox(tid(page, "country-facts"), "facts");
-  const one = tid(page, "country-oneline");
-  const o = (await one.count()) ? await docBox(one, "oneline") : null;
-  return Math.max(f.y + f.height, o ? o.y + o.height : 0);
+  return f.y + f.height;
 };
 const hScroll = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 const BAD = [/한국수출입은행이/, /30분마다/, /사이트를 새로 만들/, /자료 없음 · /, /\d{4}-\d{2}-\d{2} \d{2}:\d{2} 확인/];
@@ -139,7 +137,7 @@ test.describe("높이 · 위치 고정", () => {
 
 // 두 칸 배치는 1024px 부터(lg) — 1023 이하는 설명 아래로 흐름(그대로). 작업 전 1124 · 1280 · 1440 은 왼쪽 글 끝과 카드 끝 차이가 약 360px
 //   카드는 내용 높이(stretch 없음 · lead 결정 — 카드 안 흰 빈칸이 더 어색) → 베트남: 왼쪽 칸 끝이 카드 끝과 24px 이내(빈자리 해소) ·
-//   일본: 왼쪽 열(요약 칸 + 한 줄 답)이 카드보다 길고 카드는 내용 높이 그대로(카드 아래 끝이 왼쪽 열 끝을 넘지 않음) · 카드 안 입력 위치는 나라를 바꿔도 같음
+//   일본: 왼쪽 열(요약 칸)이 카드보다 길고(작업 0397: 한 줄 답 상자를 지워 새 빈 공간 없음 — 오른쪽 여유 140px 이하) 카드는 내용 높이 그대로(카드 아래 끝이 왼쪽 열 끝을 넘지 않음) · 카드 안 입력 위치는 나라를 바꿔도 같음
 test.describe("두 칸 아래 끝 (1024 · 1124 · 1280 · 1440)", () => {
   test.beforeEach(({ isMobile }) => {
     test.skip(isMobile, "폭을 직접 맞춰 재는 검사 — 넓은 화면 프로젝트에서만");
@@ -161,7 +159,7 @@ test.describe("두 칸 아래 끝 (1024 · 1124 · 1280 · 1440)", () => {
         const sy = await page.evaluate(() => window.scrollY);
         const gap = card.y + sy + card.height - (await leftBottom(page));
         expect(gap, `두 칸 아래 끝 차이(카드 − 왼쪽 마지막 상자)=${Math.round(gap)}px`).toBeLessThanOrEqual(24); // 빈자리 해소(작업 전 약 360)
-        expect(gap, "카드와 왼쪽 열 끝이 24px 이내(베트남) · 일본은 왼쪽 열이 더 길어도 됨").toBeGreaterThanOrEqual(code === "JPN" ? -700 : -24);
+        expect(gap, "카드와 왼쪽 열 끝이 24px 이내(베트남) · 일본은 왼쪽 열이 더 길어도 됨").toBeGreaterThanOrEqual(code === "JPN" ? -140 : -24);
         if (code === "JPN") expect(card.height, "일본 카드는 내용 높이(안이 흰 빈칸으로 늘어나지 않음)").toBeLessThanOrEqual(520);
         expect(await hScroll(page)).toBeLessThanOrEqual(0);
       });
@@ -235,4 +233,48 @@ test.describe("반응형 — 겹침 · 넘침 · 넓은 글꼴", () => {
       });
     }
   }
+});
+
+// 작업 0397 — 나라 물가 '오늘 기준 한 줄 답' 상자 지움: 일본 · 베트남 · 마카오 화면 · HTML 에 없음 · 지운 뒤 머리 구역 겹침 · 넘침 없음
+test.describe("한 줄 답 상자 없음 (작업 0397)", () => {
+  for (const code of ["JPN", "VNM", "MAC"]) {
+    test(`${code} — 화면 · 서버 첫 그림에 '오늘 기준 한 줄 답' · country-oneline 없음 · 머리 구역 겹침 · 가로 스크롤 없음`, async ({ page }) => {
+      const h = await (await page.request.get(`/prices/${code}`)).text();
+      expect(h).not.toContain("오늘 기준 한 줄 답");
+      expect(h).not.toContain('data-testid="country-oneline"');
+      await page.goto(`/prices/${code}`);
+      await expect(tid(page, "country-oneline")).toHaveCount(0);
+      await expect(page.getByText("오늘 기준 한 줄 답")).toHaveCount(0);
+      await expect(tid(page, "country-facts")).toBeVisible();
+      expect(await hScroll(page)).toBeLessThanOrEqual(0);
+    });
+  }
+  test.describe("폭별 머리 구역", () => {
+    test.beforeEach(({ isMobile }) => {
+      test.skip(isMobile, "폭을 직접 맞춰 재는 검사 — 넓은 화면 프로젝트에서만");
+    });
+    for (const code of ["JPN", "VNM", "MAC"]) {
+      test(`${code} 390 · 900 · 1124 · 1440 — 제목 · 요약 칸 · 예산 카드 겹침 없음 · 넘침 없음 · 아래 구역이 머리 구역 바로 아래`, async ({ page }) => {
+        for (const w of [390, 900, 1124, 1440]) {
+          await page.setViewportSize({ width: w, height: 900 });
+          await page.goto(`/prices/${code}`);
+          await hydrated(tid(page, "budget"));
+          const r = await page.evaluate(() => {
+            const g = (s: string) => document.querySelector(s)?.getBoundingClientRect();
+            const rects = [g("h1"), g('[data-testid="country-facts"]'), g('[data-testid="budget"]')];
+            const inter = (a: DOMRect, b: DOMRect) => a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1;
+            const overlaps: string[] = [];
+            for (let i = 0; i < 3; i++) for (let j = i + 1; j < 3; j++) if (rects[i] && rects[j] && inter(rects[i]!, rects[j]!)) overlaps.push(`${i}-${j}`);
+            const next = g('[data-testid="next-card"]');
+            const bottoms = rects.filter(Boolean).map((x) => x!.bottom + window.scrollY);
+            return { overlaps, nextTop: next ? next.top + window.scrollY : 0, headBottom: Math.max(...bottoms), sx: document.documentElement.scrollWidth - document.documentElement.clientWidth };
+          });
+          expect(r.overlaps, `${code} ${w}px 겹침(0 제목 · 1 요약 칸 · 2 예산 카드)`).toEqual([]);
+          expect(r.sx, `${code} ${w}px 가로 스크롤`).toBeLessThanOrEqual(0);
+          expect(r.nextTop - r.headBottom, `${code} ${w}px 머리 구역과 아래 구역 사이`).toBeGreaterThanOrEqual(0);
+          expect(r.nextTop - r.headBottom, `${code} ${w}px 머리 구역 아래 빈 공간이 과하지 않음`).toBeLessThanOrEqual(260);
+        }
+      });
+    }
+  });
 });

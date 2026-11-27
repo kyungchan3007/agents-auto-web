@@ -3,7 +3,7 @@
 //   값은 날마다 달라서 문장 모양 · 연결 · 있고 없음만 봄 (물가 자료는 빌드 때 받은 것)
 //   builder 가 다는 표시(data-testid) — 모두 나라 페이지 안
 //     country-crumb     제목 위 경로 "여행 물가 › 일본" · 안에 "여행 물가" 링크(/prices)
-//     country-oneline   오늘 기준 한 줄 답 상자 (글 "오늘 기준 한 줄 답" 으로 시작) — 통화가 없는 나라는 상자 자체가 없음
+//     (작업 0397: country-oneline 한 줄 답 상자는 지움 — 화면 · HTML 어디에도 없음)
 //     next-card         "다음으로 볼 것" 카드 정확히 3장 (환전 · 항공권 · 예산) · 카드마다 링크 하나: 환전 → /currencies/<통화> · 예산 → #budget
 //     compare-link      "○○과 견줘 볼 나라" 링크 네 곳 → /prices/XXX (자기 나라 아님)
 //     faq-item          <details> 문항 · 처음 두 개는 open 속성 · JSON-LD FAQPage 와 같은 문항
@@ -22,11 +22,11 @@ const html = async (page: Page, path: string) => {
 const ldTypes = (h: string) => [...h.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]) as { "@type": string; mainEntity?: { name: string }[] });
 
 test.describe("나라 페이지 정적 HTML — 서버 첫 그림 (작업 0344)", () => {
-  test("/prices/JPN — 제목 문장 · 한 줄 답 · 메타 · FAQPage 가 자바스크립트 없이 들어 있음", async ({ page }) => {
+  test("/prices/JPN — 제목 문장 · 메타 · FAQPage 가 자바스크립트 없이 들어 있음", async ({ page }) => {
     const h = await html(page, "/prices/JPN");
     expect(h).toMatch(/<h1[^>]*>[\s\S]*?일본은 한국보다 물가가 \d+% (높습니다|낮습니다)|<h1[^>]*>[\s\S]*?일본은 한국과 물가가 비슷합니다/);
-    expect(h).toContain("오늘 기준 한 줄 답");
-    expect(h).toMatch(/오늘 100엔은 [\d,.]+원/);
+    expect(h).not.toContain("오늘 기준 한 줄 답"); // 작업 0397: 상자를 지움
+    expect(h).not.toContain('data-testid="country-oneline"');
     expect(h).toMatch(/<title>[^<]*일본[^<]*<\/title>/);
     expect(h).toMatch(/<meta name="description" content="[^"]{20,}"/);
     expect(h).toMatch(/<link rel="canonical" href="https?:\/\/[^"]+\/prices\/JPN\/?"/);
@@ -39,7 +39,7 @@ test.describe("나라 페이지 정적 HTML — 서버 첫 그림 (작업 0344)"
     for (const q of faq!.mainEntity!) expect(h).toContain(q.name.replace(/&/g, "&amp;"));
   });
 
-  test("/prices/MAC — 마카오(통화 없음): 제목 문장은 있고 한 줄 답 상자 · 환전 문항은 없음", async ({ page }) => {
+  test("/prices/MAC — 마카오(통화 없음): 제목 문장은 있고 한 줄 답 상자 없음 · 환전 문항은 없음", async ({ page }) => {
     const h = await html(page, "/prices/MAC");
     expect(h).toMatch(/마카오(는|은) 한국/);
     expect(h).not.toContain('data-testid="country-oneline"');
@@ -71,10 +71,10 @@ test.describe("나라 페이지 화면 (작업 0344 · 시안 1-new · 2-new · 
     await expect(tid(page, "budget").getByLabel("나라")).toHaveValue("JPN");
   });
 
-  test("한 줄 답 상자 — 날짜 · 오늘 값 · 1년 평균 대비", async ({ page }) => {
-    const box = tid(page, "country-oneline");
-    await expect(box).toContainText(/오늘 기준 한 줄 답 · \d{4}-\d{2}-\d{2}/);
-    await expect(box).toContainText(/오늘 100엔은 [\d,.]+원/);
+  test("한 줄 답 상자는 없음 — 화면 · HTML 어디에도 \"오늘 기준 한 줄 답\" 이 없음 (작업 0397)", async ({ page }) => {
+    await expect(tid(page, "country-oneline")).toHaveCount(0);
+    await expect(page.getByText("오늘 기준 한 줄 답")).toHaveCount(0);
+    await expect(tid(page, "country-facts")).toBeVisible(); // 요약 칸(0396)이 머리 구역 왼쪽 맨 아래 상자
   });
 
   test("다음으로 볼 것 — 카드 정확히 세 장 · 환전은 통화 상세로 · 예산은 예산 카드로", async ({ page }) => {
