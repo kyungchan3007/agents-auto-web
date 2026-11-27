@@ -186,6 +186,7 @@ export function auditDom(): Violation[] {
       if (!asBox && !(containerTags.has(e.tagName) && hasBoxInside(e))) continue;
       const s = getComputedStyle(e);
       if (!(s.display === "block" || s.display === "flex" || s.display === "grid" || s.display === "list-item" || s.display === "table" || s.display === "flow-root" || s.display === "inline-flex" || s.display === "inline-block")) continue;
+      if (e.closest("[data-testid='hero-passes']")) continue; // 탑승권 카드(가운데 놓인 장식 묶음) 안 요소는 기둥 점검 밖(lead 결정)
       if (e.tagName === "SPAN" || s.transform !== "none") continue; // 꼬리표 · 배지(span)와 기울인 장식은 글 줄의 일부
       const r = e.getBoundingClientRect();
       if (r.width < W * 0.3 || r.height < 24 || r.width >= W - 1) continue;
