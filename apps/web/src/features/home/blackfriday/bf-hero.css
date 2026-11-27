@@ -175,6 +175,12 @@
 .bf-fine p {
   margin: 0;
 }
+/* 좁은 폭에서 안내 글이 대체 글꼴로는 1줄 · Pretendard 로는 2줄이라 글꼴이 오면 hero 가 늘어남 — 2줄 높이(글 크기 · 줄 높이와 같은 em)로 미리 잡음 (작업 0389) */
+@media (max-width: 480px) {
+  .bf-fine [data-testid="bf-note"] {
+    min-height: 3em;
+  }
+}
 
 /* 영수증 — 카드 폭(cqw)이 글자 크기를 정하고 안은 모두 em */
 .bf-rcpt-wrap {
