@@ -86,6 +86,9 @@ const rangeText = (ws: number[]) => {
   return out.join(", ");
 };
 
+// 변형마다 따로 열어 재므로 한 파일 안에서도 나란히 돌려 시간을 줄임(CI · 로컬 모두)
+test.describe.configure({ mode: "parallel" });
+
 test.beforeEach(({ isMobile }) => {
   test.skip(isMobile, "폭을 직접 맞춰 재는 점검 — 넓은 화면 프로젝트에서만");
 });
