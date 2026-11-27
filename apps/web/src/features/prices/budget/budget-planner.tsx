@@ -15,7 +15,7 @@ export function BudgetPlanner({ rows, latestOf, className = "", initial = null }
   const { sorted, country, setCountry, daily, setDaily, days, setDays, row, d, n, latest, empty, budget: b } = useBudgetPlanner(rows, latestOf, initial);
 
   return (
-    <section id="budget" data-testid="budget" aria-labelledby="budget-title" className={`scroll-mt-(--hav-nav-h) rounded-[1.5rem] border border-line bg-card px-5 py-6 text-fg shadow-ticket sm:px-8 sm:py-8 lg:px-[30px] lg:pt-7 lg:pb-[26px] ${className}`}>
+    <section id="budget" data-testid="budget" aria-labelledby="budget-title" className={`scroll-mt-(--hav-nav-h) rounded-[1.5rem] border border-line bg-card px-5 py-6 text-fg shadow-ticket sm:px-8 sm:py-8 lg:px-[30px] lg:pt-7 lg:pb-[26px] flex flex-col ${className}`}>
       <SectionTitle id="budget-title" className="text-[1.75rem] leading-tight text-fg">
         여행 하루 예산
       </SectionTitle>
@@ -39,7 +39,7 @@ export function BudgetPlanner({ rows, latestOf, className = "", initial = null }
         </FieldLabel>
       </form>
 
-      <div className="mt-5 border-t-2 border-dashed border-line pt-5" aria-live="polite">
+      <div className="mt-5 flex flex-1 flex-col border-t-2 border-dashed border-line pt-5" aria-live="polite">
         {!row ? null : empty ? (
           <DataEmpty {...empty} />
         ) : d == null ? (
@@ -58,6 +58,7 @@ export function BudgetPlanner({ rows, latestOf, className = "", initial = null }
                   <CountUp value={b.totalWon} suffix="원" />
                 </span>
               </p>
+              <div aria-hidden className="flex-1" />
               <p className="mt-3 text-small text-fg-2">
                 {row.name} 물가는 한국보다 {relativeText(row.relative)} ({row.year}년)
                 {b.dailyLocal != null && row.currency && latest ? ` · 하루 ≈ ${localText(b.dailyLocal, row.currency)} (${latest.date} 매매기준율)` : ""}
