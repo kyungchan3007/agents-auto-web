@@ -3,7 +3,6 @@
 // 블랙프라이데이 hero (작업 0381 · 시안 .tmp/hero 의 '블랙프라이데이') — 왼쪽 문구 · 계산기 · 오른쪽 감열지 영수증 · 기간 동안만 기본 hero 대신 보임(bf-hero.css 가 html data-hero 로 하나만 보이게 함)
 //   그리기만 — 계산은 bf-calc · 기간은 bf-period · 모션은 use-bf-receipt · 입력값은 보내지 않고 저장하지 않음(IMP-01)
 import type { FxRate } from "@hav/shared/fx";
-import { ROUTE_LABEL } from "@/shared/customs/rules";
 import type { CustomsRate } from "@/shared/customs/customs-rate";
 import { BF_COPY } from "./bf-copy";
 import { heroDraw, TITLE_REST } from "./bf-hero-view";
@@ -45,12 +44,14 @@ export function BfHero({ rates, customs }: { rates: FxRate[]; customs: Record<st
               <span className="bf-cur" aria-hidden="true">
                 $
               </span>
-              <input data-testid="bf-amount" aria-label="금액(달러)" inputMode="numeric" pattern="[0-9]*" autoComplete="off" placeholder="장바구니 금액" value={calc.amount} onChange={calc.onAmount} onCompositionStart={calc.onCompositionStart} onCompositionEnd={calc.onCompositionEnd} />
-              <select data-testid="bf-route" aria-label="통관 방식" value={calc.route} onChange={calc.onRoute}>
-                <option value="us-list">{ROUTE_LABEL["us-list"]}</option>
-                <option value="other">{ROUTE_LABEL.other}</option>
-              </select>
+              <input data-testid="bf-amount" aria-label="금액(달러)" aria-describedby="bf-route-note" inputMode="numeric" pattern="[0-9]*" autoComplete="off" placeholder="장바구니 금액" value={calc.amount} onChange={calc.onAmount} onCompositionStart={calc.onCompositionStart} onCompositionEnd={calc.onCompositionEnd} />
+              <span data-testid="bf-route" aria-hidden="true" className="bf-route">
+                {BF_COPY.route}
+              </span>
             </div>
+            <span id="bf-route-note" className="sr-only">
+              {BF_COPY.routeNote}
+            </span>
             <div className="bf-out" aria-live="polite">
               {r.kind === "idle" && (
                 <span data-testid="bf-hint" className="bf-won bf-muted">

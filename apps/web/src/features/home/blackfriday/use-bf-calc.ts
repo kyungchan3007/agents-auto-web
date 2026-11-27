@@ -5,21 +5,18 @@
 import type { FxRate } from "@hav/shared/fx";
 import { kstDate } from "@hav/shared/date";
 import { type ChangeEvent, type CompositionEvent, useRef, useState } from "react";
-import type { Route } from "@/shared/customs/rules";
 import { type CustomsRate, pickRate } from "@/shared/customs/customs-rate";
-import { type BfPicked, bfCalc } from "./bf-calc";
+import { BF_ROUTE, type BfPicked, bfCalc } from "./bf-calc";
 import { digitsOnly } from "./bf-digits";
 
 export function useBfCalc(rates: FxRate[], customs: Record<string, CustomsRate> | null) {
   const [amount, setAmount] = useState("");
-  const [route, setRoute] = useState<Route>("us-list");
   const composing = useRef(false);
   const table = Object.fromEntries(rates.map((r) => [r.currency, r]));
   const picked: BfPicked | null = pickRate("USD", table, customs, kstDate());
   return {
     amount,
-    route,
-    result: bfCalc({ amount, route }, picked),
+    result: bfCalc({ amount, route: BF_ROUTE }, picked),
     /** 1달러당 원 · 환율이 없으면 null (영수증 원화는 빈 칸) */
     perUsd: picked ? picked.rate.baseRate / picked.rate.unit : null,
     onAmount: (e: ChangeEvent<HTMLInputElement>) => {
@@ -35,6 +32,5 @@ export function useBfCalc(rates: FxRate[], customs: Record<string, CustomsRate> 
       e.currentTarget.value = clean;
       setAmount(clean);
     },
-    onRoute: (e: ChangeEvent<HTMLSelectElement>) => setRoute(e.target.value === "other" ? "other" : "us-list"),
   };
 }
