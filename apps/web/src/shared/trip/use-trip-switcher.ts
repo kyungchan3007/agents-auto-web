@@ -62,6 +62,11 @@ export function useTripSwitcher() {
     activeId: expanded && active >= 0 ? ids.option(active) : undefined,
     choose,
     setActive,
+    /** 붙기 전에 입력칸에 쓴 글을 상태로 이어받음 (느린 기기 · 작업 0394) */
+    adopt: (text: string) => {
+      setQuery(text);
+      setActive(-1);
+    },
     onChange: (e: ChangeEvent<HTMLInputElement>) => {
       setQuery(e.target.value);
       setActive(-1);

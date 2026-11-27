@@ -12,6 +12,10 @@ import { airportOf } from "./hero-pick";
 export function useHeroAsk() {
   const s = useTripSwitcher();
   const deck = useHeroDeckValue();
+  // React 가 붙기 전에 입력칸에 쓴 글자는 칸에 남음 — 붙을 때 칸 값이 상태와 다르면 상태로 이어받아야 제안이 뜸 (작업 0394)
+  const mountInput = (el: HTMLInputElement | null) => {
+    if (el && el.value !== "" && el.value !== s.query) s.adopt(el.value);
+  };
   const pick = (hit: DestinationHit) => {
     s.choose(hit);
     deck.pick(hit);
@@ -22,6 +26,7 @@ export function useHeroAsk() {
     if (hit) pick(hit);
   };
   return {
+    mountInput,
     chips: heroChips(),
     query: s.query,
     hits: s.hits.map((hit) => ({ hit, code: airportOf(hit.city) })),
