@@ -48,19 +48,28 @@ async function measure(loc: Locator) {
     const finite = () => document.getAnimations().filter((a) => a.effect && a.effect.getComputedTiming().iterations !== Number.POSITIVE_INFINITY && a.playState !== "finished");
     await Promise.race([Promise.all(finite().map((a) => a.finished.catch(() => undefined))), new Promise((res) => setTimeout(res, 3000))]);
     await new Promise((res) => requestAnimationFrame(() => requestAnimationFrame(res)));
-    // 작업 0395: 화면에 들어오면 시작하는 등장 움직임은 스크롤 직후 한 박자 늦게 시작해 위 대기가 빈 목록을 보고 끝날 수 있음(CI 에서 more-currencies 가운데를 눌러도 다른 요소) — 요소 위치가 12프레임 연속 같을 때까지(최대 3초) 기다린 뒤 잼
-    await new Promise<void>((res) => {
-      let last = Number.NaN, same = 0;
-      const t0 = performance.now();
-      const tick = () => {
-        const top = el.getBoundingClientRect().top;
-        same = top === last ? same + 1 : 0;
-        last = top;
-        if (same >= 12 || performance.now() - t0 > 3000) res();
-        else requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    });
+    // 작업 0395: 화면에 들어오면 시작하는 등장 움직임 · 아래 구역(도착지별 환전 타이밍)이 들어올 때 435 → 984px 로 늘어나는 높이 변화 때문에, 가운데로 가져온 요소가 다시 화면 아래로 밀리거나 움직이는 중에 재면 "가운데를 눌러도 다른 요소"(CI)
+    //   → 요소 위치가 12프레임 연속 같을 때까지(최대 3초) 기다리고 · 화면 밖으로 밀렸으면 다시 가운데로 가져와 같은 일을 반복(최대 4번)
+    const settle = () =>
+      new Promise<void>((res) => {
+        let last = Number.NaN, same = 0;
+        const t0 = performance.now();
+        const tick = () => {
+          const top = el.getBoundingClientRect().top;
+          same = top === last ? same + 1 : 0;
+          last = top;
+          if (same >= 12 || performance.now() - t0 > 3000) res();
+          else requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+    for (let n = 0; n < 4; n++) {
+      await settle();
+      const b = el.getBoundingClientRect();
+      const c = b.top + b.height / 2;
+      if (c >= 0 && c <= innerHeight && Math.abs(c - innerHeight / 2) < 4) break;
+      (el as HTMLElement).scrollIntoView({ block: "center", inline: "center" });
+    }
     const r = el.getBoundingClientRect();
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
     const hit = (x: number, y: number) => { const h = document.elementFromPoint(x, y); return !!h && (el === h || el.contains(h)); };
