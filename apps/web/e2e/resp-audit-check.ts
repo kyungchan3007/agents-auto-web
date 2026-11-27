@@ -172,6 +172,11 @@ export function auditDom(): Violation[] {
     const isBox = (e: Element): boolean => {
       if (boxTags.has(e.tagName.toUpperCase())) return true;
       const cs = getComputedStyle(e);
+      // 링크(a)는 바탕이 있거나 위·왼쪽까지 테두리가 둘러야 상자 — 밑줄만(border-bottom) 있는 링크는 글(lead 기준)
+      if (e.tagName === "A") {
+        const hasBg = !/rgba\(0, 0, 0, 0\)|transparent/.test(cs.backgroundColor) || cs.backgroundImage !== "none";
+        return hasBg || (parseFloat(cs.borderTopWidth) > 0 && parseFloat(cs.borderLeftWidth) > 0);
+      }
       const border = ["Top", "Right", "Bottom", "Left"].some((d) => parseFloat(cs.getPropertyValue(`border-${d.toLowerCase()}-width`)) > 0 && cs.getPropertyValue(`border-${d.toLowerCase()}-style`) !== "none");
       const bg = !/rgba\(0, 0, 0, 0\)|transparent/.test(cs.backgroundColor) || cs.backgroundImage !== "none";
       return border || bg || cs.boxShadow !== "none";
