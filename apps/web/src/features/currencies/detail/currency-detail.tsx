@@ -8,7 +8,7 @@ import type { PriceLevels } from "@hav/shared/prices";
 import type { CurrencySignal } from "@hav/shared/signal";
 import { countriesOf } from "@hav/shared/travel";
 import { pinBasis } from "@/shared/signal/signal-pin-text";
-import { emptyProps } from "@hav/shared/fx-schedule";
+import { emptyProps, fxGiven } from "@hav/shared/fx-schedule";
 import { DataEmpty } from "@hav/ui/feedback/data-empty";
 import { FreshnessNote } from "@/shared/rate/freshness-note";
 import { BigRateNumber } from "./header/big-rate-number";
@@ -30,7 +30,7 @@ export type DetailData = { code: string; rate: FxRate | null; signal: Fetched<Cu
 export function CurrencyDetail({ code, rate, signal, history, levels = null }: DetailData) {
   const name = currencyName(code);
   if (!rate) {
-    return <DataEmpty {...emptyProps({ screen: "currency", name: `${name}(${code})` })} />;
+    return <DataEmpty {...emptyProps({ screen: "currency", name: `${name}(${code})`, given: fxGiven(code) })} />;
   }
   const t = rateText(rate);
   const big = bigRate(rate);

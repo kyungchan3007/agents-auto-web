@@ -9,11 +9,17 @@ export const FX_SCHEDULE_TEXT =
 export type EmptyScreen = "calc" | "prices" | "currency";
 export type EmptyLink = { label: string; href: string };
 
-/** 빈 이유 — "none" 수출입은행이 주지 않는 통화 · "late" 주는 통화인데 오늘 값이 아직 없음 */
-export type EmptyKind = "none" | "late";
+/**
+ * 한국수출입은행이 환율을 주는 통화 (작업 0396) — 목록 한 곳
+ * 출처: 한국수출입은행 현재환율 API 가 고시하는 통화 22개(docs/domain/fx.md FX-09 의 "22개") · 새 통화가 생기면 이 목록만 고침
+ * 여기 없는 통화(동 VND · 대만 달러 TWD 등)는 "제공 안 함" · 있는데 오늘 값이 없으면 "늦음"
+ */
+const FX_GIVEN = new Set(["AED", "AUD", "BHD", "BND", "CAD", "CHF", "CNH", "DKK", "EUR", "GBP", "HKD", "IDR", "JPY", "KWD", "MYR", "NOK", "NZD", "SAR", "SEK", "SGD", "THB", "USD"]);
+/** 수출입은행이 주는 통화인가 — 통화가 없으면(null · 빈 글) false */
+export const fxGiven = (currency: string | null): boolean => !!currency && FX_GIVEN.has(currency);
 
 /** 화면별 제목 · 그동안 볼 수 있는 곳 — 제목만 두 갈래(직구 계산은 계산을 멈췄다는 뜻을 유지) */
-export function emptyCopy(p: { screen: EmptyScreen; name?: string; kind?: EmptyKind }): { title: string; links: EmptyLink[] } {
+export function emptyCopy(p: { screen: EmptyScreen; name?: string; /** 수출입은행이 주는 통화인가 — 기본 true(늦음) */ given?: boolean }): { title: string; links: EmptyLink[] } {
   const name = p.name ?? "";
   if (p.screen === "calc")
     return {
@@ -24,7 +30,7 @@ export function emptyCopy(p: { screen: EmptyScreen; name?: string; kind?: EmptyK
         { label: "여행 물가", href: "/prices" },
       ],
     };
-  const title = p.kind === "none" ? `${name} 환율은 아직 제공되지 않습니다` : `${name} 오늘 환율을 아직 받지 못했습니다`.trim();
+  const title = p.given === false ? `${name} 환율은 아직 제공되지 않습니다` : p.screen === "prices" ? "오늘 환율을 아직 받지 못했습니다" : `${name} 오늘 환율을 아직 받지 못했습니다`;
   if (p.screen === "prices")
     return {
       title,

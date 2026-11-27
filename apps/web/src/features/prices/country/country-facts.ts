@@ -3,10 +3,11 @@
 import type { Fetched } from "@hav/shared/api";
 import type { PriceLevels } from "@hav/shared/prices";
 import type { SignalList } from "@hav/shared/signal";
-import { type Facts, factsFor } from "@/shared/facts/facts";
+import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
+import { type Facts, factsOf } from "@/shared/facts/facts";
 
 export function countryFacts(code: string, levels: PriceLevels | null, signals: Fetched<SignalList>): Facts {
   const list = signals.ok ? signals.data.signals : [];
   const rates = list.flatMap((s) => (s.latest ? [{ currency: s.currency, unit: 1, baseRate: s.latest.value }] : []));
-  return factsFor({ country: code, rates, signals: list, levels, windowDays: signals.ok ? signals.data.rule.windowDays : 90 });
+  return factsOf({ country: code, title: TRAVEL_COUNTRIES[code]?.name ?? "", rates, signals: list, levels, windowDays: signals.ok ? signals.data.rule.windowDays : 90 });
 }
