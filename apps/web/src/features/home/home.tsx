@@ -4,6 +4,7 @@ import type { Fetched } from "@hav/shared/api";
 import { SiteNav } from "@/shared/nav/site-nav";
 import type { FxLatest } from "@hav/shared/fx";
 import type { IndicatorSeries } from "@hav/shared/indicators";
+import type { PriceLevels } from "@hav/shared/prices";
 import type { SignalList } from "@hav/shared/signal";
 import { DestinationsSection } from "./destinations/destinations-section";
 import { BfHero } from "./blackfriday/bf-hero";
@@ -17,9 +18,9 @@ import { moreCurrenciesCount } from "./destinations/more-currencies";
 import { DESTINATIONS } from "./common/places";
 import { travelTiming } from "./timing/travel-timing";
 
-export type HomeData = { latest: Fetched<FxLatest>; signals: Fetched<SignalList>; airFare: Fetched<IndicatorSeries>; /** 나라 페이지가 만들어지는 나라 코드 (작업 0344 countryTargets · 0347) */ pageCodes?: readonly string[]; /** 직구 계산기와 같은 관세청 과세환율(달러) · 블프 hero 계산기가 씀 (작업 0381) */ customs?: Record<string, CustomsRate> | null };
+export type HomeData = { latest: Fetched<FxLatest>; signals: Fetched<SignalList>; airFare: Fetched<IndicatorSeries>; /** 나라 페이지가 만들어지는 나라 코드 (작업 0344 countryTargets · 0347) */ pageCodes?: readonly string[]; /** 직구 계산기와 같은 관세청 과세환율(달러) · 블프 hero 계산기가 씀 (작업 0381) */ customs?: Record<string, CustomsRate> | null; /** 물가 수준 — 기본 hero 숫자 칸의 "물가" (작업 0393 · 못 받으면 null) */ levels?: PriceLevels | null };
 
-export function Home({ latest, signals, airFare, customs = null }: HomeData) {
+export function Home({ latest, signals, airFare, customs = null, levels = null, pageCodes = [] }: HomeData) {
   const rates = latest.ok ? latest.data.rates : [];
   const signalRows = signals.ok ? signals.data.signals : [];
   const windowDays = signals.ok ? signals.data.rule.windowDays : 90;
@@ -32,7 +33,7 @@ export function Home({ latest, signals, airFare, customs = null }: HomeData) {
       <HeroCarousel
         slides={{
           bf: <BfHero rates={rates} customs={customs} />,
-          sea: <HeroSection timing={timing} rates={rates} signals={signalRows} windowDays={windowDays} />,
+          sea: <HeroSection timing={timing} rates={rates} signals={signalRows} windowDays={windowDays} levels={levels} pageCodes={pageCodes} />,
         }}
       />
       <YearBars timing={timing} />

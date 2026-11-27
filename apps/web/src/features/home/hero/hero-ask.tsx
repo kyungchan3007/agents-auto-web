@@ -1,9 +1,10 @@
 "use client";
 
-// hero 왼쪽 입력창 · 칩 (작업 0380) — 그리기만 (상태는 use-hero-ask) · 기존 여행지 고르기와 같은 상태라 여기서 고르면 아래 탑승권 카드도 같은 나라로 바뀜
+// hero 왼쪽 입력창 · 칩 · 고른 곳 숫자 칸 (작업 0380 · 0393) — 그리기만 (상태는 use-hero-ask) · 기존 여행지 고르기와 같은 상태라 여기서 고르면 아래 탑승권 카드도 같은 나라로 바뀜
 import { Flag } from "@hav/ui/data/flag";
 import { TRAVEL_COUNTRIES } from "@hav/shared/travel";
 import { HERO_GUIDE } from "../timing/hero-guide";
+import { HeroPickFacts } from "./hero-pick-facts";
 import { useHeroAsk } from "./use-hero-ask";
 
 export function HeroAsk() {
@@ -42,7 +43,7 @@ export function HeroAsk() {
         </form>
         {a.expanded && (
           <ul id={a.ids.list} role="listbox" aria-label="도시 · 나라 제안" className="hp-list">
-            {a.hits.map((hit, i) => (
+            {a.hits.map(({ hit, code }, i) => (
               <li
                 key={`${hit.country}-${hit.city}`}
                 id={a.ids.option(i)}
@@ -53,7 +54,10 @@ export function HeroAsk() {
                 onMouseMove={() => i !== a.active && a.setActive(i)}
                 data-active={String(i === a.active)}
               >
-                {hit.label}
+                <span>{hit.label}</span>
+                <span data-testid="hero-suggest-code" className="hp-code-sug">
+                  {code}
+                </span>
               </li>
             ))}
           </ul>
@@ -75,6 +79,7 @@ export function HeroAsk() {
           </li>
         ))}
       </ul>
+      <HeroPickFacts />
     </div>
   );
 }

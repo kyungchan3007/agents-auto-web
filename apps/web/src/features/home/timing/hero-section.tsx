@@ -5,18 +5,19 @@ import type { RateRow, SignalRow } from "../common/destinations";
 import { HeroAsk } from "../hero/hero-ask";
 import { HeroDeckProvider } from "../hero/hero-deck";
 import { heroPassView } from "../hero/hero-pass";
+import type { HeroData } from "../hero/use-hero-deck";
 import { HeroPasses } from "../hero/hero-passes";
 import "../hero/hero.css";
 import { HERO_GUIDE } from "./hero-guide";
 import { type TravelTiming, heroParts, travelTimingCopy } from "./travel-timing";
 
-export function HeroSection({ timing, rates = [], signals = [], windowDays = 90 }: { timing: TravelTiming; rates?: RateRow[]; signals?: SignalRow[]; windowDays?: number }) {
+export function HeroSection({ timing, rates = [], signals = [], windowDays = 90, levels = null, pageCodes = [] }: { timing: TravelTiming; rates?: RateRow[]; signals?: SignalRow[]; windowDays?: number; levels?: HeroData["levels"]; pageCodes?: readonly string[] }) {
   const copy = travelTimingCopy(timing);
   const parts = heroParts(timing);
   const view = heroPassView(rates, signals, windowDays, parts?.month ?? "");
   return (
     <section data-testid="home-hero" data-surface="dark" aria-labelledby="timing-title" className="hp-hero bg-surface text-fg">
-      <HeroDeckProvider>
+      <HeroDeckProvider data={{ rates, signals, levels, windowDays, month: parts?.month ?? "", pageCodes }}>
         <div className="hp-inner">
           <div className="hp-copy">
             {parts ? (
@@ -41,7 +42,7 @@ export function HeroSection({ timing, rates = [], signals = [], windowDays = 90 
             )}
             <HeroAsk />
           </div>
-          <HeroPasses cards={view.cards} tags={view.tags} monthLabel={view.monthLabel} />
+          <HeroPasses tags={view.tags} monthLabel={view.monthLabel} />
         </div>
       </HeroDeckProvider>
     </section>
