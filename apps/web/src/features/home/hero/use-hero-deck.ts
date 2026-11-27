@@ -19,11 +19,13 @@ const OUT_MS = 650;
 /** 서버(홈)에서 받아 hero 에 넘기는 값 */
 export type HeroData = { rates: RateRow[]; signals: SignalRow[]; levels: PriceLevels | null; windowDays: number; month: string; pageCodes: readonly string[] };
 
-type Snap = { order: string[]; leaving: boolean; extras: DestinationHit[]; picked: DestinationHit | null };
+type Snap = { order: string[]; leaving: boolean; /** 넘기는 동안 고른 장의 번호 */ to: string | null; extras: DestinationHit[]; picked: DestinationHit | null };
 
 export type HeroDeck = {
   order: string[];
   leaving: boolean;
+  /** 넘기는 동안 사용자가 고른 장의 번호 — 그 장은 맨 앞 밑에 전환 없이 먼저 놓임 */
+  to: string | null;
   /** 탑승권 — 네 도시 + 고른 덱 밖 장 · 그리는 순서는 늘 같고 자리는 order 가 정함 */
   cards: PassCard[];
   /** 사용자가 고른 장의 번호(안 골랐으면 null) */
@@ -38,11 +40,11 @@ export type HeroDeck = {
   pick: (hit: DestinationHit) => void;
 };
 
-export const EMPTY_DECK: HeroDeck = { order: [], leaving: false, cards: [], pickedId: null, shown: null, facts: null, link: null, mine: false, pick: () => undefined };
+export const EMPTY_DECK: HeroDeck = { order: [], leaving: false, to: null, cards: [], pickedId: null, shown: null, facts: null, link: null, mine: false, pick: () => undefined };
 
 export function useHeroDeck(data: HeroData): HeroDeck {
   const reduce = useReducedMotion();
-  const [snap, setSnap] = useState<Snap>(() => ({ order: PASS_CITIES.map((c) => c.id), leaving: false, extras: [], picked: null }));
+  const [snap, setSnap] = useState<Snap>(() => ({ order: PASS_CITIES.map((c) => c.id), leaving: false, to: null, extras: [], picked: null }));
   const ref = useRef(snap);
   const pinned = useRef(false);
   const queued = useRef<DestinationHit | null>(null);
@@ -70,15 +72,12 @@ export function useHeroDeck(data: HeroData): HeroDeck {
       }
       const fresh = hit && !cur.order.includes(id);
       const extras = fresh ? [...cur.extras, hit] : cur.extras;
-      // 맨 앞이 사라지는 동안 고른 장이 이미 1번 자리에 있어야 엉뚱한 도시가 드러나지 않음 — [맨 앞, 고른 장, …나머지]
-      const front = cur.order[0] ?? id;
-      const order = hit ? [front, id, ...cur.order.filter((x) => x !== front && x !== id)] : cur.order;
-      set({ order, leaving: true, extras, picked: hit ?? cur.picked });
+      set({ order: fresh ? [...cur.order, id] : cur.order, leaving: true, to: hit ? id : null, extras, picked: hit ?? cur.picked });
       timer.current = setTimeout(
         () => {
           const now = ref.current;
           const order = frontWith(now.order, id);
-          set({ order, leaving: false, extras: now.extras.filter((h) => order.includes(pickCardId(h))), picked: now.picked });
+          set({ order, leaving: false, to: null, extras: now.extras.filter((h) => order.includes(pickCardId(h))), picked: now.picked });
           const q = queued.current;
           queued.current = null;
           if (q) again.current(q);
@@ -116,7 +115,7 @@ export function useHeroDeck(data: HeroData): HeroDeck {
     const cur = ref.current;
     const fresh = !cur.order.includes(id);
     pinned.current = true;
-    set({ order: frontWith(fresh ? [...cur.order, id] : cur.order, id), leaving: false, extras: fresh ? [...cur.extras, hit] : cur.extras, picked: hit });
+    set({ order: frontWith(fresh ? [...cur.order, id] : cur.order, id), leaving: false, extras: fresh ? [...cur.extras, hit] : cur.extras, picked: hit, to: null });
   }, [saved, set]);
 
   const front = hitOfCard(snap.order[0] ?? "", snap.extras);
@@ -126,6 +125,7 @@ export function useHeroDeck(data: HeroData): HeroDeck {
   return {
     order: snap.order,
     leaving: snap.leaving,
+    to: snap.to,
     cards,
     pickedId: snap.picked ? cardIdOf(snap.picked) : null,
     shown,
