@@ -69,6 +69,10 @@ main:focus {
 [data-testid="dest-list"][data-boot] [data-testid="dest-pill"] {
   display: none;
 }
+/* 알약으로 접힌 동안 줄은 보이지 않고(opacity 0) 눌리지도 않음 — 펼침이 시작되면 보임 (겹쳐 놓인 알약 글 아래 줄이 초점을 받지 않게) */
+[data-testid="dest-list"][data-state="pill"] [data-testid="dest-row"] {
+  visibility: hidden;
+}
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
   [data-testid="dest-list"][data-boot] {
     --vh: var(--pill-h);
