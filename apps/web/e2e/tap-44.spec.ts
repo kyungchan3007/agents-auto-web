@@ -48,6 +48,19 @@ async function measure(loc: Locator) {
     const finite = () => document.getAnimations().filter((a) => a.effect && a.effect.getComputedTiming().iterations !== Number.POSITIVE_INFINITY && a.playState !== "finished");
     await Promise.race([Promise.all(finite().map((a) => a.finished.catch(() => undefined))), new Promise((res) => setTimeout(res, 3000))]);
     await new Promise((res) => requestAnimationFrame(() => requestAnimationFrame(res)));
+    // 작업 0395: 화면에 들어오면 시작하는 등장 움직임은 스크롤 직후 한 박자 늦게 시작해 위 대기가 빈 목록을 보고 끝날 수 있음(CI 에서 more-currencies 가운데를 눌러도 다른 요소) — 요소 위치가 12프레임 연속 같을 때까지(최대 3초) 기다린 뒤 잼
+    await new Promise<void>((res) => {
+      let last = Number.NaN, same = 0;
+      const t0 = performance.now();
+      const tick = () => {
+        const top = el.getBoundingClientRect().top;
+        same = top === last ? same + 1 : 0;
+        last = top;
+        if (same >= 12 || performance.now() - t0 > 3000) res();
+        else requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
     const r = el.getBoundingClientRect();
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
     const hit = (x: number, y: number) => { const h = document.elementFromPoint(x, y); return !!h && (el === h || el.contains(h)); };
