@@ -52,6 +52,15 @@ html:has([data-testid="hero-carousel"]) header[data-surface="dark"] {
 html[data-hero="bf"]:has([data-testid="hero-carousel"]):not([data-slide="sea"]) header[data-surface="dark"] {
   background: var(--hav-bf-bg);
 }
+/* 휴대폰(sm 미만)에서 펼친 메뉴 판도 같은 바탕 — 넓은 화면은 판이 투명이라 그대로 */
+@media (max-width: 639px) {
+  html:has([data-testid="hero-carousel"]) header[data-surface="dark"] nav > ul {
+    transition: background-color 0.5s;
+  }
+  html[data-hero="bf"]:has([data-testid="hero-carousel"]):not([data-slide="sea"]) header[data-surface="dark"] nav > ul {
+    background: var(--hav-bf-bg);
+  }
+}
 
 /* 알약 · ‹ › */
 .hc-nav {
@@ -161,7 +170,8 @@ html[data-hero="bf"]:has([data-testid="hero-carousel"]):not([data-slide="sea"]) 
 @media (prefers-reduced-motion: reduce) {
   .hc,
   .hc-slide,
-  html:has([data-testid="hero-carousel"]) header[data-surface="dark"] {
+  html:has([data-testid="hero-carousel"]) header[data-surface="dark"],
+  html:has([data-testid="hero-carousel"]) header[data-surface="dark"] nav > ul {
     transition: none;
   }
   .hc-fill {
