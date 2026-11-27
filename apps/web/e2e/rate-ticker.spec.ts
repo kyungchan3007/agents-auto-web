@@ -51,8 +51,14 @@ test.describe("홈 — hero 캐러셀 맨 아래 띠 · 바닥 고정 띠 없음
       await expect(page.locator('[data-testid="hero-carousel"] [data-testid="rate-ticker"]')).toHaveCount(1);
       const tb = await box(t, "띠");
       expect(Math.abs(tb.height - heroH(isMobile)), "띠 높이").toBeLessThanOrEqual(1);
-      const tabs = await box(tid(page, "hero-tabs"), "알약");
-      expect(tb.y, "알약 줄 아래").toBeGreaterThanOrEqual(tabs.y + tabs.height - 1);
+      // 알약 · ‹ › 줄은 블프 기간에만 보임(기본 장에서는 CSS 로 숨김) — 보이는 장 · 줄 아래에 띠
+      const slide = await box(page.locator('[data-testid="hero-slide"][data-active="true"]'), "보이는 장");
+      expect(tb.y, "보이는 장 아래").toBeGreaterThanOrEqual(slide.y + slide.height - 1);
+      const tabs = tid(page, "hero-tabs");
+      if (await tabs.isVisible()) {
+        const tabsBox = await box(tabs, "알약");
+        expect(tb.y, "알약 줄 아래").toBeGreaterThanOrEqual(tabsBox.y + tabsBox.height - 1);
+      }
       expect(await t.evaluate((el) => getComputedStyle(el).position), "홈 띠는 바닥 고정이 아님").not.toBe("fixed");
       expect(await page.locator('[data-testid="rate-ticker"][data-variant="fixed"]').count()).toBe(0);
       await scrollTo(page, "bottom");
@@ -87,15 +93,23 @@ test.describe("홈 밖 — 화면 바닥 고정 띠", () => {
       expect(last, "마지막 내용 아래 끝이 띠 위").toBeLessThanOrEqual(tb.y + 1);
     });
 
-    test(`${path} — 띠가 붙을 때 · 글꼴 로딩 뒤에도 페이지 위치가 움직이지 않음(처음부터 아래 여백 확보)`, async ({ page }) => {
+    test(`${path} — 띠가 붙을 때 · 글꼴 로딩 뒤에도 띠 자리(아래 여백)와 본문 위치가 움직이지 않음(서버 첫 그림부터 여백 확보)`, async ({ page }) => {
       await page.goto(path, { waitUntil: "domcontentloaded" });
-      const read = () => page.evaluate(() => ({ h: document.documentElement.scrollHeight, top: document.querySelector("main")?.getBoundingClientRect().top ?? 0 }));
+      const read = () =>
+        page.evaluate(() => {
+          const sp = document.querySelector(".rt-spacer")?.getBoundingClientRect().height ?? -1;
+          const t = document.querySelector('[data-testid="rate-ticker"]')?.getBoundingClientRect();
+          return { spacer: sp, tickerH: t?.height ?? -1, tickerBottom: t ? t.bottom : -1, top: document.querySelector("main")?.getBoundingClientRect().top ?? 0 };
+        });
       await page.evaluate(() => document.fonts.ready.then(() => undefined));
       const early = await read();
+      expect(early.spacer, "서버 첫 그림에 여백이 이미 있음").toBeGreaterThan(30);
       await hydrated(tid(page, "rate-ticker"));
       await page.waitForTimeout(1200);
       const late = await read();
-      expect(Math.abs(late.h - early.h), "문서 높이").toBeLessThanOrEqual(1);
+      expect(Math.abs(late.spacer - early.spacer), "띠 아래 여백").toBeLessThanOrEqual(1);
+      expect(Math.abs(late.tickerH - early.tickerH), "띠 높이").toBeLessThanOrEqual(1);
+      expect(Math.abs(late.tickerBottom - early.tickerBottom), "띠 위치").toBeLessThanOrEqual(1);
       expect(Math.abs(late.top - early.top), "본문 위치").toBeLessThanOrEqual(1);
     });
   }
@@ -129,7 +143,7 @@ test.describe("항목 · 순서 · 라벨 · 읽기 · 누르면", () => {
     const label = page.locator(".rt-label");
     await expect(label).toBeVisible();
     if (isMobile) await expect(label).toHaveText("오늘 환율");
-    else await expect(label).toHaveText(/^오늘 환율 · \d{1,2}\.\d{2} 기준$/);
+    else await expect(label).toHaveText(/^오늘 환율\s*· \d{1,2}\.\d{2} 기준$/);
   });
 
   test("화면 읽기 목록은 하나 — 읽히는 목록 1개 · 링크 수 = 항목 수 · 복사본은 aria-hidden · 복사본 링크는 tabindex -1", async ({ page }) => {
