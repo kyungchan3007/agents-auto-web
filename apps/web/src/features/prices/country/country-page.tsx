@@ -32,8 +32,8 @@ export function CountryPage({ view, levels, signals }: { view: CountryView; leve
           <div className="col-start-2 row-start-1 pt-10 pb-32 sm:pt-14 lg:pr-[calc(28.25rem+3.5rem)] lg:pb-10">
             <CountryHeader v={view} facts={countryFacts(view.code, levels, signals)} />
           </div>
-          <div className="relative z-10 col-start-2 row-start-2 -mt-24 pb-2 lg:row-start-1 lg:mt-[3.25rem] lg:mb-10 lg:ml-auto lg:w-[28.25rem] lg:self-start lg:pb-0">
-            <BudgetPlanner rows={rows} latestOf={latestOf} initial={view.code} />
+          <div className="relative z-10 col-start-2 row-start-2 -mt-24 pb-2 lg:row-start-1 lg:mt-[3.25rem] lg:mb-10 lg:ml-auto lg:flex lg:w-[28.25rem] lg:flex-col lg:self-stretch lg:pb-0">
+            <BudgetPlanner rows={rows} latestOf={latestOf} initial={view.code} className="lg:flex-1" />
           </div>
         </div>
         <div className="px-4 pt-14 pb-16 sm:px-8 lg:pt-12">
