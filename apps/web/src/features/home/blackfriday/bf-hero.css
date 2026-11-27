@@ -418,9 +418,13 @@
   .bf-inner {
     grid-template-columns: minmax(0, 1fr);
     justify-items: center;
+    padding-inline: max(22px, env(safe-area-inset-left, 0px)) max(22px, env(safe-area-inset-right, 0px));
   }
+  /* 글 칸은 최대 600 · 가운데(작업 0393 · 글 방향은 그대로 왼쪽) */
   .bf-copy {
     width: 100%;
+    max-width: 600px;
+    margin-inline: auto;
   }
   .bf-rcpt-wrap {
     width: min(300px, 80vw);
