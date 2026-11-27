@@ -41,7 +41,7 @@
   font-size: clamp(2.5rem, 5.2vw, 4rem);
   font-weight: 800;
   line-height: 1.1;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.03em;
   text-wrap: balance;
 }
 .bf-accent {
@@ -64,7 +64,7 @@
   border: 1px solid var(--hav-bf-line);
   border-radius: 999px;
   color: var(--hav-bf-fg-2);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   letter-spacing: 0.02em;
 }
 
@@ -106,9 +106,6 @@
   color: var(--hav-bf-placeholder);
   font-weight: 500;
 }
-.bf-row input:focus {
-  outline: none;
-}
 .bf-row select {
   max-width: 44%;
   margin: 8px;
@@ -119,10 +116,6 @@
   color: var(--hav-bf-fg);
   font: inherit;
   font-size: 0.8125rem;
-}
-.bf-row select:focus-visible {
-  outline: 2px solid var(--hav-sun);
-  outline-offset: 1px;
 }
 .bf-out {
   display: flex;
@@ -392,6 +385,23 @@
   }
 }
 
+/* 900 ~ 1199 — 나란히 · 글 최대 50vw · 영수증 30vw · 뒤 영수증 한 장 숨김 (1200 이상은 글 왼쪽 · 영수증 오른쪽 · 작업 0385) */
+@media (min-width: 900px) and (max-width: 1199px) {
+  .bf-inner {
+    grid-template-columns: minmax(0, 50vw) minmax(0, 30vw);
+    justify-content: space-between;
+  }
+  .bf-copy {
+    max-width: 50vw;
+  }
+  .bf-rcpt-wrap {
+    width: 30vw;
+  }
+  .bf-rcpt-back {
+    display: none;
+  }
+}
+
 /* 899 이하 — 영수증을 계산기 아래 가운데 */
 @media (max-width: 899px) {
   .bf-inner {
@@ -403,7 +413,7 @@
   }
   .bf-rcpt-wrap {
     width: min(300px, 80vw);
-    margin-block: 10px 6px;
+    margin-block: 18px 12px;
   }
   .bf-rcpt-back {
     display: none;
