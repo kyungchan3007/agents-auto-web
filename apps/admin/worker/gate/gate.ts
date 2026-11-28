@@ -44,8 +44,8 @@ async function readLoginToken(request: Request): Promise<string> {
   }
 }
 
-/** onGranted — 쿠키를 심은 뒤 접속 기록을 남기는 쪽(owner 는 호출하지 않음) */
-export async function runGate(request: Request, url: URL, env: GateEnv, onGranted: (name: string) => void): Promise<GateResult> {
+/** onGranted — 쿠키를 심은 뒤 알리는 쪽(owner 는 호출하지 않음 · 작업 0403 부터 Worker 는 쓰지 않음 — 접속 기록을 남기지 않음) */
+export async function runGate(request: Request, url: URL, env: GateEnv, onGranted: (name: string) => void = () => undefined): Promise<GateResult> {
   const list = parseTokens(env.ADMIN_TOKENS);
   const secret = env.ADMIN_SESSION_SECRET ?? "";
   // 목록 · 서명 열쇠 중 하나라도 없으면 아무도 못 들어옴(닫힌 쪽)
