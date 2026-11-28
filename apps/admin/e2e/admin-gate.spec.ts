@@ -37,6 +37,14 @@ test.describe("접속 기록 표 — 만드는 방식 (작업 0326)", () => {
     await expect(cell(page, 1, "firstAt")).toHaveText("2026-11-21 00:30"); // 15:30Z = 다음 날 00:30 한국
   });
 
+  test("설명 문장은 사실 그대로 — 새 기록을 남기지 않고 지난 기록만 보임(작업 0403 추가 지시)", async ({ page }) => {
+    await open(page, REPORT);
+    await expect(tid(page, "admin-visits")).toContainText("2026-11-28 부터 어드민 접속 기록을 남기지 않습니다. 아래는 그 전에 남은 기록입니다.");
+    await expect(tid(page, "admin-visits")).not.toContainText("지원 링크로 들어온 이름별로");
+    await expect(tid(page, "admin-visits")).not.toContainText("접속한 시각(한국 시간)만 남깁니다");
+    await expect(tid(page, "admin-visit-row")).toHaveCount(2); // 지난 기록은 그대로 보임
+  });
+
   test("IP · 기기 · 경로 칸이 없음 — 이름과 시각만", async ({ page }) => {
     await open(page, REPORT);
     await expect(cell(page, 0, "name")).toBeVisible();
