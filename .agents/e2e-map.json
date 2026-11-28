@@ -34,11 +34,11 @@
   "apps/web/src/shared/": ["common-design.spec.ts", "site-name.spec.ts", "features.spec.ts", "pages.spec.ts", "emphasis.spec.ts", "a11y.spec.ts", "tap-44.spec.ts", "focus-ring.spec.ts", "min-12.spec.ts", "footer-same.spec.ts", "analytics.spec.ts", "home-guide.spec.ts", "click-events.spec.ts", "country-summary.spec.ts", "resp-audit.spec.ts", "rate-ticker.spec.ts"],
   "packages/ui/src/": ["common-design.spec.ts", "tokens.spec.ts", "fonts.spec.ts", "light-only.spec.ts", "emphasis.spec.ts", "a11y.spec.ts", "features.spec.ts", "tap-44.spec.ts", "focus-ring.spec.ts", "min-12.spec.ts", "word-cheap.spec.ts", "footer-same.spec.ts", "rate-decimals.spec.ts", "axis-clear.spec.ts", "flights-axis.spec.ts", "link-one.spec.ts", "headline-countup.spec.ts", "click-events.spec.ts", "country-sidebar.spec.ts", "currency-sidebar.spec.ts", "currency-fixes.spec.ts", "resp-audit.spec.ts", "rate-ticker.spec.ts"],
   "apps/api/src/features/airfare/": ["airfare-calendar.spec.ts", "flights-window.spec.ts"],
-  "apps/admin/src/shared/": ["admin.spec.ts", "basics.spec.ts", "traffic.spec.ts", "ig-insights.spec.ts", "admin-gate.spec.ts"],
-  "apps/admin/src/app/": ["admin.spec.ts", "basics.spec.ts", "traffic.spec.ts", "ig-insights.spec.ts", "admin-gate.spec.ts"],
+  "apps/admin/src/shared/": ["admin.spec.ts", "basics.spec.ts", "traffic.spec.ts", "ig-insights.spec.ts", "admin-gate.spec.ts", "company-nav.spec.ts"],
+  "apps/admin/src/app/": ["admin.spec.ts", "basics.spec.ts", "traffic.spec.ts", "ig-insights.spec.ts", "admin-gate.spec.ts", "company-nav.spec.ts"],
   "apps/admin/src/features/traffic/": ["traffic.spec.ts", "traffic-engagement.spec.ts", "traffic-clicks.spec.ts"],
   "apps/admin/src/app/traffic/": ["traffic.spec.ts", "traffic-engagement.spec.ts", "traffic-clicks.spec.ts"],
   "apps/admin/src/features/instagram/": ["ig-insights.spec.ts"],
   "apps/admin/src/app/instagram/": ["ig-insights.spec.ts"],
-  "apps/admin/worker/": ["admin.spec.ts", "traffic.spec.ts", "ig-insights.spec.ts", "admin-gate.spec.ts"]
+  "apps/admin/worker/": ["admin.spec.ts", "traffic.spec.ts", "ig-insights.spec.ts", "admin-gate.spec.ts", "company-nav.spec.ts"]
 }
