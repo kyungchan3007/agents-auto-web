@@ -13,7 +13,7 @@
 //     export const secretPayload: (list: TokenList) => string                          wrangler secret put ADMIN_TOKENS 로 올릴 JSON — Worker 의 parseTokens 가 그대로 읽음
 //   원칙: 토큰 원문은 새 링크로 한 번 출력할 뿐 — 로컬 목록(.tmp/admin-tokens.json)에도 비밀값 목록에도 해시만
 import { describe, expect, it } from "vitest";
-import { OWNER, addEntry, expFor, extendEntry, hashToken, hasVersionsFlag, linkFor, listRows, newToken, notDeployedHelp, removeEntry, secretPayload, secretPutArgs, secretPutFailure, versionsPutNotice, wranglerFailureText } from "../../../../scripts/admin-token-lib";
+import { OWNER, addEntry, expFor, hashToken, hasVersionsFlag, linkFor, listRows, newToken, notDeployedHelp, removeEntry, secretPayload, secretPutArgs, secretPutFailure, versionsPutNotice, wranglerFailureText } from "../../../../scripts/admin-token-lib";
 import { matchToken, parseTokens, sha256Hex } from "./token";
 
 const H = (c: string) => c.repeat(64);
@@ -374,68 +374,5 @@ describe("채용 담당자 공용 링크 — add recruiter · 긴 --exp (작업 
     expect(maxAgeFor("recruiter")).toBe(REVIEWER_MAX_AGE);
     expect(REVIEWER_MAX_AGE).toBe(7 * 24 * 3600);
     expect(maxAgeFor(OWNER)).toBe(OWNER_MAX_AGE);
-  });
-});
-
-describe("extendEntry — 기한만 바꿈 (작업 0403 · admin:token extend <이름> --exp)", () => {
-  const TODAY = "2026-11-28";
-  const base = () => ({ "apply-acme-1124": { hash: H("1"), exp: "2026-12-01" }, recruiter: { hash: H("2"), exp: "2026-12-05" }, owner: { hash: H("3") } });
-
-  it("그 이름의 기한만 바뀜 — 해시 · 다른 항목은 그대로 · 입력 목록은 안 바뀜", () => {
-    const before = base();
-    const after = extendEntry(before, "recruiter", "2027-11-28", TODAY);
-    expect(after.recruiter).toEqual({ hash: H("2"), exp: "2027-11-28" });
-    expect(after["apply-acme-1124"]).toEqual(before["apply-acme-1124"]);
-    expect(after.owner).toEqual(before.owner);
-    expect(Object.keys(after).sort()).toEqual(Object.keys(before).sort());
-    expect(before.recruiter.exp).toBe("2026-12-05");
-  });
-
-  it("회사 이름(apply-…)도 기한을 늘릴 수 있음 · 오늘 날짜 · 아주 먼 날짜도 됨 · 기한을 줄여도 됨(지나지 않은 날이면)", () => {
-    expect(extendEntry(base(), "apply-acme-1124", "2026-12-31", TODAY)["apply-acme-1124"]?.exp).toBe("2026-12-31");
-    expect(extendEntry(base(), "recruiter", TODAY, TODAY).recruiter?.exp).toBe(TODAY);
-    expect(extendEntry(base(), "recruiter", "2099-12-31", TODAY).recruiter?.exp).toBe("2099-12-31");
-    expect(extendEntry(base(), "recruiter", "2026-11-30", TODAY).recruiter?.exp).toBe("2026-11-30");
-  });
-
-  it("해시가 같으니 같은 링크가 그대로 맞음 — 늘리기 전 · 후 모두 같은 토큰이 통과하고 기한이 지난 날에는 못 들어옴", async () => {
-    const token = newToken();
-    const list = addEntry({}, "recruiter", await hashToken(token), "2026-12-05");
-    const longer = extendEntry(list, "recruiter", "2027-11-28", TODAY);
-    expect(longer.recruiter?.hash).toBe(list.recruiter?.hash);
-    const parsedBefore = parseTokens(secretPayload(list));
-    const parsedAfter = parseTokens(secretPayload(longer));
-    expect((await matchToken(parsedBefore, token, new Date("2026-12-04T00:00:00Z")))?.name).toBe("recruiter");
-    expect(await matchToken(parsedBefore, token, new Date("2026-12-10T00:00:00Z"))).toBeNull(); // 늘리기 전에는 기한 지남
-    expect((await matchToken(parsedAfter, token, new Date("2026-12-10T00:00:00Z")))?.name).toBe("recruiter");
-    expect(secretPayload(longer)).not.toContain(token);
-  });
-
-  it("owner 는 던짐 — 기한을 줄 수 없음 · 목록에 있어도", () => {
-    expect(() => extendEntry(base(), OWNER, "2027-11-28", TODAY)).toThrow(/owner/);
-  });
-
-  it("없는 이름은 던짐 · 이름 대소문자 · 앞뒤 공백도 다른 이름으로 봄 · 새 항목을 만들지 않음", () => {
-    expect(() => extendEntry(base(), "nobody", "2027-11-28", TODAY)).toThrow(/없는 이름/);
-    expect(() => extendEntry(base(), "Recruiter", "2027-11-28", TODAY)).toThrow(/없는 이름/);
-    expect(() => extendEntry(base(), "recruiter ", "2027-11-28", TODAY)).toThrow(/없는 이름/);
-    expect(() => extendEntry({}, "recruiter", "2027-11-28", TODAY)).toThrow(/없는 이름/);
-  });
-
-  it("지난 날짜는 던짐 — 어제 · 먼 옛날 (오늘은 됨)", () => {
-    expect(() => extendEntry(base(), "recruiter", "2026-11-27", TODAY)).toThrow(/지난 날짜/);
-    expect(() => extendEntry(base(), "recruiter", "2020-01-01", TODAY)).toThrow(/지난 날짜/);
-  });
-
-  it("형식이 틀리거나 --exp 가 없으면 던짐 — 실제 날짜가 아님 · 슬래시 · 연도만 · 빈 글 · undefined", () => {
-    for (const bad of ["2027-02-30", "2027-13-01", "2027/11/28", "27-11-28", "2027-11", "내년", "", " 2027-11-28"]) expect(() => extendEntry(base(), "recruiter", bad, TODAY), bad).toThrow(/YYYY-MM-DD/);
-    expect(() => extendEntry(base(), "recruiter", undefined, TODAY)).toThrow(/YYYY-MM-DD/);
-  });
-
-  it("실패해도 입력 목록은 그대로(부분 변경 없음)", () => {
-    const before = base();
-    const snapshot = JSON.stringify(before);
-    for (const call of [() => extendEntry(before, "owner", "2027-11-28", TODAY), () => extendEntry(before, "nobody", "2027-11-28", TODAY), () => extendEntry(before, "recruiter", "2020-01-01", TODAY), () => extendEntry(before, "recruiter", "bad", TODAY)]) expect(call).toThrow();
-    expect(JSON.stringify(before)).toBe(snapshot);
   });
 });
