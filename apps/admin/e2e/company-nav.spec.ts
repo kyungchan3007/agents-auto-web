@@ -21,6 +21,9 @@ const brand = (page: Page) => page.locator("a.adm-brand").filter({ visible: true
 const COMPANY_PATHS = ["/geo", "/how"];
 /** 채용 담당자 안내 글 전용 선택자(adm-demo-note-*) — 어드민 화면 곳곳의 기존 안내 문단은 클래스 adm-note 를 이미 쓰므로 그 이름과 섞지 않음 */
 const DEMO_SEL = ".adm-demo-note-side, .adm-demo-note-main";
+/** 보이는 채용 담당자 안내 글(클래스 · 글) */
+const visible = (page: Page) => page.locator(DEMO_SEL).evaluateAll((els) => els.filter((e) => e.getClientRects().length > 0).map((e) => ({ cls: e.className, text: (e.textContent ?? "").replace(/\s+/g, " ").trim() })));
+
 const SIX = ["/log", "/geo", "/how", "/marketing", "/traffic", "/instagram"];
 
 test.describe("회사 세션 — 안내 창 없음 · 메뉴 두 개", () => {
@@ -350,7 +353,6 @@ test.describe("첫 프레임부터 끝 모양 — /session 이 늦어도 메뉴 
 const NOTE = "채용 담당자분들을 위한 데모 링크입니다. 열람 기록이 남지 않도록 모든 분께 같은 링크 하나를 드리고 있습니다.";
 
 test.describe("채용 담당자 안내 글 (작업 0403 추가 지시)", () => {
-  const visible = (page: Page) => page.locator(DEMO_SEL).evaluateAll((els) => els.filter((e) => e.getClientRects().length > 0).map((e) => ({ cls: e.className, text: (e.textContent ?? "").replace(/\s+/g, " ").trim() })));
 
   for (const path of COMPANY_PATHS) {
     test(`${path} · 회사 세션 — 보이는 안내 글은 정확히 하나 · 원문 두 문장 그대로 · ${"넓은 화면은 사이드 · 휴대폰은 본문 맨 아래"}`, async ({ page }) => {
