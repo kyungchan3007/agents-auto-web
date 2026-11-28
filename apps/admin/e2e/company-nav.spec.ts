@@ -1,21 +1,24 @@
-// 작업 0403 — 회사 링크(owner 가 아닌 세션)는 안내 창 없이 GEO 측정 · 만드는 방식 두 화면만 (테스트 먼저 · 구현 전에는 FAIL 이 정상)
-//   서버 쪽(막힌 4개 주소 → 302 /geo · 막힌 bff 403 · / → /geo · ?t= 이동)은 worker/company-session.test.ts — 이 e2e 는 정적 서버(Worker 없음)에서 브라우저가 받는 /session 을 가짜 응답으로 바꿈
-//   화면 약속(builder 가 이 모양으로)
-//     메뉴 목록은 세션에 따라 거름 — 받기 전(첫 그림 · 서버 그림 포함) · 받지 못함 · 회사 이름이면 GEO 측정(/geo · 키 2) · 만드는 방식(/how · 키 3) 두 개 · owner 로 확인되면 여섯 개(지금 그대로)
-//     같은 목록을 쓰는 곳: 넓은 화면 사이드 · 휴대폰 위 메뉴 · 찾기(⌘K) 화면 줄 · 숫자 단축키 · 로고 링크(회사 = /geo · owner = 지금처럼 /log)
+// 작업 0403 — 회사 링크(owner 가 아닌 세션)는 안내 창 없이 GEO 측정 · 만드는 방식 두 화면만 (builder e746e5f0 방식)
+//   서버 쪽(막힌 4개 주소 → 302 /geo · 막힌 bff 403 · / → /geo · ?t= 이동 · owner 응답에만 data-viewer · Vary: Cookie)은 worker/company-session.test.ts · worker/viewer.test.ts
+//   이 e2e 는 정적 서버(Worker 없음)에서 봄 — owner 는 Worker 가 붙이는 <html data-viewer="owner"> 를 첫 그림 전에 직접 붙여 흉내(helpers.ts ownerSession) · 회사는 표시 없음
+//   약속
+//     메뉴(사이드 · 휴대폰 위)는 정적 HTML 에 여섯 개를 그리고 회사용이 아닌 네 개에 data-owner-only · CSS html:not([data-viewer=owner]) [data-owner-only] { display:none } → 첫 그림부터 최종 모양(/session 을 기다리지 않음)
+//     찾기 · 숫자 단축키 · 로고 링크는 useViewerOwner(서버 그림 false · 브라우저는 html 속성) — 회사 = 화면 두 줄 · 키 2/3 · 로고 /geo · owner = 여섯 줄 · 키 1~6 · 로고 /log
 //     안내 창(role=dialog · data-testid="gate-welcome")은 없음 — 대신 넣는 안내 문구도 없음
-//     owner 확인이 늦게 와 메뉴가 두 개 → 여섯 개가 될 때 처음 두 링크 · 본문 위치가 움직이지 않고(사이드는 아래만 늘어남) 휴대폰 위 메뉴 줄 높이도 그대로
+//     /session 이 늦게 와도(또는 실패해도) 메뉴 · 제목 · 본문 · 사이트로 가기 자리가 첫 프레임부터 끝까지 같음 · 회사 메뉴 아래에 빈칸이 없음(사이트로 가기가 두 개 바로 아래)
 import { type Page, expect, test } from "@playwright/test";
 import { companySession, hydrated, mockGeo, ownerSession } from "./helpers";
 
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 820;
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
-/** 지금 화면 폭에 맞는 어드민 메뉴(넓은 화면 사이드 · 휴대폰 위) */
+/** 지금 화면 폭에 맞는 어드민 메뉴(넓은 화면 사이드 · 휴대폰 위) — 숨겨진 링크(display none)는 role 조회에서 빠짐 */
 const menu = (page: Page) => (isPhone(page) ? page.locator("header.adm-mtop") : page.locator("aside.adm-side")).getByRole("navigation", { name: "어드민 메뉴" });
 const linkTexts = (page: Page) => menu(page).getByRole("link").evaluateAll((els) => els.map((e) => (e.textContent ?? "").replace(/\s+/g, " ").trim()));
+const hrefs = (page: Page) => menu(page).getByRole("link").evaluateAll((els) => els.map((e) => e.getAttribute("href")));
 const brand = (page: Page) => page.locator("a.adm-brand").filter({ visible: true }).first();
 
 const COMPANY_PATHS = ["/geo", "/how"];
+const SIX = ["/log", "/geo", "/how", "/marketing", "/traffic", "/instagram"];
 
 test.describe("회사 세션 — 안내 창 없음 · 메뉴 두 개", () => {
   for (const path of COMPANY_PATHS) {
@@ -26,18 +29,15 @@ test.describe("회사 세션 — 안내 창 없음 · 메뉴 두 개", () => {
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
       await expect(menu(page).getByRole("link")).toHaveCount(2);
       const texts = await linkTexts(page);
-      expect(texts.map((t) => (isPhone(page) && t === "GEO" ? "GEO 측정" : t))).toEqual(["GEO 측정", "만드는 방식"]);
-      await expect(menu(page).getByRole("link").nth(0)).toHaveAttribute("href", "/geo");
-      await expect(menu(page).getByRole("link").nth(1)).toHaveAttribute("href", "/how");
+      expect(texts.map((t) => (isPhone(page) && t === "GEO" ? "GEO 측정" : t.replace(/\s*\d$/, "")))).toEqual(["GEO 측정", "만드는 방식"]);
+      expect(await hrefs(page)).toEqual(["/geo", "/how"]);
       await expect(menu(page).locator('a[aria-current="page"]')).toHaveCount(1);
       await expect(brand(page)).toHaveAttribute("href", "/geo");
-      // 안내 창 — 늦게 떠도 안 되므로 /session 을 받은 뒤 잠시 더 봄
       await page.waitForTimeout(900);
       await expect(tid(page, "gate-welcome")).toHaveCount(0);
       await expect(page.getByRole("dialog", { name: /전용 링크/ })).toHaveCount(0);
       await expect(page.getByText("전용 링크로 들어오셨습니다")).toHaveCount(0);
       await expect(page.getByRole("button", { name: "둘러보기" })).toHaveCount(0);
-      // 메뉴 두 개를 받은 뒤에도 그대로(owner 확인 전 · 후 모두 두 개)
       await expect(menu(page).getByRole("link")).toHaveCount(2);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
     });
@@ -55,25 +55,41 @@ test.describe("회사 세션 — 안내 창 없음 · 메뉴 두 개", () => {
     }
   });
 
-  test("서버 그림(자바스크립트 없이 받은 HTML)의 어드민 메뉴도 두 개 — owner 확인 전에 여섯 개를 그리지 않음", async ({ request }) => {
+  test("서버 그림(자바스크립트 없이 받은 HTML) — 메뉴 링크 여섯 개 중 회사용 아닌 네 개에만 data-owner-only · 회사용 두 개(GEO · 만드는 방식)에는 없음 · gate-welcome 없음", async ({ request }) => {
     for (const path of ["/geo", "/how"]) {
       const html = await (await request.get(path)).text();
       const navs = [...html.matchAll(/<nav[^>]*aria-label="어드민 메뉴"[^>]*>([\s\S]*?)<\/nav>/g)].map((m) => m[1] ?? "");
-      expect(navs.length, `${path}: 어드민 메뉴 nav 수`).toBeGreaterThan(0);
+      expect(navs.length, `${path}: 어드민 메뉴 nav 수`).toBe(2); // 사이드 · 휴대폰 위
       for (const n of navs) {
-        const hrefs = [...n.matchAll(/<a[^>]*href="([^"]+)"/g)].map((m) => m[1]);
-        expect(hrefs, `${path}: 서버 그림 메뉴 링크`).toEqual(["/geo", "/how"]);
+        const links = [...n.matchAll(/<a\b([^>]*)>/g)].map((m) => m[1] ?? "");
+        expect(links.map((a) => /href="([^"]+)"/.exec(a)?.[1]), `${path}: 서버 그림 메뉴 링크`).toEqual(SIX);
+        expect(links.map((a) => /data-owner-only/.test(a)), `${path}: data-owner-only`).toEqual([true, false, false, true, true, true]);
       }
       expect(html).not.toContain('data-testid="gate-welcome"');
+      expect(html, "서버 그림의 html 에는 owner 표시가 없음(Worker 가 owner 에게만 붙임)").not.toMatch(/<html[^>]*data-viewer/);
     }
   });
 
-  test("받기 전 · 받는 중 · 받지 못함(401 · 404 · 네트워크 실패 · 알 수 없는 모양)에서도 메뉴는 두 개 — 한 번도 여섯 개로 그려진 적 없음", async ({ page }) => {
+  test("CSS: 표시가 없으면 owner 전용 네 개는 display none · 표시가 있으면 보임", async ({ page }) => {
+    await page.goto("/how");
+    const display = () => menu(page).locator("a[data-owner-only]").evaluateAll((els) => els.map((e) => getComputedStyle(e).display));
+    // 속성 없음 → 숨김 (role 조회는 숨은 링크를 빼므로 DOM 으로 직접 읽음)
+    const hidden = await page.evaluate(() => [...document.querySelectorAll("[data-owner-only]")].map((e) => getComputedStyle(e).display));
+    expect(hidden.length).toBeGreaterThanOrEqual(8); // 사이드 4 + 휴대폰 4
+    for (const d of hidden) expect(d).toBe("none");
+    await page.evaluate(() => document.documentElement.setAttribute("data-viewer", "owner"));
+    const shown = await page.evaluate(() => [...document.querySelectorAll("[data-owner-only]")].map((e) => getComputedStyle(e).display));
+    // 지금 화면 폭에서 안 보이는 쪽 메뉴(휴대폰 폭의 사이드 · 넓은 화면의 위 메뉴)는 부모가 숨겨 있으므로 보이는 메뉴 쪽만 봄
+    expect((await display()).every((d) => d !== "none"), `표시 있음 → 보이는 메뉴의 owner 전용 항목 display: ${(await display()).join()}`).toBe(true);
+    expect(shown.some((d) => d !== "none")).toBe(true);
+  });
+
+  test("받기 전 · 받는 중 · 받지 못함(401 · 404 · 네트워크 실패 · 알 수 없는 모양)에서도 보이는 메뉴는 늘 두 개 — 한 번도 여섯 개로 그려진 적 없음", async ({ page }) => {
     await page.addInitScript(() => {
-      const w = window as unknown as { __maxLinks: number };
-      w.__maxLinks = 0;
+      const w = window as unknown as { __maxVisible: number };
+      w.__maxVisible = 0;
       const read = () => {
-        for (const nav of document.querySelectorAll('nav[aria-label="어드민 메뉴"]')) w.__maxLinks = Math.max(w.__maxLinks, nav.querySelectorAll("a").length);
+        for (const nav of document.querySelectorAll('nav[aria-label="어드민 메뉴"]')) w.__maxVisible = Math.max(w.__maxVisible, [...nav.querySelectorAll("a")].filter((a) => a.getClientRects().length > 0).length);
       };
       new MutationObserver(read).observe(document, { subtree: true, childList: true });
       const tick = () => {
@@ -97,8 +113,8 @@ test.describe("회사 세션 — 안내 창 없음 · 메뉴 두 개", () => {
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
       await page.waitForTimeout(1100);
       await expect(menu(page).getByRole("link"), mode).toHaveCount(2);
-      const max = await page.evaluate(() => (window as unknown as { __maxLinks: number }).__maxLinks);
-      expect(max, `${mode}: 어드민 메뉴 링크가 한 번에 가장 많이 그려진 수`).toBeLessThanOrEqual(2);
+      const max = await page.evaluate(() => (window as unknown as { __maxVisible: number }).__maxVisible);
+      expect(max, `${mode}: 보이는 어드민 메뉴 링크가 한 번에 가장 많았던 수`).toBeLessThanOrEqual(2);
       await expect(tid(page, "gate-welcome")).toHaveCount(0);
     }
   });
@@ -119,7 +135,6 @@ test.describe("회사 세션 — 안내 창 없음 · 메뉴 두 개", () => {
     expect(labels.some((l) => l.trim() === "만드는 방식")).toBe(true);
     for (const gone of ["작업실", "알리기", "유입", "인스타 유입"]) expect(labels.some((l) => l.trim() === gone), `찾기 창에 ${gone} 없음`).toBe(false);
     expect(labels.some((l) => l.trim() === "사이트로 가기")).toBe(true);
-    // 그 화면 이름으로 찾아도 안 나옴
     await box.getByRole("combobox").fill("인스타");
     const found = await box.locator('li[role="option"] .w').allInnerTexts();
     expect(found.some((l) => /인스타 유입/.test(l)), "찾기: 인스타 유입").toBe(false);
@@ -163,6 +178,7 @@ test.describe("회사 세션 — 안내 창 없음 · 메뉴 두 개", () => {
     await mockGeo(page);
     await companySession(page);
     await page.goto("/how");
+    await hydrated(page.locator(".adm-find"));
     await expect(brand(page)).toHaveAttribute("href", "/geo");
     await brand(page).click();
     await expect(page).toHaveURL(/\/geo\/?$/);
@@ -172,11 +188,11 @@ test.describe("회사 세션 — 안내 창 없음 · 메뉴 두 개", () => {
 test.describe("owner 세션 — 여섯 개 · 지금 그대로", () => {
   test("/log · /geo · /how · /marketing · /traffic · /instagram 어디서나 메뉴 여섯 · 로고 /log · 안내 창 없음", async ({ page }) => {
     await ownerSession(page);
-    for (const path of ["/log", "/geo", "/how", "/marketing", "/traffic", "/instagram"]) {
+    for (const path of SIX) {
       await page.goto(path);
       await expect(menu(page).getByRole("link"), path).toHaveCount(6);
-      const hrefs = await menu(page).getByRole("link").evaluateAll((els) => els.map((e) => e.getAttribute("href")));
-      expect(hrefs, path).toEqual(["/log", "/geo", "/how", "/marketing", "/traffic", "/instagram"]);
+      expect(await hrefs(page), path).toEqual(SIX);
+      await hydrated(page.locator(".adm-find"));
       await expect(brand(page), path).toHaveAttribute("href", "/log");
       await expect(tid(page, "gate-welcome")).toHaveCount(0);
     }
@@ -205,79 +221,120 @@ test.describe("owner 세션 — 여섯 개 · 지금 그대로", () => {
   });
 });
 
-test.describe("owner 확인이 늦게 와도 메뉴 칸이 흔들리지 않음", () => {
-  /** 처음 두 링크 · 제목 · 본문 · (휴대폰) 위 메뉴 줄의 자리와 크기 */
-  const snap = (page: Page) =>
-    page.evaluate((phone) => {
-      const nav = (phone ? document.querySelector("header.adm-mtop") : document.querySelector("aside.adm-side"))?.querySelector('nav[aria-label="어드민 메뉴"]') as HTMLElement | null;
-      const r = (e: Element | null | undefined) => {
-        const b = e?.getBoundingClientRect();
-        return b ? { x: Math.round(b.x * 10) / 10, y: Math.round((b.y + scrollY) * 10) / 10, w: Math.round(b.width * 10) / 10, h: Math.round(b.height * 10) / 10 } : null;
-      };
-      const links = [...(nav?.querySelectorAll("a") ?? [])];
-      return {
-        count: links.length,
-        first: r(links[0]),
-        second: r(links[1]),
-        h1: r(document.querySelector("h1")),
-        main: r(document.querySelector("main")),
-        topbar: phone ? r(document.querySelector("header.adm-mtop")) : null,
-        side: phone ? null : r(document.querySelector("aside.adm-side")),
-        hscroll: document.documentElement.scrollWidth - innerWidth,
-      };
-    }, isPhone(page));
-
-  for (const delay of [600, 1800]) {
-    test(`owner 응답이 ${delay}ms 늦게 옴 — 두 개로 그리다가 여섯 개 · 처음 두 링크 · 제목 · 본문 · 위 메뉴 줄 높이 그대로 · 가로 넘침 0`, async ({ page }) => {
-      await mockGeo(page);
-      await ownerSession(page, delay);
-      await page.goto("/how");
-      await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-      await expect(menu(page).getByRole("link")).toHaveCount(2);
-      await hydrated(page.locator(".adm-find"));
-      const before = await snap(page);
-      expect(before.count).toBe(2);
-      await expect(menu(page).getByRole("link")).toHaveCount(6, { timeout: delay + 6000 });
-      await page.waitForTimeout(250);
-      const after = await snap(page);
-      expect(after.count).toBe(6);
-      expect(after.first, "처음 링크(GEO 측정) 자리").toEqual(before.first);
-      expect(after.second, "둘째 링크(만드는 방식) 자리").toEqual(before.second);
-      expect(after.h1, "제목 자리").toEqual(before.h1);
-      expect(after.main, "본문 자리").toEqual(before.main);
-      if (isPhone(page)) {
-        expect(after.topbar?.h, "휴대폰 위 메뉴 줄 높이").toBe(before.topbar?.h);
-        expect(after.topbar?.y, "휴대폰 위 메뉴 줄 위치").toBe(before.topbar?.y);
-      } else {
-        // 사이드는 위에서부터 쌓여 아래만 늘어남 — 위 끝 · 폭은 그대로
-        expect(after.side?.y, "사이드 위치").toBe(before.side?.y);
-        expect(after.side?.w, "사이드 폭").toBe(before.side?.w);
+test.describe("첫 프레임부터 끝 모양 — /session 이 늦어도 메뉴 · 본문 · 사이트로 가기 자리 변화 0", () => {
+  /** 첫 프레임부터 매 프레임, 보이는 메뉴 링크 수와 자리(처음 링크 · 메뉴 아래 끝 · 사이트로 가기 · 본문 · 휴대폰 위 메뉴 줄)를 모음 */
+  const RECORD = () => {
+    const w = window as unknown as { __fr: Record<string, number>[]; __stop: boolean };
+    w.__fr = [];
+    w.__stop = false;
+    const t0 = performance.now();
+    const r = (e: Element | null | undefined) => e?.getBoundingClientRect();
+    const tick = () => {
+      const phone = getComputedStyle(document.querySelector("header.adm-mtop") ?? document.body).display !== "none";
+      const nav = (phone ? document.querySelector("header.adm-mtop") : document.querySelector("aside.adm-side"))?.querySelector('nav[aria-label="어드민 메뉴"]');
+      const main = r(document.querySelector("main"));
+      if (nav && main && main.height > 0) {
+        const links = [...nav.querySelectorAll("a")].filter((a) => a.getClientRects().length > 0);
+        const first = r(links[0]);
+        const last = r(links[links.length - 1]);
+        const foot = r(document.querySelector("aside.adm-side .adm-nav.foot a"));
+        const top = r(document.querySelector("header.adm-mtop"));
+        w.__fr.push({
+          t: Math.round(performance.now() - t0),
+          n: links.length,
+          firstX: Math.round((first?.x ?? -1) * 2) / 2,
+          firstY: Math.round(((first?.y ?? -1) + scrollY) * 2) / 2,
+          lastBottom: Math.round(((last?.bottom ?? -1) + scrollY) * 2) / 2,
+          footY: phone ? -1 : Math.round(((foot?.y ?? -1) + scrollY) * 2) / 2,
+          mainY: Math.round((main.y + scrollY) * 2) / 2,
+          mainX: Math.round(main.x * 2) / 2,
+          topH: Math.round((top?.height ?? -1) * 2) / 2,
+        });
       }
-      expect(before.hscroll).toBeLessThanOrEqual(0);
-      expect(after.hscroll).toBeLessThanOrEqual(0);
+      if (!w.__stop) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  const frames = async (page: Page) => {
+    await page.evaluate(() => {
+      (window as unknown as { __stop: boolean }).__stop = true;
     });
+    return page.evaluate(() => (window as unknown as { __fr: Record<string, number>[] }).__fr);
+  };
+  const sig = (f: Record<string, number>) => JSON.stringify({ n: f.n, firstX: f.firstX, firstY: f.firstY, lastBottom: f.lastBottom, footY: f.footY, mainY: f.mainY, mainX: f.mainX, topH: f.topH });
+
+  for (const [who, want] of [["회사", 2], ["owner", 6]] as const) {
+    for (const delay of [1500, 0]) {
+      test(`${who} · /session ${delay === 0 ? "즉시" : `${delay}ms 늦게`} — 첫 프레임부터 끝까지 보이는 메뉴 ${want}개 · 모든 프레임의 자리가 같음`, async ({ page }) => {
+        await mockGeo(page);
+        if (who === "owner") await ownerSession(page, delay);
+        else await companySession(page, "apply-acme-1124", delay);
+        await page.addInitScript(RECORD);
+        await page.goto("/how", { waitUntil: "commit" });
+        await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+        await hydrated(page.locator(".adm-find"));
+        await page.waitForTimeout(delay + 900);
+        const fr = await frames(page);
+        expect(fr.length, "기록한 프레임 수").toBeGreaterThan(20);
+        const sigs = new Set(fr.map(sig));
+        expect([...sigs], `프레임마다 메뉴 · 본문 자리가 달라짐: ${[...sigs].slice(0, 3).join(" | ")}`).toHaveLength(1);
+        expect(fr[0]?.n, `${who}: 첫 프레임 보이는 메뉴 링크 수`).toBe(want);
+        expect(Math.max(...fr.map((f) => f.n)), "가장 많았던 수").toBe(want);
+        expect(Math.min(...fr.map((f) => f.n)), "가장 적었던 수").toBe(want);
+      });
+    }
   }
 
-  test("owner 로 확인된 뒤 더해지는 네 항목은 원래 순서대로 맨 뒤(작업실 · 알리기 · 유입 · 인스타 유입) — 앞의 두 개는 안 움직임", async ({ page }) => {
+  test("/session 이 실패(401 · 네트워크 실패)해도 회사 메뉴는 두 개 · 자리 변화 0", async ({ page }) => {
     await mockGeo(page);
-    await ownerSession(page, 800);
-    await page.goto("/how");
-    await expect(menu(page).getByRole("link")).toHaveCount(2);
-    await expect(menu(page).getByRole("link")).toHaveCount(6, { timeout: 7000 });
-    const hrefs = await menu(page).getByRole("link").evaluateAll((els) => els.map((e) => e.getAttribute("href")));
-    expect(hrefs.sort()).toEqual(["/geo", "/how", "/instagram", "/log", "/marketing", "/traffic"].sort());
+    await page.route("**/session", (route) => route.abort());
+    await page.addInitScript(RECORD);
+    await page.goto("/how", { waitUntil: "commit" });
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await page.waitForTimeout(1200);
+    const fr = await frames(page);
+    expect(new Set(fr.map(sig)).size).toBe(1);
+    expect(fr[0]?.n).toBe(2);
   });
 
-  test("회사 세션은 /session 이 늦게 와도 메뉴 · 본문 자리가 그대로(두 개 그대로)", async ({ page }) => {
+  test("회사 메뉴 아래에 빈칸이 없음 — 넓은 화면은 두 번째 링크 바로 아래에 '사이트로 가기'(간격 48px 이하) · owner 도 여섯 번째 바로 아래", async ({ page }) => {
+    test.skip(isPhone(page), "넓은 화면 사이드");
     await mockGeo(page);
-    await companySession(page, "apply-acme-1124", 1200);
+    await companySession(page);
     await page.goto("/how");
-    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await hydrated(page.locator(".adm-find"));
-    const before = await snap(page);
-    await page.waitForTimeout(1800);
-    const after = await snap(page);
-    expect(after).toEqual(before);
-    expect(after.count).toBe(2);
+    await expect(menu(page).getByRole("link")).toHaveCount(2);
+    const gap = () =>
+      page.evaluate(() => {
+        const links = [...document.querySelectorAll('aside.adm-side nav[aria-label="어드민 메뉴"] a')].filter((a) => a.getClientRects().length > 0);
+        const last = links[links.length - 1]?.getBoundingClientRect();
+        const foot = document.querySelector("aside.adm-side .adm-nav.foot a")?.getBoundingClientRect();
+        return Math.round(((foot?.y ?? 0) - (last?.bottom ?? 0)) * 10) / 10;
+      });
+    const companyGap = await gap();
+    expect(companyGap, `회사: 메뉴 마지막 링크와 사이트로 가기 사이 ${companyGap}px`).toBeGreaterThan(0);
+    expect(companyGap).toBeLessThanOrEqual(48);
+    await page.unroute("**/session");
+    await ownerSession(page);
+    await page.goto("/how");
+    await expect(menu(page).getByRole("link")).toHaveCount(6);
+    const ownerGap = await gap();
+    expect(ownerGap, `owner: ${ownerGap}px`).toBeGreaterThan(0);
+    expect(ownerGap).toBeLessThanOrEqual(48);
+  });
+
+  test("휴대폰 위 메뉴 — 회사 두 개 · owner 여섯 개 모두 줄 높이 52 그대로 · 가로 넘침 0", async ({ page }) => {
+    test.skip(!isPhone(page), "휴대폰 위 메뉴");
+    await mockGeo(page);
+    await companySession(page);
+    await page.goto("/how");
+    await expect(menu(page).getByRole("link")).toHaveCount(2);
+    const h1 = (await page.locator("header.adm-mtop").boundingBox())?.height;
+    await page.unroute("**/session");
+    await ownerSession(page);
+    await page.goto("/how");
+    await expect(menu(page).getByRole("link")).toHaveCount(6);
+    const h2 = (await page.locator("header.adm-mtop").boundingBox())?.height;
+    expect(h1).toBe(h2);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
   });
 });

@@ -79,16 +79,17 @@ export async function quietSession(page: Page): Promise<void> {
   await page.route("**/session", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ unexpected: true }) }));
 }
 
-/** 작업 0403: 본인(owner) 세션 — 메뉴 여섯 개 · 단축키 1~6 · 접속 기록 표가 보임. 정적 서버에는 Worker 가 없어 /session 을 가짜 응답으로 바꿈
- *  delayMs 를 주면 응답이 그만큼 늦게 옴(메뉴 두 개로 먼저 그리고 owner 로 확인된 뒤 여섯이 되는 흐름 · 높이 · 위치 변화 검사) */
+/** 작업 0403: 본인(owner) 세션 — Worker 가 owner 의 HTML 200 에만 <html data-viewer="owner"> 를 붙이므로(worker/viewer.ts) 정적 서버(Worker 없음)에서는 첫 그림 전에 직접 붙여 흉내 냄
+ *  메뉴 여섯 개 · 단축키 1~6 · 찾기 여섯 줄 · 로고 /log 는 이 표시로 정해짐 · /session 도 가짜 응답(접속 기록 표가 씀 · delayMs 만큼 늦게 와도 메뉴는 안 변함) */
 export async function ownerSession(page: Page, delayMs = 0): Promise<void> {
+  await page.addInitScript(() => document.documentElement.setAttribute("data-viewer", "owner"));
   await page.route("**/session", async (route) => {
     if (delayMs > 0) await new Promise((r) => setTimeout(r, delayMs));
     await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ name: "owner" }) });
   });
 }
 
-/** 작업 0403: 회사 링크(owner 가 아닌 토큰) 세션 */
+/** 작업 0403: 회사 링크(owner 가 아닌 토큰) 세션 — html 에 표시가 없음(Worker 는 회사 세션에 붙이지 않음) */
 export async function companySession(page: Page, name = "apply-acme-1124", delayMs = 0): Promise<void> {
   await page.route("**/session", async (route) => {
     if (delayMs > 0) await new Promise((r) => setTimeout(r, delayMs));
