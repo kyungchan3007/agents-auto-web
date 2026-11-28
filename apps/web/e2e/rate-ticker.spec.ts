@@ -1,6 +1,6 @@
 // 작업 0399 — 흐르는 환율 띠 e2e (테스트 먼저 · 구현 전에는 FAIL 이 정상)
 //   홈: hero 캐러셀 맨 아래(알약 · ‹ › 아래)에 띠 · 바닥 고정 띠 없음 · 높이 52px(휴대폰 44px)
-//   홈 밖(통화 · 통화 상세 · 여행 물가 · 나라 물가 · 직구 계산 · 항공권 · 소개 · 404): 화면 바닥 고정(position fixed · bottom 0 · 높이 48px · 휴대폰 42px) · 맨 아래에서 바닥 출처 띠를 안 가림 · 메뉴(z 50) · 시트(z 70)보다 아래
+//   홈 밖(통화 · 통화 상세 · 여행 물가 · 나라 물가 · 직구 계산 · 항공권 · 소개 · 404): 화면 바닥 고정(position fixed · bottom 0 · 높이 40px · 휴대폰 38px(작업 0400)) · 맨 아래에서 바닥 출처 띠를 안 가림 · 메뉴(z 50) · 시트(z 70)보다 아래
 //   builder 가 만든 표시(shared/ticker/rate-ticker.tsx — 홈 · 바닥이 같은 부품) — 클래스 rt-*
 //     [data-testid="rate-ticker"]  띠 루트(section · aria-label "오늘 환율") · data-variant="hero"(홈 hero 아래) | "fixed"(바닥 고정) · data-run="true"(흐름 켜짐 = 자바스크립트가 돌고 움직임 줄이기가 아닐 때) · data-held(손가락으로 만짐)
 //     .rt-label  왼쪽 고정 라벨(안의 .rt-chip 이 테두리 알약) — 넓은 화면 "오늘 환율 · 11.27 기준" · 휴대폰 "오늘 환율"(날짜는 CSS 로 숨김)
@@ -25,7 +25,7 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-const barH = (isMobile: boolean) => (isMobile ? 42 : 48);
+const barH = (isMobile: boolean) => (isMobile ? 38 : 40); // 작업 0400: 48/42 → 40/38
 const heroH = (isMobile: boolean) => (isMobile ? 44 : 52);
 const box = async (loc: Locator, name: string) => {
   const b = await loc.first().boundingBox();
@@ -69,7 +69,7 @@ test.describe("홈 — hero 캐러셀 맨 아래 띠 · 바닥 고정 띠 없음
 
 test.describe("홈 밖 — 화면 바닥 고정 띠", () => {
   for (const path of OTHER) {
-    test(`${path} — 맨 위 · 중간 · 맨 아래에서 bottom 0 · 높이 48(휴대폰 42) · 맨 아래에서 바닥 출처 띠 · 마지막 내용을 안 가림`, async ({ page, isMobile }) => {
+    test(`${path} — 맨 위 · 중간 · 맨 아래에서 bottom 0 · 높이 40(휴대폰 38) · 맨 아래에서 바닥 출처 띠 · 마지막 내용을 안 가림`, async ({ page, isMobile }) => {
       await page.goto(path);
       const t = tid(page, "rate-ticker");
       await expect(t).toHaveCount(1);
@@ -387,7 +387,7 @@ test.describe("글자 대비 기록", () => {
             let r = 0, gg = 0, bb = 0, n = 0;
             for (let p = 0; p < d.length; p += 4) { r += d[p]; gg += d[p + 1]; bb += d[p + 2]; n++; }
             r /= n; gg /= n; bb /= n;
-            const a = 0.36; // 띠 바탕 rgba(24,36,100,.36) 을 뒤 색 위에 얹음
+            const a = 0.18; // 띠 바탕 rgba(24,36,100,.18) 을 뒤 색 위에 얹음
             const L = lum(a * 24 + (1 - a) * r, a * 36 + (1 - a) * gg, a * 100 + (1 - a) * bb);
             worst = Math.min(worst, (1 + 0.05) / (L + 0.05)); // 흰 글자(L=1) 대비
           }
@@ -401,5 +401,95 @@ test.describe("글자 대비 기록", () => {
     writeFileSync(`${dir}/ticker-contrast-${isMobile ? "mobile" : "desktop"}.json`, JSON.stringify(rows, null, 1));
     test.info().annotations.push({ type: "대비(흰 글자 · 최소)", description: JSON.stringify(rows.map((r) => `${r.path}@${r.where}=${r.contrast}`)) });
     for (const r of rows) expect(r.contrast, `${r.path} ${r.where}`).toBeGreaterThan(1); // 기록용 — 판정은 lead
+  });
+});
+
+// 작업 0400 — 바닥 띠 모양(홈 밖 · data-variant="fixed") · 홈 hero 띠는 그대로 · 흰 금액 대비는 사용자 선택이라 위 "글자 대비 기록"에서 기록만
+test.describe("작업 0400 — 바닥 띠 모양", () => {
+  const SIG = {
+    낮음: { color: "rgb(5, 80, 42)", bg: "rgb(215, 240, 224)" },
+    보통: { color: "rgb(63, 67, 80)", bg: "rgb(230, 232, 239)" },
+    높음: { color: "rgb(138, 26, 20)", bg: "rgb(251, 224, 219)" },
+  } as const;
+  const NAVY = "rgb(22, 36, 110)";
+
+  for (const path of ["/currencies", "/prices/JPN", "/calc"]) {
+    test(`${path} — 높이 40(휴대폰 38) · 윗선 1px · 바탕 · 라벨 테두리 없음 · 글자 크기 · 금액 흰색`, async ({ page, isMobile }) => {
+      await page.goto(path);
+      const t = tid(page, "rate-ticker");
+      await hydrated(t);
+      const b = await box(t, "띠");
+      expect(Math.abs(b.height - (isMobile ? 38 : 40)), "높이").toBeLessThanOrEqual(1);
+      const st = await t.evaluate((el) => {
+        const cs = getComputedStyle(el);
+        const q = (sel: string) => {
+          const e = el.querySelector(sel) as HTMLElement | null;
+          if (!e) return null;
+          const c = getComputedStyle(e);
+          return { color: c.color, size: parseFloat(c.fontSize), weight: Number(c.fontWeight), bw: c.borderTopWidth, bs: c.borderTopStyle, bg: c.backgroundColor };
+        };
+        return {
+          bt: cs.borderTopWidth, bs: cs.borderTopStyle, bg: cs.backgroundColor, ts: cs.textShadow,
+          chip: q(".rt-chip"), label: q(".rt-label"), name: q(".rt-name"), amount: q(".rt-amount"), sig: q(".rt-sig"),
+          small: [...el.querySelectorAll(".rt-label, .rt-chip, .rt-name, .rt-amount, .rt-sig")].filter((e) => (e.textContent ?? "").trim() && parseFloat(getComputedStyle(e).fontSize) < 12).length,
+        };
+      });
+      expect(st.bt, "윗선 두께").toBe("1px");
+      expect(st.bs, "윗선 모양").toBe("solid");
+      expect(st.bg, "바탕").toMatch(/rgba\(24, 36, 100, 0?\.18\)/);
+      expect(st.ts === "none" || st.ts === "", "띠 글자 그림자 없음").toBe(true);
+      expect(st.chip, "라벨 .rt-chip").not.toBeNull();
+      expect(st.chip!.bw === "0px" || st.chip!.bs === "none", "라벨 테두리 없음").toBe(true);
+      expect(["rgba(0, 0, 0, 0)", "transparent"], "라벨 바탕 없음").toContain(st.chip!.bg);
+      expect(st.chip!.size, "라벨 12px").toBeGreaterThanOrEqual(12);
+      expect(st.chip!.color, "라벨 남색").toBe(NAVY);
+      expect(st.name!.size, "통화 이름 12.5px").toBeCloseTo(12.5, 1);
+      expect(st.name!.weight).toBe(500);
+      expect(st.name!.color).toBe(NAVY);
+      expect(st.amount!.size, "금액 13px").toBeCloseTo(13, 1);
+      expect(st.amount!.weight).toBe(700);
+      expect(st.amount!.color, "금액 흰색(사용자 선택)").toBe("rgb(255, 255, 255)");
+      expect(st.small, "12px 미만 글자 없음").toBe(0);
+    });
+  }
+
+  test("신호 낮음 · 보통 · 높음 — 글자색 · 바탕색이 서로 다름 · 정해진 값 · 알약 12px 굵기 700", async ({ page }) => {
+    await page.goto("/currencies");
+    const t = tid(page, "rate-ticker");
+    await hydrated(t);
+    const found = await t.evaluate((el) => {
+      const out: Record<string, { color: string; bg: string; size: number; weight: number; radius: number; dot: string }> = {};
+      for (const e of el.querySelectorAll('ul.rt-row:not([aria-hidden="true"]) .rt-sig')) {
+        const word = (e.textContent ?? "").replace(/\s/g, "").match(/낮음|보통|높음/)?.[0];
+        if (!word || out[word]) continue;
+        const c = getComputedStyle(e);
+        const i = e.querySelector("i") as HTMLElement | null;
+        out[word] = { color: c.color, bg: c.backgroundColor, size: parseFloat(c.fontSize), weight: Number(c.fontWeight), radius: parseFloat(c.borderTopLeftRadius), dot: i ? getComputedStyle(i).backgroundColor : "" };
+      }
+      return out;
+    });
+    const words = Object.keys(found) as (keyof typeof SIG)[];
+    expect(words.length, "신호 글자(낮음·보통·높음) 하나 이상").toBeGreaterThan(0);
+    for (const w of words) {
+      expect(found[w].color, `${w} 글자색`).toBe(SIG[w].color);
+      expect(found[w].bg, `${w} 바탕색`).toBe(SIG[w].bg);
+      expect(found[w].size).toBeGreaterThanOrEqual(12);
+      expect(found[w].weight).toBe(700);
+      expect(found[w].radius, `${w} 둥근 알약`).toBeGreaterThanOrEqual(8);
+    }
+    expect(new Set(words.map((w) => found[w].color)).size, "글자색 서로 다름").toBe(words.length);
+    expect(new Set(words.map((w) => found[w].bg)).size, "바탕색 서로 다름").toBe(words.length);
+    test.info().annotations.push({ type: "나온 신호", description: words.join(" · ") });
+  });
+
+  test("홈 hero 띠는 안 바뀜 — 높이 52(휴대폰 44) · 바탕 .18 이 아님 · 바닥 띠 없음", async ({ page, isMobile }) => {
+    await forceDefaultHero(page);
+    await page.goto("/");
+    const t = tid(page, "rate-ticker");
+    await expect(t).toHaveAttribute("data-variant", "hero");
+    const b = await box(t, "띠");
+    expect(Math.abs(b.height - heroH(isMobile)), "hero 띠 높이").toBeLessThanOrEqual(1);
+    const bg = await t.evaluate((el) => getComputedStyle(el).backgroundColor);
+    expect(bg, "hero 띠 바탕은 바닥 띠 값이 아님").not.toMatch(/rgba\(24, 36, 100, 0?\.18\)/);
   });
 });
