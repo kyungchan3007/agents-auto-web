@@ -52,7 +52,11 @@ test.describe("홈 — hero 캐러셀 맨 아래 띠 · 바닥 고정 띠 없음
       const tb = await box(t, "띠");
       expect(Math.abs(tb.height - heroH(isMobile)), "띠 높이").toBeLessThanOrEqual(1);
       // 알약 · ‹ › 줄은 블프 기간에만 보임(기본 장에서는 CSS 로 숨김) — 보이는 장 · 줄 아래에 띠
-      const slide = await box(page.locator('[data-testid="hero-slide"][data-active="true"]'), "보이는 장");
+      // 작업 0401: 하이드레이션 중 보이는 장 표시(data-active)가 바뀌는 사이에는 상자가 잠깐 null(CI 흔들림) — 보일 때까지 기다린 뒤 잼
+      const activeSlide = page.locator('[data-testid="hero-slide"][data-active="true"]').first();
+      await expect(activeSlide).toBeVisible();
+      await page.waitForLoadState("networkidle");
+      const slide = await box(activeSlide, "보이는 장");
       expect(tb.y, "보이는 장 아래").toBeGreaterThanOrEqual(slide.y + slide.height - 1);
       const tabs = tid(page, "hero-tabs");
       if (await tabs.isVisible()) {
