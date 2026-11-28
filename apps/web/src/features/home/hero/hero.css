@@ -159,20 +159,31 @@
   color: var(--hav-fg-2);
   font-size: 0.8125rem;
 }
-/* 칩 줄 수는 글꼴 폭이 아니라 화면 폭으로만 — 좁으면 늘 2+2 두 줄 · 28rem(448px) 이상은 늘 한 줄(글꼴 로딩 전 · 후 높이 같음, 작업 0402) */
+/* 칩 줄 수는 글꼴 폭이 아니라 화면 폭으로만 — 26rem(416px) 미만은 둘째 칩 뒤에서 늘 줄바꿈(2+2) · 이상은 늘 한 줄(글꼴 로딩 전 · 후 높이 같음, 작업 0402) */
 .hp-chips {
-  display: grid;
-  grid-template-columns: repeat(2, max-content);
-  justify-content: start;
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin: 16px 0 0;
   padding: 0;
   list-style: none;
 }
-@media (min-width: 28rem) {
+.hp-chips::before {
+  content: "";
+  order: 1;
+  flex-basis: 100%;
+  height: 0;
+  margin-bottom: -8px;
+}
+.hp-chips li:nth-child(n + 3) {
+  order: 2;
+}
+@media (min-width: 26rem) {
   .hp-chips {
-    display: flex;
     flex-wrap: nowrap;
+  }
+  .hp-chips::before {
+    display: none;
   }
 }
 .hp-chips button {
