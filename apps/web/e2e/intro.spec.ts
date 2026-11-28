@@ -323,9 +323,11 @@ test.describe("하나씩 다 눌러 보기 (작업 0186)", () => {
   test.skip(({ isMobile }) => isMobile, "데스크톱 인트로가 있는 홈 기준");
   test.use({ viewport: DESKTOP });
 
-  /** 홈(인트로를 건너뛴 뒤)의 사이트 안 링크 — 주소 기준 중복 없이 */
+  /** 홈(인트로를 건너뛴 뒤)의 사이트 안 링크 — 주소 기준 중복 없이
+   *  작업 0401: 흐르는 환율 띠 항목(rate-ticker 안)은 뺌 — 계속 움직여 눌리는 자리가 안 멈추고(stable 대기 시간 초과) · 눌러 가기는 rate-ticker.spec 이 검사 */
+  const NOT_TICKER = ':not([data-testid="rate-ticker"] a)';
   async function homeLinks(page: import("@playwright/test").Page) {
-    return page.$$eval("a[href]", (as) => [...new Set(as.map((a) => a.getAttribute("href") ?? ""))].filter((h) => h.startsWith("/") && !h.startsWith("//")));
+    return page.$$eval(`a[href]${NOT_TICKER}`, (as) => [...new Set(as.map((a) => a.getAttribute("href") ?? ""))].filter((h) => h.startsWith("/") && !h.startsWith("//")));
   }
 
   test("홈의 사이트 안 링크를 하나씩 — 이동되고, 뒤로 오면 인트로 없이 홈이 스크롤됨", async ({ page }) => {
@@ -339,7 +341,7 @@ test.describe("하나씩 다 눌러 보기 (작업 0186)", () => {
     expect(links.length, "홈에 사이트 안 링크가 있음").toBeGreaterThan(3);
     for (const href of links) {
       await test.step(`링크 ${href}`, async () => {
-        const link = page.locator(`a[href="${href}"]`).first();
+        const link = page.locator(`a[href="${href}"]${NOT_TICKER}`).first();
         await link.scrollIntoViewIfNeeded();
         await link.click();
         const [path, hash] = href.split("#");
