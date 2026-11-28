@@ -16,6 +16,9 @@ import "../admin.css";
 
 export type { AdminNavPage };
 
+/** 채용 담당자(owner 아닌 세션)에게만 보이는 글 — 원문 그대로 · owner 는 html[data-viewer=owner] 일 때 CSS 가 숨김 (작업 0403) */
+const DEMO_NOTE = "채용 담당자분들을 위한 데모 링크입니다. 열람 기록이 남지 않도록 모든 분께 같은 링크 하나를 드리고 있습니다.";
+
 const ICONS = { log: IconLog, geo: IconGeo, how: IconHow, marketing: IconMegaphone, traffic: IconChart, instagram: IconCamera } satisfies Record<AdminNavPage["icon"], () => ReactNode>;
 
 export function AdminShell({ brand, pages, reachable = pages, page, site, children }: { brand: string; pages: AdminNavPage[]; reachable?: AdminNavPage[]; page: string; site: SiteLink; children: ReactNode }) {
@@ -72,6 +75,7 @@ export function AdminShell({ brand, pages, reachable = pages, page, site, childr
               사이트로 가기
             </a>
           </nav>
+          <p className="adm-note adm-note-side">{DEMO_NOTE}</p>
           {/* 어드민 입구 쿠키를 지움 (작업 0326) — 어드민 메뉴 밖 */}
           <a className="adm-logout" href="/logout">
             로그아웃
@@ -79,6 +83,7 @@ export function AdminShell({ brand, pages, reachable = pages, page, site, childr
         </aside>
         <main id="main" ref={mainRef} tabIndex={-1} className="adm-main">
           {children}
+          <p className="adm-note adm-note-main">{DEMO_NOTE}</p>
         </main>
       </div>
       {pal.open && <Palette p={pal} />}
