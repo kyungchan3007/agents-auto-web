@@ -28,6 +28,7 @@
   inset-inline: 0;
   bottom: 0;
   z-index: 40;
+  --hav-ring: var(--hav-ticker-ring);
   height: calc(var(--rt-h) + env(safe-area-inset-bottom, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
   border-top: 1px solid var(--hav-ticker-glass-line);
