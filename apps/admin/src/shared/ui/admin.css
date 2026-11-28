@@ -224,7 +224,6 @@ html:not([data-viewer="owner"]) [data-owner-only] { display: none; }
 .adm-toast.on { opacity: 1; transform: translate(-50%, 0); }
 
 @media (max-width: 820px) {
-  .adm-demo-note-main { display: block; }
   .adm-shell { display: block; }
   .adm-side { display: none; }
   .adm-mtop { display: flex; position: sticky; top: 0; z-index: 20; background: var(--a-panel); border-bottom: 1px solid var(--a-line); padding: 0 12px 0 16px; height: 52px; align-items: center; justify-content: space-between; gap: 8px; }
@@ -281,5 +280,8 @@ html:not([data-viewer="owner"]) [data-owner-only] { display: none; }
 .adm-demo-note-side { margin-top: auto; padding: 0 10px; }
 .adm-demo-note-side + .adm-logout { margin-top: 0; }
 .adm-demo-note-main { display: none; }
+@media (max-width: 820px) {
+  .adm-demo-note-main { display: block; }
+}
 html[data-viewer="owner"] .adm-demo-note { display: none; }
 html[data-viewer="owner"] .adm-demo-note-side + .adm-logout { margin-top: auto; }
