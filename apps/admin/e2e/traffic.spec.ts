@@ -11,7 +11,7 @@
 //     data-testid="traffic-instagram"  인스타 유입 표 — 줄 "traffic-instagram-row"[data-kind=link|utm] · 칸 data-col="label"("인스타(링크)" · "인스타(utm)") · "sessions" · "users" · 응답의 instagram 이 null 이면 이 표가 없음
 //   어드민 메뉴: "유입"(/traffic · 단축키 5) — 메뉴가 일곱이 되는 것은 인스타 유입(/instagram · 6)와 함께(ig-insights.spec.ts) · 기존 메뉴 개수 검사(admin.spec.ts)는 구현 뒤 맞춤
 import { type Page, expect, test } from "@playwright/test";
-import { hydrated } from "./helpers";
+import { hydrated, ownerSession } from "./helpers";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 820;
@@ -35,6 +35,7 @@ const REPORT = {
 };
 
 async function open(page: Page, body: object, status = 200) {
+  await ownerSession(page); // 작업 0403: 메뉴 여섯 개는 owner 세션
   await page.route("**/bff/ga4*", (route) => route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) }));
   await page.goto("/traffic");
 }
@@ -67,6 +68,7 @@ test.describe("어드민 유입 화면 — GA4 (작업 0324)", () => {
 
   test("숫자 단축키 5 로 /traffic 에 감 (넓은 화면)", async ({ page }) => {
     test.skip(isPhone(page), "글쇠 단축키는 넓은 화면");
+    await ownerSession(page);
     await page.route("**/bff/ga4*", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(REPORT) }));
     await page.goto("/log");
     await hydrated(page.locator(".adm-find"));

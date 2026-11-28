@@ -9,7 +9,7 @@
 //     data-testid="ig-empty"              계정 · 게시물 모두 없을 때 — '아직 받은 성과 값이 없습니다'
 //     data-testid="ig-error"              /bff/ig 가 실패했을 때 — '성과 값을 받지 못했습니다' · 화면의 나머지(제목 · 어드민 메뉴)는 그대로
 import { type Page, expect, test } from "@playwright/test";
-import { hydrated } from "./helpers";
+import { hydrated, ownerSession } from "./helpers";
 
 const tid = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 
@@ -20,6 +20,7 @@ const M2 = { mediaId: "1790002", postedAt: "2026-11-20T03:00:00+0000", permalink
 const REPORT = { account: [ACCOUNT_NEW, ACCOUNT_OLD], media: [M1, M2] };
 
 async function open(page: Page, body: object, status = 200) {
+  await ownerSession(page); // 작업 0403: 메뉴 여섯 개는 owner 세션
   await page.route("**/bff/ig*", (route) => route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) }));
   await page.goto("/instagram");
 }
@@ -123,6 +124,7 @@ test.describe("알리기 — 인스타 유입 (작업 0323)", () => {
 
   test("숫자 단축키 6 으로 /instagram 에 감 (넓은 화면)", async ({ page }) => {
     test.skip((page.viewportSize()?.width ?? 0) < 820, "글쇠 단축키는 넓은 화면");
+    await ownerSession(page);
     await page.route("**/bff/ig*", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(REPORT) }));
     await page.goto("/log");
     await hydrated(page.locator(".adm-find"));
