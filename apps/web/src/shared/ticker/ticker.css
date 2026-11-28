@@ -21,9 +21,9 @@
   border-top: 1px solid var(--hav-ticker-line);
 }
 
-/* 홈 밖 — 화면 바닥 고정(어두운 유리) · 높이 48(휴대폰 42) + 아래 안전 영역 · 메뉴(z-50) · 시트(z-70)보다 아래 */
+/* 홈 밖 — 화면 바닥 고정(옅은 유리) · 높이 40(휴대폰 38) + 아래 안전 영역 · 메뉴(z-50) · 시트(z-70)보다 아래 · 글자 그림자 없음 */
 .rt[data-variant="fixed"] {
-  --rt-h: 42px;
+  --rt-h: 38px;
   position: fixed;
   inset-inline: 0;
   bottom: 0;
@@ -32,26 +32,26 @@
   padding-bottom: env(safe-area-inset-bottom, 0px);
   border-top: 1px solid var(--hav-ticker-glass-line);
   background: var(--hav-ticker-glass-bg);
+  box-shadow: 0 -6px 18px var(--hav-ticker-glass-shadow);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
   backdrop-filter: blur(16px) saturate(160%);
-  text-shadow: 0 1px 2px var(--hav-ticker-shadow);
 }
 @media (min-width: 640px) {
   .rt[data-variant="fixed"] {
-    --rt-h: 48px;
+    --rt-h: 40px;
   }
 }
 /* 띠 높이만큼 아래 여백 — 처음 그림부터 있어 띠가 붙을 때 위치가 움직이지 않음 */
 .rt-spacer {
-  height: calc(42px + env(safe-area-inset-bottom, 0px));
+  height: calc(38px + env(safe-area-inset-bottom, 0px));
 }
 @media (min-width: 640px) {
   .rt-spacer {
-    height: calc(48px + env(safe-area-inset-bottom, 0px));
+    height: calc(40px + env(safe-area-inset-bottom, 0px));
   }
 }
 
-/* 왼쪽 고정 라벨 — 테두리 있는 알약 칩 "● 오늘 환율 · 11.27 기준"(휴대폰은 "오늘 환율") */
+/* 왼쪽 고정 라벨 — "● 오늘 환율 · 11.27 기준"(휴대폰은 "오늘 환율") · 홈 hero 는 테두리 알약 */
 .rt-label {
   display: flex;
   flex: none;
@@ -69,6 +69,11 @@
   font-weight: 700;
   line-height: 1.2;
   white-space: nowrap;
+}
+.rt[data-variant="fixed"] .rt-chip {
+  padding: 0;
+  border: 0;
+  color: var(--hav-ticker-label);
 }
 .rt-chip i {
   width: 6px;
@@ -179,4 +184,37 @@
 }
 .rt-sig[data-signal="normal"] {
   color: var(--hav-normal);
+}
+
+/* 홈 밖 바닥 띠 — 이름 · 금액 · 국기 · 신호 알약(세 색) */
+.rt[data-variant="fixed"] .rt-name {
+  color: var(--hav-ticker-name);
+  font-size: 0.78125rem;
+  font-weight: 500;
+}
+.rt[data-variant="fixed"] .rt-amount {
+  color: var(--hav-ticker-amount);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+.rt[data-variant="fixed"] .rt-flag > * {
+  width: 20.4px;
+  height: 13.6px;
+}
+.rt[data-variant="fixed"] .rt-sig {
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+.rt[data-variant="fixed"] .rt-sig[data-signal="cheap"] {
+  color: var(--hav-ticker-cheap-fg);
+  background: var(--hav-ticker-cheap-bg);
+}
+.rt[data-variant="fixed"] .rt-sig[data-signal="normal"] {
+  color: var(--hav-ticker-normal-fg);
+  background: var(--hav-ticker-normal-bg);
+}
+.rt[data-variant="fixed"] .rt-sig[data-signal="expensive"] {
+  color: var(--hav-ticker-expensive-fg);
+  background: var(--hav-ticker-expensive-bg);
 }
