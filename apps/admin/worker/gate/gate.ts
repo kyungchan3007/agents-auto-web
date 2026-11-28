@@ -1,5 +1,6 @@
 // 어드민 입구 판정 — 모든 요청 앞에서 (작업 0326)
 //   결과: 막거나 · 바로 응답(로그인 · 로그아웃 · /session)하거나 · 통과(로그인한 토큰 이름)
+import { COMPANY_HOME, sendsToCompanyHome } from "./owner-only";
 import { invalidPage, blockedPage } from "./pages";
 import { COOKIE_NAME, OWNER_NAME, clearCookie, maxAgeFor, sessionCookie, signSession, verifySession } from "./session";
 import { type TokenList, matchToken, parseTokens } from "./token";
@@ -17,8 +18,9 @@ function readCookie(header: string | null, name: string): string | null {
   return null;
 }
 
-/** ?t 를 지운 같은 주소 (다른 쿼리는 남김) */
-function withoutToken(url: URL): string {
+/** ?t 를 지운 같은 주소 (다른 쿼리는 남김) — 회사 세션이고 첫 화면(/) 이나 막힌 화면이면 /geo (작업 0403 · 쿠키는 심은 뒤) */
+function landing(url: URL, name: string): string {
+  if (name !== OWNER_NAME && sendsToCompanyHome(url.pathname)) return `${url.origin}${COMPANY_HOME}`;
   const next = new URL(url);
   next.searchParams.delete("t");
   return next.href;
@@ -63,7 +65,7 @@ export async function runGate(request: Request, url: URL, env: GateEnv, onGrante
 
   if (url.searchParams.has("t")) {
     const match = ready ? await matchToken(list, url.searchParams.get("t") ?? "", new Date()) : null;
-    return { response: match ? await grant(match.name, list, secret, withoutToken(url), record) : invalidPage() };
+    return { response: match ? await grant(match.name, list, secret, landing(url, match.name), record) : invalidPage() };
   }
 
   const cookie = readCookie(request.headers.get("cookie"), COOKIE_NAME);
