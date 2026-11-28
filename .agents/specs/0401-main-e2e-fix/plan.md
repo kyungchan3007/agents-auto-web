@@ -31,3 +31,5 @@ main 반영 PR #478(develop 63ce5f75 · 운영 v1.6.0) 전체 e2e 실패 31개(�
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋 CI gate) → develop 머지 → #478 다시 실행(main 머지는 claude-desktop)
 
 ## 허점
+- focus-ring · resp-audit · tap-44 spec 은 이 작업에서 바꾸지 않아(focus-ring · tap-44) 또는 도움 파일만 바꿔(resp-audit) 로컬 가드로 못 돌림 · test 가 빌드에서 직접 잼(고리 #2438a8 · 금액 칩 43.5~44) · spec 통과는 #478 전체 e2e 에서 확인.
+- 흔들림 5개(footer-same:110 · pages:342 · prices-route:179 · calc-chart:136 · prices-redesign:211)는 고치지 않음 · 다시 돌리면 통과.

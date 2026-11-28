@@ -209,4 +209,4 @@
 | 0398 | 반응형 전수 점검 · 여백 · 정렬(전 페이지 320~1600 · 나라 물가 두 칸 · 블프 장 · 빈 공간 · 동적 변화) (Full · 급함 · develop 머지까지) | test ∥ builder | 머지됨 (#475) | task/0398-resp-audit | e2e/resp-audit.spec.ts · features/{prices/country,home}/** · 점검에서 나온 곳 |
 | 0399 | 흐르는 환율 띠: 홈 hero 아래 · 홈 밖 페이지는 화면 바닥 고정(어두운 유리) (Quick · develop 머지까지) | test ∥ builder → test | PR 열림 | task/0399-rate-ticker | apps/web/src/shared/ticker/** · home/{carousel,home.tsx} · 페이지 바닥 여백 |
 | 0400 | 바닥 환율 띠 모양 다듬기: 바탕 18% · 옅은 윗선 · 글자 12~13px · 라벨 테두리 없음 · 신호 세 색 알약 · 금액 흰색 (Quick · develop 머지까지) | builder ∥ test | 머지됨 | task/0400-ticker-style | shared/ticker/** · packages/ui tokens.css(띠 토큰) · e2e/rate-ticker.spec.ts |
-| 0401 | main 반영 #478 전체 e2e 실패 고치기: 바닥 띠 초점 고리 · 옛 기대값 · 띠 영향 (Quick · develop 머지까지) | builder ∥ test | 진행 중 | task/0401-main-e2e-fix | shared/ticker/ticker.css · tokens.css(고리 토큰) · e2e 9개 |
+| 0401 | main 반영 #478 전체 e2e 실패 고치기: 바닥 띠 초점 고리 · 옛 기대값 · 띠 영향 (Quick · develop 머지까지) | builder ∥ test | PR 열림 | task/0401-main-e2e-fix | shared/ticker/ticker.css · tokens.css(고리 토큰) · e2e 9개 |
