@@ -174,7 +174,7 @@ describe("owner — 전부 통과 · / → /log", () => {
     expect(s.api).toHaveBeenCalledTimes(BLOCKED_BFF.length + 2);
   });
 
-  it("/ → 302 /log (지금처럼) · owner 는 접속 기록을 남기지 않음", async () => {
+  it("/ → 302 /log (지금처럼) · 접속 기록 POST 없음", async () => {
     const s = await setup();
     for (const u of [`${ADMIN}/`, `${PREVIEW}/`]) {
       const res = await s.call("owner", u);
@@ -231,20 +231,17 @@ describe("?t= 로 들어올 때 — 쿠키를 심은 뒤 이동 주소", () => {
     expect(loc(root.res)?.pathname).toBe("/");
   });
 
-  it("접속 기록은 그대로 — 회사 토큰이 쿠키를 심을 때 이름만 한 번 보냄 · owner 는 안 보냄", async () => {
-    const s = await setup();
-    const waits: Promise<unknown>[] = [];
-    const ctx = { waitUntil: (p: Promise<unknown>) => void waits.push(p) };
-    await worker.fetch(new Request(`${ADMIN}/log?t=${REVIEWER_TOKEN}`, { redirect: "manual" }), s.env, ctx);
-    await Promise.all(waits);
-    const posts = s.api.mock.calls.filter(([r]) => new URL(r.url).pathname === "/admin-visits");
-    expect(posts).toHaveLength(1);
-    expect(await posts[0]![0].json()).toEqual({ name: REVIEWER_NAME });
-    const s2 = await setup();
-    const waits2: Promise<unknown>[] = [];
-    await worker.fetch(new Request(`${ADMIN}/log?t=${OWNER_TOKEN}`, { redirect: "manual" }), s2.env, { waitUntil: (p) => void waits2.push(p) });
-    await Promise.all(waits2);
-    expect(s2.api).not.toHaveBeenCalled();
+  it("접속 기록 없음 — 회사 토큰이 쿠키를 심어도 owner 토큰이어도 API(admin-visits)를 한 번도 부르지 않음", async () => {
+    for (const [token, path] of [[REVIEWER_TOKEN, "/log"], [REVIEWER_TOKEN, "/geo"], [REVIEWER_TOKEN, "/"], [OWNER_TOKEN, "/log"]] as const) {
+      const s = await setup();
+      const waits: Promise<unknown>[] = [];
+      const res = await worker.fetch(new Request(`${ADMIN}${path}?t=${token}`, { redirect: "manual" }), s.env, { waitUntil: (p) => void waits.push(p) });
+      await Promise.all(waits);
+      expect(res.status, path).toBe(303);
+      expect(res.headers.get("set-cookie"), path).toContain("__Host-admin=");
+      expect(s.api, `${path}: API 호출 없음`).not.toHaveBeenCalled();
+      expect(waits, `${path}: waitUntil 로 미뤄 둔 일 없음`).toHaveLength(0);
+    }
   });
 
   it("틀린 토큰은 지금처럼 안내 화면(쿠키 없음 · /geo 로 보내지 않음)", async () => {
@@ -255,14 +252,46 @@ describe("?t= 로 들어올 때 — 쿠키를 심은 뒤 이동 주소", () => {
   });
 });
 
-describe("접속 기록 — 화면 200 일 때만 회사 세션 이름을 남김(그대로)", () => {
-  it("/geo · /how 를 열면 한 번씩 · 막혀 302 가 된 요청은 남기지 않음", async () => {
+describe("접속 기록 — 어떤 세션도 남기지 않음 (작업 0403 추가 지시) · 읽기는 그대로", () => {
+  it("회사 세션이 /geo · /how 를 열어도 · 막혀 302 가 돼도 POST 없음", async () => {
     const s = await setup();
-    await s.call("reviewer", `${ADMIN}/geo`);
-    await s.call("reviewer", `${ADMIN}/how`);
-    await s.call("reviewer", `${ADMIN}/log`);
-    const posts = await s.visitCalls();
-    expect(posts).toHaveLength(2);
-    for (const [r] of posts) expect(await r.clone().json()).toEqual({ name: REVIEWER_NAME });
+    for (const p of ["/geo", "/how", "/log", "/", "/bff/geo", "/bff/activity"]) await s.call("reviewer", `${ADMIN}${p}`);
+    expect(await s.visitCalls()).toHaveLength(0);
+    expect(s.api.mock.calls.every(([r]) => r.method !== "POST")).toBe(true);
+  });
+
+  it("owner 가 모든 화면을 열어도 POST 없음", async () => {
+    const s = await setup();
+    for (const p of ["/geo", "/how", "/log", "/marketing", "/traffic", "/instagram"]) await s.call("owner", `${ADMIN}${p}`);
+    expect(await s.visitCalls()).toHaveLength(0);
+  });
+
+  it("읽기(/bff/admin-visits)는 그대로 — owner 는 API 로 · 회사는 404", async () => {
+    const s = await setup();
+    expect((await s.call("reviewer", `${ADMIN}/bff/admin-visits`)).status).toBe(404);
+    expect(s.api).not.toHaveBeenCalled();
+    expect((await s.call("owner", `${ADMIN}/bff/admin-visits`)).status).toBe(200);
+    expect(new URL(s.api.mock.calls[0]![0].url).pathname).toBe("/admin-visits");
+    expect(s.api.mock.calls[0]![0].method).toBe("GET");
+  });
+});
+
+describe("채용 담당자 공용 토큰(이름 recruiter · 작업 0403) — 회사 세션 규칙 그대로", () => {
+  it("recruiter 쿠키로 막힌 화면 302 /geo · /geo 통과 · 막힌 bff 403 · 접속 기록 POST 없음", async () => {
+    const { tokenList } = await import("./gate/test-kit");
+    const list = await tokenList({ recruiter: { hash: "a".repeat(64), exp: "2099-12-31" } });
+    const env: Env = { ASSETS: { fetch: vi.fn(async () => new Response("<html>page</html>", { status: 200 })) }, API: { fetch: vi.fn(async () => Response.json({})) }, ...(await gateEnv(list)) };
+    const cookie = await cookieFor("recruiter", { list });
+    const call = (p: string) => worker.fetch(new Request(`${ADMIN}${p}`, { redirect: "manual", headers: { cookie } }), env);
+    for (const p of BLOCKED_PAGES) {
+      const res = await call(p);
+      expect(res.status, p).toBe(302);
+      expect(loc(res)?.pathname, p).toBe("/geo");
+    }
+    expect((await call("/geo")).status).toBe(200);
+    expect((await call("/how")).status).toBe(200);
+    expect((await call("/bff/ga4")).status).toBe(403);
+    expect((await call("/bff/admin-visits")).status).toBe(404);
+    expect((env.API.fetch as ReturnType<typeof vi.fn>).mock.calls.filter(([r]) => (r as Request).method === "POST")).toHaveLength(0);
   });
 });

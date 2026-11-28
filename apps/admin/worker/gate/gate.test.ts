@@ -322,25 +322,21 @@ describe("/logout · /session (작업 0326)", () => {
   });
 });
 
-describe("접속 기록 — 토큰 이름별 처음 · 마지막 시각만 (작업 0326)", () => {
-  const visitOf = (name: string) => ({ method: "POST", key: API_KEY, body: { name }, cookie: null });
-
-  it("쿠키를 심을 때 한 번 — 이름만 보냄(IP · 기기 · 경로 없음) · 쿠키 · 사용자 머리글을 넘기지 않음", async () => {
+describe("접속 기록 — 남기지 않음 (작업 0403 추가 지시: '열람 기록이 남지 않도록' · 0326 의 기록은 없어짐)", () => {
+  it("쿠키를 심을 때도 API 를 부르지 않음(이름 · IP · 기기 · 경로 어느 것도 안 보냄)", async () => {
     const s = await setup();
-    await s.call(`${ORIGIN}/?t=${REVIEWER_TOKEN}`, { headers: { "user-agent": "Mozilla/5.0 test", "cf-connecting-ip": "203.0.113.9" } });
-    expect(await s.visits()).toEqual([visitOf(REVIEWER_NAME)]);
-    const sent = s.calls[0]!;
-    for (const h of ["user-agent", "cf-connecting-ip", "x-forwarded-for", "referer", "cookie"]) expect(sent.headers.get(h), h).toBeNull();
-    expect(sent.url).not.toContain("geo");
+    const res = await s.call(`${ORIGIN}/?t=${REVIEWER_TOKEN}`, { headers: { "user-agent": "Mozilla/5.0 test", "cf-connecting-ip": "203.0.113.9" } });
+    expect(res.status).toBe(303);
+    expect(await s.visits()).toEqual([]);
+    expect(s.calls).toHaveLength(0);
   });
 
-  it("로그인한 페이지(HTML) 요청 때 한 번 — 경로는 보내지 않음", async () => {
+  it("로그인한 페이지(HTML) 요청 때도 부르지 않음", async () => {
     const s = await setup();
     await s.call(`${ORIGIN}/geo`, { headers: { cookie: await cookieFor(REVIEWER_NAME) } });
     await s.call(`${ORIGIN}/how`, { headers: { cookie: await cookieFor(REVIEWER_NAME) } });
-    const v = await s.visits();
-    expect(v).toEqual([visitOf(REVIEWER_NAME), visitOf(REVIEWER_NAME)]);
-    expect(JSON.stringify(v)).not.toMatch(/geo|how/);
+    expect(await s.visits()).toEqual([]);
+    expect(s.calls).toHaveLength(0);
   });
 
   it("자산 · /bff · /session 요청은 기록하지 않음", async () => {
@@ -359,14 +355,14 @@ describe("접속 기록 — 토큰 이름별 처음 · 마지막 시각만 (작�
     expect(await s.visits()).toEqual([]);
   });
 
-  it("owner 는 기록하지 않음 — 쿠키를 심을 때도 페이지 요청 때도", async () => {
+  it("owner 도 기록하지 않음 — 쿠키를 심을 때도 페이지 요청 때도", async () => {
     const s = await setup();
     await s.call(`${ORIGIN}/?t=${OWNER_TOKEN}`);
     await s.call(`${ORIGIN}/geo`, { headers: { cookie: await cookieFor(OWNER_NAME) } });
     expect(await s.visits()).toEqual([]);
   });
 
-  it("기록이 실패해도(API 오류) 화면 · 쿠키는 그대로", async () => {
+  it("API 가 오류여도 화면 · 쿠키는 그대로(기록을 부르지 않으니 영향 없음)", async () => {
     const s = await setup({ apiFails: true });
     const grant = await s.call(`${ORIGIN}/?t=${REVIEWER_TOKEN}`);
     expect(grant.status).toBe(303);
