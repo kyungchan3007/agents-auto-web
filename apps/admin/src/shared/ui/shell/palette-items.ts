@@ -4,7 +4,7 @@ import { match } from "../../search/match";
 import { flashPanel } from "../events/admin-events";
 
 /** 어드민 화면 하나 — key 는 단축키(숫자 한 글자) · icon 은 틀의 아이콘 이름 */
-export type AdminNavPage = { id: string; href: string; label: string; short: string; key: string; icon: "log" | "geo" | "how" | "marketing" | "traffic" | "instagram" };
+export type AdminNavPage = { id: string; href: string; label: string; short: string; key: string; icon: "log" | "geo" | "how" | "marketing" | "traffic" | "instagram"; ownerOnly?: boolean };
 export type SiteLink = { href: string; label: string };
 export type PaletteItem = { group: string; label: string; hint: string; run: () => void };
 

@@ -43,7 +43,8 @@
 .adm-nav a[aria-current="page"] { background: var(--a-sunk); color: var(--a-ink); box-shadow: inset 0 0 0 1px var(--a-line); }
 .adm-nav a kbd { margin-left: auto; opacity: 0; transition: opacity 0.15s; }
 .adm-side:hover .adm-nav a kbd, .adm-nav a:focus-visible kbd { opacity: 1; }
-.adm-side .adm-nav:not(.foot) { min-height: 226px; } /* 여섯 칸(36×6 + 간격 2×5) 자리를 처음부터 잡아 owner 확인 뒤 메뉴가 늘어도 '사이트로 가기' 가 움직이지 않음 (작업 0403) */
+/* owner 가 아니면 owner 전용 메뉴 항목은 처음 그림부터 없음 — Worker 가 owner 응답의 html 에 data-viewer="owner" 를 붙임 (작업 0403 · 서버 막기는 따로) */
+html:not([data-viewer="owner"]) [data-owner-only] { display: none; }
 .adm-nav.foot { border-top: 1px solid var(--a-line); padding-top: 12px; }
 .adm svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.5; }
 .adm-mtop { display: none; }

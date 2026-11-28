@@ -18,12 +18,12 @@ export type { AdminNavPage };
 
 const ICONS = { log: IconLog, geo: IconGeo, how: IconHow, marketing: IconMegaphone, traffic: IconChart, instagram: IconCamera } satisfies Record<AdminNavPage["icon"], () => ReactNode>;
 
-export function AdminShell({ brand, pages, page, site, children }: { brand: string; pages: AdminNavPage[]; page: string; site: SiteLink; children: ReactNode }) {
-  const pal = usePalette(pages, page, site);
+export function AdminShell({ brand, pages, reachable = pages, page, site, children }: { brand: string; pages: AdminNavPage[]; reachable?: AdminNavPage[]; page: string; site: SiteLink; children: ReactNode }) {
+  const pal = usePalette(reachable, page, site);
   const toast = useToast();
   const { mainRef, mod } = useShellMount();
-  useShellKeys({ pages, page, open: pal.open, show: pal.show, hide: pal.hide });
-  const home = pages[0]?.href ?? "/";
+  useShellKeys({ pages: reachable, page, open: pal.open, show: pal.show, hide: pal.hide });
+  const home = reachable[0]?.href ?? "/";
 
   return (
     <div className="adm">
@@ -34,7 +34,7 @@ export function AdminShell({ brand, pages, page, site, children }: { brand: stri
         </a>
         <nav aria-label="어드민 메뉴">
           {pages.map((p) => (
-            <a key={p.id} href={p.href} aria-current={p.id === page ? "page" : undefined}>
+            <a key={p.id} href={p.href} aria-current={p.id === page ? "page" : undefined} data-owner-only={p.ownerOnly ? "" : undefined}>
               {p.short}
             </a>
           ))}
@@ -58,7 +58,7 @@ export function AdminShell({ brand, pages, page, site, children }: { brand: stri
             {pages.map((p) => {
               const Icon = ICONS[p.icon];
               return (
-                <a key={p.id} href={p.href} aria-current={p.id === page ? "page" : undefined}>
+                <a key={p.id} href={p.href} aria-current={p.id === page ? "page" : undefined} data-owner-only={p.ownerOnly ? "" : undefined}>
                   <Icon />
                   {p.label}
                   <kbd>{p.key}</kbd>

@@ -3,7 +3,7 @@ import type { AdminNavPage } from "../ui/shell/palette-items";
 
 export type AdminPage = "log" | "geo" | "how" | "marketing" | "traffic" | "instagram";
 
-export const ADMIN_NAV: (AdminNavPage & { id: AdminPage })[] = [
+const ALL: (AdminNavPage & { id: AdminPage })[] = [
   { id: "log", href: "/log", label: "작업실", short: "작업실", key: "1", icon: "log" },
   { id: "geo", href: "/geo", label: "GEO 측정", short: "GEO", key: "2", icon: "geo" },
   { id: "how", href: "/how", label: "만드는 방식", short: "만드는 방식", key: "3", icon: "how" },
@@ -15,6 +15,10 @@ export const ADMIN_NAV: (AdminNavPage & { id: AdminPage })[] = [
 /** 회사 링크(owner 아님)가 보는 화면 — GEO 측정 · 만드는 방식 (작업 0403 · 숫자 단축키는 원래 키 그대로) */
 export const COMPANY_PAGES: readonly AdminPage[] = ["geo", "how"];
 
-/** 세션에 맞는 메뉴 — owner 로 확인되기 전에는 회사 목록(두 개) · 확인되면 여섯 개 */
-const COMPANY_NAV = ADMIN_NAV.filter((p) => COMPANY_PAGES.includes(p.id));
+/** 여섯 개 전부 — 회사용이 아닌 항목은 ownerOnly(그리기: html[data-viewer=owner] 가 아니면 CSS 로 숨김) */
+export const ADMIN_NAV = ALL.map((p) => ({ ...p, ownerOnly: !COMPANY_PAGES.includes(p.id) }));
+
+const COMPANY_NAV = ADMIN_NAV.filter((p) => !p.ownerOnly);
+
+/** 세션에 맞는 메뉴 — 찾기 · 숫자 단축키 · 로고 링크가 씀 (owner 는 여섯 개 · 아니면 두 개) */
 export const navFor = (owner: boolean) => (owner ? ADMIN_NAV : COMPANY_NAV);
