@@ -144,10 +144,9 @@ test.describe("항목 · 순서 · 라벨 · 읽기 · 누르면", () => {
     await expect(label).toBeVisible();
     // 보이는 글(innerText) — 휴대폰은 날짜를 CSS 로 숨김
     const shown = async () => ((await label.innerText()) ?? "").replace(/\s+/g, " ").trim();
-    // 시안: 라벨은 테두리 있는 알약 칩(작업 0399) · 둥근 모서리 + 1px 테두리
-    const chip = await page.locator(".rt-label .rt-chip").evaluate((el) => ({ bw: parseFloat(getComputedStyle(el).borderTopWidth), br: parseFloat(getComputedStyle(el).borderTopLeftRadius) }));
-    expect(chip.bw, "라벨 테두리").toBeGreaterThan(0);
-    expect(chip.br, "라벨 모서리 둥글게(알약)").toBeGreaterThanOrEqual(12);
+    // 작업 0400: 바닥 띠 라벨은 테두리 · 바탕 없음(노란 점 + 글자만) — 홈 hero 띠 라벨은 0399 그대로 테두리 알약(아래 별도 테스트)
+    const chip = await page.locator(".rt-label .rt-chip").evaluate((el) => ({ bw: parseFloat(getComputedStyle(el).borderTopWidth) }));
+    expect(chip.bw, "바닥 띠 라벨 테두리 없음").toBe(0);
     if (isMobile) await expect.poll(shown).toBe("오늘 환율");
     else await expect.poll(shown).toMatch(/^오늘 환율 ?· \d{1,2}\.\d{2} 기준$/);
   });
@@ -480,6 +479,14 @@ test.describe("작업 0400 — 바닥 띠 모양", () => {
     expect(new Set(words.map((w) => found[w].color)).size, "글자색 서로 다름").toBe(words.length);
     expect(new Set(words.map((w) => found[w].bg)).size, "바탕색 서로 다름").toBe(words.length);
     test.info().annotations.push({ type: "나온 신호", description: words.join(" · ") });
+  });
+
+  test("홈 hero 띠 라벨은 0399 그대로 — 테두리 있는 알약", async ({ page }) => {
+    await forceDefaultHero(page);
+    await page.goto("/");
+    const chip = await page.locator('[data-variant="hero"] .rt-chip').first().evaluate((el) => ({ bw: parseFloat(getComputedStyle(el).borderTopWidth), br: parseFloat(getComputedStyle(el).borderTopLeftRadius) }));
+    expect(chip.bw, "hero 라벨 테두리").toBeGreaterThan(0);
+    expect(chip.br, "hero 라벨 알약").toBeGreaterThanOrEqual(12);
   });
 
   test("홈 hero 띠는 안 바뀜 — 높이 52(휴대폰 44) · 바탕 .18 이 아님 · 바닥 띠 없음", async ({ page, isMobile }) => {
