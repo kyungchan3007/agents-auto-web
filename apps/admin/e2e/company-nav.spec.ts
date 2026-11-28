@@ -91,7 +91,7 @@ test.describe("회사 세션 — 안내 창 없음 · 메뉴 두 개", () => {
       const read = () => {
         for (const nav of document.querySelectorAll('nav[aria-label="어드민 메뉴"]')) w.__maxVisible = Math.max(w.__maxVisible, [...nav.querySelectorAll("a")].filter((a) => a.getClientRects().length > 0).length);
       };
-      new MutationObserver(read).observe(document, { subtree: true, childList: true });
+      // 그림이 그려지는 프레임(rAF)에서만 읽음 — 스타일이 붙기 전 DOM 삽입 순간은 화면에 그려지지 않음
       const tick = () => {
         read();
         requestAnimationFrame(tick);

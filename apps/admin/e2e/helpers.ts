@@ -82,7 +82,12 @@ export async function quietSession(page: Page): Promise<void> {
 /** 작업 0403: 본인(owner) 세션 — Worker 가 owner 의 HTML 200 에만 <html data-viewer="owner"> 를 붙이므로(worker/viewer.ts) 정적 서버(Worker 없음)에서는 첫 그림 전에 직접 붙여 흉내 냄
  *  메뉴 여섯 개 · 단축키 1~6 · 찾기 여섯 줄 · 로고 /log 는 이 표시로 정해짐 · /session 도 가짜 응답(접속 기록 표가 씀 · delayMs 만큼 늦게 와도 메뉴는 안 변함) */
 export async function ownerSession(page: Page, delayMs = 0): Promise<void> {
-  await page.addInitScript(() => document.documentElement.setAttribute("data-viewer", "owner"));
+  // 초기화 스크립트는 html 요소가 생기기 전에 돌 수 있어 — 생기는 즉시 붙이고 하이드레이션 뒤에도 유지(Worker 는 HTML 자체에 붙여 보냄)
+  await page.addInitScript(() => {
+    const put = () => document.documentElement?.setAttribute("data-viewer", "owner");
+    put();
+    new MutationObserver(put).observe(document, { childList: true, subtree: false, attributes: true, attributeFilter: ["data-viewer"] });
+  });
   await page.route("**/session", async (route) => {
     if (delayMs > 0) await new Promise((r) => setTimeout(r, delayMs));
     await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ name: "owner" }) });
