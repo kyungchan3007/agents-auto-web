@@ -5,7 +5,7 @@
 //     메뉴(사이드 · 휴대폰 위)는 정적 HTML 에 여섯 개를 그리고 회사용이 아닌 네 개에 data-owner-only · CSS html:not([data-viewer=owner]) [data-owner-only] { display:none } → 첫 그림부터 최종 모양(/session 을 기다리지 않음)
 //     찾기 · 숫자 단축키 · 로고 링크는 useViewerOwner(서버 그림 false · 브라우저는 html 속성) — 회사 = 화면 두 줄 · 키 2/3 · 로고 /geo · owner = 여섯 줄 · 키 1~6 · 로고 /log
 //     안내 창(role=dialog · data-testid="gate-welcome")은 없음 — 대신 넣는 안내 문구도 없음
-//     추가 지시: 회사(owner 아님) 세션에만 원문 두 문장 — 넓은 화면은 사이드바 로그아웃 바로 위(.adm-note-side) · 휴대폰(820px 이하)은 본문 맨 아래 한 번(.adm-note-main) · owner 에겐 첫 그림부터 없음(html[data-viewer=owner] .adm-note 숨김) · 문구 때문에 메뉴 · 본문 위치가 변하지 않음
+//     추가 지시: 회사(owner 아님) 세션에만 원문 두 문장 — 넓은 화면은 사이드바 로그아웃 바로 위(.adm-demo-note-side) · 휴대폰(820px 이하)은 본문 맨 아래 한 번(.adm-demo-note-main) · owner 에겐 첫 그림부터 없음(html[data-viewer=owner] .adm-demo-note 숨김) · 기존 안내 문단(.adm-note)은 owner · 회사 모두 그대로 · 문구 때문에 메뉴 · 본문 위치가 변하지 않음
 //     /session 이 늦게 와도(또는 실패해도) 메뉴 · 제목 · 본문 · 사이트로 가기 자리가 첫 프레임부터 끝까지 같음 · 회사 메뉴 아래에 빈칸이 없음(사이트로 가기가 두 개 바로 아래)
 import { type Page, expect, test } from "@playwright/test";
 import { companySession, hydrated, mockGeo, ownerSession } from "./helpers";
@@ -19,6 +19,8 @@ const hrefs = (page: Page) => menu(page).getByRole("link").evaluateAll((els) => 
 const brand = (page: Page) => page.locator("a.adm-brand").filter({ visible: true }).first();
 
 const COMPANY_PATHS = ["/geo", "/how"];
+/** 채용 담당자 안내 글 전용 선택자(adm-demo-note-*) — 어드민 화면 곳곳의 기존 안내 문단은 클래스 adm-note 를 이미 쓰므로 그 이름과 섞지 않음 */
+const DEMO_SEL = ".adm-demo-note-side, .adm-demo-note-main";
 const SIX = ["/log", "/geo", "/how", "/marketing", "/traffic", "/instagram"];
 
 test.describe("회사 세션 — 안내 창 없음 · 메뉴 두 개", () => {
@@ -240,7 +242,7 @@ test.describe("첫 프레임부터 끝 모양 — /session 이 늦어도 메뉴 
         const last = r(links[links.length - 1]);
         const foot = r(document.querySelector("aside.adm-side .adm-nav.foot a"));
         const top = r(document.querySelector("header.adm-mtop"));
-        const note = r([...document.querySelectorAll(".adm-note")].find((e) => e.getClientRects().length > 0));
+        const note = r([...document.querySelectorAll(".adm-demo-note-side, .adm-demo-note-main")].find((e) => e.getClientRects().length > 0));
         const logout = phone ? null : r(document.querySelector("aside.adm-side .adm-logout"));
         w.__fr.push({
           t: Math.round(performance.now() - t0),
@@ -252,7 +254,7 @@ test.describe("첫 프레임부터 끝 모양 — /session 이 늦어도 메뉴 
           mainY: Math.round((main.y + scrollY) * 2) / 2,
           mainX: Math.round(main.x * 2) / 2,
           topH: Math.round((top?.height ?? -1) * 2) / 2,
-          noteY: note ? Math.round((note.y + scrollY) * 2) / 2 : -1,
+          noteY: note && !phone ? Math.round((note.y + scrollY) * 2) / 2 : -1, // 휴대폰은 본문 맨 아래라 아래 내용이 늦게 늘면 따라 내려감(문구 탓이 아님) — 넓은 화면 사이드만 잼
           noteH: note ? Math.round(note.height * 2) / 2 : -1,
           logoutY: logout ? Math.round((logout.y + scrollY) * 2) / 2 : -1,
         });
@@ -348,7 +350,7 @@ test.describe("첫 프레임부터 끝 모양 — /session 이 늦어도 메뉴 
 const NOTE = "채용 담당자분들을 위한 데모 링크입니다. 열람 기록이 남지 않도록 모든 분께 같은 링크 하나를 드리고 있습니다.";
 
 test.describe("채용 담당자 안내 글 (작업 0403 추가 지시)", () => {
-  const visible = (page: Page) => page.locator(".adm-note").evaluateAll((els) => els.filter((e) => e.getClientRects().length > 0).map((e) => ({ cls: e.className, text: (e.textContent ?? "").replace(/\s+/g, " ").trim() })));
+  const visible = (page: Page) => page.locator(DEMO_SEL).evaluateAll((els) => els.filter((e) => e.getClientRects().length > 0).map((e) => ({ cls: e.className, text: (e.textContent ?? "").replace(/\s+/g, " ").trim() })));
 
   for (const path of COMPANY_PATHS) {
     test(`${path} · 회사 세션 — 보이는 안내 글은 정확히 하나 · 원문 두 문장 그대로 · ${"넓은 화면은 사이드 · 휴대폰은 본문 맨 아래"}`, async ({ page }) => {
@@ -359,7 +361,7 @@ test.describe("채용 담당자 안내 글 (작업 0403 추가 지시)", () => {
       const shown = await visible(page);
       expect(shown, "보이는 안내 글 수").toHaveLength(1);
       expect(shown[0]?.text, "원문 그대로").toBe(NOTE);
-      expect(shown[0]?.cls).toContain(isPhone(page) ? "adm-note-main" : "adm-note-side");
+      expect(shown[0]?.cls).toContain(isPhone(page) ? "adm-demo-note-main" : "adm-demo-note-side");
       await expect(page.getByText(NOTE, { exact: true }).filter({ visible: true })).toHaveCount(1);
     });
   }
@@ -371,7 +373,7 @@ test.describe("채용 담당자 안내 글 (작업 0403 추가 지시)", () => {
     await page.goto("/how");
     const g = await page.evaluate(() => {
       const r = (sel: string) => document.querySelector(sel)?.getBoundingClientRect();
-      const note = document.querySelector(".adm-note-side") as HTMLElement;
+      const note = document.querySelector(".adm-demo-note-side") as HTMLElement;
       const side = r("aside.adm-side");
       const nb = note.getBoundingClientRect();
       const foot = r("aside.adm-side .adm-nav.foot");
@@ -385,7 +387,7 @@ test.describe("채용 담당자 안내 글 (작업 0403 추가 지시)", () => {
     expect(g.nb.right).toBeLessThanOrEqual((g.side?.right ?? 0) + 0.5);
     expect(g.fs, "작은 글씨여도 12px 이상").toBeGreaterThanOrEqual(12);
     expect(g.sw, "글이 칸 밖으로 넘치지 않음").toBeLessThanOrEqual(0);
-    await expect(page.locator(".adm-note-main")).toBeHidden();
+    await expect(page.locator(".adm-demo-note-main")).toBeHidden();
   });
 
   test("휴대폰 — 문구는 본문 맨 아래 한 번(마지막 내용 뒤) · 사이드 문구는 안 보임 · 가로 넘침 0", async ({ page }) => {
@@ -393,11 +395,11 @@ test.describe("채용 담당자 안내 글 (작업 0403 추가 지시)", () => {
     await mockGeo(page);
     await companySession(page);
     await page.goto("/how");
-    await expect(page.locator(".adm-note-main")).toBeVisible();
-    await expect(page.locator(".adm-note-side")).toBeHidden();
+    await expect(page.locator(".adm-demo-note-main")).toBeVisible();
+    await expect(page.locator(".adm-demo-note-side")).toBeHidden();
     const g = await page.evaluate(() => {
       const main = document.querySelector("main") as HTMLElement;
-      const note = document.querySelector(".adm-note-main") as HTMLElement;
+      const note = document.querySelector(".adm-demo-note-main") as HTMLElement;
       const last = main.lastElementChild;
       const content = [...main.children].filter((e) => e !== note && e.getClientRects().length > 0);
       const lastContent = content[content.length - 1]?.getBoundingClientRect();
@@ -430,8 +432,8 @@ test.describe("채용 담당자 안내 글 (작업 0403 추가 지시)", () => {
     for (const path of ["/geo", "/how"]) {
       const html = await (await request.get(path)).text();
       expect(html.split(NOTE).length - 1, `${path}: 원문이 들어 있는 곳`).toBe(2);
-      expect(html).toContain("adm-note-side");
-      expect(html).toContain("adm-note-main");
+      expect(html).toContain("adm-demo-note-side");
+      expect(html).toContain("adm-demo-note-main");
     }
   });
 
@@ -443,10 +445,11 @@ test.describe("채용 담당자 안내 글 (작업 0403 추가 지시)", () => {
       w.__nf = [];
       w.__stop = false;
       const tick = () => {
-        const note = [...document.querySelectorAll(".adm-note")].find((e) => e.getClientRects().length > 0)?.getBoundingClientRect();
+        const note = [...document.querySelectorAll(".adm-demo-note-side, .adm-demo-note-main")].find((e) => e.getClientRects().length > 0)?.getBoundingClientRect();
+        const phone = getComputedStyle(document.querySelector("header.adm-mtop") ?? document.body).display !== "none";
         const main = document.querySelector("main")?.getBoundingClientRect();
         const nav = document.querySelector("aside.adm-side .adm-nav.foot a, header.adm-mtop")?.getBoundingClientRect();
-        if (main && main.height > 0) w.__nf.push(JSON.stringify([note ? Math.round((note.y + scrollY) * 2) / 2 : -1, note ? Math.round(note.height * 2) / 2 : -1, Math.round((main.y + scrollY) * 2) / 2, Math.round((nav?.y ?? -1) * 2) / 2]));
+        if (main && main.height > 0) w.__nf.push(JSON.stringify([note ? (phone ? 1 : Math.round((note.y + scrollY) * 2) / 2) : -1, note ? Math.round(note.height * 2) / 2 : -1, Math.round((main.y + scrollY) * 2) / 2, Math.round((nav?.y ?? -1) * 2) / 2]));
         if (!w.__stop) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
@@ -463,4 +466,50 @@ test.describe("채용 담당자 안내 글 (작업 0403 추가 지시)", () => {
     expect([...new Set(fr)], "문구 · 본문 · 메뉴 자리가 프레임마다 같음").toHaveLength(1);
     expect(JSON.parse(fr[0] as string)[0], "첫 프레임부터 문구가 있음").toBeGreaterThan(0);
   });
+});
+
+test.describe("owner 화면의 기존 안내 문단은 그대로 (작업 0403 — .adm-note 는 기존 문단 클래스)", () => {
+  /** 새 안내 글이 아닌 기존 페이지 안내 문단 중 눈에 보이는 것 */
+  const pageNotes = (page: Page) => page.locator(".adm-note").evaluateAll((els) => els.filter((e) => e.getClientRects().length > 0).map((e) => (e.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 40)));
+
+  for (const path of ["/how", "/geo"]) {
+    test(`${path} — owner 와 회사가 보는 기존 안내 문단이 같음(owner 에게 사라지지 않음) · 새 안내 글만 다름`, async ({ page }) => {
+      await mockGeo(page);
+      await companySession(page);
+      await page.goto(path);
+      await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+      await hydrated(page.locator(".adm-find"));
+      await page.waitForTimeout(600);
+      const company = await pageNotes(page);
+      expect(company.length, `${path}: 회사가 보는 기존 안내 문단 수`).toBeGreaterThan(0);
+      await page.unroute("**/session");
+      await ownerSession(page);
+      await page.goto(path);
+      await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+      await hydrated(page.locator(".adm-find"));
+      await page.waitForTimeout(600);
+      const owner = await pageNotes(page);
+      expect(owner, `${path}: owner 의 기존 안내 문단`).toEqual(company);
+      expect(await visible(page)).toHaveLength(0); // 새 글은 owner 에게 없음
+    });
+  }
+});
+
+test.describe("공용 링크(recruiter)와 회사 링크(apply-…)는 같은 화면 (작업 0403)", () => {
+  for (const name of ["recruiter", "apply-acme-1124"]) {
+    test(`${name} — 메뉴 두 개 · 로고 /geo · 안내 글 한 번 · 안내 창 없음`, async ({ page }) => {
+      await mockGeo(page);
+      await companySession(page, name);
+      await page.goto("/geo");
+      await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+      await expect(menu(page).getByRole("link")).toHaveCount(2);
+      expect(await hrefs(page)).toEqual(["/geo", "/how"]);
+      await expect(brand(page)).toHaveAttribute("href", "/geo");
+      const shown = await visible(page);
+      expect(shown).toHaveLength(1);
+      expect(shown[0]?.text).toBe(NOTE);
+      await page.waitForTimeout(700);
+      await expect(tid(page, "gate-welcome")).toHaveCount(0);
+    });
+  }
 });

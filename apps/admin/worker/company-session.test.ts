@@ -276,22 +276,26 @@ describe("접속 기록 — 어떤 세션도 남기지 않음 (작업 0403 추�
   });
 });
 
-describe("채용 담당자 공용 토큰(이름 recruiter · 작업 0403) — 회사 세션 규칙 그대로", () => {
-  it("recruiter 쿠키로 막힌 화면 302 /geo · /geo 통과 · 막힌 bff 403 · 접속 기록 POST 없음", async () => {
-    const { tokenList } = await import("./gate/test-kit");
-    const list = await tokenList({ recruiter: { hash: "a".repeat(64), exp: "2099-12-31" } });
-    const env: Env = { ASSETS: { fetch: vi.fn(async () => new Response("<html>page</html>", { status: 200 })) }, API: { fetch: vi.fn(async () => Response.json({})) }, ...(await gateEnv(list)) };
-    const cookie = await cookieFor("recruiter", { list });
-    const call = (p: string) => worker.fetch(new Request(`${ADMIN}${p}`, { redirect: "manual", headers: { cookie } }), env);
-    for (const p of BLOCKED_PAGES) {
-      const res = await call(p);
-      expect(res.status, p).toBe(302);
-      expect(loc(res)?.pathname, p).toBe("/geo");
-    }
-    expect((await call("/geo")).status).toBe(200);
-    expect((await call("/how")).status).toBe(200);
-    expect((await call("/bff/ga4")).status).toBe(403);
-    expect((await call("/bff/admin-visits")).status).toBe(404);
-    expect((env.API.fetch as ReturnType<typeof vi.fn>).mock.calls.filter(([r]) => (r as Request).method === "POST")).toHaveLength(0);
-  });
+describe("공용 링크(recruiter)와 회사 링크(apply-…)는 같은 규칙 (작업 0403)", () => {
+  for (const name of ["recruiter", "apply-acme-1124"]) {
+    it(`${name} 쿠키로 막힌 화면 302 /geo · /geo 통과 · 막힌 bff 403 · 접속 기록 읽기 404 · POST 없음`, async () => {
+      const { tokenList } = await import("./gate/test-kit");
+      const list = await tokenList({ [name]: { hash: "a".repeat(64), exp: "2099-12-31" } });
+      const env: Env = { ASSETS: { fetch: vi.fn(async () => new Response("<html>page</html>", { status: 200 })) }, API: { fetch: vi.fn(async () => Response.json({})) }, ...(await gateEnv(list)) };
+      const cookie = await cookieFor(name, { list });
+      const call = (p: string) => worker.fetch(new Request(`${ADMIN}${p}`, { redirect: "manual", headers: { cookie } }), env);
+      for (const p of BLOCKED_PAGES) {
+        const res = await call(p);
+        expect(res.status, `${name} ${p}`).toBe(302);
+        expect(loc(res)?.pathname, `${name} ${p}`).toBe("/geo");
+      }
+      expect((await call("/")).status).toBe(302);
+      expect(loc(await call("/"))?.pathname).toBe("/geo");
+      expect((await call("/geo")).status).toBe(200);
+      expect((await call("/how")).status).toBe(200);
+      for (const b of BLOCKED_BFF) expect((await call(b)).status, `${name} ${b}`).toBe(403);
+      expect((await call("/bff/admin-visits")).status).toBe(404);
+      expect((env.API.fetch as ReturnType<typeof vi.fn>).mock.calls.filter(([r]) => (r as Request).method === "POST")).toHaveLength(0);
+    });
+  }
 });
