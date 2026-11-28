@@ -32,6 +32,7 @@
 - 보호 파일(wrangler.jsonc 등)은 바꾸지 않음.
 
 ## 계획 밖 변경 이유
+- docs/architecture.md: 접속 기록 설명이 지금 동작과 달라짐(어드민은 기록을 남기지 않음) · 회사 세션 메뉴 · 서버 막기 · recruiter 공용 링크 안내를 한 줄씩 더함.
 
 ## 위험
 - 막힌 경로 변형(/log/ · /log.html · /log.txt · /log/index.txt · ?_rsc)을 빠뜨리면 회사가 주소로 열 수 있음 → 단위 테스트로 변형 목록 검사.
