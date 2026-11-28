@@ -160,7 +160,20 @@ test.describe("두 칸 아래 끝 (1024 · 1124 · 1280 · 1440)", () => {
         const gap = card.y + sy + card.height - (await leftBottom(page));
         expect(gap, `두 칸 아래 끝 차이(카드 − 왼쪽 마지막 상자)=${Math.round(gap)}px`).toBeLessThanOrEqual(24); // 빈자리 해소(작업 전 약 360)
         expect(gap, "카드와 왼쪽 열 끝이 24px 이내(베트남) · 일본은 왼쪽 열이 더 길어도 됨").toBeGreaterThanOrEqual(code === "JPN" ? -140 : -24);
-        if (code === "JPN") expect(card.height, "일본 카드는 내용 높이(안이 흰 빈칸으로 늘어나지 않음)").toBeLessThanOrEqual(520);
+        if (code === "JPN") {
+          // 작업 0401: 0398 에서 예산 카드를 늘려 일본 카드 높이가 580~610 으로 확정 — 높이 상한 대신 "안이 흰 빈칸으로 늘어나지 않음"(마지막 내용 아래 여백)을 직접 잼
+          expect(card.height, "일본 카드 높이(확정 범위)").toBeLessThanOrEqual(660);
+          const blank = await tid(page, "budget").evaluate((el) => {
+            const r = el.getBoundingClientRect();
+            let last = r.top;
+            for (const c of el.querySelectorAll("*")) {
+              const b = c.getBoundingClientRect();
+              if (b.height > 0 && b.width > 0 && getComputedStyle(c).visibility !== "hidden") last = Math.max(last, b.bottom);
+            }
+            return r.bottom - last;
+          });
+          expect(blank, "카드 안 마지막 내용 아래 빈칸").toBeLessThanOrEqual(48);
+        }
         expect(await hScroll(page)).toBeLessThanOrEqual(0);
       });
     }
