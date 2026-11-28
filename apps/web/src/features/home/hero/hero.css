@@ -46,15 +46,18 @@
   margin: 14px 0 0;
   color: var(--hav-fg-2);
   font-size: 1.125rem;
+  /* 출처 알약 높이 = 글 12px × 줄 높이 1.5 + 위아래 여백 3×2 + 테두리 1×2 (= 26px) */
+  --hp-src-h: calc(0.75rem * 1.5 + 8px);
 }
-/* 448px 미만 — 글꼴 폭이 달라져도 두 줄 자리 유지(글 한 줄 + 줄 간격 8 + 출처 알약[글 12px×1.5 + 위아래 여백 6 + 테두리 2] · 출처가 글 옆에 붙어 한 줄로 줄어 hero 높이가 바뀌지 않음, 작업 0402) */
+/* 448px 미만 — 글꼴 폭이 달라져도 두 줄 자리 유지(글 한 줄 + 줄 간격 8 + 출처 알약(--hp-src-h) · 출처가 글 옆에 붙어 한 줄로 줄어 hero 높이가 바뀌지 않음, 작업 0402) */
 @media (max-width: 27.99rem) {
   .hp-one {
-    min-height: calc(1lh + 8px + 0.75rem * 1.5 + 8px);
+    min-height: calc(1lh + 8px + var(--hp-src-h));
   }
 }
 .hp-src {
   padding: 3px 9px;
+  line-height: 1.5;
   border: 1px solid var(--hav-hero-src-line);
   border-radius: 999px;
   color: var(--hav-fg-2);
