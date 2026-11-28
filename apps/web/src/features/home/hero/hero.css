@@ -174,19 +174,25 @@
   padding: 0;
   list-style: none;
 }
+.hp-chips {
+  row-gap: 0;
+}
 .hp-chips::before {
   content: "";
   order: 1;
   flex-basis: 100%;
   height: 0;
-  margin-bottom: -8px;
 }
 .hp-chips li:nth-child(n + 3) {
   order: 2;
+  margin-top: 8px;
 }
 @media (min-width: 25rem) {
   .hp-chips {
     flex-wrap: nowrap;
+  }
+  .hp-chips li:nth-child(n + 3) {
+    margin-top: 0;
   }
   .hp-chips::before {
     display: none;
