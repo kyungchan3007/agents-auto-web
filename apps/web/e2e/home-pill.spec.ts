@@ -71,8 +71,13 @@ const snapshot = (page: Page) =>
   page.evaluate(() => {
     const card = document.querySelector('[data-testid="dest-list"]') as HTMLElement;
     const cr = card.getBoundingClientRect();
+    // 작업 0401: 0398 에서 카드 자리(레이아웃 높이)는 처음부터 끝 높이 — 보이는 높이는 clip-path 아래 끝 · 보이는 모서리는 ::before(--vr)
+    const clip = getComputedStyle(card).clipPath;
+    const m = /inset\(\s*[\d.]+(?:px)?\s+[\d.]+(?:px)?\s+([\d.]+)px/.exec(clip);
+    const visibleH = clip !== "none" && m ? cr.height - Number.parseFloat(m[1]) : cr.height;
+    const radius = getComputedStyle(card, "::before").borderTopLeftRadius;
     return {
-      h: cr.height, w: cr.width, radius: getComputedStyle(card).borderTopLeftRadius, pills: [...card.querySelectorAll('[data-testid="dest-pill"]')].filter((e) => e.getBoundingClientRect().height > 0).length,
+      h: visibleH, w: cr.width, radius, pills: [...card.querySelectorAll('[data-testid="dest-pill"]')].filter((e) => e.getBoundingClientRect().height > 0).length,
       styleAttr: card.getAttribute("style") ?? "",
       rows: [...card.querySelectorAll('[data-testid="dest-row"]')].map((r) => {
         const b = r.getBoundingClientRect();
