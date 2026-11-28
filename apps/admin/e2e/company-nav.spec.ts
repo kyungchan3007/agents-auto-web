@@ -272,7 +272,7 @@ test.describe("첫 프레임부터 끝 모양 — /session 이 늦어도 메뉴 
     });
     return page.evaluate(() => (window as unknown as { __fr: Record<string, number>[] }).__fr);
   };
-  const sig = (f: Record<string, number>) => JSON.stringify({ n: f.n, firstX: f.firstX, firstY: f.firstY, lastBottom: f.lastBottom, footY: f.footY, mainY: f.mainY, mainX: f.mainX, topH: f.topH, noteY: f.noteY, noteH: f.noteH, logoutY: f.logoutY });
+  const sig = (f: Record<string, number>) => JSON.stringify({ n: f.n, firstX: f.firstX, firstY: f.firstY, lastBottom: f.lastBottom, footY: f.footY, mainY: f.mainY, mainX: f.mainX, topH: f.topH, noteBottom: f.noteY < 0 ? -1 : f.noteY + f.noteH, logoutY: f.logoutY });
 
   for (const [who, want] of [["회사", 2], ["owner", 6]] as const) {
     for (const delay of [1500, 0]) {
@@ -451,7 +451,7 @@ test.describe("채용 담당자 안내 글 (작업 0403 추가 지시)", () => {
         const phone = getComputedStyle(document.querySelector("header.adm-mtop") ?? document.body).display !== "none";
         const main = document.querySelector("main")?.getBoundingClientRect();
         const nav = document.querySelector("aside.adm-side .adm-nav.foot a, header.adm-mtop")?.getBoundingClientRect();
-        if (main && main.height > 0) w.__nf.push(JSON.stringify([note ? (phone ? 1 : Math.round((note.y + scrollY) * 2) / 2) : -1, note ? Math.round(note.height * 2) / 2 : -1, Math.round((main.y + scrollY) * 2) / 2, Math.round((nav?.y ?? -1) * 2) / 2]));
+        if (main && main.height > 0) w.__nf.push(JSON.stringify([note ? (phone ? 1 : Math.round((note.bottom + scrollY) * 2) / 2) : -1, Math.round((main.y + scrollY) * 2) / 2, Math.round((nav?.y ?? -1) * 2) / 2]));
         if (!w.__stop) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
@@ -465,14 +465,16 @@ test.describe("채용 담당자 안내 글 (작업 0403 추가 지시)", () => {
       return (window as unknown as { __nf: string[] }).__nf;
     });
     expect(fr.length).toBeGreaterThan(20);
-    expect([...new Set(fr)], "문구 · 본문 · 메뉴 자리가 프레임마다 같음").toHaveLength(1);
+    expect([...new Set(fr)], "문구 아래 끝 · 본문 · 메뉴 자리가 프레임마다 같음").toHaveLength(1);
     expect(JSON.parse(fr[0] as string)[0], "첫 프레임부터 문구가 있음").toBeGreaterThan(0);
+    // 참고: 문구 글 자체의 줄 수는 글꼴 로딩 뒤 3 → 4줄로 바뀔 수 있어(로그아웃 위에 붙어 위쪽만 늘어남) 위 끝 · 높이는 같다고 보지 않고, 아래 끝(로그아웃 위) · 본문 · 메뉴 자리가 같은지만 봄
   });
 });
 
 test.describe("owner 화면의 기존 안내 문단은 그대로 (작업 0403 — .adm-note 는 기존 문단 클래스)", () => {
   /** 새 안내 글이 아닌 기존 페이지 안내 문단 중 눈에 보이는 것 */
-  const pageNotes = (page: Page) => page.locator(".adm-note").evaluateAll((els) => els.filter((e) => e.getClientRects().length > 0).map((e) => (e.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 40)));
+  // 만드는 방식의 '접속 기록' 칸(data-testid=admin-visits)은 owner 에게만 그려지므로 비교에서 뺌
+  const pageNotes = (page: Page) => page.locator(".adm-note").evaluateAll((els) => els.filter((e) => e.getClientRects().length > 0 && !e.closest('[data-testid="admin-visits"]') && !e.matches('[data-testid^="admin-visits"]')).map((e) => (e.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 40)));
 
   for (const path of ["/how", "/geo"]) {
     test(`${path} — owner 와 회사가 보는 기존 안내 문단이 같음(owner 에게 사라지지 않음) · 새 안내 글만 다름`, async ({ page }) => {
