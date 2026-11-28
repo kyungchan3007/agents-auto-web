@@ -224,7 +224,7 @@ html:not([data-viewer="owner"]) [data-owner-only] { display: none; }
 .adm-toast.on { opacity: 1; transform: translate(-50%, 0); }
 
 @media (max-width: 820px) {
-  .adm-note-main { display: block; }
+  .adm-demo-note-main { display: block; }
   .adm-shell { display: block; }
   .adm-side { display: none; }
   .adm-mtop { display: flex; position: sticky; top: 0; z-index: 20; background: var(--a-panel); border-bottom: 1px solid var(--a-line); padding: 0 12px 0 16px; height: 52px; align-items: center; justify-content: space-between; gap: 8px; }
@@ -277,9 +277,9 @@ html:not([data-viewer="owner"]) [data-owner-only] { display: none; }
 .adm-logout:hover { color: var(--a-ink); }
 
 /* 채용 담당자 안내 글 (작업 0403) — 사이드바 아래 빈 곳(로그아웃 위) · 휴대폰은 본문 맨 아래 · owner 는 처음 그림부터 없음 */
-.adm-note { margin: 0; font-size: 12px; line-height: 1.5; color: var(--a-mute); }
-.adm-note-side { margin-top: auto; padding: 0 10px; }
-.adm-note-side + .adm-logout { margin-top: 0; }
-.adm-note-main { display: none; }
-html[data-viewer="owner"] .adm-note { display: none; }
-html[data-viewer="owner"] .adm-note-side + .adm-logout { margin-top: auto; }
+.adm-demo-note { margin: 0; font-size: 12px; line-height: 1.5; color: var(--a-mute); }
+.adm-demo-note-side { margin-top: auto; padding: 0 10px; }
+.adm-demo-note-side + .adm-logout { margin-top: 0; }
+.adm-demo-note-main { display: none; }
+html[data-viewer="owner"] .adm-demo-note { display: none; }
+html[data-viewer="owner"] .adm-demo-note-side + .adm-logout { margin-top: auto; }
