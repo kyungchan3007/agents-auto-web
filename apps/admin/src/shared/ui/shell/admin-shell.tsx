@@ -75,7 +75,7 @@ export function AdminShell({ brand, pages, reachable = pages, page, site, childr
               사이트로 가기
             </a>
           </nav>
-          <p className="adm-note adm-note-side">{DEMO_NOTE}</p>
+          <p className="adm-demo-note adm-demo-note-side">{DEMO_NOTE}</p>
           {/* 어드민 입구 쿠키를 지움 (작업 0326) — 어드민 메뉴 밖 */}
           <a className="adm-logout" href="/logout">
             로그아웃
@@ -83,7 +83,7 @@ export function AdminShell({ brand, pages, reachable = pages, page, site, childr
         </aside>
         <main id="main" ref={mainRef} tabIndex={-1} className="adm-main">
           {children}
-          <p className="adm-note adm-note-main">{DEMO_NOTE}</p>
+          <p className="adm-demo-note adm-demo-note-main">{DEMO_NOTE}</p>
         </main>
       </div>
       {pal.open && <Palette p={pal} />}
