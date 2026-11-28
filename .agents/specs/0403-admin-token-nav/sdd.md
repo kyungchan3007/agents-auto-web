@@ -13,6 +13,8 @@
   - owner 판정이 늦게 와 메뉴 항목이 더해질 때 메뉴 칸 높이 · 위치가 흔들리지 않게(사이드는 위에서부터 쌓여 아래만 늘고, 휴대폰 위 메뉴는 가로 줄 높이 고정).
 - 안내 창 삭제: gate-welcome.tsx · use-gate-welcome.ts · admin-shell 의 <GateWelcome /> · gate.css 안내 창 스타일 · 안 쓰게 된 함수(shouldWelcome · hello 등)와 그 테스트.
 
+- 추가 지시: worker 의 recordVisit 를 owner 아닌 세션에서도 부르지 않음(owner 는 원래 안 남김 → 사실상 기록 끊김 · API 쪽 POST 경로는 그대로 두되 어드민이 부르지 않음). 사이드바 아래 문구는 AdminShell 의 사이드 아래 칸에 정적으로 그리고 html[data-viewer=owner] 이면 CSS 로 숨김(메뉴와 같은 방식 · 첫 그림부터) · 휴대폰은 본문 맨 아래. scripts/admin-token.mjs: recruiter 이름 허용 · --exp 긴 기한 · 회사 전용 안내 정리.
+
 ## 대안 · 트레이드오프
 - 화면에서만 숨기기: 주소를 직접 치면 열려서 제외. 서버에서 막고 화면도 거름.
 - 받기 전 여섯 개 → 줄이기: 보였다 사라짐 · 회사에 이름이 잠깐 드러남 → 두 개에서 더하는 방향.
@@ -23,6 +25,8 @@
   - apps/admin/src/shared/gate/** (안내 창 삭제 · session 판정)
   - apps/admin/src/shared/ui/shell/** (admin-shell · palette · palette-items · use-palette · use-shell-keys · 메뉴)
   - apps/admin/src/shared/nav/** (세션별 메뉴 목록)
+  - apps/admin/src/shared/ui/admin.css (메뉴 · 문구 숨김) · apps/admin/worker/viewer.ts
+  - scripts/admin-token.mjs (+ 그 라이브러리 · 테스트가 있으면) · docs 의 토큰 안내 문서가 있으면 그 줄
 - test: apps/admin/worker/**/*.test.ts · apps/admin/src/**/*.test.ts · apps/admin/e2e/** (안내 창 e2e 삭제 · 회사/owner 세션 e2e)
 - .agents/specs/0403-admin-token-nav/** · .agents/orchestration/TASKS.md
 - 보호 파일(wrangler.jsonc 등)은 바꾸지 않음.
