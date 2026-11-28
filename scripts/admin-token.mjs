@@ -1,5 +1,6 @@
 // 어드민 토큰 관리 명령 (작업 0326) — 사용자가 자기 맥에서 돌림
-//   npm run admin:token -- add <이름> [--exp YYYY-MM-DD]   지원 링크 만들기 (새 링크는 한 번만 출력 · --exp 없으면 발급일 + 7일 · 작업 0330)
+//   npm run admin:token -- add <이름> [--exp YYYY-MM-DD]   링크 만들기 (새 링크는 한 번만 출력 · --exp 없으면 발급일 + 7일 · 작업 0330)
+//     채용 담당자 공용 링크(작업 0403): add recruiter --exp <1년 뒤 날짜>  (이름은 영문 소문자 · 숫자 · 하이픈 · 기한은 날짜로 길게 줄 수 있음 · 쿠키 유효 기간은 그대로 7일)
 //   npm run admin:token -- remove <이름>                    링크 지우기 (그 토큰의 쿠키도 바로 무효)
 //   npm run admin:token -- list                             이름 · 기한 · 상태 (토큰 · 해시는 안 보임)
 //   npm run admin:token -- init                             처음 한 번 — 없는 비밀값만 만들고 owner 링크 출력

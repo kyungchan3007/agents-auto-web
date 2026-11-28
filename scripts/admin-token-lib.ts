@@ -30,7 +30,7 @@ function realDate(text: string): boolean {
   return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === text;
 }
 
-/** 리뷰어 링크 기본 기한(작업 0330) — 발급일 + 7일 (안내 창 "유효 기간은 발급일로부터 7일입니다" 와 맞춤) */
+/** 리뷰어 링크 기본 기한(작업 0330) — 발급일 + 7일 (--exp 로 길게 줄 수 있음) */
 export const DEFAULT_EXP_DAYS = 7;
 
 /** add 에 넣을 기한 — --exp 를 주면 그대로 · 안 주면 today + 7일 · owner 는 기한 없음 */
