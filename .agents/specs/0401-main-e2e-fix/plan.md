@@ -23,6 +23,10 @@ main 반영 PR #478(develop 63ce5f75 · 운영 v1.6.0) 전체 e2e 실패 31개(�
 - test: apps/web/e2e/{focus-ring,country-summary,home-pill,home-redesign,resp-audit,resp-audit-check,tap-44,currency-sidebar,intro}.spec.ts 또는 그 도움 파일
 - .agents/specs/0401-main-e2e-fix/** · .agents/orchestration/TASKS.md
 
+## 계획 밖 변경 이유
+- apps/web/src/features/currencies/converter/converter.tsx: test 측정에서 tap-44 USD 실패가 테스트 문제가 아니라 화면 문제로 확인됨(416px 미만 금액 칩 두 줄 · 줄 간격 8px 이라 눌리는 영역 44px 가 겹쳐 39.5). 줄 간격만 12px(gap-y-3 · 가로 8 그대로) · claude-desktop 에 알림.
+- e2e/resp-audit-check.ts: 흐르는 띠(.rt-track)를 겹침 · 넘침 판정에서 뺌.
+
 ## 완료 기준
 - [ ] bash .agents/checks.sh PASS (PR 최신 커밋 CI gate) → develop 머지 → #478 다시 실행(main 머지는 claude-desktop)
 
