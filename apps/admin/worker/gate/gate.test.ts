@@ -106,7 +106,7 @@ describe("지원 링크 ?t= — 아무것도 입력하지 않고 들어옴 (작�
     const s = await setup();
     const res = await s.call(`${ORIGIN}/?t=${REVIEWER_TOKEN}`);
     expect(res.status).toBe(303);
-    expect(abs(res.headers.get("location"))).toBe(`${ORIGIN}/`);
+    expect(abs(res.headers.get("location"))).toBe(`${ORIGIN}/geo`); // 작업 0403: 회사 세션의 첫 화면은 /geo
     const c = res.headers.get("set-cookie") ?? "";
     expect(c.startsWith(`${COOKIE_NAME}=`)).toBe(true);
     for (const part of ["Path=/", "HttpOnly", "Secure", "SameSite=Lax", "Max-Age=604800"]) expect(c.split(/;\s*/), part).toContain(part);

@@ -26,11 +26,11 @@ describe("어드민 Worker", () => {
     expect(res.headers.get("x-robots-tag")).toBe("noindex, nofollow");
   });
 
-  it("어드민 /bff/* 는 API 로 · 검색 막음 머리글", async () => {
+  it("어드민 /bff/* 는 API 로 · 검색 막음 머리글 (작업 0403: 회사 세션이 열 수 있는 /bff/geo — /bff/activity 는 owner 만 · company-session.test.ts)", async () => {
     const s = await setup();
-    const res = await s.call("https://admin.flapfx.com/bff/activity");
+    const res = await s.call("https://admin.flapfx.com/bff/geo");
     expect(s.api).toHaveBeenCalledTimes(1);
-    expect(new URL(s.api.mock.calls[0]![0].url).pathname).toBe("/activity");
+    expect(new URL(s.api.mock.calls[0]![0].url).pathname).toBe("/geo");
     expect(res.headers.get("x-robots-tag")).toBe("noindex, nofollow");
     expect(s.assets).not.toHaveBeenCalled();
   });
@@ -60,7 +60,7 @@ describe("어드민 Worker", () => {
 
   it("쓰기 요청은 405", async () => {
     const s = await setup();
-    expect((await s.call("https://admin.flapfx.com/bff/activity", { method: "POST" })).status).toBe(405);
+    expect((await s.call("https://admin.flapfx.com/bff/geo", { method: "POST" })).status).toBe(405);
     expect(s.api).not.toHaveBeenCalled();
   });
 

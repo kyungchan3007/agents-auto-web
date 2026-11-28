@@ -109,7 +109,8 @@ describe("회사 세션 — 막힌 BFF 4개는 403", () => {
 });
 
 describe("회사 세션 — /geo · /how 와 그 BFF 는 그대로 통과", () => {
-  for (const p of ["/geo", "/geo/", "/geo.html", "/geo.txt", "/geo?_rsc=a", "/how", "/how/", "/how.html", "/how.txt", "/how/index.txt"]) {
+  // 참고: .html · .txt 변형은 host 규칙(host.ts)이 admin 주소에서 원래 301(운영 주소)로 보냄 — 이 막음과 상관없음
+  for (const p of ["/geo", "/geo/", "/geo?_rsc=a", "/how", "/how/", "/how/index.txt"]) {
     it(`${p} → 자산 200 (리다이렉트 없음)`, async () => {
       const s = await setup();
       const res = await s.call("reviewer", `${ADMIN}${p}`);
@@ -154,12 +155,13 @@ describe("owner — 전부 통과 · / → /log", () => {
   for (const base of BLOCKED_PAGES) {
     it(`${base} · 변형은 자산으로(리다이렉트 없음)`, async () => {
       const s = await setup();
-      for (const p of [base, `${base}/`, `${base}.html`, `${base}.txt`, `${base}?_rsc=abc12`, `${base}/index.txt`]) {
+      // 참고: .html · .txt 는 host 규칙이 admin 주소에서 원래 301(운영 주소)로 보냄 — owner 에게도 그대로(이 작업과 상관없음)
+      for (const p of [base, `${base}/`, `${base}?_rsc=abc12`, `${base}/index.txt`]) {
         const res = await s.call("owner", `${ADMIN}${p}`);
         expect(res.status, p).toBe(200);
         expect(res.headers.get("location"), p).toBeNull();
       }
-      expect(s.assets).toHaveBeenCalledTimes(6);
+      expect(s.assets).toHaveBeenCalledTimes(4);
     });
   }
 
