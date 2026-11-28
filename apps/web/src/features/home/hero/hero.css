@@ -47,10 +47,10 @@
   color: var(--hav-fg-2);
   font-size: 1.125rem;
 }
-/* 448px 미만 — 글꼴 폭이 달라져도 두 줄 자리 유지(두 줄 → 한 줄로 hero 높이가 바뀌지 않음, 작업 0402) */
+/* 448px 미만 — 글꼴 폭이 달라져도 두 줄 자리 유지(글 한 줄 + 줄 간격 8 + 출처 알약[글 12px×1.5 + 위아래 여백 6 + 테두리 2] · 출처가 글 옆에 붙어 한 줄로 줄어 hero 높이가 바뀌지 않음, 작업 0402) */
 @media (max-width: 27.99rem) {
   .hp-one {
-    min-height: 2lh;
+    min-height: calc(1lh + 8px + 0.75rem * 1.5 + 8px);
   }
 }
 .hp-src {
