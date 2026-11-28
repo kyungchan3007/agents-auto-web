@@ -51,16 +51,6 @@ export function addEntry(list: TokenList, name: string, hash: string, exp?: stri
   return { ...list, [name]: exp === undefined ? { hash } : { hash, exp } };
 }
 
-/** 새 목록 — 링크 값(해시)은 그대로 두고 기한만 바꿈(작업 0403) · owner · 없는 이름 · 형식이 틀리거나 지난 날짜는 던짐 */
-export function extendEntry(list: TokenList, name: string, exp: string | undefined, today: string): TokenList {
-  if (name === OWNER) throw new Error("owner 는 기한을 줄 수 없습니다");
-  if (!Object.hasOwn(list, name)) throw new Error(`없는 이름입니다: ${name}`);
-  if (exp === undefined || !realDate(exp)) throw new Error("기한은 실제 날짜 YYYY-MM-DD 여야 합니다 (--exp 필요)");
-  if (exp < today) throw new Error("이미 지난 날짜입니다");
-  const entry = list[name] as TokenEntry;
-  return { ...list, [name]: { ...entry, exp } };
-}
-
 /** 새 목록 — owner · 없는 이름은 던짐 */
 export function removeEntry(list: TokenList, name: string): TokenList {
   if (name === OWNER) throw new Error("owner 는 지울 수 없습니다 (본인이 잠기지 않게). 다시 만들려면 add owner");
