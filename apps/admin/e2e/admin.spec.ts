@@ -2,7 +2,7 @@
 //   ADD-01 틀 · ADD-02 찾기 창 · ADD-03 단축키 · ADD-04 작업실 · ADD-05 GEO · ADD-06 만드는 방식 · ADD-07 사람 역할 · ADD-08 움직임 줄이기
 //   빌드한 사이트를 읽음 (미리보기와 같은 정적 파일) · 휴대폰 · 넓은 화면 두 프로젝트에서 돎
 import { type Page, expect, test } from "@playwright/test";
-import { hydrated, mockGeo, quietSession } from "./helpers";
+import { hydrated, mockGeo, ownerSession, quietSession } from "./helpers";
 
 const tid = (page: Page, id: string) => page.getByTestId(id);
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 820;
@@ -17,7 +17,8 @@ test.describe("어드민 틀 (ADD-01)", () => {
     ["/traffic", "유입"], // 작업 0324
     ["/instagram", "인스타 유입"], // 작업 0324
   ] as const) {
-    test(`${path} — 어드민 메뉴 여섯 화면 · 지금 화면 표시 · 방문자 파란 머리띠 없음 · 가로 넘침 없음`, async ({ page }) => {
+    test(`${path} — 어드민 메뉴 여섯 화면(owner 세션 · 작업 0403) · 지금 화면 표시 · 방문자 파란 머리띠 없음 · 가로 넘침 없음`, async ({ page }) => {
+      await ownerSession(page);
       await page.goto(path);
       const nav = visibleNav(page);
       await expect(nav.getByRole("link")).toHaveCount(6);
@@ -77,7 +78,7 @@ test.describe("찾기 창 · 단축키 (ADD-02 · ADD-03)", () => {
   test("숫자 단축키 1 · 2 · 3 으로 화면 이동 · 글을 입력하는 중에는 쓰지 않음", async ({ page }) => {
     test.skip(isPhone(page), "글쇠 단축키는 넓은 화면");
     await mockGeo(page); // 작업 0352: /geo 의 '질문 걸러 보기' 칸은 /bff/geo 를 받은 뒤에 생김(빌드는 401)
-    await quietSession(page);
+    await ownerSession(page); // 작업 0403: 숫자 1~6 은 owner 메뉴 — 회사 세션의 단축키는 company-nav.spec.ts
     await page.goto("/log");
     await hydrated(page.locator(".adm-find"));
     await page.keyboard.press("2");
