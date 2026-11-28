@@ -45,3 +45,6 @@
 - gate 통과 → develop 머지.
 
 ## 계획과 달라진 점
+- 메뉴: useIsOwner(받은 뒤 더함) → worker 가 owner HTML 에 data-viewer 표시 · CSS 로 거름(owner 메뉴가 한 칸 내려가는 흔들림 때문).
+- 접속 기록: 그대로 → 남기지 않음(추가 지시) · recordVisit 삭제.
+- extend 명령: 만들었다가 추가 지시 3 으로 되돌림.
