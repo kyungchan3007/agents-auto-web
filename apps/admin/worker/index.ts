@@ -11,6 +11,7 @@ import { type GateEnv, runGate } from "./gate/gate";
 import { COMPANY_HOME, isOwnerOnlyBff, isOwnerOnlyPage } from "./gate/owner-only";
 import { OWNER_NAME } from "./gate/session";
 import { hostRoute, isAsset } from "./host";
+import { withViewer } from "./viewer";
 
 /** 본인만 읽는 BFF 경로 — 접속 기록 */
 const OWNER_ONLY_BFF = "/bff/admin-visits";
@@ -51,6 +52,6 @@ export default {
     if (isBff(url.pathname)) return withNoindex(await handleBff(request, env.API, ADMIN_BFF_ROUTES, { apiKey: env.ADMIN_API_KEY }));
     const res = await env.ASSETS.fetch(request);
     if (res.status === 200 && !isAsset(url.pathname)) recordVisit(env, ctx, gate.name);
-    return withNoindex(res);
+    return withNoindex(withViewer(res, gate.name === OWNER_NAME));
   },
 };
