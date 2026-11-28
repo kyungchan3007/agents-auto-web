@@ -31,9 +31,10 @@ const RECORD = `
       const card = document.querySelector('[data-testid="dest-list"]');
       if (card) {
         const cr = card.getBoundingClientRect();
+        const bf = getComputedStyle(card, "::before");
         const pill = card.querySelector('[data-testid="dest-pill"]');
         w.__fr.push({
-          t: performance.now() - w.__t0, state: card.getAttribute("data-state"), h: cr.height, radius: parseFloat(getComputedStyle(card).borderTopLeftRadius) || 0,
+          t: performance.now() - w.__t0, state: card.getAttribute("data-state"), h: Math.min(cr.height, parseFloat(bf.height) || cr.height), radius: parseFloat(bf.borderTopLeftRadius) || 0,
           pill: pill && pill.getBoundingClientRect().height > 0 ? eff(pill, document.body) : null,
           rows: [...card.querySelectorAll('[data-testid="dest-row"]')].map((r) => {
             const rate = r.querySelector('[data-testid="dest-rate"]'), dot = r.querySelector('[data-testid="dest-dot"]'), st = r.querySelector('[data-testid="dest-status"]');
@@ -71,11 +72,10 @@ const snapshot = (page: Page) =>
   page.evaluate(() => {
     const card = document.querySelector('[data-testid="dest-list"]') as HTMLElement;
     const cr = card.getBoundingClientRect();
-    // 작업 0401: 0398 에서 카드 자리(레이아웃 높이)는 처음부터 끝 높이 — 보이는 높이는 clip-path 아래 끝 · 보이는 모서리는 ::before(--vr)
-    const clip = getComputedStyle(card).clipPath;
-    const m = /inset\(\s*[\d.]+(?:px)?\s+[\d.]+(?:px)?\s+([\d.]+)px/.exec(clip);
-    const visibleH = clip !== "none" && m ? cr.height - Number.parseFloat(m[1]) : cr.height;
-    const radius = getComputedStyle(card, "::before").borderTopLeftRadius;
+    // 작업 0401: 0398 에서 카드 자리(레이아웃 높이)는 처음부터 끝 높이 — 보이는 높이 = ::before 틀 높이(--vh · 끝에서는 카드 + 4px 이라 카드 높이로 자름) · 보이는 모서리 = ::before 모서리(--vr)
+    const before = getComputedStyle(card, "::before");
+    const visibleH = Math.min(cr.height, Number.parseFloat(before.height) || cr.height);
+    const radius = before.borderTopLeftRadius;
     return {
       h: visibleH, w: cr.width, radius, pills: [...card.querySelectorAll('[data-testid="dest-pill"]')].filter((e) => e.getBoundingClientRect().height > 0).length,
       styleAttr: card.getAttribute("style") ?? "",
