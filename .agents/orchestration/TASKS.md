@@ -210,4 +210,5 @@
 | 0399 | 흐르는 환율 띠: 홈 hero 아래 · 홈 밖 페이지는 화면 바닥 고정(어두운 유리) (Quick · develop 머지까지) | test ∥ builder → test | PR 열림 | task/0399-rate-ticker | apps/web/src/shared/ticker/** · home/{carousel,home.tsx} · 페이지 바닥 여백 |
 | 0400 | 바닥 환율 띠 모양 다듬기: 바탕 18% · 옅은 윗선 · 글자 12~13px · 라벨 테두리 없음 · 신호 세 색 알약 · 금액 흰색 (Quick · develop 머지까지) | builder ∥ test | 머지됨 | task/0400-ticker-style | shared/ticker/** · packages/ui tokens.css(띠 토큰) · e2e/rate-ticker.spec.ts |
 | 0401 | main 반영 #478 전체 e2e 실패 고치기: 바닥 띠 초점 고리 · 옛 기대값 · 띠 영향 (Quick · develop 머지까지) | builder ∥ test | 머지됨 | task/0401-main-e2e-fix | shared/ticker/ticker.css · tokens.css(고리 토큰) · e2e 9개 |
-| 0402 | main 반영 #478 남은 실패: 390px 홈 hero 높이 7초 안 48px 변화 원인 찾기 · 고치기 (Quick · develop 머지까지) | test → builder | PR 열림 | task/0402-hero-height | home/hero/hero.css |
+| 0402 | main 반영 #478 남은 실패: 390px 홈 hero 높이 7초 안 48px 변화 원인 찾기 · 고치기 (Quick · develop 머지까지) | test → builder | 머지됨 | task/0402-hero-height | home/hero/hero.css |
+| 0403 | 회사 링크 어드민: 안내 창 없애기 · GEO 측정 · 만드는 방식 두 화면만(메뉴 · 서버 막기 · 첫 화면 /geo) (Full · develop 머지까지 · admin ff 는 claude-desktop) | builder ∥ test | 진행 중 | task/0403-admin-token-nav | apps/admin/worker/** · apps/admin/src/shared/{gate,ui/shell,nav}/** · apps/admin/e2e/** |
