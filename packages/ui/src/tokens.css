@@ -79,6 +79,7 @@
   --hav-ticker-glass-bg: rgba(24, 36, 100, 0.18);
   --hav-ticker-glass-line: rgba(22, 36, 110, 0.09);
   --hav-ticker-glass-shadow: rgba(22, 36, 110, 0.06);
+  --hav-ticker-ring: #2438a8; /* 바닥 띠 초점 고리 — 옅은 유리 위는 밝은 면 파랑 */
   --hav-ticker-label: #16246e;
   --hav-ticker-name: #16246e;
   --hav-ticker-amount: #ffffff;
