@@ -299,3 +299,80 @@ describe("add 기본 기한 (작업 0330)", () => {
     expect(expFor(OWNER, undefined, "2026-11-23")).toBeUndefined();
   });
 });
+
+describe("채용 담당자 공용 링크 — add recruiter · 긴 --exp (작업 0403)", () => {
+  const TODAY = "2026-11-28";
+
+  it("이름 recruiter 는 이름 규칙을 지남 · 긴 기한(1년 · 5년 · 2099-12-31)도 실제 날짜면 그대로 담김", () => {
+    for (const exp of ["2027-11-28", "2031-11-28", "2099-12-31"]) {
+      const list = addEntry({}, "recruiter", H("a"), exp);
+      expect(list.recruiter).toEqual({ hash: H("a"), exp });
+    }
+  });
+
+  it("--exp 를 안 주면 발급일 + 7일(기본은 그대로) · 길게 주면 그 날짜 그대로 — 7일로 줄이지 않음", () => {
+    expect(expFor("recruiter", undefined, TODAY)).toBe("2026-12-05");
+    expect(expFor("recruiter", "2027-11-28", TODAY)).toBe("2027-11-28");
+    expect(expFor("recruiter", "2099-12-31", TODAY)).toBe("2099-12-31");
+  });
+
+  it("실제 날짜가 아닌 기한(2027-02-30 · 2027-13-01 · 글자)은 던짐 · 이미 있는 recruiter 도 던짐(다른 토큰을 조용히 무효로 만들지 않음)", () => {
+    expect(() => addEntry({}, "recruiter", H("a"), "2027-02-30")).toThrow();
+    expect(() => addEntry({}, "recruiter", H("a"), "2027-13-01")).toThrow();
+    expect(() => addEntry({}, "recruiter", H("a"), "내년")).toThrow();
+    const once = addEntry({}, "recruiter", H("a"), "2027-11-28");
+    expect(() => addEntry(once, "recruiter", H("b"), "2027-11-28")).toThrow(/이미 있는 이름/);
+  });
+
+  it("이미 나간 회사 토큰(apply-…)은 건드리지 않음 — recruiter 를 더해도 그대로 · 지우거나 막지 않음", () => {
+    const before = { "apply-acme-1124": { hash: H("1"), exp: "2026-12-01" }, owner: { hash: H("2") } };
+    const after = addEntry(before, "recruiter", H("3"), "2027-11-28");
+    expect(after["apply-acme-1124"]).toEqual(before["apply-acme-1124"]);
+    expect(after.owner).toEqual(before.owner);
+    expect(Object.keys(after).sort()).toEqual(["apply-acme-1124", "owner", "recruiter"]);
+    expect(Object.keys(before)).toHaveLength(2); // 입력은 안 바뀜
+  });
+
+  it("목록 — recruiter 는 기한 · 유효(오래 감) · owner 아님 · 해시 · 토큰은 안 실림 · 기한이 지나면 기한 지남", async () => {
+    const token = newToken();
+    const hash = await hashToken(token);
+    const list = addEntry({}, "recruiter", hash, "2027-11-28");
+    const rows = listRows(list, TODAY);
+    expect(rows).toEqual([{ name: "recruiter", exp: "2027-11-28", status: "유효", owner: false }]);
+    const text = JSON.stringify(rows);
+    expect(text).not.toContain(token);
+    expect(text).not.toContain(hash);
+    expect(listRows(list, "2027-11-29")[0]?.status).toBe("기한 지남");
+    expect(listRows(list, "2027-11-28")[0]?.status).toBe("유효"); // exp 날까지 유효
+  });
+
+  it("토큰 값은 새 링크로만 — 비밀값(secretPayload)에는 해시와 기한뿐 · 링크는 한 번만 만들어 줌(목록 어디에도 토큰이 없음)", async () => {
+    const token = newToken();
+    const hash = await hashToken(token);
+    const list = addEntry({}, "recruiter", hash, "2027-11-28");
+    const payload = secretPayload(list);
+    expect(payload).not.toContain(token);
+    expect(payload).toContain(hash);
+    expect(linkFor(token)).toBe(`https://admin.flapfx.com/?t=${token}`);
+    expect(JSON.stringify(list)).not.toContain(token);
+  });
+
+  it("Worker 와 약속이 같음 — 긴 기한 recruiter 토큰이 맞고 · 기한이 지나면 못 들어옴 · 지우면 못 들어옴 · 이름은 recruiter(owner 아님 → 회사 세션 규칙)", async () => {
+    const token = newToken();
+    const list = addEntry({}, "recruiter", await hashToken(token), "2027-11-28");
+    const parsed = parseTokens(secretPayload(list));
+    expect((await matchToken(parsed, token, new Date("2026-11-28T00:00:00Z")))?.name).toBe("recruiter");
+    expect((await matchToken(parsed, token, new Date("2027-11-28T12:00:00Z")))?.name).toBe("recruiter");
+    expect(await matchToken(parsed, token, new Date("2027-11-29T12:00:00Z"))).toBeNull();
+    const removed = parseTokens(secretPayload(removeEntry(list, "recruiter")));
+    expect(await matchToken(removed, token, new Date("2026-11-28T00:00:00Z"))).toBeNull();
+    expect("recruiter").not.toBe(OWNER);
+  });
+
+  it("브라우저 쿠키 유효 기간은 그대로 7일 — recruiter 도 owner 의 30일이 아님", async () => {
+    const { maxAgeFor, REVIEWER_MAX_AGE, OWNER_MAX_AGE } = await import("./session");
+    expect(maxAgeFor("recruiter")).toBe(REVIEWER_MAX_AGE);
+    expect(REVIEWER_MAX_AGE).toBe(7 * 24 * 3600);
+    expect(maxAgeFor(OWNER)).toBe(OWNER_MAX_AGE);
+  });
+});

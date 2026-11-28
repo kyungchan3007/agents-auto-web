@@ -5,6 +5,7 @@
 //     메뉴(사이드 · 휴대폰 위)는 정적 HTML 에 여섯 개를 그리고 회사용이 아닌 네 개에 data-owner-only · CSS html:not([data-viewer=owner]) [data-owner-only] { display:none } → 첫 그림부터 최종 모양(/session 을 기다리지 않음)
 //     찾기 · 숫자 단축키 · 로고 링크는 useViewerOwner(서버 그림 false · 브라우저는 html 속성) — 회사 = 화면 두 줄 · 키 2/3 · 로고 /geo · owner = 여섯 줄 · 키 1~6 · 로고 /log
 //     안내 창(role=dialog · data-testid="gate-welcome")은 없음 — 대신 넣는 안내 문구도 없음
+//     추가 지시: 회사(owner 아님) 세션에만 원문 두 문장 — 넓은 화면은 사이드바 로그아웃 바로 위(.adm-note-side) · 휴대폰(820px 이하)은 본문 맨 아래 한 번(.adm-note-main) · owner 에겐 첫 그림부터 없음(html[data-viewer=owner] .adm-note 숨김) · 문구 때문에 메뉴 · 본문 위치가 변하지 않음
 //     /session 이 늦게 와도(또는 실패해도) 메뉴 · 제목 · 본문 · 사이트로 가기 자리가 첫 프레임부터 끝까지 같음 · 회사 메뉴 아래에 빈칸이 없음(사이트로 가기가 두 개 바로 아래)
 import { type Page, expect, test } from "@playwright/test";
 import { companySession, hydrated, mockGeo, ownerSession } from "./helpers";
@@ -239,6 +240,8 @@ test.describe("첫 프레임부터 끝 모양 — /session 이 늦어도 메뉴 
         const last = r(links[links.length - 1]);
         const foot = r(document.querySelector("aside.adm-side .adm-nav.foot a"));
         const top = r(document.querySelector("header.adm-mtop"));
+        const note = r([...document.querySelectorAll(".adm-note")].find((e) => e.getClientRects().length > 0));
+        const logout = phone ? null : r(document.querySelector("aside.adm-side .adm-logout"));
         w.__fr.push({
           t: Math.round(performance.now() - t0),
           n: links.length,
@@ -249,6 +252,9 @@ test.describe("첫 프레임부터 끝 모양 — /session 이 늦어도 메뉴 
           mainY: Math.round((main.y + scrollY) * 2) / 2,
           mainX: Math.round(main.x * 2) / 2,
           topH: Math.round((top?.height ?? -1) * 2) / 2,
+          noteY: note ? Math.round((note.y + scrollY) * 2) / 2 : -1,
+          noteH: note ? Math.round(note.height * 2) / 2 : -1,
+          logoutY: logout ? Math.round((logout.y + scrollY) * 2) / 2 : -1,
         });
       }
       if (!w.__stop) requestAnimationFrame(tick);
@@ -261,7 +267,7 @@ test.describe("첫 프레임부터 끝 모양 — /session 이 늦어도 메뉴 
     });
     return page.evaluate(() => (window as unknown as { __fr: Record<string, number>[] }).__fr);
   };
-  const sig = (f: Record<string, number>) => JSON.stringify({ n: f.n, firstX: f.firstX, firstY: f.firstY, lastBottom: f.lastBottom, footY: f.footY, mainY: f.mainY, mainX: f.mainX, topH: f.topH });
+  const sig = (f: Record<string, number>) => JSON.stringify({ n: f.n, firstX: f.firstX, firstY: f.firstY, lastBottom: f.lastBottom, footY: f.footY, mainY: f.mainY, mainX: f.mainX, topH: f.topH, noteY: f.noteY, noteH: f.noteH, logoutY: f.logoutY });
 
   for (const [who, want] of [["회사", 2], ["owner", 6]] as const) {
     for (const delay of [1500, 0]) {
@@ -336,5 +342,125 @@ test.describe("첫 프레임부터 끝 모양 — /session 이 늦어도 메뉴 
     const h2 = (await page.locator("header.adm-mtop").boundingBox())?.height;
     expect(h1).toBe(h2);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
+  });
+});
+
+const NOTE = "채용 담당자분들을 위한 데모 링크입니다. 열람 기록이 남지 않도록 모든 분께 같은 링크 하나를 드리고 있습니다.";
+
+test.describe("채용 담당자 안내 글 (작업 0403 추가 지시)", () => {
+  const visible = (page: Page) => page.locator(".adm-note").evaluateAll((els) => els.filter((e) => e.getClientRects().length > 0).map((e) => ({ cls: e.className, text: (e.textContent ?? "").replace(/\s+/g, " ").trim() })));
+
+  for (const path of COMPANY_PATHS) {
+    test(`${path} · 회사 세션 — 보이는 안내 글은 정확히 하나 · 원문 두 문장 그대로 · ${"넓은 화면은 사이드 · 휴대폰은 본문 맨 아래"}`, async ({ page }) => {
+      await mockGeo(page);
+      await companySession(page);
+      await page.goto(path);
+      await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+      const shown = await visible(page);
+      expect(shown, "보이는 안내 글 수").toHaveLength(1);
+      expect(shown[0]?.text, "원문 그대로").toBe(NOTE);
+      expect(shown[0]?.cls).toContain(isPhone(page) ? "adm-note-main" : "adm-note-side");
+      await expect(page.getByText(NOTE, { exact: true }).filter({ visible: true })).toHaveCount(1);
+    });
+  }
+
+  test("넓은 화면 — 문구는 사이드바 '사이트로 가기' 아래 · 로그아웃 바로 위 · 겹치지 않음 · 글자 12px 이상 · 사이드 안에 들어 있음", async ({ page }) => {
+    test.skip(isPhone(page), "넓은 화면 사이드바");
+    await mockGeo(page);
+    await companySession(page);
+    await page.goto("/how");
+    const g = await page.evaluate(() => {
+      const r = (sel: string) => document.querySelector(sel)?.getBoundingClientRect();
+      const note = document.querySelector(".adm-note-side") as HTMLElement;
+      const side = r("aside.adm-side");
+      const nb = note.getBoundingClientRect();
+      const foot = r("aside.adm-side .adm-nav.foot");
+      const out = r("aside.adm-side .adm-logout");
+      return { nb, foot, out, side, fs: Number.parseFloat(getComputedStyle(note).fontSize), sw: note.scrollWidth - note.clientWidth };
+    });
+    expect(g.nb.top, "사이트로 가기 아래").toBeGreaterThanOrEqual((g.foot?.bottom ?? 0) - 0.5);
+    expect(g.nb.bottom, "로그아웃 위").toBeLessThanOrEqual((g.out?.top ?? 0) + 0.5);
+    expect((g.out?.top ?? 0) - g.nb.bottom, "문구와 로그아웃 사이").toBeLessThanOrEqual(16);
+    expect(g.nb.left).toBeGreaterThanOrEqual((g.side?.left ?? 0) - 0.5);
+    expect(g.nb.right).toBeLessThanOrEqual((g.side?.right ?? 0) + 0.5);
+    expect(g.fs, "작은 글씨여도 12px 이상").toBeGreaterThanOrEqual(12);
+    expect(g.sw, "글이 칸 밖으로 넘치지 않음").toBeLessThanOrEqual(0);
+    await expect(page.locator(".adm-note-main")).toBeHidden();
+  });
+
+  test("휴대폰 — 문구는 본문 맨 아래 한 번(마지막 내용 뒤) · 사이드 문구는 안 보임 · 가로 넘침 0", async ({ page }) => {
+    test.skip(!isPhone(page), "휴대폰");
+    await mockGeo(page);
+    await companySession(page);
+    await page.goto("/how");
+    await expect(page.locator(".adm-note-main")).toBeVisible();
+    await expect(page.locator(".adm-note-side")).toBeHidden();
+    const g = await page.evaluate(() => {
+      const main = document.querySelector("main") as HTMLElement;
+      const note = document.querySelector(".adm-note-main") as HTMLElement;
+      const last = main.lastElementChild;
+      const content = [...main.children].filter((e) => e !== note && e.getClientRects().length > 0);
+      const lastContent = content[content.length - 1]?.getBoundingClientRect();
+      return { isLast: last === note, noteTop: note.getBoundingClientRect().top + scrollY, contentBottom: (lastContent?.bottom ?? 0) + scrollY, hs: document.documentElement.scrollWidth - innerWidth, fs: Number.parseFloat(getComputedStyle(note).fontSize) };
+    });
+    expect(g.isLast, "본문의 맨 마지막 요소").toBe(true);
+    expect(g.noteTop, "마지막 내용 아래").toBeGreaterThanOrEqual(g.contentBottom - 0.5);
+    expect(g.fs).toBeGreaterThanOrEqual(12);
+    expect(g.hs).toBeLessThanOrEqual(0);
+  });
+
+  test("owner — 안내 글이 어디에도 안 보임(사이드 · 본문 모두 display none) · 로그아웃은 맨 아래 그대로", async ({ page }) => {
+    await mockGeo(page);
+    await ownerSession(page);
+    await page.goto("/how");
+    await expect(menu(page).getByRole("link")).toHaveCount(6);
+    expect(await visible(page)).toHaveLength(0);
+    await expect(page.getByText(NOTE, { exact: true }).filter({ visible: true })).toHaveCount(0);
+    if (!isPhone(page)) {
+      const bottom = await page.evaluate(() => {
+        const out = document.querySelector("aside.adm-side .adm-logout")?.getBoundingClientRect();
+        const side = document.querySelector("aside.adm-side")?.getBoundingClientRect();
+        return { gap: (side?.bottom ?? 0) - (out?.bottom ?? 0) };
+      });
+      expect(bottom.gap, "로그아웃이 사이드 맨 아래(여백 40px 이하)").toBeLessThanOrEqual(40);
+    }
+  });
+
+  test("서버 그림(HTML) — 안내 글 두 곳(사이드 · 본문)에 원문 두 문장이 그대로 · owner 숨김은 CSS(html[data-viewer=owner])", async ({ request }) => {
+    for (const path of ["/geo", "/how"]) {
+      const html = await (await request.get(path)).text();
+      expect(html.split(NOTE).length - 1, `${path}: 원문이 들어 있는 곳`).toBe(2);
+      expect(html).toContain("adm-note-side");
+      expect(html).toContain("adm-note-main");
+    }
+  });
+
+  test("문구가 있어도 메뉴 · 본문 · 사이트로 가기 · 로그아웃 자리가 첫 프레임부터 끝까지 같고, /session 이 늦어도 같음", async ({ page }) => {
+    await mockGeo(page);
+    await companySession(page, "apply-acme-1124", 1500);
+    await page.addInitScript(() => {
+      const w = window as unknown as { __nf: string[]; __stop: boolean };
+      w.__nf = [];
+      w.__stop = false;
+      const tick = () => {
+        const note = [...document.querySelectorAll(".adm-note")].find((e) => e.getClientRects().length > 0)?.getBoundingClientRect();
+        const main = document.querySelector("main")?.getBoundingClientRect();
+        const nav = document.querySelector("aside.adm-side .adm-nav.foot a, header.adm-mtop")?.getBoundingClientRect();
+        if (main && main.height > 0) w.__nf.push(JSON.stringify([note ? Math.round((note.y + scrollY) * 2) / 2 : -1, note ? Math.round(note.height * 2) / 2 : -1, Math.round((main.y + scrollY) * 2) / 2, Math.round((nav?.y ?? -1) * 2) / 2]));
+        if (!w.__stop) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+    await page.goto("/how", { waitUntil: "commit" });
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await hydrated(page.locator(".adm-find"));
+    await page.waitForTimeout(2400);
+    const fr = await page.evaluate(() => {
+      (window as unknown as { __stop: boolean }).__stop = true;
+      return (window as unknown as { __nf: string[] }).__nf;
+    });
+    expect(fr.length).toBeGreaterThan(20);
+    expect([...new Set(fr)], "문구 · 본문 · 메뉴 자리가 프레임마다 같음").toHaveLength(1);
+    expect(JSON.parse(fr[0] as string)[0], "첫 프레임부터 문구가 있음").toBeGreaterThan(0);
   });
 });
