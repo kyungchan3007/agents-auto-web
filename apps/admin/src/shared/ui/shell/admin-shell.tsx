@@ -5,7 +5,6 @@
 //   찾기 창(⌘K · Ctrl+K): 화면들 + 지금 화면의 [data-cmd] 요소(판 · 질문 · 규칙 · 궁금한 것)를 낱자 · 초성으로 찾음 (palette.tsx · use-palette)
 //   단축키(use-shell-keys) · 주소 끝 #판id 로 들어오면 그 판으로 스크롤(use-shell-mount) · 알림(use-toast) — 이 파일은 그리기만 (작업 0312)
 import type { ReactNode } from "react";
-import { GateWelcome } from "../../gate/gate-welcome";
 import { IconCamera, IconChart, IconGeo, IconHow, IconLog, IconMegaphone, IconOut, IconSearch } from "../icons/icons";
 import { Palette } from "./palette";
 import { type AdminNavPage, type SiteLink, kbdText } from "./palette-items";
@@ -82,7 +81,6 @@ export function AdminShell({ brand, pages, page, site, children }: { brand: stri
           {children}
         </main>
       </div>
-      <GateWelcome />
       {pal.open && <Palette p={pal} />}
       <div className={`adm-toast${toast.on ? " on" : ""}`} role="status" aria-live="polite">
         {toast.text}
