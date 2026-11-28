@@ -114,7 +114,10 @@ test.describe("버튼이 스크롤해도 가려지지 않음 (작업 0356 · 따
         const b = document.querySelector('[data-testid="currency-more"]') as HTMLElement;
         const q = b.getBoundingClientRect();
         const cx = q.x + q.width / 2, cy = q.y + q.height / 2;
-        const inView = cy > 80 && cy < innerHeight - 1; // 위 메뉴 띠(약 72px) 아래 · 화면 안
+        // 작업 0401: 바닥 고정 환율 띠(rate-ticker · 화면 아래 40px)는 늘 덮는 설계 — 띠 위쪽 끝까지만 "화면 안"으로 셈
+        const bar = document.querySelector('[data-testid="rate-ticker"]')?.getBoundingClientRect();
+        const bottom = bar && bar.top > 0 ? bar.top : innerHeight;
+        const inView = cy > 80 && cy < bottom - 1; // 위 메뉴 띠(약 72px) 아래 · 아래 환율 띠 위 · 화면 안
         const hit = inView ? document.elementFromPoint(cx, cy) : null;
         return { inView, covered: inView && !(hit && (b === hit || b.contains(hit))), by: hit?.closest("[data-testid]")?.getAttribute("data-testid") ?? hit?.tagName ?? null, scrollY: Math.round(scrollY) };
       });
