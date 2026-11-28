@@ -1,7 +1,6 @@
 // 어드민 토큰 관리 명령 (작업 0326) — 사용자가 자기 맥에서 돌림
 //   npm run admin:token -- add <이름> [--exp YYYY-MM-DD]   링크 만들기 (새 링크는 한 번만 출력 · --exp 없으면 발급일 + 7일 · 작업 0330)
 //     채용 담당자 공용 링크(작업 0403): add recruiter --exp <1년 뒤 날짜>  (이름은 영문 소문자 · 숫자 · 하이픈 · 기한은 날짜로 길게 줄 수 있음 · 쿠키 유효 기간은 그대로 7일)
-//   npm run admin:token -- extend <이름> --exp YYYY-MM-DD   기한만 바꿈 (링크 값 · 해시는 그대로 · owner 는 대상 아님 · 지난 날짜는 실패 · 링크는 출력하지 않음 · 작업 0403)
 //   npm run admin:token -- remove <이름>                    링크 지우기 (그 토큰의 쿠키도 바로 무효)
 //   npm run admin:token -- list                             이름 · 기한 · 상태 (토큰 · 해시는 안 보임)
 //   npm run admin:token -- init                             처음 한 번 — 없는 비밀값만 만들고 owner 링크 출력
@@ -13,7 +12,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { OWNER, addEntry, expFor, extendEntry, hasVersionsFlag, hashToken, linkFor, listRows, newToken, removeEntry, secretPayload, secretPutArgs, versionsPutNotice, wranglerFailureText } from "./admin-token-lib.ts";
+import { OWNER, addEntry, expFor, hasVersionsFlag, hashToken, linkFor, listRows, newToken, removeEntry, secretPayload, secretPutArgs, versionsPutNotice, wranglerFailureText } from "./admin-token-lib.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ADMIN_CONFIG = "apps/admin/wrangler.jsonc";
@@ -99,18 +98,6 @@ if (cmd === "add") {
   }
   publish(list);
   console.log(`만들었습니다: ${name}${exp ? ` (기한 ${exp})` : ""}\n새 링크 (이 화면에서만 보입니다 — 지금 복사하세요):\n${linkFor(token)}`);
-} else if (cmd === "extend") {
-  const name = rest[0];
-  const exp = flag(rest, "--exp");
-  if (!name || !exp) fail("사용법: extend <이름> --exp YYYY-MM-DD");
-  let list;
-  try {
-    list = extendEntry(loadList(), name, exp, today);
-  } catch (e) {
-    fail(e.message);
-  }
-  publish(list);
-  console.log(`기한을 바꿨습니다: ${name} (기한 ${exp} · 링크는 그대로)`);
 } else if (cmd === "remove") {
   const name = rest[0];
   if (!name) fail("사용법: remove <이름>");
@@ -153,7 +140,7 @@ if (cmd === "add") {
   console.log(made.length ? `새로 만든 비밀값: ${made.join(", ")}` : "새로 만들 것이 없습니다 (이미 모두 있음)");
   if (link) console.log(`본인(owner) 링크 (이 화면에서만 보입니다 — 지금 복사하세요):\n${link}`);
 } else {
-  fail("사용법: add <이름> [--exp YYYY-MM-DD] | extend <이름> --exp YYYY-MM-DD | remove <이름> | list | init");
+  fail("사용법: add <이름> [--exp YYYY-MM-DD] | remove <이름> | list | init");
 }
 
 // --versions 로 넣었으면 배포 안내 (비밀값 글은 출력하지 않음)
