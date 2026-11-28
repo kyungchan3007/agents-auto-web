@@ -47,6 +47,12 @@
   color: var(--hav-fg-2);
   font-size: 1.125rem;
 }
+/* 448px 미만 — 글꼴 폭이 달라져도 두 줄 자리 유지(두 줄 → 한 줄로 hero 높이가 바뀌지 않음, 작업 0402) */
+@media (max-width: 27.99rem) {
+  .hp-one {
+    min-height: 2lh;
+  }
+}
 .hp-src {
   padding: 3px 9px;
   border: 1px solid var(--hav-hero-src-line);
@@ -159,7 +165,7 @@
   color: var(--hav-fg-2);
   font-size: 0.8125rem;
 }
-/* 칩 줄 수는 글꼴 폭이 아니라 화면 폭으로만 — 26rem(416px) 미만은 둘째 칩 뒤에서 늘 줄바꿈(2+2) · 이상은 늘 한 줄(글꼴 로딩 전 · 후 높이 같음, 작업 0402) */
+/* 칩 줄 수는 글꼴 폭이 아니라 화면 폭으로만 — 25rem(416px) 미만은 둘째 칩 뒤에서 늘 줄바꿈(2+2) · 이상은 늘 한 줄(글꼴 로딩 전 · 후 높이 같음, 작업 0402) */
 .hp-chips {
   display: flex;
   flex-wrap: wrap;
@@ -178,7 +184,7 @@
 .hp-chips li:nth-child(n + 3) {
   order: 2;
 }
-@media (min-width: 26rem) {
+@media (min-width: 25rem) {
   .hp-chips {
     flex-wrap: nowrap;
   }
