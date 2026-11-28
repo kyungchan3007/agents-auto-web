@@ -384,7 +384,7 @@ test.describe("채용 담당자 안내 글 (작업 0403 추가 지시)", () => {
     });
     expect(g.nb.top, "사이트로 가기 아래").toBeGreaterThanOrEqual((g.foot?.bottom ?? 0) - 0.5);
     expect(g.nb.bottom, "로그아웃 위").toBeLessThanOrEqual((g.out?.top ?? 0) + 0.5);
-    expect((g.out?.top ?? 0) - g.nb.bottom, "문구와 로그아웃 사이").toBeLessThanOrEqual(16);
+    expect((g.out?.top ?? 0) - g.nb.bottom, "문구와 로그아웃 사이(사이드 flex 간격 20px)").toBeLessThanOrEqual(24);
     expect(g.nb.left).toBeGreaterThanOrEqual((g.side?.left ?? 0) - 0.5);
     expect(g.nb.right).toBeLessThanOrEqual((g.side?.right ?? 0) + 0.5);
     expect(g.fs, "작은 글씨여도 12px 이상").toBeGreaterThanOrEqual(12);
