@@ -25,7 +25,8 @@ export function auditDom(): Violation[] {
     const d = e.closest("details:not([open])");
     return !!d && !e.closest("summary");
   };
-  const skip = (e: Element): boolean => inClosedDetails(e) || !!e.closest("[inert],[aria-hidden='true'],script,style,noscript,svg *,[data-resp-skip],.sr-only");
+  // 작업 0401: 흐르는 환율 띠 항목(.rt-track)은 왼쪽 고정 라벨 뒤로 지나가는 설계(양 끝 흐림) — 겹침 · 넘침 판정에서 뺌(띠 자체 · 라벨은 rate-ticker.spec 이 검사)
+  const skip = (e: Element): boolean => inClosedDetails(e) || !!e.closest("[inert],[aria-hidden='true'],script,style,noscript,svg *,[data-resp-skip],.sr-only,.rt-track");
   // 글자가 overflow 로 잘려 보이지 않는 자리(굴러가는 숫자 줄 등)면 점검에서 뺌
   const hiddenByClip = (e: Element, r: DOMRect): boolean => {
     for (let n = e.parentElement; n && n !== document.documentElement; n = n.parentElement) {
