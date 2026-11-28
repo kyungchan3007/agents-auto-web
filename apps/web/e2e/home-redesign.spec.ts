@@ -95,9 +95,14 @@ test.describe("새 홈 — 도착지별 환전 타이밍 (작업 0217)", () => {
   test("흰 판 하나 · 줄마다 국기 · 도시 · 통화 · 금액 · 동그라미 · 상태 · 더 보기 링크", async ({ page }) => {
     await page.goto("/");
     const list = tid(page, "dest-list");
-    expect(await bg(page, "dest-list")).toBe("rgb(255, 255, 255)");
+    // 작업 0401: 0398 부터 카드 자리는 처음부터 끝 높이이고 보이는 판(흰 바탕 · 옅은 선 · 모서리)은 ::before 가 그림(clip-path 로 알약 → 펼침)
+    const plate = await list.evaluate((el) => {
+      const b = getComputedStyle(el, "::before");
+      return { bg: b.backgroundColor, bw: Number.parseFloat(b.borderTopWidth) };
+    });
+    expect(plate.bg).toBe("rgb(255, 255, 255)");
     // 흰 바탕 위 흰 판은 옅은 선으로 구분 (작업 0216 흰 바탕 결정)
-    expect(await tid(page, "dest-list").evaluate((el) => parseFloat(getComputedStyle(el).borderTopWidth))).toBeGreaterThanOrEqual(1);
+    expect(plate.bw).toBeGreaterThanOrEqual(1);
     const n = await tid(page, "dest-row").count();
     expect(n).toBeGreaterThanOrEqual(4);
     expect(await list.locator('[data-testid="dest-row"]').count()).toBe(n);
